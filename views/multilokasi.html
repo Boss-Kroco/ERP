@@ -1,0 +1,52 @@
+<div id="view-multilokasi" style="display: none;">
+                    <div class="order-section-card">
+                        <div class="order-header-row">
+                            <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
+                                <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                                    <path d="m16 3 4 4-4 4" />
+                                    <path d="M20 7H4" />
+                                    <path d="m8 21-4-4 4-4" />
+                                    <path d="M4 17h16" />
+                                </svg>
+                                Mutasi & Transfer Stok Internal Antar Lokasi
+                            </span>
+                        </div>
+                        <form onsubmit="event.preventDefault(); submitTransferStok();"
+                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px;">
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Pilih
+                                    Produk</label>
+                                <select class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="tfProdukId" required></select>
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Jumlah
+                                    Unit</label>
+                                <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="tfJumlah" min="1" value="20" required>
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Lokasi
+                                    Asal</label>
+                                <select class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="tfLokasiAsal">
+                                    <option value="Gudang Produksi">Gudang Produksi</option>
+                                    <option value="Etalase Toko">Etalase Toko</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Lokasi
+                                    Tujuan</label>
+                                <select class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="tfLokasiTujuan">
+                                    <option value="Etalase Toko">Etalase Toko</option>
+                                    <option value="Gudang Produksi">Gudang Produksi</option>
+                                </select>
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <button type="submit" class="btn-pill-action btn-pill-primary">Eksekusi Mutasi
+                                    Stok</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>

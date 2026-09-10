@@ -1,0 +1,96 @@
+<div id="view-produksi" style="display: none;">
+                    <div class="order-section-card">
+                        <div class="order-header-row">
+                            <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
+                                <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                                    <path
+                                        d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+                                    <path d="M17 18h1" />
+                                    <path d="M12 18h1" />
+                                    <path d="M7 18h1" />
+                                </svg>
+                                Manufaktur Batch & Kalkulasi HPP Otomatis
+                            </span>
+                        </div>
+                        <form onsubmit="event.preventDefault(); submitBatchProduksi();"
+                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px;">
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Pilih
+                                    Produk</label>
+                                <select class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="prodBatchProdukId" required onchange="hitungLiveHppPreview()"></select>
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Skema
+                                    Tenaga Kerja</label>
+                                <select class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="prodBatchTenagaKerja">
+                                    <option value="Pekerja harian">Pekerja harian</option>
+                                    <option value="Karyawan tetap">Karyawan tetap</option>
+                                    <option value="Pekerja per jam">Pekerja per jam</option>
+                                    <option value="Owner/sendiri">Owner/sendiri</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Jumlah
+                                    Rencana (Pcs)</label>
+                                <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="prodBatchRencana" value="100" required oninput="hitungLiveHppPreview()">
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Jumlah
+                                    Rusak (Pcs)</label>
+                                <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="prodBatchRusak" value="2" oninput="hitungLiveHppPreview()">
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya
+                                    Bahan Baku (Rp)</label>
+                                <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="prodBiayaBahan" value="450000" oninput="hitungLiveHppPreview()">
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya
+                                    Kemasan & Label (Rp)</label>
+                                <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="prodBiayaKemasan" value="85000" oninput="hitungLiveHppPreview()">
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya
+                                    Utilitas / Operasional (Rp)</label>
+                                <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="prodBiayaOperasional" value="50000" oninput="hitungLiveHppPreview()">
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya Upah
+                                    Kerja (Rp)</label>
+                                <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="prodBiayaUpah" value="96000" oninput="hitungLiveHppPreview()">
+                            </div>
+
+                            <!-- Live HPP Calculator Box -->
+                            <div style="grid-column: span 2;">
+                                <div class="calc-live-preview-box">
+                                    <div class="calc-preview-item">
+                                        <span class="calc-preview-label">PRODUKSI BERSIH</span>
+                                        <span class="calc-preview-val" id="prevJmlBersih">98 Pcs</span>
+                                    </div>
+                                    <div class="calc-preview-item">
+                                        <span class="calc-preview-label">TOTAL HPP BATCH</span>
+                                        <span class="calc-preview-val" id="prevTotalHpp">Rp 681.000</span>
+                                    </div>
+                                    <div class="calc-preview-item">
+                                        <span class="calc-preview-label">HPP / UNIT PCS</span>
+                                        <span class="calc-preview-val" id="prevHppPcs" style="color: var(--emerald);">Rp
+                                            6.949 / pcs</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="grid-column: span 2;">
+                                <button type="submit" class="btn-pill-action btn-pill-primary"
+                                    style="padding: 10px 20px;">Bukukan Batch & Tambah ke Gudang</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>

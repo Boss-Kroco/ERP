@@ -1,0 +1,195 @@
+<div id="view-profil" style="display: none;">
+
+    <!-- 1. Profile Hero Header Banner -->
+    <div class="profile-hero-card">
+        <div class="profile-hero-left">
+            <div class="profile-avatar-large-wrap">
+                <div class="profile-avatar-large" id="profHeaderAvatar">BA</div>
+                <span class="profile-online-badge" title="Status: Online"></span>
+            </div>
+            <div class="profile-hero-text">
+                <div class="profile-hero-name-row">
+                    <h2 class="profile-hero-name" id="profHeaderNama">Bapak Direktur Owner</h2>
+                    <span class="prof-status-pill">
+                        <span class="prof-status-dot"></span>
+                        Akun Aktif
+                    </span>
+                </div>
+                <div class="profile-hero-meta-row">
+                    <span class="prof-role-chip" id="profHeaderRole">Owner</span>
+                    <span class="prof-meta-text" id="profHeaderUsername">@owner</span>
+                    <span class="prof-meta-divider">•</span>
+                    <span class="prof-meta-text" id="profHeaderId">ID: USR-001</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-hero-actions">
+            <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigatePage('dashboard')">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                    <path d="m15 18-6-6 6-6" />
+                </svg>
+                Kembali ke Dashboard
+            </button>
+            <button type="button" class="btn-pill-action btn-pill-danger" onclick="doLogout()">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" x2="9" y1="12" y2="12" />
+                </svg>
+                Keluar
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Profile Details Grid (2 Columns) -->
+    <div class="profile-content-grid">
+
+        <!-- Column 1: Biodata & Identitas Akun -->
+        <div class="profile-panel-card">
+            <div class="panel-card-header">
+                <div class="panel-card-title">
+                    <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24">
+                        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    Informasi &amp; Biodata Akun
+                </div>
+                <span class="panel-badge-sub">Data Personal</span>
+            </div>
+
+            <form onsubmit="event.preventDefault(); saveProfileBiodata();" class="profile-form-body">
+                <div class="profile-form-group">
+                    <label for="profInputNama" class="profile-label">Nama Lengkap</label>
+                    <input type="text" id="profInputNama" class="search-filter-input profile-input" required
+                        placeholder="Masukkan nama lengkap...">
+                </div>
+
+                <div class="profile-form-row">
+                    <div class="profile-form-group">
+                        <label for="profInputUsername" class="profile-label">Username</label>
+                        <input type="text" id="profInputUsername" class="search-filter-input profile-input" disabled>
+                    </div>
+                    <div class="profile-form-group">
+                        <label for="profInputId" class="profile-label">ID Akun ERP</label>
+                        <input type="text" id="profInputId" class="search-filter-input profile-input" disabled>
+                    </div>
+                </div>
+
+                <div class="profile-form-group">
+                    <label for="profInputRole" class="profile-label">Peran Sistem (Role)</label>
+                    <input type="text" id="profInputRole" class="search-filter-input profile-input" disabled>
+                </div>
+
+                <div class="profile-form-footer">
+                    <button type="submit" class="btn-pill-action btn-pill-primary">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                            <polyline points="17 21 17 13 7 13 7 21" />
+                            <polyline points="7 3 7 8 15 8" />
+                        </svg>
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Column 2: Keamanan & Kata Sandi -->
+        <div class="profile-panel-card">
+            <div class="panel-card-header">
+                <div class="panel-card-title">
+                    <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    Keamanan &amp; Kata Sandi
+                </div>
+                <span class="panel-badge-sub">Proteksi Akun</span>
+            </div>
+
+            <form onsubmit="event.preventDefault(); saveProfilePassword();" class="profile-form-body">
+                <div class="profile-form-group">
+                    <label for="profOldPassword" class="profile-label">Kata Sandi Saat Ini</label>
+                    <input type="password" id="profOldPassword" class="search-filter-input profile-input"
+                        placeholder="Masukkan sandi saat ini..." required>
+                </div>
+
+                <div class="profile-form-group">
+                    <label for="profNewPassword" class="profile-label">Kata Sandi Baru</label>
+                    <input type="password" id="profNewPassword" class="search-filter-input profile-input"
+                        placeholder="Minimal 6 karakter..." minlength="6" required>
+                </div>
+
+                <div class="profile-form-group">
+                    <label for="profConfirmPassword" class="profile-label">Konfirmasi Kata Sandi Baru</label>
+                    <input type="password" id="profConfirmPassword" class="search-filter-input profile-input"
+                        placeholder="Ulangi kata sandi baru..." minlength="6" required>
+                </div>
+
+                <div class="profile-form-footer">
+                    <button type="submit" class="btn-pill-action btn-pill-primary">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                        </svg>
+                        Perbarui Kata Sandi
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Column 3: Matriks Hak Akses Modul (Full Width) -->
+        <div class="profile-panel-card profile-full-width">
+            <div class="panel-card-header">
+                <div class="panel-card-title">
+                    <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                    </svg>
+                    Hak Akses &amp; Otorisasi Modul ERP
+                </div>
+                <span class="panel-badge-sub">Role-Based Access Control (RBAC)</span>
+            </div>
+
+            <div class="prof-permission-grid" id="profPermissionGrid">
+                <!-- Injected dynamically via JS -->
+            </div>
+        </div>
+
+        <!-- Column 4: Sesi & Info Perangkat (Full Width) -->
+        <div class="profile-panel-card profile-full-width">
+            <div class="panel-card-header">
+                <div class="panel-card-title">
+                    <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    Informasi Sesi &amp; Lingkungan Aplikasi
+                </div>
+                <span class="panel-badge-sub">Audit Sesi</span>
+            </div>
+
+            <div class="profile-session-grid">
+                <div class="prof-session-item">
+                    <div class="prof-session-label">Waktu Login Sesi Ini</div>
+                    <div class="prof-session-val" id="profSessionLoginTime">Memuat waktu...</div>
+                </div>
+                <div class="prof-session-item">
+                    <div class="prof-session-label">Penyimpanan Basis Data</div>
+                    <div class="prof-session-val">Supabase Cloud Sync (PostgreSQL)</div>
+                </div>
+                <div class="prof-session-item">
+                    <div class="prof-session-label">Zona Waktu Operasional</div>
+                    <div class="prof-session-val">Asia/Jakarta (WIB)</div>
+                </div>
+                <div class="prof-session-item">
+                    <div class="prof-session-label">Protokol Keamanan</div>
+                    <div class="prof-session-val">SHA-256 Hashing &amp; RLS RBAC</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

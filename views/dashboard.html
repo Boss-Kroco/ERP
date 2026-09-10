@@ -1,0 +1,366 @@
+<div id="view-dashboard">
+
+                    <div class="dashboard-hero-grid">
+
+                        <!-- 1. Overview Penjualan (Exact 236px Panoramic Height) -->
+                        <div class="overview-hero-card">
+                            <div class="overview-top-row">
+                                <div class="overview-title">Overview Penjualan</div>
+                                <div class="overview-top-badges">
+                                    <div class="peak-tag-badge">
+                                        <span id="overviewPeakVal">Rp 1.631.000</span>
+                                        <small>OMZET PEAK</small>
+                                    </div>
+                                    <button class="period-dropdown-btn" onclick="togglePeriodDashboard()">
+                                        <span id="lblPeriodCurrent">Bulanan</span>
+                                        <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                                            <path d="m6 9 6 6 6-6" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- High-DPI Glowing Spline Wave Canvas (Tahap 3) -->
+                            <div class="spline-chart-box" id="splineChartContainer">
+                                <canvas id="chartOverviewSpline"></canvas>
+                                <div class="spline-floating-tooltip" id="splineHoverTooltip">
+                                    <span id="tooltipOmzetVal">Rp 1.631.000</span>
+                                    <small id="tooltipDateLabel">05 Sep 2026 • Peak</small>
+                                </div>
+                            </div>
+
+                            <div class="overview-bottom-stats">
+                                <div class="ov-stat-item">
+                                    <span class="ov-stat-label">TOTAL OMZET</span>
+                                    <span class="ov-stat-value" id="statHeroOmzet">Rp 1.631.000</span>
+                                    <span class="ov-stat-sub">POS & Konsinyasi</span>
+                                </div>
+                                <div class="ov-stat-item">
+                                    <span class="ov-stat-label">LABA BERSIH</span>
+                                    <span class="ov-stat-value" id="statHeroLaba">Rp -1.099.000</span>
+                                    <span class="ov-stat-sub">Periode Berjalan</span>
+                                </div>
+                                <div class="ov-stat-item">
+                                    <span class="ov-stat-label">TARGET CAPAIAN</span>
+                                    <span class="ov-stat-value" id="dashboardTargetVal">Rp 5.000.000</span>
+                                    <span class="ov-stat-sub" id="dashboardTargetPct">32.6% Terpenuhi</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Dual Stacked Cards (Exact Heights: 72px & 152px) -->
+                        <div class="middle-stacked-column">
+                            <div class="card-kas-deep" onclick="navigatePage('keuangan')">
+                                <div class="kas-header-row">
+                                    <div class="kas-coin-icon">
+                                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                                            <path
+                                                d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
+                                            <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
+                                        </svg>
+                                    </div>
+                                    <span class="kas-card-title">Saldo Kas Riil</span>
+                                    <span id="badgeKasKritis" style="display: none; background: #fee2e2; color: #dc2626; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 6px; margin-left: auto; letter-spacing: 0.3px; border: 1px solid #fca5a5;">⚠️ KAS KRITIS</span>
+                                </div>
+                                <div class="kas-card-val" id="statHeroKas">Rp 15.218.000</div>
+                            </div>
+
+                            <div class="card-beban-coral" onclick="navigatePage('keuangan')">
+                                <div class="beban-top-row">
+                                    <div class="beban-icon-box">
+                                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                                            <polyline points="22 17 13.5 8.5 8.5 13.5 2 7" />
+                                            <polyline points="16 17 22 17 22 11" />
+                                        </svg>
+                                    </div>
+                                    <span class="beban-title">Beban Pengeluaran</span>
+                                </div>
+                                <div class="beban-body-val">
+                                    <div class="beban-amount-num" id="statHeroBeban">Rp 2.730.000</div>
+                                    <div class="beban-subtitle">Biaya Bahan & Operasional</div>
+                                </div>
+                                <div class="beban-floating-circle-btn">
+                                    <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                                        <path d="M5 12h14" />
+                                        <path d="m12 5 7 7-7 7" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. Tim & Rekanan (236px Height) -->
+                        <div class="tim-rekanan-card">
+                            <div class="panel-widget-header">
+                                <span class="widget-title-bold">
+                                    <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                    </svg>
+                                    Tim & Rekanan
+                                </span>
+                                <span class="widget-action-link" onclick="refreshTimRekanan()">Refresh</span>
+                            </div>
+
+                            <div class="segmented-pill-tabs">
+                                <div class="seg-pill-item active" id="tabAktivitas" onclick="switchTimTab('aktivitas')">
+                                    Aktivitas</div>
+                                <div class="seg-pill-item" id="tabMitra" onclick="switchTimTab('mitra')">Mitra Toko
+                                </div>
+                            </div>
+
+                            <ul class="activity-user-list" id="timRekananList">
+                                <li class="act-user-row">
+                                    <div class="act-avatar-pill blue">TB</div>
+                                    <div class="act-meta-text">
+                                        <div class="act-name-bold">Toko Oleh-Oleh Barokah</div>
+                                        <div class="act-sub-desc">Piutang Rp 750.000 • H-1</div>
+                                    </div>
+                                    <span class="act-icon-right">
+                                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                                    </span>
+                                </li>
+                                <li class="act-user-row">
+                                    <div class="act-avatar-pill pink">RN</div>
+                                    <div class="act-meta-text">
+                                        <div class="act-name-bold">Rina Kasir Utama</div>
+                                        <div class="act-sub-desc">TRX-0001 • Tunai Lunas</div>
+                                    </div>
+                                    <span class="act-icon-right">
+                                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                                    </span>
+                                </li>
+                                <li class="act-user-row">
+                                    <div class="act-avatar-pill green">AH</div>
+                                    <div class="act-meta-text">
+                                        <div class="act-name-bold">Ahmad Supervisor</div>
+                                        <div class="act-sub-desc">Produksi Batch Selesai 98 pcs</div>
+                                    </div>
+                                    <span class="act-icon-right">
+                                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                                    </span>
+                                </li>
+                                <li class="act-user-row">
+                                    <div class="act-avatar-pill amber">MS</div>
+                                    <div class="act-meta-text">
+                                        <div class="act-name-bold">Minimarket Sentosa</div>
+                                        <div class="act-sub-desc">Pengiriman Barang Konsinyasi</div>
+                                    </div>
+                                    <span class="act-icon-right">
+                                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+
+                    <!-- Bottom Row: 4 Aligned Cards (Progress + Live Map) -->
+                    <div class="bottom-progress-grid">
+
+                        <div class="progress-metric-card" onclick="navigatePage('produksi')" style="cursor: pointer;">
+                            <div>
+                                <div class="prog-top-row">
+                                    <div class="prog-icon-sq" style="color: var(--violet-main);">
+                                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                                            <path
+                                                d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+                                            <path d="M17 18h1" />
+                                            <path d="M12 18h1" />
+                                            <path d="M7 18h1" />
+                                        </svg>
+                                    </div>
+                                    <span style="color: var(--text-muted);">···</span>
+                                </div>
+                                <div class="prog-card-title">Gudang Produksi</div>
+                                <div class="prog-card-sub">Stok Barang Jadi</div>
+                            </div>
+
+                            <div class="prog-bar-container">
+                                <div class="prog-bar-meta">
+                                    <span>Kapasitas Simpan</span>
+                                    <span id="lblPersenGudang">78%</span>
+                                </div>
+                                <div class="prog-track-bg">
+                                    <div class="prog-fill-line" id="barGudang"
+                                        style="width: 78%; background: var(--violet-main);"></div>
+                                </div>
+                            </div>
+
+                            <div class="prog-bottom-row">
+                                <span class="prog-main-num" id="lblStokGudang">1.145 Unit</span>
+                                <span class="prog-status-pill green">Aman</span>
+                            </div>
+                        </div>
+
+                        <div class="progress-metric-card" onclick="navigatePage('pos')" style="cursor: pointer;">
+                            <div>
+                                <div class="prog-top-row">
+                                    <div class="prog-icon-sq" style="color: var(--emerald);">
+                                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                                            <circle cx="8" cy="21" r="1" />
+                                            <circle cx="19" cy="21" r="1" />
+                                            <path
+                                                d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+                                        </svg>
+                                    </div>
+                                    <span style="color: var(--text-muted);">···</span>
+                                </div>
+                                <div class="prog-card-title">Etalase Toko Siap Jual</div>
+                                <div class="prog-card-sub">Stok Kasir & Kanvas</div>
+                            </div>
+
+                            <div class="prog-bar-container">
+                                <div class="prog-bar-meta">
+                                    <span>Ketersediaan Rak</span>
+                                    <span id="lblPersenEtalase">45%</span>
+                                </div>
+                                <div class="prog-track-bg">
+                                    <div class="prog-fill-line" id="barEtalase"
+                                        style="width: 45%; background: var(--emerald);"></div>
+                                </div>
+                            </div>
+
+                            <div class="prog-bottom-row">
+                                <span class="prog-main-num" id="lblStokEtalase">230 Unit</span>
+                                <span class="prog-status-pill violet">Siap Jual</span>
+                            </div>
+                        </div>
+
+                        <div class="progress-metric-card" onclick="openDueAlertModal()" style="cursor: pointer;">
+                            <div>
+                                <div class="prog-top-row">
+                                    <div class="prog-icon-sq" style="color: var(--coral-pink);">
+                                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                                            <circle cx="12" cy="12" r="10" />
+                                            <polyline points="12 6 12 12 16 14" />
+                                        </svg>
+                                    </div>
+                                    <span style="color: var(--text-muted);">···</span>
+                                </div>
+                                <div class="prog-card-title">Piutang Toko Rekanan</div>
+                                <div class="prog-card-sub">Tagihan Belum Lunas</div>
+                            </div>
+
+                            <div class="prog-bar-container">
+                                <div class="prog-bar-meta">
+                                    <span>Rasio Tagihan</span>
+                                    <span>65%</span>
+                                </div>
+                                <div class="prog-track-bg">
+                                    <div class="prog-fill-line" style="width: 65%; background: var(--coral-pink);">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="prog-bottom-row">
+                                <span class="prog-main-num" id="lblTotalPiutang">Rp 2.800.000</span>
+                                <span class="prog-status-pill coral">Tempo H-3</span>
+                            </div>
+                        </div>
+
+                        <div class="live-map-metric-card">
+                            <div class="panel-widget-header" style="margin-bottom: 4px;">
+                                <span class="widget-title-bold">
+                                    <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: var(--coral-pink);">
+                                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                                        <circle cx="12" cy="10" r="3" />
+                                    </svg>
+                                    Live Distribusi Stok
+                                </span>
+                                <span class="widget-action-link" onclick="navigatePage('multilokasi')">Transfer</span>
+                            </div>
+
+                            <div class="map-canvas-box" onclick="navigatePage('multilokasi')"
+                                title="Klik untuk Buka Form Transfer Stok">
+                                <div class="map-road-line"
+                                    style="width: 140%; height: 6px; top: 28px; left: -20px; transform: rotate(-12deg);">
+                                </div>
+                                <div class="map-road-line"
+                                    style="width: 6px; height: 120%; top: -10px; left: 52%; transform: rotate(18deg);">
+                                </div>
+                                <div class="map-pin-badge pabrik" title="Gudang Produksi (1.145 Unit)">
+                                    <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                                        <path
+                                            d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+                                    </svg>
+                                </div>
+                                <div class="map-pin-badge toko" title="Etalase Toko (230 Unit)">
+                                    <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                                        <circle cx="8" cy="21" r="1" />
+                                        <circle cx="19" cy="21" r="1" />
+                                        <path
+                                            d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="map-card-footer">
+                                <span>2 Titik Lokasi Aktif</span>
+                                <span class="status-sync-dot">● Semua Sinkron</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Table Order Section (Tahap 4 Full Functional) -->
+                    <div class="order-section-card">
+                        <div class="order-header-row">
+                            <div class="order-title-group">
+                                <span class="order-main-title">Daftar Transaksi Pesanan</span>
+                                <span class="order-count-tag" id="orderCountBadge">10 Data</span>
+                            </div>
+                            <div class="order-action-tools">
+                                <div class="search-filter-box">
+                                    <span class="table-search-icon">
+                                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                                            <circle cx="11" cy="11" r="8" />
+                                            <path d="m21 21-4.3-4.3" />
+                                        </svg>
+                                    </span>
+                                    <input type="text" class="search-filter-input" id="searchOrderTable"
+                                        placeholder="Cari transaksi..." oninput="filterOrderTable()">
+                                </div>
+                                <button class="btn-pill-action btn-pill-secondary" onclick="openExportModal()">
+                                    <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" x2="12" y1="15" y2="3" />
+                                    </svg>
+                                    Export CSV
+                                </button>
+                                <button class="btn-pill-action btn-pill-primary" onclick="navigatePage('pos')">
+                                    <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                                        <path d="M5 12h14" />
+                                        <path d="M12 5v14" />
+                                    </svg>
+                                    Transaksi Kasir
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive-wrapper">
+                            <table class="custom-order-table" id="tableOrders">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 36px;">
+                                            <input type="checkbox" id="selectAllOrders"
+                                                onchange="toggleSelectAllOrders(this)">
+                                        </th>
+                                        <th>No Pesanan</th>
+                                        <th>Pelanggan</th>
+                                        <th>Kategori / Item</th>
+                                        <th>Nominal</th>
+                                        <th>Tanggal</th>
+                                        <th>Metode</th>
+                                        <th>Status Pesanan</th>
+                                        <th style="text-align: center;">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblOrderBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>

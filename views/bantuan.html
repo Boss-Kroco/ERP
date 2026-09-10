@@ -1,0 +1,239 @@
+<div id="view-bantuan" style="display: none;">
+    <div class="bantuan-page-grid">
+
+        <!-- Kolom Kiri: FAQ & Panduan Fitur (White Card) -->
+        <div class="faq-card">
+            <div class="faq-title">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main); stroke: currentColor; fill: none; stroke-width: 2;">
+                    <circle cx="12" cy="12" r="10" />
+                    <circle cx="12" cy="12" r="4" />
+                    <line x1="4.93" y1="4.93" x2="9.17" y2="9.17" />
+                    <line x1="14.83" y1="9.17" x2="19.07" y2="4.93" />
+                    <line x1="14.83" y1="14.83" x2="19.07" y2="19.07" />
+                    <line x1="4.93" y1="19.07" x2="9.17" y2="14.83" />
+                </svg>
+                FAQ (Tanya Jawab)
+            </div>
+
+            <div class="faq-list-container">
+                <!-- FAQ 1 (Expanded / Active by default) -->
+                <div class="faq-item active" id="faqItem0">
+                    <div class="faq-header" onclick="toggleFaqAccordion(0)">
+                        <span>Apakah data saya aman di Bos Kroco ERP?</span>
+                        <svg class="svg-icon-xs faq-chevron" viewBox="0 0 24 24">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-body">
+                        Sangat aman! Seluruh data transaksi penjualan, formula resep produksi, stok multi-lokasi, dan buku kas Bos Kroco tersimpan langsung di dalam Cloud Database Supabase menggunakan standar enkripsi Row Level Security (RLS) kelas enterprise.
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="faq-item" id="faqItem1">
+                    <div class="faq-header" onclick="toggleFaqAccordion(1)">
+                        <span>Bagaimana alur pencatatan produksi dan kalkulasi HPP otomatis?</span>
+                        <svg class="svg-icon-xs faq-chevron" viewBox="0 0 24 24">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-body">
+                        Buka modul <b>Produksi &amp; HPP</b>, pilih produk jadi yang akan diproduksi, tentukan jumlah target unit, lalu masukkan biaya bahan baku dan overhead. Sistem Bos Kroco ERP akan otomatis menghitung HPP per unit secara real-time dan langsung menambahkan stok jadi ke gudang saat Anda menekan tombol simpan.
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="faq-item" id="faqItem2">
+                    <div class="faq-header" onclick="toggleFaqAccordion(2)">
+                        <span>Bagaimana cara melakukan transfer stok antar lokasi (Pabrik ke Etalase Toko)?</span>
+                        <svg class="svg-icon-xs faq-chevron" viewBox="0 0 24 24">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-body">
+                        Masuk ke menu <b>Transfer Stok</b>, tentukan gudang asal (misal: Pabrik/Gudang Utama) dan lokasi tujuan (misal: Etalase Toko atau Mitra Toko Konsinyasi). Masukkan jumlah barang yang dipindahkan, lalu klik <i>Kirim Transfer</i>. Stok di lokasi asal akan otomatis berkurang dan stok tujuan bertambah seketika.
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="faq-item" id="faqItem3">
+                    <div class="faq-header" onclick="toggleFaqAccordion(3)">
+                        <span>Bagaimana jika pelanggan membeli dengan pembayaran tempo / piutang?</span>
+                        <svg class="svg-icon-xs faq-chevron" viewBox="0 0 24 24">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-body">
+                        Pada modul <b>Kasir &amp; POS</b>, pilih mitra toko yang bersangkutan lalu ubah metode pembayaran dari <i>Tunai</i> menjadi <i>Tempo (Buku Piutang Toko)</i>. Transaksi otomatis dicatat ke buku piutang dan jadwal jatuh tempo penagihannya langsung muncul di banner Dashboard.
+                    </div>
+                </div>
+
+                <!-- FAQ 5 -->
+                <div class="faq-item" id="faqItem4">
+                    <div class="faq-header" onclick="toggleFaqAccordion(4)">
+                        <span>Bagaimana cara mengaktifkan notifikasi Telegram otomatis setiap penjualan?</span>
+                        <svg class="svg-icon-xs faq-chevron" viewBox="0 0 24 24">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-body">
+                        Masuk ke <b>Pengaturan</b> &gt; <b>Integrasi Telegram Bot</b>. Masukkan Bot Token yang Anda dapatkan dari @BotFather dan ID Chat/Grup Telegram Anda, lalu pastikan centang <i>Aktifkan notifikasi otomatis</i> menyala. Setiap kali kasir menekan tombol selesai transaksi, struk penjualan lengkap langsung terkirim ke Telegram Anda.
+                    </div>
+                </div>
+
+                <!-- FAQ 6 -->
+                <div class="faq-item" id="faqItem5">
+                    <div class="faq-header" onclick="toggleFaqAccordion(5)">
+                        <span>Apa yang harus dilakukan jika kasir salah memasukkan barang di keranjang?</span>
+                        <svg class="svg-icon-xs faq-chevron" viewBox="0 0 24 24">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-body">
+                        Selama transaksi belum disimpan, kasir cukup mengklik tombol ikon sampah berwarna merah pada baris barang di tabel keranjang belanja. Subtotal, diskon potongan, PPN, dan total akhir akan langsung dikalkulasi ulang secara otomatis.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panduan Fitur (4 Kotak Grid) -->
+            <div class="guide-section-title" style="display: flex; align-items: center; gap: 8px;">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24" style="stroke: var(--violet-main); width: 18px; height: 18px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
+                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                    <path d="M6 6h10" />
+                    <path d="M6 10h10" />
+                </svg>
+                <span>Panduan &amp; Cara Penggunaan Fitur Bos Kroco</span>
+            </div>
+
+            <div class="guide-grid">
+                <!-- Panduan 1: Produksi & HPP -->
+                <div class="guide-card" onclick="openGuideModal('produksi')">
+                    <div class="guide-card-left">
+                        <div class="guide-icon-box" style="background: rgba(234, 88, 12, 0.1); border: 1px solid rgba(234, 88, 12, 0.25);">
+                            <svg class="svg-icon-sm" viewBox="0 0 24 24" style="stroke: #ea580c; width: 18px; height: 18px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
+                                <path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+                                <path d="M17 18h1" />
+                                <path d="M12 18h1" />
+                                <path d="M7 18h1" />
+                            </svg>
+                        </div>
+                        <div class="guide-name">Manajemen Produksi &amp; HPP</div>
+                    </div>
+                    <div class="guide-link-btn">
+                        Baca →
+                    </div>
+                </div>
+
+                <!-- Panduan 2: Kasir POS -->
+                <div class="guide-card" onclick="openGuideModal('pos')">
+                    <div class="guide-card-left">
+                        <div class="guide-icon-box" style="background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.25);">
+                            <svg class="svg-icon-sm" viewBox="0 0 24 24" style="stroke: #dc2626; width: 18px; height: 18px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
+                                <circle cx="8" cy="21" r="1" />
+                                <circle cx="19" cy="21" r="1" />
+                                <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+                            </svg>
+                        </div>
+                        <div class="guide-name">Kasir POS &amp; Cetak Struk</div>
+                    </div>
+                    <div class="guide-link-btn">
+                        Baca →
+                    </div>
+                </div>
+
+                <!-- Panduan 3: Multi-Lokasi -->
+                <div class="guide-card" onclick="openGuideModal('multilokasi')">
+                    <div class="guide-card-left">
+                        <div class="guide-icon-box" style="background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.25);">
+                            <svg class="svg-icon-sm" viewBox="0 0 24 24" style="stroke: #2563eb; width: 18px; height: 18px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
+                                <path d="m16 3 4 4-4 4" />
+                                <path d="M20 7H4" />
+                                <path d="m8 21-4-4 4-4" />
+                                <path d="M4 17h16" />
+                            </svg>
+                        </div>
+                        <div class="guide-name">Transfer Stok Multi-Lokasi</div>
+                    </div>
+                    <div class="guide-link-btn">
+                        Baca →
+                    </div>
+                </div>
+
+                <!-- Panduan 4: Keuangan & Upah -->
+                <div class="guide-card" onclick="openGuideModal('keuangan')">
+                    <div class="guide-card-left">
+                        <div class="guide-icon-box" style="background: rgba(22, 163, 74, 0.1); border: 1px solid rgba(22, 163, 74, 0.25);">
+                            <svg class="svg-icon-sm" viewBox="0 0 24 24" style="stroke: #16a34a; width: 18px; height: 18px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
+                                <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
+                                <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
+                            </svg>
+                        </div>
+                        <div class="guide-name">Buku Kas &amp; Upah Kerja</div>
+                    </div>
+                    <div class="guide-link-btn">
+                        Baca →
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kolom Kanan: Hubungi Tim Dukungan (Elevated Dark Violet Card) -->
+        <div class="support-card">
+            <div class="support-top-row">
+                <div>
+                    <div class="support-badge">
+                        <span class="support-badge-dot"></span>
+                        <span>LAYANAN DUKUNGAN</span>
+                    </div>
+                    <div class="support-title">Hubungi Tim<br>Dukungan</div>
+                </div>
+                <button type="button" class="support-lacak-btn" onclick="openLacakTiketModal()" title="Cek status tiket bantuan Anda">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24" style="stroke: currentColor; width: 14px; height: 14px; fill: none; stroke-width: 2;">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    Lacak Tiket
+                </button>
+            </div>
+
+            <p class="support-sub">Butuh bantuan teknis atau ada kendala?</p>
+
+            <form onsubmit="event.preventDefault(); submitSupportTicket();">
+                <div>
+                    <label class="support-label">Nama Lengkap</label>
+                    <input type="text" id="supportInpNama" class="support-input" placeholder="Contoh: Budi Prasetyo" required>
+                </div>
+
+                <div>
+                    <label class="support-label">Email Aktif *</label>
+                    <input type="email" id="supportInpEmail" class="support-input" placeholder="Contoh: budi@gmail.com" required>
+                </div>
+
+                <div>
+                    <label class="support-label">Kategori Kendala</label>
+                    <select id="supportInpKategori" class="support-input" style="cursor: pointer;">
+                        <option value="Kendala Teknis / Bug">Kendala Teknis / Bug Aplikasi</option>
+                        <option value="Pertanyaan Fitur & Operasional">Pertanyaan Fitur &amp; Operasional</option>
+                        <option value="Permintaan Fitur Baru">Permintaan Fitur Tambahan</option>
+                        <option value="Bantuan Integrasi Telegram">Bantuan Integrasi Bot Telegram</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="support-label">Deskripsi Kendala</label>
+                    <textarea id="supportInpDeskripsi" class="support-input" rows="4" style="resize: vertical; min-height: 90px;" placeholder="Jelaskan pertanyaan Anda secara mendalam..." required></textarea>
+                </div>
+
+                <button type="submit" class="support-submit-btn" id="supportSubmitBtn">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                    Kirim Tiket Bantuan
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,429 @@
+<div id="view-pengaturan" style="display: none;">
+
+    <div class="settings-page-wrapper">
+
+        <!-- 1. Top Profile Hero Card -->
+        <div class="settings-profile-card">
+            <div class="settings-avatar-container">
+                <div class="settings-avatar-circle" id="settingsAvatarBox" onclick="document.getElementById('inputGalleryPhoto').click()" style="cursor: pointer;" title="Klik untuk unggah / ganti foto profil dari galeri">
+                    <!-- Default Dual Arrow SVG Logo -->
+                    <svg viewBox="0 0 64 64" class="settings-avatar-svg" id="settingsAvatarSvg">
+                        <circle cx="32" cy="32" r="30" fill="#1e293b" />
+                        <!-- Upper Orange Arrow -->
+                        <path d="M22 26h18a6 6 0 0 1 0 12h-4" fill="none" stroke="#f97316" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <polyline points="36 21 42 26 36 31" fill="none" stroke="#f97316" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <!-- Lower White/Teal Arrow -->
+                        <path d="M42 38H24a6 6 0 0 1 0-12h4" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <polyline points="28 43 22 38 28 33" fill="none" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <!-- Uploaded Gallery Photo Display -->
+                    <img id="settingsAvatarImg" src="" alt="Foto Profil" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                </div>
+                <div class="settings-camera-badge" onclick="document.getElementById('inputGalleryPhoto').click()" title="Unggah Foto Profil dari Galeri">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                        <circle cx="12" cy="13" r="4" />
+                    </svg>
+                </div>
+                <!-- Hidden file picker for gallery upload -->
+                <input type="file" id="inputGalleryPhoto" accept="image/*" style="display: none;" onchange="handleProfilePhotoUpload(event)">
+            </div>
+
+            <h2 class="settings-user-name" id="settingsUserName">Bapak Direktur Owner</h2>
+            <p class="settings-user-email" id="settingsUserEmail">owner@gmail.com</p>
+        </div>
+
+        <!-- 2. Executive Financial Metrics Card (3 Columns - Sesuai Foto) -->
+        <div class="settings-metrics-card">
+            <!-- Col 1: Total Omzet -->
+            <div class="settings-metric-col">
+                <div class="settings-metric-lbl">TOTAL OMZET</div>
+                <div class="settings-metric-val" id="settingsStatOmzet">Rp 1.631.000</div>
+                <div class="settings-metric-sub" id="settingsSubOmzet">POS &amp; Konsinyasi</div>
+            </div>
+
+            <!-- Col 2: Laba Bersih -->
+            <div class="settings-metric-col">
+                <div class="settings-metric-lbl">LABA BERSIH</div>
+                <div class="settings-metric-val" id="settingsStatLaba">Rp -1.099.000</div>
+                <div class="settings-metric-sub" id="settingsSubLaba">Periode Berjalan</div>
+            </div>
+
+            <!-- Col 3: Target Capaian -->
+            <div class="settings-metric-col">
+                <div class="settings-metric-lbl">TARGET CAPAIAN</div>
+                <div class="settings-metric-val" id="settingsStatTarget">Rp 5.000.000</div>
+                <div class="settings-metric-sub" id="settingsSubTarget">32.6% Terpenuhi</div>
+            </div>
+        </div>
+
+        <!-- 3. Stacked Settings Menu Items (Exactly as in Photo) -->
+        <div class="settings-menu-list">
+
+            <!-- Item 1: Profil Pengguna -->
+            <div class="settings-menu-card" onclick="openSettingModal('modalSetProfile')">
+                <div class="settings-menu-left">
+                    <div class="settings-icon-box green">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </div>
+                    <div class="settings-menu-title-box">
+                        <div class="settings-menu-title">Profil Pengguna</div>
+                        <div class="settings-menu-subtitle">Biodata akun, nama tampilan &amp; kontak</div>
+                    </div>
+                </div>
+                <div class="settings-chevron">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg>
+                </div>
+            </div>
+
+            <!-- Item 2: Konfigurasi Finansial -->
+            <div class="settings-menu-card" onclick="openSettingModal('modalSetFinance')">
+                <div class="settings-menu-left">
+                    <div class="settings-icon-box blue">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <ellipse cx="12" cy="5" rx="9" ry="3" />
+                            <path d="M3 5V19A9 3 0 0 0 21 19V5" />
+                            <path d="M3 12A9 3 0 0 0 21 12" />
+                        </svg>
+                    </div>
+                    <div class="settings-menu-title-box">
+                        <div class="settings-menu-title">Konfigurasi Finansial</div>
+                        <div class="settings-menu-subtitle">Pajak PPN, target capaian omzet &amp; limit kas kritis</div>
+                    </div>
+                </div>
+                <div class="settings-chevron">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg>
+                </div>
+            </div>
+
+            <!-- Item 3: Keamanan & Fitur Aplikasi -->
+            <div class="settings-menu-card" onclick="openSettingModal('modalSetSecurity')">
+                <div class="settings-menu-left">
+                    <div class="settings-icon-box violet">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                        </svg>
+                    </div>
+                    <div class="settings-menu-title-box">
+                        <div class="settings-menu-title">Keamanan &amp; Fitur Aplikasi</div>
+                        <div class="settings-menu-subtitle">Kata sandi akun &amp; batas waktu sesi</div>
+                    </div>
+                </div>
+                <div class="settings-chevron">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg>
+                </div>
+            </div>
+
+            <!-- Item 4: Manajemen Data -->
+            <div class="settings-menu-card" onclick="openSettingModal('modalSetData')">
+                <div class="settings-menu-left">
+                    <div class="settings-icon-box amber">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <ellipse cx="12" cy="5" rx="9" ry="3" />
+                            <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+                            <path d="M3 19c0 1.66 4 3 9 3s9-1.34 9-3" />
+                            <path d="M3 5v14" />
+                            <path d="M21 5v14" />
+                        </svg>
+                    </div>
+                    <div class="settings-menu-title-box">
+                        <div class="settings-menu-title">Manajemen Data</div>
+                        <div class="settings-menu-subtitle">Cadangan JSON, ekspor CSV &amp; pembersihan cache</div>
+                    </div>
+                </div>
+                <div class="settings-chevron">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg>
+                </div>
+            </div>
+
+            <!-- Item 5: Tentang Bos Kroco ERP -->
+            <div class="settings-menu-card" onclick="openSettingModal('modalSetAbout')">
+                <div class="settings-menu-left">
+                    <div class="settings-icon-box slate">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 16v-4" />
+                            <path d="M12 8h.01" />
+                        </svg>
+                    </div>
+                    <div class="settings-menu-title-box">
+                        <div class="settings-menu-title">Tentang Bos Kroco ERP</div>
+                        <div class="settings-menu-subtitle">Versi 2.4.0 High-Density Edition &amp; lisensi sistem</div>
+                    </div>
+                </div>
+                <div class="settings-chevron">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg>
+                </div>
+            </div>
+
+            <!-- Item 6: Integrasi Telegram Bot -->
+            <div class="settings-menu-card" onclick="openSettingModal('modalSetTelegram')">
+                <div class="settings-menu-left">
+                    <div class="settings-icon-box sky">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <line x1="22" x2="11" y1="2" y2="13" />
+                            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                        </svg>
+                    </div>
+                    <div class="settings-menu-title-box">
+                        <div class="settings-menu-title">Integrasi Telegram Bot</div>
+                        <div class="settings-menu-subtitle">Notifikasi penjualan real-time &amp; peringatan kas</div>
+                    </div>
+                </div>
+                <div class="settings-chevron">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" /></svg>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Logout Action Button -->
+        <div style="margin-top: 10px; margin-bottom: 30px; text-align: center;">
+            <button type="button" class="btn-pill-action btn-pill-danger" style="width: 100%; justify-content: center; padding: 12px;" onclick="doLogout()">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" x2="9" y1="12" y2="12" />
+                </svg>
+                Keluar dari Akun (Logout)
+            </button>
+        </div>
+
+    </div>
+
+    <!-- ==================================================================== -->
+    <!-- 6 MODALS / DIALOGS FOR SETTINGS CATEGORIES                           -->
+    <!-- ==================================================================== -->
+
+    <!-- Modal 1: Profil Pengguna -->
+    <div class="modal-overlay-custom" id="modalSetProfile">
+        <div class="modal-sheet-card">
+            <div class="modal-sheet-header">
+                <div class="modal-sheet-title">
+                    <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Profil Pengguna
+                </div>
+                <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeSettingModal('modalSetProfile')">✕</button>
+            </div>
+            <div class="modal-sheet-body">
+                <form onsubmit="event.preventDefault(); savePengaturanProfile();" style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Gallery Photo Trigger Card -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 10px 14px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 34px; height: 34px; border-radius: 50%; background: var(--violet-main); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 15px;">📷</div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 12px; color: var(--text-main);">Foto Profil Akun</div>
+                                <div style="font-size: 10.5px; color: var(--text-muted);">Pilih gambar dari galeri perangkat</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 6px;">
+                            <button type="button" class="btn-pill-action btn-pill-primary" style="font-size: 11px; padding: 5px 10px;" onclick="document.getElementById('inputGalleryPhoto').click()">
+                                Unggah Galeri
+                            </button>
+                            <button type="button" class="btn-pill-action btn-pill-secondary" style="font-size: 11px; padding: 5px 8px;" onclick="removeProfilePhoto()" title="Kembalikan ke avatar bawaan">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="profile-label">Nama Tampilan</label>
+                        <input type="text" id="setInpNama" class="search-filter-input profile-input" required placeholder="Nama lengkap Anda...">
+                    </div>
+                    <div>
+                        <label class="profile-label">Alamat Email / Kontak</label>
+                        <input type="email" id="setInpEmail" class="search-filter-input profile-input" required placeholder="email@domain.com">
+                    </div>
+                    <div>
+                        <label class="profile-label">Username Sistem</label>
+                        <input type="text" id="setInpUsername" class="search-filter-input profile-input" disabled>
+                    </div>
+                    <div>
+                        <label class="profile-label">Peran (Role Akses)</label>
+                        <input type="text" id="setInpRole" class="search-filter-input profile-input" disabled>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+                        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeSettingModal('modalSetProfile')">Tutup</button>
+                        <button type="submit" class="btn-pill-action btn-pill-primary">Simpan Profil</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Konfigurasi Finansial -->
+    <div class="modal-overlay-custom" id="modalSetFinance">
+        <div class="modal-sheet-card">
+            <div class="modal-sheet-header">
+                <div class="modal-sheet-title">
+                    <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+                    Konfigurasi Finansial
+                </div>
+                <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeSettingModal('modalSetFinance')">✕</button>
+            </div>
+            <div class="modal-sheet-body">
+                <form onsubmit="event.preventDefault(); savePengaturanFinance();" style="display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <label class="profile-label">Target Capaian Omzet Bulanan (Rp)</label>
+                        <input type="number" id="setFinTargetOmzet" class="search-filter-input profile-input" value="5000000" min="0" step="500000" placeholder="5000000">
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label class="profile-label">Tarif Pajak PPN (%)</label>
+                            <input type="number" id="setFinPajak" class="search-filter-input profile-input" value="11" min="0" max="100">
+                        </div>
+                        <div>
+                            <label class="profile-label">Mata Uang Baku</label>
+                            <input type="text" class="search-filter-input profile-input" value="IDR (Rupiah)" disabled>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="profile-label">Limit Peringatan Saldo Kas Kritis (Rp)</label>
+                        <input type="number" id="setFinLimitKas" class="search-filter-input profile-input" value="2000000">
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+                        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeSettingModal('modalSetFinance')">Tutup</button>
+                        <button type="submit" class="btn-pill-action btn-pill-primary">Simpan Finansial</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Keamanan & Fitur Aplikasi -->
+    <div class="modal-overlay-custom" id="modalSetSecurity">
+        <div class="modal-sheet-card">
+            <div class="modal-sheet-header">
+                <div class="modal-sheet-title">
+                    <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+                    Keamanan &amp; Fitur Aplikasi
+                </div>
+                <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeSettingModal('modalSetSecurity')">✕</button>
+            </div>
+            <div class="modal-sheet-body">
+                <form onsubmit="event.preventDefault(); savePengaturanSecurity();" style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="font-size: 11.5px; color: var(--text-muted); background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 8px; padding: 8px 12px; line-height: 1.5;">
+                        Akun aktif saat ini: <b style="color: var(--violet-main);">owner</b> (Sandi default: <b style="color: var(--violet-main);">owner123</b>). Anda dapat mengubah sandi di bawah ini jika diinginkan.
+                    </div>
+                    <div>
+                        <label class="profile-label">Kata Sandi Baru</label>
+                        <input type="password" id="setSecNewPass" class="search-filter-input profile-input" placeholder="Minimal 6 karakter...">
+                    </div>
+                    <div>
+                        <label class="profile-label">Ulangi Kata Sandi Baru</label>
+                        <input type="password" id="setSecConfirmPass" class="search-filter-input profile-input" placeholder="Konfirmasi sandi baru...">
+                    </div>
+                    <div>
+                        <label class="profile-label">Batas Waktu Auto-Lock Sesi (Menit)</label>
+                        <select id="setSecTimeout" class="search-filter-input profile-input">
+                            <option value="15">15 Menit</option>
+                            <option value="30" selected>30 Menit</option>
+                            <option value="60">1 Jam</option>
+                            <option value="0">Jangan Kunci Otomatis</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+                        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeSettingModal('modalSetSecurity')">Tutup</button>
+                        <button type="submit" class="btn-pill-action btn-pill-primary">Perbarui Keamanan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Manajemen Data -->
+    <div class="modal-overlay-custom" id="modalSetData">
+        <div class="modal-sheet-card">
+            <div class="modal-sheet-header">
+                <div class="modal-sheet-title">
+                    <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/><path d="M3 19c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>
+                    Manajemen Data &amp; Cadangan
+                </div>
+                <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeSettingModal('modalSetData')">✕</button>
+            </div>
+            <div class="modal-sheet-body" style="display: flex; flex-direction: column; gap: 14px;">
+                <div style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 12px;">
+                    <div style="font-weight: 700; font-size: 12.5px; color: var(--text-main); margin-bottom: 4px;">Cadangkan Seluruh Basis Data (JSON)</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Unduh snapshot lengkap transaksi, produk, piutang, dan log sistem ke file JSON terenkripsi.</div>
+                    <button type="button" class="btn-pill-action btn-pill-primary" onclick="exportFullJSONBackup()">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                        Unduh Cadangan JSON
+                    </button>
+                </div>
+
+                <div style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 12px;">
+                    <div style="font-weight: 700; font-size: 12.5px; color: var(--text-main); margin-bottom: 4px;">Pembersihan Cache &amp; Resinkronisasi</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Bersihkan data sementara di browser dan tarik data termutakhir dari Supabase Cloud.</div>
+                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="clearLocalCacheAndResync()">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                        Bersihkan Cache &amp; Sinkron
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 5: Tentang Bos Kroco ERP -->
+    <div class="modal-overlay-custom" id="modalSetAbout">
+        <div class="modal-sheet-card">
+            <div class="modal-sheet-header">
+                <div class="modal-sheet-title">
+                    <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                    Tentang Bos Kroco ERP
+                </div>
+                <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeSettingModal('modalSetAbout')">✕</button>
+            </div>
+            <div class="modal-sheet-body" style="display: flex; flex-direction: column; gap: 12px; text-align: center;">
+                <div style="width: 52px; height: 52px; border-radius: 14px; background: var(--violet-gradient); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 20px; margin: 0 auto; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">
+                    BK
+                </div>
+                <h3 style="font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0;">Bos Kroco ERP</h3>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 0;">Sistem POS &amp; Manajemen Manufaktur Multi-Lokasi</p>
+                <div style="background: #f1f5f9; border-radius: 8px; padding: 10px; font-size: 11.5px; color: var(--text-main); font-weight: 600; line-height: 1.6;">
+                    Aplikasi: Bos Kroco ERP (FinTech Edition)<br>
+                    Versi: 2.4.0 Production Build<br>
+                    Basis Data: Supabase PostgreSQL Realtime<br>
+                    Hak Cipta &copy; 2026 Bos Kroco Inc. Seluruh Hak Dilindungi.
+                </div>
+                <button type="button" class="btn-pill-action btn-pill-primary" style="margin-top: 8px;" onclick="closeSettingModal('modalSetAbout')">Tutup Informasi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 6: Integrasi Telegram Bot -->
+    <div class="modal-overlay-custom" id="modalSetTelegram">
+        <div class="modal-sheet-card">
+            <div class="modal-sheet-header">
+                <div class="modal-sheet-title">
+                    <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24"><line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    Integrasi Telegram Bot
+                </div>
+                <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeSettingModal('modalSetTelegram')">✕</button>
+            </div>
+            <div class="modal-sheet-body">
+                <form onsubmit="event.preventDefault(); savePengaturanTelegram();" style="display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <label class="profile-label">Telegram Bot Token (dari @BotFather)</label>
+                        <input type="text" id="setTeleToken" class="search-filter-input profile-input" placeholder="Contoh: 123456789:ABCdefGHIjklMNO...">
+                    </div>
+                    <div>
+                        <label class="profile-label">Telegram Chat ID / Group ID</label>
+                        <input type="text" id="setTeleChatId" class="search-filter-input profile-input" placeholder="Contoh: -100123456789 atau ID Pribadi">
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                        <input type="checkbox" id="setTeleEnable" checked style="width: 16px; height: 16px; accent-color: var(--violet-main);">
+                        <label for="setTeleEnable" style="font-size: 11.5px; font-weight: 600; color: var(--text-main); cursor: pointer;">Aktifkan notifikasi otomatis saat ada penjualan baru</label>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+                        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="testTelegramNotification()">Kirim Tes Pesan</button>
+                        <button type="submit" class="btn-pill-action btn-pill-primary">Simpan Integrasi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>

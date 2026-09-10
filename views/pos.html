@@ -1,0 +1,112 @@
+<div id="view-pos" style="display: none;">
+    <div class="order-section-card">
+        <div class="order-header-row">
+            <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                    <circle cx="8" cy="21" r="1" />
+                    <circle cx="19" cy="21" r="1" />
+                    <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+                </svg>
+                Kasir &amp; Point of Sales (POS)
+            </span>
+            <button class="btn-pill-action btn-pill-secondary" onclick="cetakStrukTerakhir()">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                    <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" />
+                    <path d="M16 8h-6" />
+                    <path d="M16 12H8" />
+                    <path d="M16 16h-4" />
+                </svg>
+                Cetak PDF Struk
+            </button>
+        </div>
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 10px;">
+            <div>
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Pilih Produk Etalase Siap Jual</label>
+                    <select class="search-filter-input" style="width: 100%;" id="posSelectProduk"></select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Qty (Pcs)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%;" id="posQty" value="1" min="1">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Diskon Potongan (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%;" id="posDiskon" value="0" oninput="renderCart()">
+                    </div>
+                </div>
+                <button class="btn-pill-action btn-pill-secondary" style="width: 100%; justify-content: center;" onclick="tambahKeKeranjang()">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                        <path d="M5 12h14" />
+                        <path d="M12 5v14" />
+                    </svg>
+                    Masukkan Keranjang Belanja
+                </button>
+
+                <div class="table-responsive-wrapper" style="margin-top: 16px;">
+                    <table class="custom-order-table">
+                        <thead>
+                            <tr>
+                                <th>Item Produk</th>
+                                <th>Qty</th>
+                                <th>Subtotal</th>
+                                <th style="text-align:center;">Hapus</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblCart"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">RINGKASAN PEMBAYARAN KASIR</div>
+                    
+                    <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; font-size: 11.5px; display: flex; flex-direction: column; gap: 6px;">
+                        <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+                            <span>Subtotal Produk</span>
+                            <span id="posSubtotalLabel" style="font-weight: 700; color: var(--text-main);">Rp 0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+                            <span>Diskon Potongan</span>
+                            <span id="posDiskonLabel" style="font-weight: 700; color: var(--coral-pink);">Rp 0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 4px; border-top: 1px dashed var(--border-strong);">
+                            <label style="font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 6px; user-select: none; margin: 0;">
+                                <input type="checkbox" id="posCheckPpn" onchange="renderCart()" checked style="width: 14px; height: 14px; accent-color: var(--violet-main); cursor: pointer;">
+                                <span>Kenakan PPN (<span id="posPpnRateLabel">11%</span>)</span>
+                            </label>
+                            <span id="posPpnLabel" style="font-weight: 700; color: var(--violet-main);">Rp 0</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 6px; border-top: 1px solid var(--border-strong); font-size: 12.5px;">
+                            <span style="font-weight: 800; color: var(--text-main);">TOTAL AKHIR</span>
+                            <span id="posTotalLabel" style="font-size: 20px; font-weight: 900; color: var(--violet-main);">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 12px;">
+                        <label style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Pelanggan / Toko</label>
+                        <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="posCustomer">
+                            <option value="CUST-UMUM">Pelanggan Umum Kasir</option>
+                            <option value="CUST-001">Toko Oleh-Oleh Barokah</option>
+                            <option value="CUST-002">Minimarket Sentosa</option>
+                            <option value="CUST-004">Toko Sentra Kuliner Nusantara</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Metode Pembayaran</label>
+                        <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="posPaymentMethod">
+                            <option value="Tunai">Tunai (Kas Masuk Otomatis)</option>
+                            <option value="Tempo">Tempo (Buku Piutang Toko)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn-pill-action btn-pill-primary" style="width: 100%; justify-content: center; padding: 12px;" onclick="submitTransaksiPOS()">
+                    Selesaikan Transaksi &amp; Simpan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

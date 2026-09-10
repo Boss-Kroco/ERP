@@ -1,0 +1,69 @@
+<div id="view-tenagakerja" style="display: none;">
+                    <div class="order-section-card">
+                        <div class="order-header-row">
+                            <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
+                                <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                </svg>
+                                Presensi & Kalkulasi Upah Kerja
+                            </span>
+                        </div>
+                        <form onsubmit="event.preventDefault(); submitPresensiUpah();"
+                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px;">
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nama
+                                    Pekerja</label>
+                                <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="tkNama" required placeholder="Nama lengkap...">
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Skema
+                                    Tenaga Kerja</label>
+                                <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="tkTipe">
+                                    <option value="Pekerja harian">Pekerja harian</option>
+                                    <option value="Karyawan tetap">Karyawan tetap</option>
+                                    <option value="Pekerja per jam">Pekerja per jam</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Total Jam
+                                    Kerja</label>
+                                <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="tkTotalJam" value="8" oninput="hitungLiveUpahPreview()">
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Rate Upah
+                                    (Rp)</label>
+                                <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="tkRate" value="12000" oninput="hitungLiveUpahPreview()">
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Bonus /
+                                    Lembur (Rp)</label>
+                                <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="tkBonus" value="0" oninput="hitungLiveUpahPreview()">
+                            </div>
+                            <div>
+                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Potongan /
+                                    Kasbon (Rp)</label>
+                                <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                                    id="tkPotongan" value="0" oninput="hitungLiveUpahPreview()">
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <div
+                                    style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 10px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">TOTAL
+                                        UPAH BERSIH DIBAYARKAN:</span>
+                                    <span style="font-size: 16px; font-weight: 800; color: var(--violet-main);"
+                                        id="lblLiveTotalUpah">Rp 96.000</span>
+                                </div>
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <button type="submit" class="btn-pill-action btn-pill-primary">Catat Upah Kerja</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>

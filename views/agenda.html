@@ -1,0 +1,293 @@
+<div id="view-agenda" style="display: none;">
+    <!-- Header Modul & Aksi Cepat -->
+    <div class="agenda-header-strip">
+        <div class="agenda-header-info">
+            <div class="agenda-header-title">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="18" rx="3" ry="3" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                <span>Agenda &amp; Kalender Operasional</span>
+            </div>
+            <p class="agenda-header-subtitle">
+                Jadwal batch produksi, pengiriman mitra konsinyasi, penagihan tempo, dan pengingat harian Bos Kroco.
+            </p>
+        </div>
+        <div class="agenda-header-actions">
+            <button type="button" class="btn-pill-action btn-pill-secondary" onclick="exportAgendaCSV()" title="Ekspor data kegiatan ke file CSV">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                <span>Export CSV</span>
+            </button>
+            <button type="button" class="btn-pill-action btn-pill-primary" onclick="openAgendaFormModal()">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                <span>Tambah Agenda</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 4 Kartu Metrik Ringkasan Agenda (Kompak & Elegan) -->
+    <div class="agenda-stat-row">
+        <div class="agenda-stat-card">
+            <div class="agenda-stat-icon-box violet">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+            </div>
+            <div class="agenda-stat-data">
+                <div class="agenda-stat-num" id="agendaStatTotal">0</div>
+                <div class="agenda-stat-label">Total Agenda</div>
+            </div>
+        </div>
+
+        <div class="agenda-stat-card">
+            <div class="agenda-stat-icon-box orange">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg>
+            </div>
+            <div class="agenda-stat-data">
+                <div class="agenda-stat-num" id="agendaStatToday">0</div>
+                <div class="agenda-stat-label">Hari Ini</div>
+            </div>
+        </div>
+
+        <div class="agenda-stat-card">
+            <div class="agenda-stat-icon-box amber">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+            </div>
+            <div class="agenda-stat-data">
+                <div class="agenda-stat-num" id="agendaStatPending">0</div>
+                <div class="agenda-stat-label">Belum Selesai</div>
+            </div>
+        </div>
+
+        <div class="agenda-stat-card">
+            <div class="agenda-stat-icon-box green">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+            </div>
+            <div class="agenda-stat-data">
+                <div class="agenda-stat-num" id="agendaStatCompleted">0</div>
+                <div class="agenda-stat-label">Telah Selesai</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Control Bar Universal -->
+    <div class="agenda-global-filter-strip">
+        <div class="agenda-search-input-box">
+            <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input type="text" id="agendaSearchInput" placeholder="Cari kegiatan, instruksi, PIC..." oninput="onAgendaFilterChange()">
+        </div>
+
+        <div class="agenda-filter-actions-right">
+            <select id="agendaCategoryFilter" class="agenda-cat-select" onchange="onAgendaFilterChange()">
+                <option value="">Semua Kategori</option>
+                <option value="Produksi & HPP">Produksi &amp; HPP</option>
+                <option value="Pengiriman Mitra">Pengiriman Mitra</option>
+                <option value="Tagih Piutang">Tagih Piutang</option>
+                <option value="Belanja Bahan">Belanja Bahan</option>
+                <option value="Operasional Toko">Operasional Toko</option>
+                <option value="Lainnya">Lainnya</option>
+            </select>
+
+            <button type="button" class="btn-pill-action btn-pill-secondary" onclick="resetAgendaFilters()" title="Reset filter">
+                Reset Filter
+            </button>
+        </div>
+    </div>
+
+    <!-- ==================================================================== -->
+    <!-- TATA LETAK FOTO 2: KALENDER ROUNDED (KIRI) + AKTIVITAS HARIAN (KANAN) -->
+    <!-- ==================================================================== -->
+    <div id="agendaCalendarContainer" class="agenda-photo2-layout">
+        <!-- Kolom Kiri: Kalender Rounded Card Estetik -->
+        <div class="agenda-photo2-left-col">
+            <div class="photo2-calendar-card">
+                <!-- Header Navigasi Bulan: Judul Besar + Tombol Bulat Panah -->
+                <div class="photo2-calendar-header">
+                    <div class="photo2-month-title" id="calendarMonthYearTitle">September 2026</div>
+                    <div class="photo2-nav-buttons">
+                        <button type="button" class="photo2-nav-circle-btn" onclick="prevCalendarMonth()" title="Bulan Sebelumnya">
+                            ‹
+                        </button>
+                        <button type="button" class="photo2-nav-circle-btn" onclick="nextCalendarMonth()" title="Bulan Berikutnya">
+                            ›
+                        </button>
+                        <button type="button" class="photo2-today-pill-btn" onclick="goToTodayCalendar()" title="Kembali ke Hari Ini">
+                            Hari Ini
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Baris Nama Hari (MIN, SEN, SEL, RAB, KAM, JUM, SAB) -->
+                <div class="photo2-weekdays-row">
+                    <span class="day-weekend">MIN</span>
+                    <span>SEN</span>
+                    <span>SEL</span>
+                    <span>RAB</span>
+                    <span>KAM</span>
+                    <span>JUM</span>
+                    <span class="day-weekend">SAB</span>
+                </div>
+
+                <!-- Grid Kotak-Kotak Tanggal Rounded (Dengan Bar Indikator di Bawah Tanggal) -->
+                <div class="photo2-days-grid" id="calendarDaysGrid"></div>
+
+                <!-- Legend Bar Indikator Warna di Bawah Kalender -->
+                <div class="photo2-legend-footer">
+                    <div class="photo2-legend-item">
+                        <span class="photo2-legend-bar cat-produksi"></span>
+                        <span>Produksi</span>
+                    </div>
+                    <div class="photo2-legend-item">
+                        <span class="photo2-legend-bar cat-pengiriman"></span>
+                        <span>Kirim Mitra</span>
+                    </div>
+                    <div class="photo2-legend-item">
+                        <span class="photo2-legend-bar cat-piutang"></span>
+                        <span>Piutang &amp; Kas</span>
+                    </div>
+                    <div class="photo2-legend-item">
+                        <span class="photo2-legend-bar cat-lainnya"></span>
+                        <span>Operasional Toko</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Banner Filter Tanggal Terpilih (jika difilter) -->
+            <div class="calendar-active-filter-box" id="calendarActiveFilterBox" style="display: none; margin-top: 10px;">
+                <div class="cal-filter-info">
+                    <svg class="svg-icon-xs text-violet" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    <div>
+                        <div style="font-size: 10.5px; color: var(--text-muted); line-height: 1;">Filter Kalender:</div>
+                        <div style="font-size: 12.5px; font-weight: 800; color: var(--violet-main); margin-top: 2px;" id="calendarActiveFilterText">10 September 2026</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-pill-action btn-pill-secondary cal-filter-clear-btn" onclick="clearCalendarDateFilter()">
+                    Tampilkan Semua Hari
+                </button>
+            </div>
+        </div>
+
+        <!-- Kolom Kanan: Panel Aktivitas Harian (Clean White & Violet Theme) -->
+        <div class="agenda-photo2-right-col">
+            <div class="photo2-daily-card">
+                <!-- Header Panel Aktivitas Harian -->
+                <div class="photo2-daily-header">
+                    <div class="photo2-daily-badge">
+                        <span class="photo2-badge-dot"></span>
+                        <span>AKTIVITAS HARIAN</span>
+                    </div>
+                    <div class="photo2-daily-title" id="agendaDailyPanelDateTitle">Kamis, 10 September 2026</div>
+                </div>
+
+                <!-- Kotak Catatan / Instruksi Cepat Operasional Hari Ini -->
+                <div class="photo2-quick-note-box">
+                    <div class="photo2-quick-note-header">
+                        <svg class="svg-icon-xs text-violet" viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                        </svg>
+                        <span>Catatan Operasional Hari Ini</span>
+                    </div>
+                    <textarea id="agendaDailyQuickNoteInput" class="photo2-quick-note-textarea" rows="2" placeholder="Tulis instruksi shift, catatan tim, atau pengingat operasional..." onchange="saveDailyOperationalNote()"></textarea>
+                </div>
+
+                <!-- Subheader Daftar Kegiatan Harian -->
+                <div class="photo2-activities-header-row">
+                    <div class="photo2-activities-title">
+                        <svg class="svg-icon-xs text-violet" viewBox="0 0 24 24">
+                            <rect x="3" y="4" width="18" height="18" rx="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        <span>Riwayat Kegiatan Tanggal Ini</span>
+                        <span class="photo2-activities-count-badge" id="agendaDailyActivitiesCount">0</span>
+                    </div>
+                    <button type="button" class="btn-pill-action btn-pill-primary photo2-add-btn" onclick="openAgendaFormModalWithSelectedDate()">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <span>Tambah Kegiatan</span>
+                    </button>
+                </div>
+
+                <!-- Daftar Kegiatan Simpel/Pendek (Pas diklik kebuka rincian lengkap seperti sekarang) -->
+                <div class="photo2-daily-items-list" id="agendaDailyActivitiesList">
+                    <!-- Diisi secara dinamis oleh js/modules/agenda.js -->
+                </div>
+
+                <!-- Petunjuk Interaksi -->
+                <div class="photo2-daily-footer-tip">
+                    <svg class="svg-icon-xs text-violet" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="16" x2="12" y2="12" />
+                        <line x1="12" y1="8" x2="12.01" y2="8" />
+                    </svg>
+                    <span>Klik pada item kegiatan di atas untuk membuka <strong>Rincian Lengkap</strong> (instruksi detail, checklist selesai, bot Telegram &amp; edit).</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================================================================== -->
+    <!-- MODE DAFTAR LENGKAP KARTU (TAB VIEW ALTERNATIF)                       -->
+    <!-- ==================================================================== -->
+    <div id="agendaListContainer" class="agenda-list-full-view" style="display: none;">
+        <div class="agenda-list-panel">
+            <div class="agenda-filter-bar">
+                <div class="agenda-tabs-row">
+                    <button type="button" class="agenda-tab-btn active" data-tab="semua" onclick="switchAgendaTab('semua')">
+                        <span>Semua</span>
+                        <span class="agenda-tab-count" id="tabCountSemua">0</span>
+                    </button>
+                    <button type="button" class="agenda-tab-btn" data-tab="hari_ini" onclick="switchAgendaTab('hari_ini')">
+                        <span>Hari Ini</span>
+                        <span class="agenda-tab-count" id="tabCountToday">0</span>
+                    </button>
+                    <button type="button" class="agenda-tab-btn" data-tab="pending" onclick="switchAgendaTab('pending')">
+                        <span>Belum Selesai</span>
+                        <span class="agenda-tab-count" id="tabCountPending">0</span>
+                    </button>
+                    <button type="button" class="agenda-tab-btn" data-tab="completed" onclick="switchAgendaTab('completed')">
+                        <span>Selesai</span>
+                        <span class="agenda-tab-count" id="tabCountCompleted">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kontainer Kartu Agenda Lengkap -->
+            <div class="agenda-cards-container" id="agendaCardsContainer">
+                <!-- Diisi secara dinamis oleh js/modules/agenda.js -->
+            </div>
+        </div>
+    </div>
+</div>
