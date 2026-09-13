@@ -6,6 +6,7 @@
  */
 
 var allKeuanganKas = [];
+var currentRawKasList = allKeuanganKas;
 var currentFilteredKas = [];
 
 var escapeHtml = function (text) {
@@ -52,6 +53,9 @@ function fetchKeuanganKas() {
         }
 
         allKeuanganKas = res.data || [];
+        currentRawKasList = allKeuanganKas;
+        window.allKeuanganKas = allKeuanganKas;
+        window.currentRawKasList = currentRawKasList;
 
         // Perbarui saldo kas riil dari transaksi mutasi terbaru jika ada
         if (allKeuanganKas.length > 0) {
@@ -213,13 +217,13 @@ function updateKeuanganMetrics(items) {
     if (elNetFlow) {
         if (netFlow > 0) {
             elNetFlow.textContent = '+' + formatRupiah(netFlow);
-            elNetFlow.style.color = '#059669';
+            if (elNetFlow.style) elNetFlow.style.color = '#059669';
         } else if (netFlow < 0) {
             elNetFlow.textContent = '-' + formatRupiah(Math.abs(netFlow));
-            elNetFlow.style.color = '#dc2626';
+            if (elNetFlow.style) elNetFlow.style.color = '#dc2626';
         } else {
             elNetFlow.textContent = 'Rp 0';
-            elNetFlow.style.color = 'var(--text-main)';
+            if (elNetFlow.style) elNetFlow.style.color = 'var(--text-main)';
         }
     }
 }
@@ -353,7 +357,8 @@ function exportKeuanganCSV() {
 }
 
 function openModalEditKas(kasId) {
-    var item = (currentRawKasList || []).find(function (k) { return k.kasId === kasId; });
+    var item = (allKeuanganKas || []).find(function (k) { return k.kasId === kasId; })
+        || (currentFilteredKas || []).find(function (k) { return k.kasId === kasId; });
     if (!item) {
         showToast('Data transaksi kas tidak ditemukan.', 'error');
         return;
@@ -407,15 +412,15 @@ function submitEditKas() {
             return;
         }
 
-        // Update di currentRawKasList
-        for (var i = 0; i < currentRawKasList.length; i++) {
-            if (currentRawKasList[i].kasId === kasId) {
-                currentRawKasList[i].tanggal = payload.tanggal;
-                currentRawKasList[i].tipe = payload.tipe;
-                currentRawKasList[i].kategori = payload.kategori;
-                currentRawKasList[i].nominal = payload.nominal;
-                currentRawKasList[i].keterangan = payload.keterangan;
-                currentRawKasList[i].dicatatOleh = payload.dicatatOleh;
+        // Update di allKeuanganKas
+        for (var i = 0; i < allKeuanganKas.length; i++) {
+            if (allKeuanganKas[i].kasId === kasId) {
+                allKeuanganKas[i].tanggal = payload.tanggal;
+                allKeuanganKas[i].tipe = payload.tipe;
+                allKeuanganKas[i].kategori = payload.kategori;
+                allKeuanganKas[i].nominal = payload.nominal;
+                allKeuanganKas[i].keterangan = payload.keterangan;
+                allKeuanganKas[i].dicatatOleh = payload.dicatatOleh;
                 break;
             }
         }
