@@ -57,4 +57,52 @@
             </div>
         </form>
     </div>
+
+    <!-- Tabel Riwayat Presensi & Upah Tenaga Kerja -->
+    <div class="order-section-card" style="margin-top: 20px;">
+        <div class="order-header-row">
+            <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                </svg>
+                Riwayat Presensi &amp; Penggajian
+            </span>
+            <button class="btn-pill-action btn-pill-secondary" onclick="fetchTenagaKerjaLogs()" title="Segarkan Data Upah">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                    <path d="M21 3v5h-5" />
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                    <path d="M3 21v-5h5" />
+                </svg>
+                Segarkan
+            </button>
+        </div>
+        <div class="table-responsive-wrapper">
+            <table class="custom-order-table" id="tableTenagaKerja">
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>ID Log</th>
+                        <th>Nama Pekerja</th>
+                        <th>Skema Kerja</th>
+                        <th style="text-align: right;">Jam Kerja</th>
+                        <th style="text-align: right;">Rate (Rp)</th>
+                        <th style="text-align: right;">Bonus (Rp)</th>
+                        <th style="text-align: right;">Potongan (Rp)</th>
+                        <th style="text-align: right;">Total Bayar (Rp)</th>
+                        <th style="text-align: center;">Status</th>
+                        <th style="text-align: center;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tblTenagaKerjaBody">
+                    <tr>
+                        <td colspan="11" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                            Memuat data upah tenaga kerja...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

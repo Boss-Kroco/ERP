@@ -289,7 +289,12 @@ function renderOrderTable(dataset) {
                     + '<option value="await" ' + (item.status === 'await' ? 'selected' : '') + '>Await</option>'
                     + '</select>'
                     + '</td>'
-                    + '<td style="text-align:center;"><button class="btn-pill-action btn-pill-secondary" style="padding:2px 8px;" onclick="detailTransaksi(\'' + escapeHtml(item.id) + '\')">&middot;&middot;&middot;</button></td>';
+                    + '<td style="text-align:center; white-space: nowrap;">'
+                    + '<button class="btn-pill-action btn-pill-secondary" style="padding:2px 8px; margin-right: 4px;" onclick="openModalEditTransaksi(\'' + escapeHtml(item.id) + '\')" title="Edit Transaksi">'
+                    + '<svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Edit'
+                    + '</button>'
+                    + '<button class="btn-pill-action btn-pill-secondary" style="padding:2px 8px;" onclick="detailTransaksi(\'' + escapeHtml(item.id) + '\')" title="Rincian Transaksi">&middot;&middot;&middot;</button>'
+                    + '</td>';
                 tbody.appendChild(tr);
             });
         }
@@ -405,6 +410,97 @@ function cetakStrukDariModal() {
             runBackend('apiGenerateDocumentPdf', [{ docType: 'STRUK_POS', docId: trxId }], function (res) {
                 if (res.success && res.pdfUrl) window.open(res.pdfUrl, '_blank');
                 else if (!res.success) showToast(res.message || 'Gagal membuat PDF.', 'error');
+            });
+        }
+
+        function editTransaksiDariModal() {
+            var btn = document.getElementById('btnCetakDariModal');
+            var trxId = btn ? btn.getAttribute('data-trxid') : null;
+            if (!trxId) return;
+            closeDetailTrxModal();
+            openModalEditTransaksi(trxId);
+        }
+
+        function openModalEditTransaksi(trxId) {
+            var item = (orderTransactions || []).find(function (o) { return o.id === trxId; });
+            if (!item) {
+                showToast('Data transaksi ' + trxId + ' tidak ditemukan.', 'error');
+                return;
+            }
+
+            var elId = document.getElementById('editTrxId');
+            if (elId) elId.value = item.id;
+            var elOrderNum = document.getElementById('editTrxOrderNumBadge');
+            if (elOrderNum) elOrderNum.textContent = item.orderNum || item.id;
+            var elSubId = document.getElementById('editTrxSubIdBadge');
+            if (elSubId) elSubId.textContent = item.id;
+            var elTgl = document.getElementById('editTrxTanggal');
+            if (elTgl) elTgl.value = item.date || '';
+            var elCust = document.getElementById('editTrxCustomer');
+            if (elCust) elCust.value = item.customer || '';
+            var elPhone = document.getElementById('editTrxPhone');
+            if (elPhone) elPhone.value = item.phone || '';
+            var elCat = document.getElementById('editTrxCategory');
+            if (elCat) elCat.value = item.category || '';
+            var elPrice = document.getElementById('editTrxPrice');
+            if (elPrice) elPrice.value = item.price || 0;
+            var elPay = document.getElementById('editTrxPayment');
+            if (elPay) elPay.value = item.payment || 'Tunai';
+            var elStatus = document.getElementById('editTrxStatus');
+            if (elStatus) elStatus.value = (item.status || 'delivered').toLowerCase();
+
+            var modal = document.getElementById('modalEditTransaksi');
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeModalEditTransaksi() {
+            var modal = document.getElementById('modalEditTransaksi');
+            if (modal) modal.classList.remove('active');
+        }
+
+        function submitEditTransaksi() {
+            var trxId = document.getElementById('editTrxId').value;
+            var payload = {
+                trxId: trxId,
+                date: document.getElementById('editTrxTanggal').value.trim(),
+                customer: document.getElementById('editTrxCustomer').value.trim(),
+                phone: document.getElementById('editTrxPhone').value.trim(),
+                category: document.getElementById('editTrxCategory').value.trim(),
+                price: parseFloat(document.getElementById('editTrxPrice').value) || 0,
+                payment: document.getElementById('editTrxPayment').value,
+                status: document.getElementById('editTrxStatus').value
+            };
+
+            showToast('Menyimpan perubahan transaksi ' + trxId + '...', 'success');
+
+            runBackend('apiUpdateTransaction', [payload, window.currentUser], function (res) {
+                if (!res.success) {
+                    showToast(res.message || 'Gagal memperbarui transaksi.', 'error');
+                    return;
+                }
+
+                for (var i = 0; i < orderTransactions.length; i++) {
+                    if (orderTransactions[i].id === trxId) {
+                        orderTransactions[i].date = payload.date;
+                        orderTransactions[i].customer = payload.customer;
+                        orderTransactions[i].phone = payload.phone;
+                        orderTransactions[i].category = payload.category;
+                        orderTransactions[i].price = payload.price;
+                        orderTransactions[i].payment = payload.payment;
+                        orderTransactions[i].status = payload.status;
+                        break;
+                    }
+                }
+
+                renderOrderTable(orderTransactions);
+                closeModalEditTransaksi();
+                showToast(res.message || 'Transaksi berhasil diperbarui.', 'success');
+
+                if (typeof window.loadDashboardData === 'function') {
+                    window.loadDashboardData();
+                }
+            }, function (err) {
+                showToast('Gagal update transaksi: ' + (err.message || 'Koneksi terganggu'), 'error');
             });
         }
 
@@ -856,3 +952,9 @@ window.refreshTimRekanan = function () {
     var isAkt = tabAkt ? tabAkt.classList.contains('active') : true;
     window.renderTimRekanan(isAkt ? 'aktivitas' : 'mitra');
 };
+
+// Export edit transaction functions to window
+window.editTransaksiDariModal = editTransaksiDariModal;
+window.openModalEditTransaksi = openModalEditTransaksi;
+window.closeModalEditTransaksi = closeModalEditTransaksi;
+window.submitEditTransaksi = submitEditTransaksi;

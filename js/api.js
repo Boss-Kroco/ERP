@@ -792,6 +792,264 @@
                 return { success: true, data: mapped };
             }
 
+            case 'apiUpdateTransaction': {
+                var pData = args[0] || {};
+                var uSession = args[1] || window.currentUser;
+                var trxId = pData.trxId || pData.id;
+                if (!trxId) return { success: false, message: 'ID transaksi tidak valid.' };
+
+                var updates = {};
+                if (pData.customer) updates.nama_pelanggan = pData.customer;
+                if (pData.date) updates.tanggal = pData.date;
+                if (pData.payment) updates.metode_bayar = pData.payment;
+                if (pData.status) updates.status_bayar = pData.status;
+                if (pData.price !== undefined) updates.total_net = Number(pData.price);
+                if (pData.category) updates.kategori = pData.category;
+
+                var { data: oldData } = await sb.from('penjualan').select('*').eq('trx_id', trxId).maybeSingle();
+                var { error } = await sb.from('penjualan').update(updates).eq('trx_id', trxId);
+                if (error) throw error;
+
+                try {
+                    await sb.from('audit_trail').insert([{
+                        log_id: 'LOG-' + Date.now(),
+                        waktu: new Date().toISOString(),
+                        user_id: uSession ? uSession.userId : 'USR',
+                        nama_user: uSession ? (uSession.namaLengkap || uSession.username) : 'Pengguna',
+                        modul: 'Penjualan',
+                        aksi: 'EDIT_TRANSAKSI',
+                        nilai_lama: oldData ? (oldData.nama_pelanggan + ' | Rp ' + oldData.total_net + ' | ' + oldData.status_bayar) : '-',
+                        nilai_baru: (updates.nama_pelanggan || (oldData && oldData.nama_pelanggan)) + ' | Rp ' + (updates.total_net || (oldData && oldData.total_net)) + ' | ' + (updates.status_bayar || (oldData && oldData.status_bayar)),
+                        keterangan: 'Pembaruan data transaksi: ' + trxId
+                    }]);
+                } catch (e) {
+                    console.warn('[Audit Log Insert Warning]', e);
+                }
+
+                return { success: true, message: 'Transaksi ' + trxId + ' berhasil diperbarui.' };
+            }
+
+            case 'apiUpdateKasManual': {
+                var pKas = args[0] || {};
+                var uSession = args[1] || window.currentUser;
+                var kasId = pKas.kasId || pKas.id;
+                if (!kasId) return { success: false, message: 'ID kas tidak valid.' };
+
+                var { data: oldRec } = await sb.from('keuangan_kas').select('*').eq('kas_id', kasId).maybeSingle();
+
+                var updates = {
+                    tanggal: pKas.tanggal,
+                    tipe: pKas.tipe,
+                    kategori: pKas.kategori,
+                    nominal: Number(pKas.nominal || 0),
+                    keterangan: pKas.keterangan || '-',
+                    dicatat_oleh: pKas.dicatatOleh || (uSession ? (uSession.namaLengkap || uSession.username) : 'Bendahara')
+                };
+
+                var { error } = await sb.from('keuangan_kas').update(updates).eq('kas_id', kasId);
+                if (error) throw error;
+
+                try {
+                    await sb.from('audit_trail').insert([{
+                        log_id: 'LOG-' + Date.now(),
+                        waktu: new Date().toISOString(),
+                        user_id: uSession ? uSession.userId : 'USR',
+                        nama_user: uSession ? (uSession.namaLengkap || uSession.username) : 'Pengguna',
+                        modul: 'KeuanganKas',
+                        aksi: 'EDIT_KAS',
+                        nilai_lama: oldRec ? (oldRec.tipe + ' Rp ' + oldRec.nominal + ' (' + oldRec.kategori + ')') : '-',
+                        nilai_baru: updates.tipe + ' Rp ' + updates.nominal + ' (' + updates.kategori + ')',
+                        keterangan: 'Pembaruan mutasi kas ' + kasId + ': ' + updates.keterangan
+                    }]);
+                } catch (e) {
+                    console.warn('[Audit Log Insert Warning]', e);
+                }
+
+                return { success: true, message: 'Mutasi kas ' + kasId + ' berhasil diperbarui.' };
+            }
+
+            case 'apiUpdateProduct': {
+                var pProd = args[0] || {};
+                var uSession = args[1] || window.currentUser;
+                var pid = pProd.produkId || pProd.id;
+                if (!pid) return { success: false, message: 'ID produk tidak valid.' };
+
+                var { data: oldProd } = await sb.from('produk').select('*').eq('produk_id', pid).maybeSingle();
+
+                var updates = {
+                    nama_produk: pProd.namaProduk,
+                    satuan: pProd.satuan || 'Pcs',
+                    harga_beli_hpp: Number(pProd.hargaBeliHPP || 0),
+                    harga_jual: Number(pProd.hargaJual || 0),
+                    status: pProd.status || 'Aktif'
+                };
+
+                var { error } = await sb.from('produk').update(updates).eq('produk_id', pid);
+                if (error) throw error;
+
+                if (pProd.namaProduk && (!oldProd || oldProd.nama_produk !== pProd.namaProduk)) {
+                    try {
+                        await sb.from('stok_lokasi').update({ nama_produk: pProd.namaProduk }).eq('produk_id', pid);
+                    } catch (e) {}
+                }
+
+                try {
+                    await sb.from('audit_trail').insert([{
+                        log_id: 'LOG-' + Date.now(),
+                        waktu: new Date().toISOString(),
+                        user_id: uSession ? uSession.userId : 'USR',
+                        nama_user: uSession ? (uSession.namaLengkap || uSession.username) : 'Pengguna',
+                        modul: 'MasterProduk',
+                        aksi: 'EDIT_PRODUK',
+                        nilai_lama: oldProd ? ('HPP: Rp ' + oldProd.harga_beli_hpp + ' | Jual: Rp ' + oldProd.harga_jual) : '-',
+                        nilai_baru: 'HPP: Rp ' + updates.harga_beli_hpp + ' | Jual: Rp ' + updates.harga_jual,
+                        keterangan: 'Pembaruan produk: ' + updates.nama_produk
+                    }]);
+                } catch (e) {
+                    console.warn('[Audit Log Insert Warning]', e);
+                }
+
+                return { success: true, message: 'Produk ' + updates.nama_produk + ' berhasil diperbarui.' };
+            }
+
+            case 'apiGetProductionBatches': {
+                var { data, error } = await sb.from('produksi').select('*').order('created_at', { ascending: false }).limit(50);
+                if (error) throw error;
+                var mapped = (data || []).map(function(d) {
+                    return {
+                        batchId: d.produksi_id,
+                        tanggal: d.tanggal,
+                        produkId: d.produk_id,
+                        namaProduk: d.nama_produk,
+                        tipeTenagaKerja: d.tipe_tenaga_kerja,
+                        jmlRencana: Number(d.jml_rencana || 0),
+                        jmlRusak: Number(d.jml_rusak || 0),
+                        jmlBersih: Number(d.jml_bersih || 0),
+                        biayaBahan: Number(d.biaya_bahan || 0),
+                        biayaKemasan: Number(d.biaya_kemasan || 0),
+                        biayaOperasional: Number(d.biaya_operasional || 0),
+                        biayaUpah: Number(d.biaya_upah || 0),
+                        totalHpp: Number(d.total_hpp_batch || 0),
+                        hppUnit: Number(d.hpp_unit || 0)
+                    };
+                });
+                return { success: true, data: mapped };
+            }
+
+            case 'apiUpdateProductionBatch': {
+                var pB = args[0] || {};
+                var uSession = args[1] || window.currentUser;
+                var bId = pB.batchId;
+                if (!bId) return { success: false, message: 'ID batch tidak valid.' };
+
+                var jmlRencana = Number(pB.jmlRencana || 0);
+                var jmlRusak = Number(pB.jmlRusak || 0);
+                var jmlBersih = Math.max(0, jmlRencana - jmlRusak);
+                var bBahan = Number(pB.biayaBahan || 0);
+                var bKemasan = Number(pB.biayaKemasan || 0);
+                var bOps = Number(pB.biayaOperasional || 0);
+                var bUpah = Number(pB.biayaUpah || 0);
+                var totalHpp = bBahan + bKemasan + bOps + bUpah;
+                var hppUnit = jmlBersih > 0 ? Math.round(totalHpp / jmlBersih) : 0;
+
+                var updates = {
+                    jml_rencana: jmlRencana,
+                    jml_rusak: jmlRusak,
+                    jml_bersih: jmlBersih,
+                    biaya_bahan: bBahan,
+                    biaya_kemasan: bKemasan,
+                    biaya_operasional: bOps,
+                    biaya_upah: bUpah,
+                    total_hpp_batch: totalHpp,
+                    hpp_unit: hppUnit
+                };
+
+                var { error } = await sb.from('produksi').update(updates).eq('produksi_id', bId);
+                if (error) throw error;
+
+                try {
+                    await sb.from('audit_trail').insert([{
+                        log_id: 'LOG-' + Date.now(),
+                        waktu: new Date().toISOString(),
+                        user_id: uSession ? uSession.userId : 'USR',
+                        nama_user: uSession ? (uSession.namaLengkap || uSession.username) : 'Pengguna',
+                        modul: 'Produksi',
+                        aksi: 'EDIT_BATCH',
+                        nilai_lama: '-',
+                        nilai_baru: 'Bersih: ' + jmlBersih + ', HPP/Unit: Rp ' + hppUnit,
+                        keterangan: 'Pembaruan data batch produksi ' + bId
+                    }]);
+                } catch (e) {
+                    console.warn('[Audit Log Insert Warning]', e);
+                }
+
+                return { success: true, message: 'Batch produksi ' + bId + ' berhasil diperbarui.' };
+            }
+
+            case 'apiGetTenagaKerjaLogs': {
+                var { data, error } = await sb.from('tenaga_kerja').select('*').order('created_at', { ascending: false }).limit(50);
+                if (error) throw error;
+                var mapped = (data || []).map(function(d) {
+                    return {
+                        pekerjaId: d.pekerja_id,
+                        namaPekerja: d.nama_pekerja,
+                        tipePekerja: d.tipe_pekerja,
+                        tanggal: d.tanggal,
+                        totalJam: Number(d.total_jam || 0),
+                        upahRate: Number(d.upah_rate || 0),
+                        bonus: Number(d.bonus || 0),
+                        potongan: Number(d.potongan || 0),
+                        totalBayar: Number(d.total_bayar || 0),
+                        statusBayar: d.status_bayar || 'Lunas'
+                    };
+                });
+                return { success: true, data: mapped };
+            }
+
+            case 'apiUpdateTenagaKerja': {
+                var pTk = args[0] || {};
+                var uSession = args[1] || window.currentUser;
+                var tkId = pTk.pekerjaId;
+                if (!tkId) return { success: false, message: 'ID pekerja tidak valid.' };
+
+                var jam = Number(pTk.totalJam || 8);
+                var rate = Number(pTk.upahRate || 12000);
+                var bonus = Number(pTk.bonus || 0);
+                var pot = Number(pTk.potongan || 0);
+                var totalBayar = Math.max(0, (jam * rate) + bonus - pot);
+
+                var updates = {
+                    nama_pekerja: pTk.namaPekerja,
+                    tipe_pekerja: pTk.tipePekerja,
+                    total_jam: jam,
+                    upah_rate: rate,
+                    bonus: bonus,
+                    potongan: pot,
+                    total_bayar: totalBayar
+                };
+
+                var { error } = await sb.from('tenaga_kerja').update(updates).eq('pekerja_id', tkId);
+                if (error) throw error;
+
+                try {
+                    await sb.from('audit_trail').insert([{
+                        log_id: 'LOG-' + Date.now(),
+                        waktu: new Date().toISOString(),
+                        user_id: uSession ? uSession.userId : 'USR',
+                        nama_user: uSession ? (uSession.namaLengkap || uSession.username) : 'Pengguna',
+                        modul: 'TenagaKerja',
+                        aksi: 'EDIT_UPAH',
+                        nilai_lama: '-',
+                        nilai_baru: 'Total: Rp ' + totalBayar,
+                        keterangan: 'Pembaruan data upah ' + pTk.namaPekerja
+                    }]);
+                } catch (e) {
+                    console.warn('[Audit Log Insert Warning]', e);
+                }
+
+                return { success: true, message: 'Data upah ' + pTk.namaPekerja + ' berhasil diperbarui.' };
+            }
+
             case 'apiGenerateDocumentPdf': {
                 return { success: true, pdfUrl: 'https://docs.google.com' };
             }
@@ -1010,6 +1268,95 @@
             var newPId = 'PRD-' + ('000' + Math.floor(Math.random() * 900 + 100)).slice(-3);
             window.addMockAuditLog('MasterProduk', 'TAMBAH', '-', (args[0] ? args[0].namaProduk : ''), 'Pendaftaran master produk baru', args[1]);
             successCb({ success: true, produkId: newPId, message: 'Produk baru berhasil didaftarkan.' });
+        } else if (functionName === 'apiUpdateTransaction') {
+            var pTrx = args[0] || {};
+            var targetTrx = (window.orderTransactions || []).find(function (t) { return t.id === pTrx.trxId || t.id === pTrx.id; });
+            if (targetTrx) {
+                if (pTrx.customer) targetTrx.customer = pTrx.customer;
+                if (pTrx.phone) targetTrx.phone = pTrx.phone;
+                if (pTrx.date) targetTrx.date = pTrx.date;
+                if (pTrx.payment) targetTrx.payment = pTrx.payment;
+                if (pTrx.status) targetTrx.status = pTrx.status;
+                if (pTrx.price !== undefined) targetTrx.price = Number(pTrx.price);
+                if (pTrx.category) targetTrx.category = pTrx.category;
+            }
+            window.addMockAuditLog('Penjualan', 'EDIT_TRANSAKSI', '-', String(pTrx.price || ''), 'Edit transaksi penjualan: ' + (pTrx.trxId || ''), args[1]);
+            successCb({ success: true, message: 'Transaksi ' + (pTrx.trxId || '') + ' berhasil diperbarui.' });
+        } else if (functionName === 'apiUpdateKasManual') {
+            var pKasUp = args[0] || {};
+            var listKas = window.mockKeuanganKas || [];
+            var targetKas = listKas.find(function (k) { return k.kasId === pKasUp.kasId || k.kasId === pKasUp.id; });
+            if (targetKas) {
+                targetKas.tanggal = pKasUp.tanggal || targetKas.tanggal;
+                targetKas.tipe = pKasUp.tipe || targetKas.tipe;
+                targetKas.kategori = pKasUp.kategori || targetKas.kategori;
+                targetKas.nominal = Number(pKasUp.nominal !== undefined ? pKasUp.nominal : targetKas.nominal);
+                targetKas.keterangan = pKasUp.keterangan || targetKas.keterangan;
+                targetKas.dicatatOleh = pKasUp.dicatatOleh || targetKas.dicatatOleh;
+            }
+            window.addMockAuditLog('Kas', 'EDIT_KAS', '-', String(pKasUp.nominal || ''), 'Edit mutasi kas: ' + (pKasUp.kasId || ''), args[1]);
+            successCb({ success: true, message: 'Mutasi kas ' + (pKasUp.kasId || '') + ' berhasil diperbarui.' });
+        } else if (functionName === 'apiUpdateProduct') {
+            var pUpPrd = args[0] || {};
+            var listPrd = window.catalogProducts || [];
+            var targetPrd = listPrd.find(function (p) { return p.produkId === pUpPrd.produkId || p.produkId === pUpPrd.id; });
+            if (targetPrd) {
+                targetPrd.namaProduk = pUpPrd.namaProduk || targetPrd.namaProduk;
+                targetPrd.satuan = pUpPrd.satuan || targetPrd.satuan;
+                targetPrd.hargaBeliHPP = Number(pUpPrd.hargaBeliHPP !== undefined ? pUpPrd.hargaBeliHPP : targetPrd.hargaBeliHPP);
+                targetPrd.hargaJual = Number(pUpPrd.hargaJual !== undefined ? pUpPrd.hargaJual : targetPrd.hargaJual);
+                targetPrd.status = pUpPrd.status || targetPrd.status;
+            }
+            window.addMockAuditLog('MasterProduk', 'EDIT_PRODUK', '-', (pUpPrd.namaProduk || ''), 'Edit produk: ' + (pUpPrd.produkId || ''), args[1]);
+            successCb({ success: true, message: 'Produk ' + (pUpPrd.namaProduk || '') + ' berhasil diperbarui.' });
+        } else if (functionName === 'apiGetProductionBatches') {
+            if (!window.mockProductionBatches) {
+                window.mockProductionBatches = [
+                    { batchId: 'BATCH-20260905-01', tanggal: '05/09/2026', produkId: 'PRD-001', namaProduk: 'Kripik Tempe Premium', tipeTenagaKerja: 'Pekerja harian', jmlRencana: 100, jmlRusak: 2, jmlBersih: 98, biayaBahan: 450000, biayaKemasan: 85000, biayaOperasional: 50000, biayaUpah: 96000, totalHpp: 681000, hppUnit: 6949 },
+                    { batchId: 'BATCH-20260904-01', tanggal: '04/09/2026', produkId: 'PRD-002', namaProduk: 'Kue Kacang Gurih', tipeTenagaKerja: 'Pekerja harian', jmlRencana: 50, jmlRusak: 1, jmlBersih: 49, biayaBahan: 320000, biayaKemasan: 60000, biayaOperasional: 40000, biayaUpah: 80000, totalHpp: 500000, hppUnit: 10204 }
+                ];
+            }
+            successCb({ success: true, data: window.mockProductionBatches.slice() });
+        } else if (functionName === 'apiUpdateProductionBatch') {
+            var pBUp = args[0] || {};
+            var listB = window.mockProductionBatches || [];
+            var tB = listB.find(function (b) { return b.batchId === pBUp.batchId; });
+            if (tB) {
+                tB.jmlRencana = Number(pBUp.jmlRencana || tB.jmlRencana);
+                tB.jmlRusak = Number(pBUp.jmlRusak !== undefined ? pBUp.jmlRusak : tB.jmlRusak);
+                tB.jmlBersih = Math.max(0, tB.jmlRencana - tB.jmlRusak);
+                tB.biayaBahan = Number(pBUp.biayaBahan !== undefined ? pBUp.biayaBahan : tB.biayaBahan);
+                tB.biayaKemasan = Number(pBUp.biayaKemasan !== undefined ? pBUp.biayaKemasan : tB.biayaKemasan);
+                tB.biayaOperasional = Number(pBUp.biayaOperasional !== undefined ? pBUp.biayaOperasional : tB.biayaOperasional);
+                tB.biayaUpah = Number(pBUp.biayaUpah !== undefined ? pBUp.biayaUpah : tB.biayaUpah);
+                tB.totalHpp = tB.biayaBahan + tB.biayaKemasan + tB.biayaOperasional + tB.biayaUpah;
+                tB.hppUnit = tB.jmlBersih > 0 ? Math.round(tB.totalHpp / tB.jmlBersih) : 0;
+            }
+            window.addMockAuditLog('Produksi', 'EDIT_BATCH', '-', (pBUp.batchId || ''), 'Edit data batch produksi', args[1]);
+            successCb({ success: true, message: 'Batch produksi ' + (pBUp.batchId || '') + ' berhasil diperbarui.' });
+        } else if (functionName === 'apiGetTenagaKerjaLogs') {
+            if (!window.mockTenagaKerjaLogs) {
+                window.mockTenagaKerjaLogs = [
+                    { pekerjaId: 'TK-20260905-01', namaPekerja: 'Slamet Riyadi', tipePekerja: 'Pekerja harian', tanggal: '05/09/2026', totalJam: 8, upahRate: 12000, bonus: 10000, potongan: 0, totalBayar: 106000, statusBayar: 'Lunas' },
+                    { pekerjaId: 'TK-20260905-02', namaPekerja: 'Wartini', tipePekerja: 'Pekerja harian', tanggal: '05/09/2026', totalJam: 8, upahRate: 12000, bonus: 0, potongan: 15000, totalBayar: 81000, statusBayar: 'Lunas' }
+                ];
+            }
+            successCb({ success: true, data: window.mockTenagaKerjaLogs.slice() });
+        } else if (functionName === 'apiUpdateTenagaKerja') {
+            var pTkUp = args[0] || {};
+            var listTk = window.mockTenagaKerjaLogs || [];
+            var tTk = listTk.find(function (k) { return k.pekerjaId === pTkUp.pekerjaId; });
+            if (tTk) {
+                tTk.namaPekerja = pTkUp.namaPekerja || tTk.namaPekerja;
+                tTk.tipePekerja = pTkUp.tipePekerja || tTk.tipePekerja;
+                tTk.totalJam = Number(pTkUp.totalJam !== undefined ? pTkUp.totalJam : tTk.totalJam);
+                tTk.upahRate = Number(pTkUp.upahRate !== undefined ? pTkUp.upahRate : tTk.upahRate);
+                tTk.bonus = Number(pTkUp.bonus !== undefined ? pTkUp.bonus : tTk.bonus);
+                tTk.potongan = Number(pTkUp.potongan !== undefined ? pTkUp.potongan : tTk.potongan);
+                tTk.totalBayar = Math.max(0, (tTk.totalJam * tTk.upahRate) + tTk.bonus - tTk.potongan);
+            }
+            window.addMockAuditLog('TenagaKerja', 'EDIT_UPAH', '-', (pTkUp.namaPekerja || ''), 'Edit data upah pekerja', args[1]);
+            successCb({ success: true, message: 'Data upah ' + (pTkUp.namaPekerja || '') + ' berhasil diperbarui.' });
         } else if (functionName === 'apiGenerateDocumentPdf') {
             successCb({ success: true, pdfUrl: 'https://docs.google.com' });
         } else {

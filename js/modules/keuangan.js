@@ -134,7 +134,7 @@ function renderKeuanganTable(items) {
     tbody.innerHTML = '';
 
     if (!items || items.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 12.5px;">'
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 32px; color: var(--text-muted); font-size: 12.5px;">'
             + '<svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--text-muted); opacity: 0.5; width: 32px; height: 32px; margin-bottom: 8px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><br>'
             + 'Tidak ada data transaksi kas yang sesuai filter.</td></tr>';
         return;
@@ -168,7 +168,12 @@ function renderKeuanganTable(items) {
             + '<td style="text-align: right;">' + nominalMasukHtml + '</td>'
             + '<td style="text-align: right;">' + nominalKeluarHtml + '</td>'
             + '<td style="text-align: right; font-weight: 800; color: var(--violet-main);">' + formatRupiah(k.saldoBerjalan || 0) + '</td>'
-            + '<td><small style="font-weight: 600; color: var(--text-main);">' + escapeHtml(k.dicatatOleh || '-') + '</small></td>';
+            + '<td><small style="font-weight: 600; color: var(--text-main);">' + escapeHtml(k.dicatatOleh || '-') + '</small></td>'
+            + '<td style="text-align: center; white-space: nowrap;">'
+            + '<button class="btn-pill-action btn-pill-secondary" style="padding: 2px 8px;" onclick="openModalEditKas(\'' + escapeHtml(k.kasId) + '\')" title="Edit Transaksi Kas">'
+            + '<svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Edit'
+            + '</button>'
+            + '</td>';
 
         tbody.appendChild(tr);
     });
@@ -347,6 +352,87 @@ function exportKeuanganCSV() {
     showToast('Laporan mutasi kas berhasil diunduh (CSV).', 'success');
 }
 
+function openModalEditKas(kasId) {
+    var item = (currentRawKasList || []).find(function (k) { return k.kasId === kasId; });
+    if (!item) {
+        showToast('Data transaksi kas tidak ditemukan.', 'error');
+        return;
+    }
+
+    var elId = document.getElementById('editKasId');
+    if (elId) elId.value = item.kasId;
+    var elBadge = document.getElementById('editKasIdBadge');
+    if (elBadge) elBadge.textContent = item.kasId;
+    var elRef = document.getElementById('editKasRefBadge');
+    if (elRef) elRef.textContent = 'Ref: ' + (item.refId || '-');
+    var elTgl = document.getElementById('editKasTanggal');
+    if (elTgl) elTgl.value = item.tanggal || '';
+    var elTipe = document.getElementById('editKasTipe');
+    if (elTipe) elTipe.value = item.tipe || 'Masuk';
+    var elKat = document.getElementById('editKasKategori');
+    if (elKat) elKat.value = item.kategori || '';
+    var elNom = document.getElementById('editKasNominal');
+    if (elNom) elNom.value = item.nominal || 0;
+    var elKet = document.getElementById('editKasKeterangan');
+    if (elKet) elKet.value = item.keterangan || '';
+    var elOleh = document.getElementById('editKasDicatatOleh');
+    if (elOleh) elOleh.value = item.dicatatOleh || '';
+
+    var modal = document.getElementById('modalEditKas');
+    if (modal) modal.classList.add('active');
+}
+
+function closeModalEditKas() {
+    var modal = document.getElementById('modalEditKas');
+    if (modal) modal.classList.remove('active');
+}
+
+function submitEditKas() {
+    var kasId = document.getElementById('editKasId').value;
+    var payload = {
+        kasId: kasId,
+        tanggal: document.getElementById('editKasTanggal').value.trim(),
+        tipe: document.getElementById('editKasTipe').value,
+        kategori: document.getElementById('editKasKategori').value.trim(),
+        nominal: parseFloat(document.getElementById('editKasNominal').value) || 0,
+        keterangan: document.getElementById('editKasKeterangan').value.trim(),
+        dicatatOleh: document.getElementById('editKasDicatatOleh').value.trim()
+    };
+
+    showToast('Menyimpan perubahan kas ' + kasId + '...', 'success');
+
+    runBackend('apiUpdateKasManual', [payload, window.currentUser], function (res) {
+        if (!res.success) {
+            showToast(res.message || 'Gagal memperbarui mutasi kas.', 'error');
+            return;
+        }
+
+        // Update di currentRawKasList
+        for (var i = 0; i < currentRawKasList.length; i++) {
+            if (currentRawKasList[i].kasId === kasId) {
+                currentRawKasList[i].tanggal = payload.tanggal;
+                currentRawKasList[i].tipe = payload.tipe;
+                currentRawKasList[i].kategori = payload.kategori;
+                currentRawKasList[i].nominal = payload.nominal;
+                currentRawKasList[i].keterangan = payload.keterangan;
+                currentRawKasList[i].dicatatOleh = payload.dicatatOleh;
+                break;
+            }
+        }
+
+        closeModalEditKas();
+        filterKeuanganKas();
+        showToast(res.message || 'Mutasi kas berhasil diperbarui.', 'success');
+
+        // Muat ulang ringkasan keuangan dashboard jika ada
+        if (typeof window.loadDashboardData === 'function') {
+            window.loadDashboardData();
+        }
+    }, function (err) {
+        showToast('Gagal update kas: ' + (err.message || 'Koneksi terganggu'), 'error');
+    });
+}
+
 // Export functions to global window
 window.initKeuanganPage = initKeuanganPage;
 window.fetchKeuanganKas = fetchKeuanganKas;
@@ -357,3 +443,6 @@ window.toggleKasFormCollapse = toggleKasFormCollapse;
 window.resetKasForm = resetKasForm;
 window.submitKasManual = submitKasManual;
 window.exportKeuanganCSV = exportKeuanganCSV;
+window.openModalEditKas = openModalEditKas;
+window.closeModalEditKas = closeModalEditKas;
+window.submitEditKas = submitEditKas;
