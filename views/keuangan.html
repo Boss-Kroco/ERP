@@ -1,61 +1,187 @@
 <div id="view-keuangan" style="display: none;">
-    <div class="order-section-card">
-        <div class="order-header-row">
+
+    <!-- 1. Top Metrics Summary Cards (Arus Kas & Saldo Operasional) -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 16px;">
+        <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 14px; padding: 14px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+                <span>SALDO KAS OPERASIONAL</span>
+                <span id="badgeKeuanganKasKritis" style="display: none; background: #fee2e2; color: #dc2626; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; border: 1px solid #fca5a5;">⚠️ KAS KRITIS</span>
+            </div>
+            <div style="font-size: 22px; font-weight: 900; color: var(--violet-main); margin-top: 6px;" id="keuanganSaldoKas">Rp 0</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Limit Kritis: <b id="keuanganLimitKas">Rp 2.000.000</b></div>
+        </div>
+
+        <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 14px; padding: 14px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+                <span>TOTAL KAS MASUK</span>
+                <span class="prog-status-pill green">MASUK</span>
+            </div>
+            <div style="font-size: 22px; font-weight: 900; color: #059669; margin-top: 6px;" id="keuanganTotalMasuk">Rp 0</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;" id="keuanganSubMasuk">0 transaksi</div>
+        </div>
+
+        <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 14px; padding: 14px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+                <span>TOTAL KAS KELUAR</span>
+                <span class="prog-status-pill coral">KELUAR</span>
+            </div>
+            <div style="font-size: 22px; font-weight: 900; color: #dc2626; margin-top: 6px;" id="keuanganTotalKeluar">Rp 0</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;" id="keuanganSubKeluar">0 transaksi</div>
+        </div>
+
+        <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 14px; padding: 14px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+                <span>ARUS KAS BERSIH</span>
+                <span class="prog-status-pill violet">NET FLOW</span>
+            </div>
+            <div style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 6px;" id="keuanganNetFlow">Rp 0</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Selisih Masuk &minus; Keluar</div>
+        </div>
+    </div>
+
+    <!-- Alert Box Kas Kritis -->
+    <div id="alertKasKritisBox" style="display: none; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; color: #9f1239; font-size: 12px; line-height: 1.5;">
+        <b>⚠️ Peringatan:</b> Saldo kas operasional saat ini berada di bawah batas minimum yang ditetapkan di Pengaturan. Harap batasi pengeluaran kas atau lakukan penyetoran modal operasional.
+    </div>
+
+    <!-- 2. Form Pencatatan Kas Baru (Collapsible Card) -->
+    <div class="order-section-card" style="margin-bottom: 16px;">
+        <div class="order-header-row" style="cursor: pointer;" onclick="toggleKasFormCollapse()">
             <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
                 <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
-                    <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
-                    <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
+                    <path d="M12 5v14" />
+                    <path d="M5 12h14" />
                 </svg>
-                Buku Kas &amp; Pencatatan Pengeluaran
+                Pencatatan Transaksi Kas Baru
             </span>
+            <button class="btn-pill-action btn-pill-secondary" type="button" id="btnToggleKasForm" style="font-size: 11px; padding: 4px 10px;">
+                <span id="lblToggleKasForm">Sembunyikan Form</span>
+            </button>
         </div>
 
-        <!-- Indikator Saldo Kas Riil & Peringatan Limit Kritis -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 12px 0 16px;">
-            <div style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 12px; padding: 12px 16px;">
-                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
-                    <span>SALDO KAS OPERASIONAL</span>
-                    <span id="badgeKeuanganKasKritis" style="display: none; background: #fee2e2; color: #dc2626; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; border: 1px solid #fca5a5;">⚠️ KAS KRITIS</span>
+        <div id="kasFormCollapseBody" style="margin-top: 14px;">
+            <form onsubmit="event.preventDefault(); submitKasManual();"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+                <div>
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Tipe Transaksi</label>
+                    <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="kasTipe">
+                        <option value="Keluar">🔴 Kas Keluar (Biaya / Beban / Pengeluaran)</option>
+                        <option value="Masuk">🟢 Kas Masuk (Pendapatan Lain / Setoran Modal)</option>
+                    </select>
                 </div>
-                <div style="font-size: 20px; font-weight: 900; color: var(--violet-main); margin-top: 4px;" id="keuanganSaldoKas">Rp 0</div>
-            </div>
-            <div style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 12px; padding: 12px 16px;">
-                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted);">LIMIT SALDO MINIMUM KRITIS</div>
-                <div style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-top: 4px;" id="keuanganLimitKas">Rp 2.000.000</div>
-            </div>
+                <div>
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Kategori Transaksi</label>
+                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                        id="kasKategori" placeholder="Contoh: Listrik / Bahan Baku / Sewa / Bensin" required>
+                </div>
+                <div>
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nominal (Rp)</label>
+                    <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                        id="kasNominal" required placeholder="0" min="1">
+                </div>
+                <div>
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Keterangan Rinci</label>
+                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                        id="kasKeterangan" placeholder="Catatan transaksi kas...">
+                </div>
+                <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px;">
+                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="resetKasForm()">Reset</button>
+                    <button type="submit" class="btn-pill-action btn-pill-primary">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                            <polyline points="17 21 17 13 7 13 7 21" />
+                            <polyline points="7 3 7 8 15 8" />
+                        </svg>
+                        Simpan Transaksi Kas
+                    </button>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <div id="alertKasKritisBox" style="display: none; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; color: #9f1239; font-size: 11.5px; line-height: 1.5;">
-            <b>Peringatan:</b> Saldo kas operasional saat ini berada di bawah batas minimum yang ditetapkan di Pengaturan. Harap batasi pengeluaran kas atau lakukan penyetoran modal.
-        </div>
+    <!-- 3. Tabel Riwayat & Laporan Mutasi Kas Masuk Keluar (Buku Kas) -->
+    <div class="order-section-card">
+        <div class="order-header-row" style="flex-wrap: wrap; gap: 10px;">
+            <div class="order-title-group">
+                <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
+                    <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                        <rect width="20" height="12" x="2" y="6" rx="2" />
+                        <circle cx="12" cy="12" r="2" />
+                        <path d="M6 12h.01M18 12h.01" />
+                    </svg>
+                    Laporan Mutasi Arus Kas Masuk &amp; Keluar
+                </span>
+                <span class="order-count-tag" id="kasCountBadge">0 Transaksi</span>
+            </div>
+            <div class="order-action-tools" style="flex-wrap: wrap; gap: 8px;">
+                <div class="search-filter-box">
+                    <span class="table-search-icon">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.3-4.3" />
+                        </svg>
+                    </span>
+                    <input type="text" class="search-filter-input" id="searchKasTable"
+                        placeholder="Cari kas, kategori, keterangan..." oninput="filterKeuanganKas()">
+                </div>
 
-        <form onsubmit="event.preventDefault(); submitKasManual();"
-            style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px;">
-            <div>
-                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Tipe Transaksi</label>
-                <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="kasTipe">
-                    <option value="Keluar">Kas Keluar (Biaya / Beban)</option>
-                    <option value="Masuk">Kas Masuk (Pendapatan Lain)</option>
+                <select class="search-filter-input" id="filterKasTipe" onchange="filterKeuanganKas()" style="min-width: 130px;">
+                    <option value="all">Semua Tipe Kas</option>
+                    <option value="Masuk">🟢 Kas Masuk Saja</option>
+                    <option value="Keluar">🔴 Kas Keluar Saja</option>
                 </select>
+
+                <select class="search-filter-input" id="filterKasPeriode" onchange="filterKeuanganKas()" style="min-width: 130px;">
+                    <option value="all">Semua Waktu</option>
+                    <option value="today">Hari Ini</option>
+                    <option value="last7">7 Hari Terakhir</option>
+                    <option value="thisMonth" selected>Bulan Ini</option>
+                </select>
+
+                <button class="btn-pill-action btn-pill-secondary" onclick="fetchKeuanganKas()" title="Segarkan Data Kas">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                        <path d="M21 3v5h-5" />
+                        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                        <path d="M3 21v-5h5" />
+                    </svg>
+                    Segarkan
+                </button>
+
+                <button class="btn-pill-action btn-pill-secondary" onclick="exportKeuanganCSV()" title="Unduh CSV Mutasi Kas">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" x2="12" y1="15" y2="3" />
+                    </svg>
+                    Export CSV
+                </button>
             </div>
-            <div>
-                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Kategori Transaksi</label>
-                <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
-                    id="kasKategori" placeholder="Contoh: Listrik / Bahan / Sewa" required>
-            </div>
-            <div>
-                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nominal (Rp)</label>
-                <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
-                    id="kasNominal" required placeholder="0">
-            </div>
-            <div>
-                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Keterangan Rinci</label>
-                <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
-                    id="kasKeterangan" placeholder="Catatan transaksi kas...">
-            </div>
-            <div style="grid-column: span 2;">
-                <button type="submit" class="btn-pill-action btn-pill-primary">Simpan Transaksi Kas</button>
-            </div>
-        </form>
+        </div>
+
+        <div class="table-responsive-wrapper" style="margin-top: 10px;">
+            <table class="custom-order-table" id="tableKeuanganKas">
+                <thead>
+                    <tr>
+                        <th style="min-width: 125px;">Tanggal &amp; Waktu</th>
+                        <th style="min-width: 120px;">No Kas / Ref</th>
+                        <th style="min-width: 90px; text-align: center;">Tipe</th>
+                        <th style="min-width: 130px;">Kategori</th>
+                        <th style="min-width: 170px;">Keterangan</th>
+                        <th style="min-width: 110px; text-align: right;">Masuk (Rp)</th>
+                        <th style="min-width: 110px; text-align: right;">Keluar (Rp)</th>
+                        <th style="min-width: 120px; text-align: right;">Saldo Berjalan</th>
+                        <th style="min-width: 120px;">Dicatat Oleh</th>
+                    </tr>
+                </thead>
+                <tbody id="tblKeuanganKas">
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 24px; color: var(--text-muted);">
+                            Memuat data mutasi kas...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

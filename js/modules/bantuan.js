@@ -139,8 +139,8 @@ var GUIDE_CONTENTS = {
                 text: 'Pada menu "Tenaga Kerja & Upah", rekap jam kerja atau output borongan karyawan untuk mengkalkulasi total gaji yang harus dibayarkan.'
             },
             {
-                title: '4. Laporan Arus Kas & Laba Bersih',
-                text: 'Semua pemasukan kasir dan pengeluaran beban otomatis membentuk kurva laba bersih riil di Dashboard.'
+                title: '4. Laporan Mutasi Kas & Ekspor CSV',
+                text: 'Pantau seluruh riwayat aliran uang masuk & keluar pada tabel mutasi buku kas lengkap dengan filter tipe, rentang tanggal, pencarian instan, dan fitur Export CSV.'
             }
         ]
     }

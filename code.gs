@@ -903,6 +903,37 @@ function apiSaveKasManual(payload, userSession) {
 }
 
 /**
+ * Pengambilan Riwayat Mutasi Buku Kas & Arus Kas Lengkap
+ */
+function apiGetKeuanganKas(userSession) {
+  try {
+    if (!userSession || !userSession.role || ['Owner', 'Admin', 'Bendahara'].indexOf(userSession.role) === -1) {
+      return { success: false, message: 'Akses ditolak: Hanya Owner, Admin, dan Bendahara yang berhak mengakses buku kas.' };
+    }
+    var rows = getSheetRows('KeuanganKas');
+    if (rows.length <= 1) return { success: true, data: [] };
+    var kasList = [];
+    for (var i = rows.length - 1; i >= 1; i--) {
+      kasList.push({
+        kasId: String(rows[i][0] || ''),
+        tanggal: String(rows[i][1] || ''),
+        tipe: String(rows[i][2] || 'Masuk'),
+        kategori: String(rows[i][3] || ''),
+        nominal: parseFloat(rows[i][4]) || 0,
+        keterangan: String(rows[i][5] || '-'),
+        refId: String(rows[i][6] || '-'),
+        saldoBerjalan: parseFloat(rows[i][7]) || 0,
+        dicatatOleh: String(rows[i][8] || '-')
+      });
+      if (kasList.length >= 300) break;
+    }
+    return { success: true, data: kasList };
+  } catch (err) {
+    return { success: false, message: err.toString() };
+  }
+}
+
+/**
  * Pencatatan Presensi & Upah Tenaga Kerja
  */
 function apiSaveTenagaKerja(payload, userSession) {

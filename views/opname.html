@@ -1,49 +1,43 @@
 <div id="view-opname" style="display: none;">
-                    <div class="order-section-card">
-                        <div class="order-header-row">
-                            <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
-                                <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
-                                    <rect width="8" height="4" x="8" y="2" rx="1" ry="1" />
-                                    <path
-                                        d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
-                                    <path d="m9 14 2 2 4-4" />
-                                </svg>
-                                Audit Fisik & Stock Opname Berkala
-                            </span>
-                        </div>
-                        <form onsubmit="event.preventDefault(); submitStockOpname();"
-                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px;">
-                            <div>
-                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Pilih
-                                    Produk</label>
-                                <select class="search-filter-input" style="width: 100%; margin-top: 4px;"
-                                    id="opnameProdukId" required></select>
-                            </div>
-                            <div>
-                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Lokasi
-                                    Fisik</label>
-                                <select class="search-filter-input" style="width: 100%; margin-top: 4px;"
-                                    id="opnameLokasi">
-                                    <option value="Gudang Produksi">Gudang Produksi</option>
-                                    <option value="Etalase Toko">Etalase Toko</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Hitungan
-                                    Fisik Nyata</label>
-                                <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
-                                    id="opnameStokFisik" required placeholder="Hasil hitung aktual...">
-                            </div>
-                            <div>
-                                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Keterangan
-                                    Audit</label>
-                                <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
-                                    id="opnameKet" placeholder="Audit rutin...">
-                            </div>
-                            <div style="grid-column: span 2;">
-                                <button type="submit" class="btn-pill-action btn-pill-primary">Sesuaikan & Bukukan
-                                    Selisih Otomatis</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+    <div class="order-section-card">
+        <div class="order-header-row">
+            <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                    <rect width="8" height="4" x="8" y="2" rx="1" />
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                    <path d="m9 14 2 2 4-4" />
+                </svg>
+                Audit Fisik &amp; Stock Opname Berkala
+            </span>
+        </div>
+        <form onsubmit="event.preventDefault(); submitStockOpname();"
+            style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px;">
+            <div>
+                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Pilih Produk</label>
+                <select class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                    id="opnameProdukId" required></select>
+            </div>
+            <div>
+                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Lokasi Fisik</label>
+                <select class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                    id="opnameLokasi">
+                    <option value="Gudang Produksi">Gudang Produksi</option>
+                    <option value="Etalase Toko">Etalase Toko</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Hitungan Fisik Nyata</label>
+                <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                    id="opnameStokFisik" required placeholder="Hasil hitung aktual...">
+            </div>
+            <div>
+                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Keterangan Audit</label>
+                <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                    id="opnameKet" placeholder="Audit rutin...">
+            </div>
+            <div style="grid-column: span 2;">
+                <button type="submit" class="btn-pill-action btn-pill-primary">Sesuaikan &amp; Bukukan Selisih Otomatis</button>
+            </div>
+        </form>
+    </div>
+</div>

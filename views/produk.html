@@ -1,40 +1,37 @@
 <div id="view-produk" style="display: none;">
-                    <div class="order-section-card">
-                        <div class="order-header-row">
-                            <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
-                                <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
-                                    <path d="m7.5 4.27 9 5.15" />
-                                    <path
-                                        d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-                                    <path d="m3.3 7 8.7 5 8.7-5" />
-                                    <path d="M12 22V12" />
-                                </svg>
-                                Master Katalog & Stok Multi-Lokasi
-                            </span>
-                            <button class="btn-pill-action btn-pill-primary" onclick="openModalTambahProduk()">
-                                <svg class="svg-icon-sm" viewBox="0 0 24 24">
-                                    <path d="M5 12h14" />
-                                    <path d="M12 5v14" />
-                                </svg>
-                                Tambah Produk Baru
-                            </button>
-                        </div>
-                        <div class="table-responsive-wrapper">
-                            <table class="custom-order-table">
-                                <thead>
-                                    <tr>
-                                        <th>Kode ID</th>
-                                        <th>Nama Produk</th>
-                                        <th>Satuan</th>
-                                        <th>HPP Acuan</th>
-                                        <th>Harga Jual</th>
-                                        <th>Stok Etalase</th>
-                                        <th>Stok Gudang</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tblMasterProduk"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
+    <div class="order-section-card">
+        <div class="order-header-row">
+            <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                    <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
+                    <path d="M7 7h.01" />
+                </svg>
+                Master Katalog &amp; Stok Multi-Lokasi
+            </span>
+            <button class="btn-pill-action btn-pill-primary" onclick="openModalTambahProduk()">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                    <path d="M5 12h14" />
+                    <path d="M12 5v14" />
+                </svg>
+                Tambah Produk Baru
+            </button>
+        </div>
+        <div class="table-responsive-wrapper">
+            <table class="custom-order-table">
+                <thead>
+                    <tr>
+                        <th>Kode ID</th>
+                        <th>Nama Produk</th>
+                        <th>Satuan</th>
+                        <th>HPP Acuan</th>
+                        <th>Harga Jual</th>
+                        <th>Stok Etalase</th>
+                        <th>Stok Gudang</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="tblMasterProduk"></tbody>
+            </table>
+        </div>
+    </div>
+</div>

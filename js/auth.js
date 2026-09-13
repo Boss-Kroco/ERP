@@ -134,6 +134,7 @@ window.navigatePage = function (viewId) {
     if (viewId === 'audit' && typeof window.fetchAuditLogs === 'function') window.fetchAuditLogs();
     if (viewId === 'profil' && typeof window.initProfilePage === 'function') window.initProfilePage();
     if (viewId === 'pengaturan' && typeof window.initPengaturanPage === 'function') window.initPengaturanPage();
+    if (viewId === 'keuangan' && typeof window.initKeuanganPage === 'function') window.initKeuanganPage();
     if (viewId === 'bantuan' && typeof window.initBantuanPage === 'function') window.initBantuanPage();
 };
 

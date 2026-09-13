@@ -655,21 +655,66 @@
                 return { success: true, message: 'Hasil stock opname berhasil disimpan dan stok disesuaikan.' };
             }
 
+            case 'apiGetKeuanganKas': {
+                var uSession = args[0] || window.currentUser;
+                if (!uSession || ['Owner', 'Admin', 'Bendahara'].indexOf(uSession.role) === -1) {
+                    return { success: false, message: 'Akses ditolak. Modul ini hanya untuk Owner, Admin, dan Bendahara.' };
+                }
+                var { data, error } = await sb
+                    .from('keuangan_kas')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(300);
+                if (error) throw error;
+                var mapped = (data || []).map(function (d) {
+                    return {
+                        kasId: d.kas_id,
+                        tanggal: d.tanggal,
+                        tipe: d.tipe,
+                        kategori: d.kategori,
+                        nominal: Number(d.nominal || 0),
+                        keterangan: d.keterangan || '-',
+                        refId: d.ref_id || '-',
+                        saldoBerjalan: Number(d.saldo_berjalan || 0),
+                        dicatatOleh: d.dicatat_oleh || '-'
+                    };
+                });
+                return { success: true, data: mapped };
+            }
+
             case 'apiSaveKasManual': {
                 var pKas = args[0] || {};
                 var uSession = args[1] || window.currentUser;
+                var now = new Date();
+                var timeStr = ('0' + now.getDate()).slice(-2) + '/' + ('0' + (now.getMonth() + 1)).slice(-2) + '/' + now.getFullYear() + ' ' +
+                    ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+
+                var nom = Number(pKas.nominal || 0);
+                var tip = pKas.tipe || 'Masuk';
+
+                var lastSaldo = 0;
+                try {
+                    var { data: lastRec } = await sb.from('keuangan_kas').select('saldo_berjalan').order('created_at', { ascending: false }).limit(1);
+                    if (lastRec && lastRec.length > 0) {
+                        lastSaldo = Number(lastRec[0].saldo_berjalan || 0);
+                    }
+                } catch (e) {
+                    console.warn('Gagal ambil saldo terakhir:', e);
+                }
+                var newSaldo = (tip === 'Masuk') ? (lastSaldo + nom) : (lastSaldo - nom);
+
                 await sb.from('keuangan_kas').insert([{
                     kas_id: 'KAS-' + Date.now(),
-                    tanggal: new Date().toLocaleDateString('id-ID'),
-                    tipe: pKas.tipe || 'Masuk',
+                    tanggal: timeStr,
+                    tipe: tip,
                     kategori: pKas.kategori || 'Lain-lain',
-                    nominal: Number(pKas.nominal || 0),
+                    nominal: nom,
                     keterangan: pKas.keterangan || '-',
                     ref_id: 'MANUAL',
-                    saldo_berjalan: 0,
+                    saldo_berjalan: newSaldo,
                     dicatat_oleh: uSession ? (uSession.namaLengkap || uSession.username) : 'Bendahara'
                 }]);
-                return { success: true, message: 'Pencatatan kas manual berhasil dibukukan.' };
+                return { success: true, message: 'Kas ' + tip + ' sebesar Rp ' + nom.toLocaleString('id-ID') + ' berhasil dibukukan.' };
             }
 
             case 'apiSaveTenagaKerja': {
@@ -914,9 +959,50 @@
             }
             window.addMockAuditLog('StockOpname', 'ADJUST_STOK', '-', String(fStok), 'Penyesuaian stok opname fisik', args[1]);
             successCb({ success: true, message: 'Hasil audit fisik stock opname berhasil disesuaikan.' });
+        } else if (functionName === 'apiGetKeuanganKas') {
+            if (!window.mockKeuanganKas) {
+                window.mockKeuanganKas = [
+                    { kasId: 'KAS-20260905-0010', tanggal: '05/09/2026 14:30', tipe: 'Masuk', kategori: 'Pelunasan Piutang Toko', nominal: 500000, keterangan: 'Cicilan Piutang Toko Barokah', refId: 'PIU-001', saldoBerjalan: 13268000, dicatatOleh: 'Bendahara' },
+                    { kasId: 'KAS-20260905-0009', tanggal: '05/09/2026 13:00', tipe: 'Keluar', kategori: 'Upah Tenaga Kerja', nominal: 450000, keterangan: 'Pembayaran Upah Harian Produksi Shift 1', refId: 'WAGE-P1', saldoBerjalan: 12768000, dicatatOleh: 'Bendahara' },
+                    { kasId: 'KAS-20260905-0008', tanggal: '05/09/2026 12:15', tipe: 'Masuk', kategori: 'Penjualan POS', nominal: 350000, keterangan: 'Penjualan Grosir TRX-20260905-0008', refId: 'TRX-20260905-0008', saldoBerjalan: 13218000, dicatatOleh: 'Rina Kasir Utama' },
+                    { kasId: 'KAS-20260905-0007', tanggal: '05/09/2026 11:45', tipe: 'Masuk', kategori: 'Penjualan POS', nominal: 70000, keterangan: 'Penjualan Retail TRX-20260905-0005', refId: 'TRX-20260905-0005', saldoBerjalan: 12868000, dicatatOleh: 'Dimas Kasir Cabang' },
+                    { kasId: 'KAS-20260905-0006', tanggal: '05/09/2026 11:00', tipe: 'Keluar', kategori: 'Listrik & Gas Operasional', nominal: 350000, keterangan: 'Pengisian Token Listrik Pabrik & Gas LPG', refId: 'EXP-UTIL', saldoBerjalan: 12798000, dicatatOleh: 'Bendahara' },
+                    { kasId: 'KAS-20260905-0005', tanggal: '05/09/2026 10:30', tipe: 'Masuk', kategori: 'Penjualan POS', nominal: 48000, keterangan: 'Penjualan Retail TRX-20260905-0003', refId: 'TRX-20260905-0003', saldoBerjalan: 13148000, dicatatOleh: 'Dimas Kasir Cabang' },
+                    { kasId: 'KAS-20260905-0004', tanggal: '05/09/2026 09:15', tipe: 'Masuk', kategori: 'Penjualan POS', nominal: 30000, keterangan: 'Penjualan Retail TRX-20260905-0001', refId: 'TRX-20260905-0001', saldoBerjalan: 13100000, dicatatOleh: 'Rina Kasir Utama' },
+                    { kasId: 'KAS-20260905-0003', tanggal: '05/09/2026 08:45', tipe: 'Keluar', kategori: 'Beli Kemasan', nominal: 680000, keterangan: 'Beli Standing Pouch 800 pcs', refId: 'BHN-004', saldoBerjalan: 13070000, dicatatOleh: 'Bendahara' },
+                    { kasId: 'KAS-20260905-0002', tanggal: '05/09/2026 08:00', tipe: 'Keluar', kategori: 'Beli Bahan Baku', nominal: 1250000, keterangan: 'Pembelian Kedelai Super 100kg', refId: 'BHN-001', saldoBerjalan: 13750000, dicatatOleh: 'Bendahara' },
+                    { kasId: 'KAS-20260905-0001', tanggal: '05/09/2026 07:00', tipe: 'Masuk', kategori: 'Modal Awal', nominal: 15000000, keterangan: 'Saldo Kas Awal Operasional', refId: 'INIT', saldoBerjalan: 15000000, dicatatOleh: 'Owner' }
+                ];
+            }
+            successCb({ success: true, data: window.mockKeuanganKas.slice() });
         } else if (functionName === 'apiSaveKasManual') {
-            window.addMockAuditLog('Kas', 'MANUAL_' + (args[0] ? args[0].tipe : 'MASUK'), '-', (args[0] ? args[0].nominal : '0'), 'Pencatatan kas manual', args[1]);
-            successCb({ success: true, message: 'Catatan kas berhasil dibukukan.' });
+            if (!window.mockKeuanganKas) {
+                window.mockKeuanganKas = [];
+            }
+            var pKas = args[0] || {};
+            var uSession = args[1] || window.currentUser;
+            var now = new Date();
+            var timeStr = ('0' + now.getDate()).slice(-2) + '/' + ('0' + (now.getMonth() + 1)).slice(-2) + '/' + now.getFullYear() + ' ' +
+                ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+            var nom = Number(pKas.nominal || 0);
+            var tip = pKas.tipe || 'Masuk';
+            var lastSaldo = window.mockKeuanganKas.length > 0 ? window.mockKeuanganKas[0].saldoBerjalan : 15000000;
+            var newSal = tip === 'Masuk' ? (lastSaldo + nom) : (lastSaldo - nom);
+
+            var newEntry = {
+                kasId: 'KAS-' + now.getTime(),
+                tanggal: timeStr,
+                tipe: tip,
+                kategori: pKas.kategori || 'Lain-lain',
+                nominal: nom,
+                keterangan: pKas.keterangan || '-',
+                refId: 'MANUAL',
+                saldoBerjalan: newSal,
+                dicatatOleh: uSession ? (uSession.namaLengkap || uSession.username) : 'Bendahara'
+            };
+            window.mockKeuanganKas.unshift(newEntry);
+            window.addMockAuditLog('Kas', 'MANUAL_' + tip.toUpperCase(), '-', String(nom), 'Pencatatan kas manual: ' + (pKas.keterangan || pKas.kategori), args[1]);
+            successCb({ success: true, message: 'Kas ' + tip + ' sebesar ' + (window.formatRupiah ? window.formatRupiah(nom) : ('Rp ' + nom)) + ' berhasil dibukukan.' });
         } else if (functionName === 'apiSaveTenagaKerja') {
             window.addMockAuditLog('TenagaKerja', 'CATAT_UPAH', '-', (args[0] ? args[0].namaPekerja : ''), 'Presensi dan upah kerja', args[1]);
             successCb({ success: true, message: 'Presensi dan upah kerja berhasil disimpan.' });
