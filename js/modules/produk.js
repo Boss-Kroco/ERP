@@ -75,7 +75,9 @@ function populateProductDropdowns() {
             if (prodSelect) prodSelect.innerHTML = optHtml;
             if (tfSelect) tfSelect.innerHTML = optHtml;
             if (opnameSelect) opnameSelect.innerHTML = optHtml;
-            hitungLiveHppPreview();
+            if (typeof window.hitungLiveHppPreview === 'function') {
+                window.hitungLiveHppPreview();
+            }
         }
 
 function openModalTambahProduk() { document.getElementById('modalTambahProduk').classList.add('active'); }
@@ -90,7 +92,7 @@ function submitTambahProduk() {
                 hargaJual: document.getElementById('newProdHargaJual').value
             };
 
-            runBackend('apiSaveProduct', [payload, currentUser], function (res) {
+            runBackend('apiSaveProduct', [payload, window.currentUser], function (res) {
                 if (!res.success) {
                     // Jangan update UI jika backend gagal
                     showToast(res.message || 'Gagal menyimpan produk.', 'error');
@@ -158,7 +160,7 @@ function submitEditProduk() {
 
             showToast('Menyimpan perubahan produk ' + prodId + '...', 'success');
 
-            runBackend('apiUpdateProduct', [payload, currentUser], function (res) {
+            runBackend('apiUpdateProduct', [payload, window.currentUser], function (res) {
                 if (!res.success) {
                     showToast(res.message || 'Gagal memperbarui produk.', 'error');
                     return;

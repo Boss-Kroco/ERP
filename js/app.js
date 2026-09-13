@@ -130,7 +130,7 @@ window.loadAllViews = async function () {
     if (!container) return;
 
     try {
-        var viewVersion = '?v=3.5.' + Date.now();
+        var viewVersion = '?v=3.8.' + Date.now();
         // Load Modals & Drawer First
         if (modalsContainer && !modalsContainer.innerHTML.trim()) {
             var mRes = await fetch('views/modals.html' + viewVersion);

@@ -312,7 +312,7 @@ function changeOrderStatus(trxId, newStatus, selectElem) {
             }
             selectElem.className = 'table-status-select ' + newStatus;
             showToast('Memperbarui status ' + trxId + '...', 'success');
-            runBackend('apiUpdateTransactionStatus', [{ trxId: trxId, status: newStatus }, currentUser], function (res) {
+            runBackend('apiUpdateTransactionStatus', [{ trxId: trxId, status: newStatus }, window.currentUser], function (res) {
                 if (res.success) {
                     showToast(res.message || 'Status berhasil diperbarui.', 'success');
                 } else {
@@ -565,7 +565,7 @@ function executeBatchStatusChange(newStatus) {
             });
             renderOrderTable();
 
-            runBackend('apiBatchUpdateTransactionStatus', [{ trxIds: selectedOrderIds, status: newStatus }, currentUser], function (res) {
+            runBackend('apiBatchUpdateTransactionStatus', [{ trxIds: selectedOrderIds, status: newStatus }, window.currentUser], function (res) {
                 if (res.success) {
                     showToast(res.message || 'Status massal berhasil diperbarui.', 'success');
                     clearBatchSelection();
@@ -768,7 +768,7 @@ function renderDueAlertsTable() {
 
 function eksekusiQuickPay(refId, sisaNominal) {
             showToast('Memproses pelunasan ' + refId + '...', 'success');
-            runBackend('apiQuickPayHutangPiutang', [{ refId: refId, nominalBayar: sisaNominal }, currentUser], function (res) {
+            runBackend('apiQuickPayHutangPiutang', [{ refId: refId, nominalBayar: sisaNominal }, window.currentUser], function (res) {
                 if (res.success) {
                     showToast(res.message, 'success');
                     dueAlertsData = dueAlertsData.filter(function (d) { return d.refId !== refId; });

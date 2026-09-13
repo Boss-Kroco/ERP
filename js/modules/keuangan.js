@@ -268,7 +268,7 @@ function submitKasManual() {
 
     showToast('Menyimpan transaksi kas...', 'success');
 
-    runBackend('apiSaveKasManual', [payload, currentUser], function (res) {
+    runBackend('apiSaveKasManual', [payload, window.currentUser], function (res) {
         if (!res.success) {
             showToast(res.message || 'Gagal mencatat kas.', 'error');
             return;
