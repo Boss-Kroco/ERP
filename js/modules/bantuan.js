@@ -267,12 +267,66 @@ window.submitSupportTicket = function () {
         }
 
         // Tampilkan modal konfirmasi dengan opsi lacak
-        alert('✅ Tiket Bantuan Berhasil Dibuat!\n\nNomor Tiket Anda: #' + ticketId + '\nTim dukungan teknis akan segera menindaklanjuti kendala Anda.\nAnda dapat memeriksa statusnya kapan saja melalui tombol "Lacak Tiket".');
+        alert('✅ Tiket Bantuan Berhasil Dibuat!\n\nNomor Tiket Anda: #' + ticketId + '\nTim dukungan teknis / Owner akan segera menindaklanjuti kendala Anda.\nAnda dapat memeriksa status dan balasannya kapan saja melalui tombol "Lacak Tiket".');
     }, 400);
 };
 
 /**
- * Lacak Tiket Bantuan
+ * Data Contoh Awal Tiket Bantuan (Resilient Seed)
+ */
+var DEFAULT_SUPPORT_TICKETS = [
+    {
+        id: 'TKT-BK-84210',
+        nama: 'Rina Kasir Utama',
+        email: 'rina.kasir@kroco.id',
+        kategori: 'Pertanyaan Fitur & Operasional',
+        deskripsi: 'Bagaimana cara cetak ulang struk transaksi pelanggan yang sudah selesai kemarin jika kertas printer sempat habis?',
+        status: 'Selesai',
+        balasan: 'Halo Rina, untuk cetak ulang struk cukup buka menu Dashboard -> pada tabel Daftar Transaksi Pesanan, cari nomor transaksi tersebut lalu tekan tombol Cetak PDF Struk. Data transaksi tersimpan permanen di cloud.',
+        dibalasOleh: 'Bapak Direktur Owner',
+        waktuBalas: '08/09/2026 14:20',
+        createdAt: '2026-09-08T06:30:00Z',
+        waktuFormatted: '08/09/2026 13:30'
+    },
+    {
+        id: 'TKT-BK-91045',
+        nama: 'Ahmad Supervisor Produksi',
+        email: 'ahmad.prod@kroco.id',
+        kategori: 'Kendala Teknis / Bug',
+        deskripsi: 'Ada selisih 2 bungkus saat input hasil produksi batch kemarin karena kemasan bocor saat pengemasan. Di modul mana mencatat penyesuaiannya?',
+        status: 'Menunggu Respon',
+        balasan: '',
+        dibalasOleh: '',
+        waktuBalas: '',
+        createdAt: '2026-09-09T08:00:00Z',
+        waktuFormatted: '09/09/2026 15:00'
+    }
+];
+
+window.getStoredTickets = function () {
+    try {
+        var raw = localStorage.getItem('bos_kroco_tickets');
+        if (raw) {
+            var parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+    } catch (e) {
+        console.warn('Gagal membaca storage tiket:', e);
+    }
+    localStorage.setItem('bos_kroco_tickets', JSON.stringify(DEFAULT_SUPPORT_TICKETS));
+    return DEFAULT_SUPPORT_TICKETS.slice();
+};
+
+window.saveStoredTickets = function (tickets) {
+    try {
+        localStorage.setItem('bos_kroco_tickets', JSON.stringify(tickets));
+    } catch (e) {
+        console.error('Gagal menyimpan storage tiket:', e);
+    }
+};
+
+/**
+ * Lacak & Kelola Tiket Bantuan
  */
 window.openLacakTiketModal = function () {
     window.renderTicketList();
@@ -289,59 +343,249 @@ window.renderTicketList = function (searchQuery) {
     var container = document.getElementById('ticketListContainer');
     if (!container) return;
 
-    var tickets = [];
-    try {
-        var raw = localStorage.getItem('bos_kroco_tickets');
-        if (raw) tickets = JSON.parse(raw);
-    } catch (e) {}
+    var tickets = window.getStoredTickets();
+    var qInput = document.getElementById('searchTicketInput');
+    var stFilter = document.getElementById('filterTicketStatus');
 
-    var q = (searchQuery || '').toLowerCase().trim();
-    if (q) {
-        tickets = tickets.filter(function (t) {
-            return (t.id && t.id.toLowerCase().indexOf(q) !== -1) ||
+    var q = (searchQuery !== undefined ? searchQuery : (qInput ? qInput.value : '')).toLowerCase().trim();
+    var st = stFilter ? stFilter.value : 'all';
+
+    var filtered = tickets.filter(function (t) {
+        var matchQ = true;
+        if (q) {
+            matchQ = (t.id && t.id.toLowerCase().indexOf(q) !== -1) ||
+                (t.nama && t.nama.toLowerCase().indexOf(q) !== -1) ||
                 (t.kategori && t.kategori.toLowerCase().indexOf(q) !== -1) ||
-                (t.deskripsi && t.deskripsi.toLowerCase().indexOf(q) !== -1);
-        });
-    }
+                (t.deskripsi && t.deskripsi.toLowerCase().indexOf(q) !== -1) ||
+                (t.balasan && t.balasan.toLowerCase().indexOf(q) !== -1);
+        }
+        var matchSt = (st === 'all' || !st) ? true : (t.status === st);
+        return matchQ && matchSt;
+    });
 
     container.innerHTML = '';
 
-    if (tickets.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding: 30px; color: var(--text-muted); font-size: 12.5px;">'
-            + '<div style="font-size: 28px; margin-bottom: 8px;">🎫</div>'
-            + 'Belum ada tiket bantuan yang diajukan.'
+    if (filtered.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding: 36px 20px; color: var(--text-muted); font-size: 12.5px;">'
+            + '<div style="font-size: 32px; margin-bottom: 8px;">🎫</div>'
+            + '<b>Tidak ada tiket yang cocok.</b><br>'
+            + '<span style="font-size:11.5px;">Belum ada pertanyaan pada filter ini atau kata kunci pencarian tidak ditemukan.</span>'
             + '</div>';
         return;
     }
 
-    tickets.forEach(function (t) {
+    var currentUser = window.currentUser || { role: 'Owner', namaLengkap: 'Owner' };
+    var canReply = true; // Seluruh pengelola sistem / Owner / Admin dapat membalas tiket
+
+    filtered.forEach(function (t) {
         var item = document.createElement('div');
-        item.style.background = '#f8fafc';
+        item.style.background = '#ffffff';
         item.style.border = '1px solid var(--border-strong)';
-        item.style.borderRadius = '12px';
-        item.style.padding = '14px';
-        item.style.marginBottom = '10px';
+        item.style.borderRadius = '14px';
+        item.style.padding = '14px 16px';
+        item.style.marginBottom = '12px';
+        item.style.boxShadow = '0 1px 3px rgba(0,0,0,0.03)';
 
         var statusBg = '#fef3c7';
         var statusColor = '#b45309';
+        var statusBorder = '#fde68a';
         if (t.status === 'Diproses') {
             statusBg = '#eff6ff';
             statusColor = '#1d4ed8';
+            statusBorder = '#bfdbfe';
         } else if (t.status === 'Selesai') {
             statusBg = '#f0fdf4';
             statusColor = '#15803d';
+            statusBorder = '#bbf7d0';
         }
 
-        item.innerHTML = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">'
-            + '<div>'
-            + '<span style="font-weight: 800; font-size: 13px; color: var(--violet-main);">' + escapeHtml(t.id) + '</span>'
-            + '<span style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">' + escapeHtml(t.waktuFormatted || '') + '</span>'
+        var html = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 6px;">'
+            + '<div style="display: flex; align-items: center; gap: 8px;">'
+            + '<span style="font-weight: 800; font-size: 13px; color: var(--violet-main); letter-spacing: 0.3px;">' + escapeHtml(t.id) + '</span>'
+            + '<span style="font-size: 11px; color: var(--text-muted); background: #f1f5f9; padding: 2px 7px; border-radius: 5px;">' + escapeHtml(t.waktuFormatted || '') + '</span>'
             + '</div>'
-            + '<span style="background: ' + statusBg + '; color: ' + statusColor + '; font-size: 10.5px; font-weight: 800; padding: 2px 8px; border-radius: 6px;">' + escapeHtml(t.status) + '</span>'
+            + '<div style="display: flex; align-items: center; gap: 6px;">'
+            + '<span style="background: ' + statusBg + '; color: ' + statusColor + '; border: 1px solid ' + statusBorder + '; font-size: 10.5px; font-weight: 800; padding: 2px 9px; border-radius: 6px;">' + escapeHtml(t.status || 'Menunggu Respon') + '</span>'
             + '</div>'
-            + '<div style="font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">' + escapeHtml(t.kategori) + '</div>'
-            + '<div style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5; background: #ffffff; padding: 8px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">' + escapeHtml(t.deskripsi) + '</div>';
+            + '</div>'
 
+            // Baris Pengirim
+            + '<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px; font-size: 11.5px; color: var(--text-secondary); background: #f8fafc; padding: 6px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">'
+            + '<span>👤 <b>' + escapeHtml(t.nama || 'Anonim') + '</b></span>'
+            + '<span>✉️ <a href="mailto:' + encodeURIComponent(t.email || '') + '" style="color: var(--violet-main); text-decoration: none;">' + escapeHtml(t.email || '-') + '</a></span>'
+            + '<span style="margin-left: auto; color: var(--text-muted); font-weight: 600;">' + escapeHtml(t.kategori || 'Umum') + '</span>'
+            + '</div>'
+
+            // Pertanyaan / Deskripsi Kendala
+            + '<div style="font-size: 12.5px; color: var(--text-main); line-height: 1.55; margin-bottom: 10px; padding: 10px 12px; background: #ffffff; border: 1px solid var(--border-strong); border-radius: 9px;">'
+            + '<div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px;">Pertanyaan / Kendala:</div>'
+            + escapeHtml(t.deskripsi || '-')
+            + '</div>';
+
+        // Kotak Balasan Resmi (Jika sudah pernah dibalas)
+        if (t.balasan) {
+            html += '<div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 9px; padding: 10px 12px; margin-bottom: 10px;">'
+                + '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">'
+                + '<span style="font-size: 11px; font-weight: 800; color: #15803d;">💬 Tanggapan Resmi (' + escapeHtml(t.dibalasOleh || 'Owner / Tim Dukungan') + ')</span>'
+                + '<span style="font-size: 10.5px; color: #166534;">' + escapeHtml(t.waktuBalas || '') + '</span>'
+                + '</div>'
+                + '<div style="font-size: 12px; color: #14532d; line-height: 1.55;">'
+                + escapeHtml(t.balasan)
+                + '</div>'
+                + '</div>';
+        }
+
+        // Action Toolbar untuk Owner & Admin
+        html += '<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 8px; pt-2; flex-wrap: wrap;">'
+            + '<div style="display: flex; gap: 8px;">'
+            + '<button type="button" class="btn-pill-action btn-pill-primary" style="font-size: 11px; padding: 5px 12px;" onclick="window.toggleReplyTicketBox(\'' + t.id + '\')">'
+            + (t.balasan ? '✏️ Ubah Balasan' : '💬 Balas Pertanyaan')
+            + '</button>'
+            + '<button type="button" class="btn-pill-action btn-pill-danger" style="font-size: 11px; padding: 5px 9px;" onclick="window.deleteTicket(\'' + t.id + '\')" title="Hapus tiket ini">'
+            + '🗑️'
+            + '</button>'
+            + '</div>'
+            + '<div style="display: flex; align-items: center; gap: 6px;">'
+            + '<span style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Status:</span>'
+            + '<select class="search-filter-input" style="padding: 3px 8px; font-size: 11px; cursor: pointer;" onchange="window.updateTicketStatus(\'' + t.id + '\', this.value)">'
+            + '<option value="Menunggu Respon"' + (t.status === 'Menunggu Respon' ? ' selected' : '') + '>Menunggu Respon</option>'
+            + '<option value="Diproses"' + (t.status === 'Diproses' ? ' selected' : '') + '>Sedang Diproses</option>'
+            + '<option value="Selesai"' + (t.status === 'Selesai' ? ' selected' : '') + '>Selesai</option>'
+            + '</select>'
+            + '</div>'
+            + '</div>'
+
+            // Form Balasan Inline (Tersembunyi secara default)
+            + '<div id="replyBox_' + t.id + '" style="display: none; margin-top: 12px; padding: 12px; background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 10px;">'
+            + '<label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-main); margin-bottom: 5px;">Tulis Solusi / Tanggapan Anda:</label>'
+            + '<textarea id="replyText_' + t.id + '" class="search-filter-input" rows="3" style="width: 100%; resize: vertical; min-height: 60px; background: #ffffff; font-size: 12px;" placeholder="Tuliskan jawaban atau instruksi penyelesaian untuk ' + escapeHtml(t.nama || 'penanya') + '...">' + escapeHtml(t.balasan || '') + '</textarea>'
+            + '<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; flex-wrap: wrap; gap: 8px;">'
+            + '<div style="display: flex; align-items: center; gap: 6px;">'
+            + '<label style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Ubah Status Menjadi:</label>'
+            + '<select id="replyStatus_' + t.id + '" class="search-filter-input" style="padding: 4px 8px; font-size: 11px; cursor: pointer; background: #ffffff;">'
+            + '<option value="Selesai" selected>Selesai (Dijawab)</option>'
+            + '<option value="Diproses">Sedang Diproses</option>'
+            + '<option value="Menunggu Respon">Tetap Menunggu Respon</option>'
+            + '</select>'
+            + '</div>'
+            + '<div style="display: flex; gap: 6px;">'
+            + '<button type="button" class="btn-pill-action btn-pill-secondary" style="font-size: 11px; padding: 5px 10px;" onclick="window.toggleReplyTicketBox(\'' + t.id + '\')">Batal</button>'
+            + '<button type="button" class="btn-pill-action btn-pill-primary" style="font-size: 11px; padding: 5px 12px;" onclick="window.submitTicketReply(\'' + t.id + '\')">Kirim Tanggapan</button>'
+            + '</div>'
+            + '</div>'
+            + '</div>';
+
+        item.innerHTML = html;
         container.appendChild(item);
     });
+};
+
+/**
+ * Buka / Tutup Form Balasan Inline
+ */
+window.toggleReplyTicketBox = function (ticketId) {
+    var box = document.getElementById('replyBox_' + ticketId);
+    if (!box) return;
+    box.style.display = (box.style.display === 'none' || !box.style.display) ? 'block' : 'none';
+};
+
+/**
+ * Simpan Balasan Tiket oleh Owner / Admin
+ */
+window.submitTicketReply = function (ticketId) {
+    var textEl = document.getElementById('replyText_' + ticketId);
+    var statusEl = document.getElementById('replyStatus_' + ticketId);
+    if (!textEl) return;
+
+    var replyText = textEl.value.trim();
+    if (!replyText) {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Harap tuliskan tanggapan terlebih dahulu.', 'error');
+        }
+        return;
+    }
+
+    var newStatus = statusEl ? statusEl.value : 'Selesai';
+    var user = window.currentUser || { namaLengkap: 'Bapak Direktur Owner' };
+    var responderName = user.namaLengkap || user.username || 'Owner';
+    var nowStr = new Date().toLocaleDateString('id-ID') + ' ' + ('0' + new Date().getHours()).slice(-2) + ':' + ('0' + new Date().getMinutes()).slice(-2);
+
+    var tickets = window.getStoredTickets();
+    var updated = false;
+    var targetTicket = null;
+
+    tickets.forEach(function (t) {
+        if (t.id === ticketId) {
+            t.balasan = replyText;
+            t.dibalasOleh = responderName;
+            t.waktuBalas = nowStr;
+            t.status = newStatus;
+            updated = true;
+            targetTicket = t;
+        }
+    });
+
+    if (updated) {
+        window.saveStoredTickets(tickets);
+
+        // Kirim notifikasi Telegram jika bot Telegram aktif
+        if (typeof window.sendTelegramNotification === 'function' && targetTicket) {
+            var teleMsg = '💬 *TANGGAPAN TIKET BANTUAN - BOS KROCO ERP*\n'
+                + '━━━━━━━━━━━━━━━━━━━━\n'
+                + '🆔 *ID Tiket:* `' + ticketId + '`\n'
+                + '👤 *Penanya:* ' + (targetTicket.nama || '-') + '\n'
+                + '✍️ *Dijawab Oleh:* ' + responderName + '\n'
+                + '📊 *Status Baru:* ' + newStatus + '\n\n'
+                + '📝 *Tanggapan / Solusi:*\n' + replyText;
+
+            window.sendTelegramNotification(teleMsg);
+        }
+
+        if (typeof window.showToast === 'function') {
+            window.showToast('Balasan untuk tiket #' + ticketId + ' berhasil disimpan!', 'success');
+        }
+
+        window.renderTicketList();
+    }
+};
+
+/**
+ * Hapus Tiket Bantuan
+ */
+window.deleteTicket = function (ticketId) {
+    if (!confirm('Apakah Anda yakin ingin menghapus tiket #' + ticketId + '?')) return;
+
+    var tickets = window.getStoredTickets();
+    var filtered = tickets.filter(function (t) {
+        return t.id !== ticketId;
+    });
+
+    window.saveStoredTickets(filtered);
+    if (typeof window.showToast === 'function') {
+        window.showToast('Tiket #' + ticketId + ' berhasil dihapus.', 'success');
+    }
+    window.renderTicketList();
+};
+
+/**
+ * Update Cepat Status Tiket
+ */
+window.updateTicketStatus = function (ticketId, newStatus) {
+    var tickets = window.getStoredTickets();
+    var updated = false;
+
+    tickets.forEach(function (t) {
+        if (t.id === ticketId) {
+            t.status = newStatus;
+            updated = true;
+        }
+    });
+
+    if (updated) {
+        window.saveStoredTickets(tickets);
+        if (typeof window.showToast === 'function') {
+            window.showToast('Status tiket #' + ticketId + ' diubah ke: ' + newStatus, 'success');
+        }
+        window.renderTicketList();
+    }
 };

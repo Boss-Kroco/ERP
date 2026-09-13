@@ -360,25 +360,32 @@
     </div>
 </div>
 
-<!-- Modal Lacak Tiket Bantuan -->
+<!-- Modal Lacak & Kelola Tiket Bantuan -->
 <div class="modal-overlay-custom" id="modalLacakTiket">
-    <div class="modal-sheet-card" style="max-width: 560px;">
+    <div class="modal-sheet-card" style="max-width: 660px;">
         <div class="modal-sheet-header">
             <div class="modal-sheet-title" style="display: flex; align-items: center; gap: 8px;">
                 <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
-                Lacak Status Tiket Bantuan
+                Lacak &amp; Kelola Tiket Pertanyaan
             </div>
             <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeLacakTiketModal()">✕</button>
         </div>
         <div class="modal-sheet-body">
-            <div style="margin-bottom: 14px;">
-                <input type="text" class="search-filter-input" placeholder="Cari No. Tiket (#TKT-BK-...) / Kategori..." style="width: 100%;" oninput="renderTicketList(this.value)">
+            <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+                <input type="text" class="search-filter-input" id="searchTicketInput" placeholder="Cari No. Tiket (#TKT-BK-...) / Kategori / Nama..." style="flex: 1; min-width: 200px;" oninput="renderTicketList(this.value)">
+                <select class="search-filter-input" id="filterTicketStatus" style="width: 170px; cursor: pointer;" onchange="renderTicketList()">
+                    <option value="all">Semua Status</option>
+                    <option value="Menunggu Respon">Menunggu Respon</option>
+                    <option value="Diproses">Sedang Diproses</option>
+                    <option value="Selesai">Selesai Dijawab</option>
+                </select>
             </div>
-            <div id="ticketListContainer" style="max-height: 380px; overflow-y: auto; padding-right: 4px;"></div>
-            <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
+            <div id="ticketListContainer" style="max-height: 420px; overflow-y: auto; padding-right: 4px;"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; border-top: 1px solid var(--border-strong); padding-top: 10px;">
+                <span style="font-size: 11px; color: var(--text-muted);">Owner &amp; Admin dapat langsung membalas pertanyaan dan memperbarui status tiket.</span>
                 <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeLacakTiketModal()">Tutup</button>
             </div>
         </div>
