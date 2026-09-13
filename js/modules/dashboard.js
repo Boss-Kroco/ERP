@@ -290,10 +290,7 @@ function renderOrderTable(dataset) {
                     + '</select>'
                     + '</td>'
                     + '<td style="text-align:center; white-space: nowrap;">'
-                    + '<button class="btn-pill-action btn-pill-secondary" style="padding:2px 8px; margin-right: 4px;" onclick="openModalEditTransaksi(\'' + escapeHtml(item.id) + '\')" title="Edit Transaksi">'
-                    + '<svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Edit'
-                    + '</button>'
-                    + '<button class="btn-pill-action btn-pill-secondary" style="padding:2px 8px;" onclick="detailTransaksi(\'' + escapeHtml(item.id) + '\')" title="Rincian Transaksi">&middot;&middot;&middot;</button>'
+                    + '<button class="btn-pill-action btn-pill-secondary" style="padding:2px 10px;" onclick="detailTransaksi(\'' + escapeHtml(item.id) + '\')" title="Rincian & Aksi Transaksi">&middot;&middot;&middot;</button>'
                     + '</td>';
                 tbody.appendChild(tr);
             });
@@ -393,8 +390,11 @@ function detailTransaksi(trxId) {
                 + itemsHtml
                 + '</div>';
 
-            // Simpan trxId untuk tombol cetak
-            document.getElementById('btnCetakDariModal').setAttribute('data-trxid', item.id);
+            // Simpan trxId untuk tombol cetak & edit
+            var btnCetak = document.getElementById('btnCetakDariModal');
+            if (btnCetak) btnCetak.setAttribute('data-trxid', item.id);
+            var btnEdit = document.getElementById('btnEditDariModal');
+            if (btnEdit) btnEdit.setAttribute('data-trxid', item.id);
             document.getElementById('modalDetailTrx').classList.add('active');
         }
 
@@ -414,7 +414,7 @@ function cetakStrukDariModal() {
         }
 
         function editTransaksiDariModal() {
-            var btn = document.getElementById('btnCetakDariModal');
+            var btn = document.getElementById('btnEditDariModal') || document.getElementById('btnCetakDariModal');
             var trxId = btn ? btn.getAttribute('data-trxid') : null;
             if (!trxId) return;
             closeDetailTrxModal();
