@@ -4574,3 +4574,283 @@
                 width: 100%;
             }
         }
+
+        /* ==========================================================================
+           PREMIUM RECEIPT / STRUK KASIR THERMAL STYLING
+           ========================================================================== */
+        .receipt-paper-slip {
+            background: #ffffff;
+            color: #0f172a;
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace, sans-serif;
+            border-radius: 16px;
+            padding: 24px 22px;
+            box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.2), 0 0 0 1px rgba(226, 232, 240, 0.9);
+            position: relative;
+            overflow: hidden;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .receipt-paper-slip::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: repeating-linear-gradient(-45deg, var(--violet-main), var(--violet-main) 6px, #ffffff 6px, #ffffff 12px);
+        }
+
+        .receipt-header {
+            text-align: center;
+            padding-bottom: 8px;
+        }
+
+        .receipt-logo-emblem {
+            width: 46px;
+            height: 46px;
+            margin: 0 auto 8px;
+            background: linear-gradient(135deg, #1e1b4b, #4338ca);
+            color: #ffffff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            box-shadow: 0 6px 16px rgba(67, 56, 202, 0.25);
+        }
+
+        .receipt-brand-name {
+            font-size: 15.5px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            color: #0f172a;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+
+        .receipt-brand-desc {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .receipt-contact-info {
+            font-size: 10px;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        .receipt-dashed-line {
+            border-bottom: 1.5px dashed #cbd5e1;
+            margin: 12px 0;
+        }
+
+        .receipt-meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .receipt-meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .receipt-meta-label {
+            font-size: 9.5px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .receipt-meta-val {
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .receipt-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11.5px;
+            margin: 6px 0;
+        }
+
+        .receipt-table th {
+            font-size: 9.5px;
+            text-transform: uppercase;
+            color: #64748b;
+            font-weight: 800;
+            padding: 4px 0 6px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .receipt-table td {
+            padding: 6px 0;
+            vertical-align: top;
+        }
+
+        .receipt-item-name {
+            font-weight: 700;
+            color: #0f172a;
+            display: block;
+        }
+
+        .receipt-item-sub {
+            font-size: 10px;
+            color: #64748b;
+        }
+
+        .receipt-calc-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            margin-bottom: 4px;
+            color: #475569;
+        }
+
+        .receipt-grand-total-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .receipt-grand-total-label {
+            font-size: 12px;
+            font-weight: 800;
+            color: #0f172a;
+            text-transform: uppercase;
+        }
+
+        .receipt-grand-total-num {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--violet-main, #6c47ff);
+        }
+
+        .receipt-barcode-wrap {
+            text-align: center;
+            padding: 10px 0 4px;
+        }
+
+        .receipt-barcode-svg {
+            width: 180px;
+            height: 38px;
+            margin: 0 auto 4px;
+            display: block;
+        }
+
+        .receipt-order-code {
+            font-size: 10px;
+            font-family: monospace;
+            letter-spacing: 2px;
+            color: #64748b;
+            font-weight: 700;
+        }
+
+        .receipt-footer-notes {
+            text-align: center;
+            font-size: 10px;
+            color: #64748b;
+            line-height: 1.5;
+            margin-top: 8px;
+            padding-top: 6px;
+        }
+
+        /* ==========================================================================
+           PRINT MEDIA QUERY FOR 80mm / 58mm THERMAL & STANDARD PRINTERS
+           ========================================================================== */
+        @media print {
+            @page {
+                size: auto;
+                margin: 4mm;
+            }
+            html, body {
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                color: #000000 !important;
+                font-family: 'DM Sans', monospace, sans-serif !important;
+                font-size: 10pt !important;
+            }
+            
+            /* Sembunyikan seluruh UI luar */
+            #appLayout,
+            header,
+            aside,
+            nav,
+            .login-screen-overlay,
+            .toast-pill-box,
+            .modal-overlay-custom:not(#modalPreviewStruk),
+            .no-print,
+            .receipt-top-actions,
+            .receipt-bottom-actions {
+                display: none !important;
+            }
+
+            /* Tampilkan hanya area struk */
+            #modalPreviewStruk {
+                display: block !important;
+                position: static !important;
+                width: 100% !important;
+                height: auto !important;
+                background: transparent !important;
+                backdrop-filter: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                z-index: 999999 !important;
+            }
+            
+            #modalPreviewStruk .modal-sheet-card {
+                box-shadow: none !important;
+                border: none !important;
+                width: 100% !important;
+                max-width: 80mm !important;
+                margin: 0 auto !important;
+                padding: 0 !important;
+                background: #ffffff !important;
+            }
+            
+            .receipt-paper-slip {
+                box-shadow: none !important;
+                border: none !important;
+                border-radius: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                color: #000000 !important;
+                max-height: none !important;
+                overflow: visible !important;
+            }
+
+            .receipt-paper-slip::before {
+                display: none !important;
+            }
+
+            .receipt-grand-total-box {
+                background: transparent !important;
+                border-top: 1.5px dashed #000000 !important;
+                border-bottom: 1.5px dashed #000000 !important;
+                border-left: none !important;
+                border-right: none !important;
+                border-radius: 0 !important;
+            }
+
+            .receipt-grand-total-num {
+                color: #000000 !important;
+            }
+
+            .receipt-dashed-line {
+                border-bottom-color: #000000 !important;
+            }
+        }

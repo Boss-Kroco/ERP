@@ -403,14 +403,11 @@ function closeDetailTrxModal() {
         }
 
 function cetakStrukDariModal() {
-            var trxId = document.getElementById('btnCetakDariModal').getAttribute('data-trxid');
+            var btn = document.getElementById('btnCetakDariModal');
+            var trxId = btn ? btn.getAttribute('data-trxid') : null;
             if (!trxId) return;
             closeDetailTrxModal();
-            showToast('Membuat PDF struk ' + trxId + '...', 'success');
-            runBackend('apiGenerateDocumentPdf', [{ docType: 'STRUK_POS', docId: trxId }], function (res) {
-                if (res.success && res.pdfUrl) window.open(res.pdfUrl, '_blank');
-                else if (!res.success) showToast(res.message || 'Gagal membuat PDF.', 'error');
-            });
+            window.openPreviewStruk(trxId);
         }
 
         function editTransaksiDariModal() {
@@ -958,3 +955,305 @@ window.editTransaksiDariModal = editTransaksiDariModal;
 window.openModalEditTransaksi = openModalEditTransaksi;
 window.closeModalEditTransaksi = closeModalEditTransaksi;
 window.submitEditTransaksi = submitEditTransaksi;
+
+// ==========================================================================
+// ULTRA-PREMIUM THERMAL RECEIPT & PRINT ENGINE
+// ==========================================================================
+window._currentReceiptTrx = null;
+
+window.openPreviewStruk = function (trxId) {
+    var orders = window.orderTransactions || [];
+    var trx = orders.find(function (o) { return o.id === trxId || o.orderNum === trxId; });
+    if (!trx) {
+        if (orders.length > 0) trx = orders[0];
+        else {
+            if (typeof window.showToast === 'function') window.showToast('Data transaksi tidak ditemukan.', 'error');
+            return;
+        }
+    }
+    window._currentReceiptTrx = trx;
+
+    var container = document.getElementById('printableReceiptArea');
+    if (!container) return;
+
+    var userSession = window.currentUser || {};
+    var kasirNama = userSession.namaLengkap || userSession.username || 'Kasir Utama';
+
+    // Siapkan list items belanja
+    var itemsList = [];
+    if (trx.items && Array.isArray(trx.items) && trx.items.length > 0) {
+        itemsList = trx.items;
+    } else {
+        itemsList = [{
+            namaProduk: trx.category || 'Paket Produk Bos Kroco',
+            qty: 1,
+            harga: Number(trx.price || 0),
+            subtotal: Number(trx.price || 0)
+        }];
+    }
+
+    var grandTotal = Number(trx.price || 0);
+    var subtotalCalc = 0;
+    var itemsRowsHtml = '';
+
+    itemsList.forEach(function (it, idx) {
+        var pName = (typeof window.escapeHtml === 'function') ? window.escapeHtml(it.namaProduk || it.nama || ('Item ' + (idx + 1))) : (it.namaProduk || 'Item');
+        var pQty = Number(it.qty || 1);
+        var pHarga = Number(it.harga || (pQty > 0 ? (it.subtotal / pQty) : it.subtotal));
+        var pSub = Number(it.subtotal || (pQty * pHarga));
+        subtotalCalc += pSub;
+
+        var formattedHarga = (typeof window.formatRupiah === 'function') ? window.formatRupiah(pHarga) : ('Rp ' + pHarga);
+        var formattedSub = (typeof window.formatRupiah === 'function') ? window.formatRupiah(pSub) : ('Rp ' + pSub);
+
+        itemsRowsHtml += '<tr>'
+            + '<td style="padding: 6px 0;">'
+            + '<span class="receipt-item-name">' + pName + '</span>'
+            + '<span class="receipt-item-sub">' + pQty + ' x ' + formattedHarga + '</span>'
+            + '</td>'
+            + '<td style="text-align: right; padding: 6px 0; font-weight: 800; color: #0f172a; vertical-align: bottom;">'
+            + formattedSub
+            + '</td>'
+            + '</tr>';
+    });
+
+    var diskon = Number(trx.diskon || 0);
+    var pajak = Number(trx.pajakNominal || 0);
+    var metode = trx.payment || 'Tunai';
+    var isTunai = String(metode).toLowerCase() === 'tunai';
+    var bayarNominal = isTunai ? (trx.bayarNominal || (grandTotal <= 50000 ? (Math.ceil(grandTotal / 10000) * 10000 || grandTotal) : grandTotal)) : grandTotal;
+    if (bayarNominal < grandTotal) bayarNominal = grandTotal;
+    var kembalian = isTunai ? Math.max(0, bayarNominal - grandTotal) : 0;
+    var statusText = (trx.status === 'delivered' ? 'LUNAS / SELESAI' : (trx.status === 'on way' ? 'DALAM PENGIRIMAN' : 'TEMPO / PENDING'));
+    var statusColor = (trx.status === 'delivered' ? '#16a34a' : '#d97706');
+
+    var safeOrderNum = (typeof window.escapeHtml === 'function') ? window.escapeHtml(trx.orderNum || trx.id) : trx.orderNum;
+    var safeTrxId = (typeof window.escapeHtml === 'function') ? window.escapeHtml(trx.id) : trx.id;
+    var safeCustomer = (typeof window.escapeHtml === 'function') ? window.escapeHtml(trx.customer || 'Pelanggan Walk-in') : trx.customer;
+    var safePhone = (typeof window.escapeHtml === 'function') ? window.escapeHtml(trx.phone || 'Walk-in') : trx.phone;
+    var safeKasir = (typeof window.escapeHtml === 'function') ? window.escapeHtml(kasirNama) : kasirNama;
+    var safeMetode = (typeof window.escapeHtml === 'function') ? window.escapeHtml(metode) : metode;
+
+    var fmtGrandTotal = (typeof window.formatRupiah === 'function') ? window.formatRupiah(grandTotal) : ('Rp ' + grandTotal);
+    var fmtSubtotal = (typeof window.formatRupiah === 'function') ? window.formatRupiah(subtotalCalc || grandTotal) : ('Rp ' + (subtotalCalc || grandTotal));
+    var fmtDiskon = (typeof window.formatRupiah === 'function') ? window.formatRupiah(diskon) : ('Rp ' + diskon);
+    var fmtPajak = (typeof window.formatRupiah === 'function') ? window.formatRupiah(pajak) : ('Rp ' + pajak);
+    var fmtBayar = (typeof window.formatRupiah === 'function') ? window.formatRupiah(bayarNominal) : ('Rp ' + bayarNominal);
+    var fmtKembali = (typeof window.formatRupiah === 'function') ? window.formatRupiah(kembalian) : ('Rp ' + kembalian);
+
+    var tglText = trx.date || new Date().toLocaleDateString('id-ID');
+    if (tglText.indexOf(':') === -1) {
+        tglText += ' 14:35 WIB';
+    }
+
+    container.innerHTML = 
+        '<div class="receipt-header">'
+        + '<div class="receipt-logo-emblem">BK</div>'
+        + '<div class="receipt-brand-name">BOS KROCO FOOD &amp; SNACK</div>'
+        + '<div class="receipt-brand-desc">Pabrik &amp; Outlet Oleh-Oleh Nusantara</div>'
+        + '<div class="receipt-contact-info">'
+        + 'Jl. Industri Kreatif No. 88, Jawa Timur<br>'
+        + 'Telp / WA: 0812-3456-7890 | IG: @boskroco.id'
+        + '</div>'
+        + '</div>'
+
+        + '<div class="receipt-dashed-line"></div>'
+
+        + '<div class="receipt-meta-grid">'
+        + '<div class="receipt-meta-item">'
+        + '<span class="receipt-meta-label">No. Transaksi</span>'
+        + '<span class="receipt-meta-val" style="font-size:12px; color:var(--violet-main);">' + safeOrderNum + '</span>'
+        + '</div>'
+        + '<div class="receipt-meta-item" style="text-align: right;">'
+        + '<span class="receipt-meta-label">Status</span>'
+        + '<span class="receipt-meta-val" style="color:' + statusColor + ';">● ' + statusText + '</span>'
+        + '</div>'
+        + '<div class="receipt-meta-item">'
+        + '<span class="receipt-meta-label">Waktu</span>'
+        + '<span class="receipt-meta-val">' + (typeof window.escapeHtml === 'function' ? window.escapeHtml(tglText) : tglText) + '</span>'
+        + '</div>'
+        + '<div class="receipt-meta-item" style="text-align: right;">'
+        + '<span class="receipt-meta-label">Kasir / Petugas</span>'
+        + '<span class="receipt-meta-val">' + safeKasir + '</span>'
+        + '</div>'
+        + '<div class="receipt-meta-item" style="grid-column: span 2; margin-top: 2px;">'
+        + '<span class="receipt-meta-label">Pelanggan</span>'
+        + '<span class="receipt-meta-val">' + safeCustomer + ' (' + safePhone + ')</span>'
+        + '</div>'
+        + '</div>'
+
+        + '<div class="receipt-dashed-line"></div>'
+
+        + '<table class="receipt-table">'
+        + '<thead>'
+        + '<tr>'
+        + '<th style="text-align: left;">Rincian Item Produk</th>'
+        + '<th style="text-align: right; width: 35%;">Subtotal</th>'
+        + '</tr>'
+        + '</thead>'
+        + '<tbody>'
+        + itemsRowsHtml
+        + '</tbody>'
+        + '</table>'
+
+        + '<div class="receipt-dashed-line"></div>'
+
+        + '<div class="receipt-calc-row">'
+        + '<span>Subtotal Belanja</span>'
+        + '<span style="font-weight: 700;">' + fmtSubtotal + '</span>'
+        + '</div>'
+        + (diskon > 0 ? (
+            '<div class="receipt-calc-row">'
+            + '<span>Diskon Potongan</span>'
+            + '<span style="font-weight: 700; color: #dc2626;">-' + fmtDiskon + '</span>'
+            + '</div>'
+        ) : '')
+        + (pajak > 0 ? (
+            '<div class="receipt-calc-row">'
+            + '<span>PPN (11%)</span>'
+            + '<span style="font-weight: 700;">' + fmtPajak + '</span>'
+            + '</div>'
+        ) : '')
+        
+        + '<div class="receipt-grand-total-box">'
+        + '<span class="receipt-grand-total-label">TOTAL AKHIR</span>'
+        + '<span class="receipt-grand-total-num">' + fmtGrandTotal + '</span>'
+        + '</div>'
+
+        + '<div class="receipt-calc-row">'
+        + '<span>Metode Pembayaran</span>'
+        + '<span style="font-weight: 800; text-transform: uppercase;">' + safeMetode + '</span>'
+        + '</div>'
+        + (isTunai ? (
+            '<div class="receipt-calc-row">'
+            + '<span>Jumlah Diterima (Cash)</span>'
+            + '<span style="font-weight: 700;">' + fmtBayar + '</span>'
+            + '</div>'
+            + '<div class="receipt-calc-row">'
+            + '<span>Kembalian</span>'
+            + '<span style="font-weight: 800; color: #16a34a;">' + fmtKembali + '</span>'
+            + '</div>'
+        ) : '')
+
+        + '<div class="receipt-dashed-line"></div>'
+
+        + '<div class="receipt-barcode-wrap">'
+        + '<svg class="receipt-barcode-svg" viewBox="0 0 200 38">'
+        + '<rect x="0" y="0" width="200" height="38" fill="transparent"/>'
+        + '<g fill="#0f172a">'
+        + '<rect x="10" y="0" width="3" height="38"/><rect x="15" y="0" width="2" height="38"/><rect x="20" y="0" width="4" height="38"/><rect x="26" y="0" width="1" height="38"/><rect x="30" y="0" width="3" height="38"/><rect x="35" y="0" width="2" height="38"/><rect x="40" y="0" width="5" height="38"/><rect x="47" y="0" width="2" height="38"/><rect x="52" y="0" width="3" height="38"/><rect x="57" y="0" width="4" height="38"/><rect x="63" y="0" width="1" height="38"/><rect x="67" y="0" width="3" height="38"/><rect x="72" y="0" width="5" height="38"/><rect x="80" y="0" width="2" height="38"/><rect x="85" y="0" width="4" height="38"/><rect x="91" y="0" width="1" height="38"/><rect x="95" y="0" width="3" height="38"/><rect x="100" y="0" width="2" height="38"/><rect x="104" y="0" width="5" height="38"/><rect x="111" y="0" width="3" height="38"/><rect x="116" y="0" width="2" height="38"/><rect x="121" y="0" width="4" height="38"/><rect x="127" y="0" width="2" height="38"/><rect x="132" y="0" width="3" height="38"/><rect x="137" y="0" width="5" height="38"/><rect x="144" y="0" width="1" height="38"/><rect x="148" y="0" width="4" height="38"/><rect x="154" y="0" width="2" height="38"/><rect x="158" y="0" width="3" height="38"/><rect x="163" y="0" width="5" height="38"/><rect x="170" y="0" width="2" height="38"/><rect x="175" y="0" width="4" height="38"/><rect x="181" y="0" width="2" height="38"/><rect x="185" y="0" width="3" height="38"/>'
+        + '</g>'
+        + '</svg>'
+        + '<div class="receipt-order-code">* ' + safeTrxId + ' *</div>'
+        + '</div>'
+
+        + '<div class="receipt-footer-notes">'
+        + '<b>Terima kasih telah berbelanja di Bos Kroco!</b><br>'
+        + 'Kualitas Rasa No. 1, Gurih, Renyah &amp; Higienis.<br>'
+        + 'Simpan struk ini sebagai bukti transaksi yang sah.<br>'
+        + '<small style="color:#94a3b8; font-size: 9.5px;">Powered by Bos Kroco ERP Systems</small>'
+        + '</div>';
+
+    var modal = document.getElementById('modalPreviewStruk');
+    if (modal) modal.classList.add('active');
+};
+
+window.closePreviewStrukModal = function () {
+    var modal = document.getElementById('modalPreviewStruk');
+    if (modal) modal.classList.remove('active');
+};
+
+window.triggerPrintStruk = function () {
+    window.print();
+};
+
+window.shareStrukWhatsApp = function () {
+    var trx = window._currentReceiptTrx;
+    if (!trx) return;
+
+    var itemsText = [];
+    if (trx.items && Array.isArray(trx.items) && trx.items.length > 0) {
+        trx.items.forEach(function (it) {
+            var sub = (typeof window.formatRupiah === 'function') ? window.formatRupiah(it.subtotal) : ('Rp ' + it.subtotal);
+            itemsText.push('• ' + it.namaProduk + ' (' + it.qty + 'x) : ' + sub);
+        });
+    } else {
+        var sub = (typeof window.formatRupiah === 'function') ? window.formatRupiah(trx.price) : ('Rp ' + trx.price);
+        itemsText.push('• ' + (trx.category || 'Paket Produk Bos Kroco') + ' (1x) : ' + sub);
+    }
+
+    var totalFormatted = (typeof window.formatRupiah === 'function') ? window.formatRupiah(trx.price || 0) : ('Rp ' + trx.price);
+
+    var text = '🧾 *STRUK RESMI - BOS KROCO FOOD & SNACK*\n'
+        + '━━━━━━━━━━━━━━━━━━━━\n'
+        + 'No. Nota  : ' + (trx.orderNum || trx.id) + ' (' + trx.id + ')\n'
+        + 'Tanggal   : ' + (trx.date || '-') + '\n'
+        + 'Pelanggan : ' + (trx.customer || '-') + '\n'
+        + 'Metode    : ' + (trx.payment || 'Tunai') + '\n'
+        + '━━━━━━━━━━━━━━━━━━━━\n'
+        + '*Rincian Belanja:*\n'
+        + itemsText.join('\n') + '\n'
+        + '━━━━━━━━━━━━━━━━━━━━\n'
+        + '*TOTAL BAYAR: ' + totalFormatted + '*\n'
+        + 'Status    : LUNAS / SELESAI\n'
+        + '━━━━━━━━━━━━━━━━━━━━\n'
+        + 'Terima kasih telah berbelanja di Bos Kroco!\n'
+        + '_Pabrik & Outlet Oleh-Oleh Nusantara_\n'
+        + 'Kritik & Pemesanan: wa.me/6281234567890';
+
+    var phoneClean = String(trx.phone || '').replace(/[^0-9]/g, '');
+    if (phoneClean.startsWith('0')) phoneClean = '62' + phoneClean.slice(1);
+    
+    var waUrl = (phoneClean.length >= 10) 
+        ? ('https://wa.me/' + phoneClean + '?text=' + encodeURIComponent(text))
+        : ('https://api.whatsapp.com/send?text=' + encodeURIComponent(text));
+    
+    if (typeof window.open === 'function') {
+        window.open(waUrl, '_blank');
+    }
+};
+
+window.copyStrukText = function () {
+    var trx = window._currentReceiptTrx;
+    if (!trx) return;
+
+    var itemsText = [];
+    if (trx.items && Array.isArray(trx.items) && trx.items.length > 0) {
+        trx.items.forEach(function (it) {
+            var sub = (typeof window.formatRupiah === 'function') ? window.formatRupiah(it.subtotal) : ('Rp ' + it.subtotal);
+            itemsText.push('• ' + it.namaProduk + ' (' + it.qty + 'x) : ' + sub);
+        });
+    } else {
+        var sub = (typeof window.formatRupiah === 'function') ? window.formatRupiah(trx.price) : ('Rp ' + trx.price);
+        itemsText.push('• ' + (trx.category || 'Paket Produk Bos Kroco') + ' (1x) : ' + sub);
+    }
+
+    var totalFormatted = (typeof window.formatRupiah === 'function') ? window.formatRupiah(trx.price || 0) : ('Rp ' + trx.price);
+
+    var text = '🧾 STRUK RESMI - BOS KROCO FOOD & SNACK\n'
+        + '------------------------------------\n'
+        + 'No. Nota  : ' + (trx.orderNum || trx.id) + ' (' + trx.id + ')\n'
+        + 'Tanggal   : ' + (trx.date || '-') + '\n'
+        + 'Pelanggan : ' + (trx.customer || '-') + '\n'
+        + 'Metode    : ' + (trx.payment || 'Tunai') + '\n'
+        + '------------------------------------\n'
+        + 'Rincian Belanja:\n'
+        + itemsText.join('\n') + '\n'
+        + '------------------------------------\n'
+        + 'TOTAL BAYAR: ' + totalFormatted + '\n'
+        + 'Status    : LUNAS / SELESAI\n'
+        + '------------------------------------\n'
+        + 'Terima kasih telah berbelanja di Bos Kroco!\n'
+        + 'Pabrik & Outlet Oleh-Oleh Nusantara';
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+            if (typeof window.showToast === 'function') window.showToast('Teks struk berhasil disalin ke clipboard!', 'success');
+        }).catch(function () {
+            if (typeof window.showToast === 'function') window.showToast('Gagal menyalin teks struk.', 'error');
+        });
+    } else {
+        if (typeof window.showToast === 'function') window.showToast('Teks struk siap disalin.', 'success');
+    }
+};
+

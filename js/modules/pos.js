@@ -198,17 +198,12 @@ function cetakStrukTerakhir() {
     var orders = window.orderTransactions || [];
     var lastTrxId = orders.length > 0 ? orders[0].id : null;
     if (!lastTrxId) {
-        showToast('Belum ada transaksi untuk dicetak.', 'error');
+        if (typeof window.showToast === 'function') window.showToast('Belum ada transaksi untuk dicetak.', 'error');
         return;
     }
-    showToast('Membuat PDF struk ' + lastTrxId + '...', 'success');
-    runBackend('apiGenerateDocumentPdf', [{ docType: 'STRUK_POS', docId: lastTrxId }], function (res) {
-        if (res.success && res.pdfUrl) {
-            window.open(res.pdfUrl, '_blank');
-        } else if (!res.success) {
-            showToast(res.message || 'Gagal membuat PDF.', 'error');
-        }
-    });
+    if (typeof window.openPreviewStruk === 'function') {
+        window.openPreviewStruk(lastTrxId);
+    }
 }
 
 function filterPosProducts(q) {
