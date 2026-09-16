@@ -8,6 +8,7 @@ node_modules/
 scratch/
 *.bak
 *.log
+bot_config.json
 
 # OS generated files
 Thumbs.db

@@ -2634,6 +2634,408 @@
             color: var(--violet-main);
         }
 
+        /* ============================================================
+         * MODAL TENTANG BOS KROCO ERP (HIGH-END LUXURY FINTECH MODAL)
+         * ============================================================ */
+        .about-modal-card {
+            width: 100%;
+            max-width: 480px;
+            border-radius: 22px;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 25px 70px -12px rgba(15, 23, 42, 0.3), 0 0 0 1px rgba(226, 232, 240, 0.95);
+            animation: modalSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .about-modal-accent-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #4f46e5 0%, #06b6d4 50%, #10b981 100%);
+            width: 100%;
+        }
+
+        .about-modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+        }
+
+        .about-modal-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .about-modal-title-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: #eef2ff;
+            color: var(--violet-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .about-modal-title-text {
+            font-size: 14.5px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.01em;
+        }
+
+        .about-modal-close-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid var(--border-strong);
+            background: #ffffff;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 0;
+        }
+
+        .about-modal-close-btn:hover {
+            background: #f8fafc;
+            color: var(--text-main);
+            transform: scale(1.08);
+            border-color: #cbd5e1;
+        }
+
+        .about-modal-body {
+            padding: 20px 22px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .about-hero-section {
+            text-align: center;
+            position: relative;
+            padding: 4px 0 2px;
+        }
+
+        .about-brand-emblem {
+            width: 68px;
+            height: 68px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 55%, #1e1b4b 100%);
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 28px -4px rgba(79, 70, 229, 0.42), inset 0 1px 2px rgba(255, 255, 255, 0.45);
+            border: 2px solid rgba(255, 255, 255, 0.28);
+            position: relative;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .about-brand-emblem:hover {
+            transform: translateY(-2px) scale(1.04);
+            box-shadow: 0 16px 34px -4px rgba(79, 70, 229, 0.52), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+        }
+
+        .about-brand-lettermark {
+            font-family: var(--font-heading);
+            font-weight: 900;
+            font-size: 26px;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+        }
+
+        .about-status-pip {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #10b981;
+            border: 2.5px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+            animation: pulseAboutPip 2.5s infinite;
+        }
+
+        @keyframes pulseAboutPip {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .about-app-heading {
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 0 0 4px;
+            letter-spacing: -0.02em;
+        }
+
+        .about-app-tagline {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin: 0 0 12px;
+            font-weight: 500;
+        }
+
+        .about-badges-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .about-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            line-height: 1;
+        }
+
+        .about-chip.violet {
+            background: #eef2ff;
+            color: #4338ca;
+            border: 1px solid #c7d2fe;
+        }
+
+        .about-chip.slate {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid var(--border-strong);
+        }
+
+        .about-chip.emerald {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .about-specs-card {
+            background: #f8fafc;
+            border: 1px solid var(--border-strong);
+            border-radius: 16px;
+            padding: 4px 14px;
+        }
+
+        .about-spec-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 2px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .about-spec-item:last-child {
+            border-bottom: none;
+        }
+
+        .about-spec-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .about-spec-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .about-spec-icon.indigo {
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .about-spec-icon.blue {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .about-spec-icon.emerald {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .about-spec-icon.purple {
+            background: #faf5ff;
+            color: #7c3aed;
+        }
+
+        .about-spec-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .about-spec-right {
+            text-align: right;
+        }
+
+        .about-spec-value {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .about-spec-subvalue {
+            font-size: 10px;
+            color: #10b981;
+            font-weight: 600;
+            margin-top: 1px;
+        }
+
+        .about-modules-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .about-modules-title {
+            font-size: 10.5px;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .about-modules-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .about-module-card {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            background: #ffffff;
+            border: 1px solid var(--border-strong);
+            border-radius: 11px;
+            padding: 7px 10px;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .about-module-card:hover {
+            border-color: rgba(79, 70, 229, 0.35);
+            background: #fcfdfe;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.07);
+        }
+
+        .about-module-icon-box {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.2s ease;
+        }
+
+        .about-module-card:hover .about-module-icon-box {
+            transform: scale(1.08);
+        }
+
+        .about-module-icon-box.violet {
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .about-module-icon-box.amber {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .about-module-icon-box.blue {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+        .about-module-icon-box.emerald {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .about-module-icon-box.purple {
+            background: #faf5ff;
+            color: #7c3aed;
+        }
+
+        .about-module-icon-box.sky {
+            background: #f0f9ff;
+            color: #0284c7;
+        }
+
+        .about-module-content {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            line-height: 1.25;
+        }
+
+        .about-module-name {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--text-main);
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .about-module-desc {
+            font-size: 10px;
+            color: var(--text-muted);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 1px;
+        }
+
+        .about-actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 2px;
+        }
+
+        .about-action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            font-size: 12px;
+            padding: 10px 14px;
+            font-weight: 700;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
         /* Responsive & Auto-Adjusting Layout */
         @media (max-width: 1366px) {
             .clock-live-date,
@@ -3397,7 +3799,7 @@
         .photo2-legend-bar.cat-piutang    { background: #16a34a; }
         .photo2-legend-bar.cat-lainnya    { background: #8b5cf6; }
 
-        /* 2. PANEL AKTIVITAS HARIAN (KANAN) - ELEVATED DARK BOS KROCO THEME (SESUAI SAVORA) */
+        /* 2. PANEL AKTIVITAS HARIAN (KANAN) - ELEVATED DARK BOS KROCO THEME */
         .photo2-daily-card {
             background: linear-gradient(165deg, #1e1b4b 0%, #151238 55%, #0d0a27 100%);
             border: 1px solid rgba(165, 180, 252, 0.18);
@@ -3601,7 +4003,7 @@
             background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
         }
 
-        /* Daftar Kegiatan Simpel/Pendek (Frosted Card Glass Savora Style) */
+        /* Daftar Kegiatan Simpel/Pendek (Frosted Card Glass Bos Kroco Style) */
         .photo2-daily-items-list {
             display: flex;
             flex-direction: column;

@@ -103,6 +103,21 @@ window.initPengaturanPage = function () {
             if (cfg.teleChatId && document.getElementById('setTeleChatId')) document.getElementById('setTeleChatId').value = cfg.teleChatId;
             if (typeof cfg.teleEnabled === 'boolean' && document.getElementById('setTeleEnable')) document.getElementById('setTeleEnable').checked = cfg.teleEnabled;
         }
+
+        // Sinkronisasi data bot dari server jika input form masih kosong
+        if (!document.getElementById('setTeleToken') || !document.getElementById('setTeleToken').value) {
+            fetch('/api/telegram-config')
+                .then(function (res) { return res.json(); })
+                .then(function (res) {
+                    if (res && res.config) {
+                        var sc = res.config;
+                        if (sc.teleToken && document.getElementById('setTeleToken')) document.getElementById('setTeleToken').value = sc.teleToken;
+                        if (sc.teleChatId && document.getElementById('setTeleChatId')) document.getElementById('setTeleChatId').value = sc.teleChatId;
+                        if (typeof sc.teleEnabled === 'boolean' && document.getElementById('setTeleEnable')) document.getElementById('setTeleEnable').checked = sc.teleEnabled;
+                    }
+                })
+                .catch(function () {});
+        }
     } catch (e) {
         console.warn('Gagal membaca saved settings:', e);
     }
@@ -357,10 +372,92 @@ window.savePengaturanTelegram = function () {
     var isEnabled = document.getElementById('setTeleEnable') ? document.getElementById('setTeleEnable').checked : false;
 
     saveAppSettingsHelper({ teleToken: token, teleChatId: chatId, teleEnabled: isEnabled });
+
+    // Sinkronisasi otomatis ke server lokal & aktifkan bot polling seketika
+    fetch('/api/telegram-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            teleToken: token,
+            teleChatId: chatId,
+            teleEnabled: isEnabled
+        })
+    }).then(function (r) { return r.json(); })
+    .then(function (d) {
+        console.log('[Telegram Bot] Status sinkronisasi server:', d);
+    }).catch(function (e) {
+        console.warn('[Telegram Bot] Catatan sinkronisasi server:', e.message);
+    });
+
     window.closeSettingModal('modalSetTelegram');
     if (typeof window.showToast === 'function') {
-        window.showToast('Konfigurasi bot Telegram berhasil disimpan!', 'success');
+        window.showToast('Konfigurasi Asisten Bot Telegram disimpan & diaktifkan!', 'success');
     }
+};
+
+window.detectTelegramChatId = function () {
+    var token = document.getElementById('setTeleToken') ? document.getElementById('setTeleToken').value.trim() : '';
+    if (!token) {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Masukkan Bot Token terlebih dahulu.', 'error');
+        }
+        return;
+    }
+
+    if (typeof window.showToast === 'function') {
+        window.showToast('Mencari pesan terbaru di bot Anda...', 'success');
+    }
+
+    var url = 'https://api.telegram.org/bot' + token + '/getUpdates';
+    fetch(url)
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            if (!data.ok) {
+                var desc = data.description || 'Gagal terhubung ke Telegram API';
+                if (typeof window.showToast === 'function') window.showToast('Telegram: ' + desc, 'error');
+                return;
+            }
+
+            var results = data.result || [];
+            if (results.length === 0) {
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Belum ada pesan. Buka bot Anda di Telegram, klik "Start" atau kirim pesan apa saja, lalu klik tombol ini lagi.', 'error');
+                }
+                return;
+            }
+
+            var lastUpdate = results[results.length - 1];
+            var msg = lastUpdate.message || lastUpdate.channel_post || lastUpdate.my_chat_member || lastUpdate.edited_message;
+            var detectedId = null;
+            var senderName = '';
+
+            if (msg && msg.chat) {
+                detectedId = msg.chat.id;
+                senderName = msg.chat.title || msg.chat.first_name || (msg.from && msg.from.first_name) || '';
+            } else if (msg && msg.from) {
+                detectedId = msg.from.id;
+                senderName = msg.from.first_name || '';
+            }
+
+            if (detectedId) {
+                var inpChat = document.getElementById('setTeleChatId');
+                if (inpChat) {
+                    inpChat.value = detectedId;
+                }
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Chat ID berhasil ditemukan: ' + detectedId + (senderName ? ' (' + senderName + ')' : '') + '!', 'success');
+                }
+            } else {
+                if (typeof window.showToast === 'function') {
+                    window.showToast('Tidak dapat menemukan Chat ID. Pastikan Anda sudah mengirim pesan ke bot.', 'error');
+                }
+            }
+        })
+        .catch(function (err) {
+            if (typeof window.showToast === 'function') {
+                window.showToast('Gagal menghubungkan ke Telegram: ' + (err.message || 'Koneksi terganggu'), 'error');
+            }
+        });
 };
 
 window.testTelegramNotification = function () {
@@ -375,26 +472,81 @@ window.testTelegramNotification = function () {
     }
 
     if (typeof window.showToast === 'function') {
-        window.showToast('Mengirim pesan uji coba ke Telegram...', 'success');
+        window.showToast('Mengirim pesan sapaan uji coba ke Telegram...', 'success');
     }
 
-    var textMsg = '🔔 *Tes Notifikasi Bos Kroco ERP*\nKoneksi bot Telegram berhasil terhubung!';
-    var teleUrl = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + encodeURIComponent(chatId) + '&text=' + encodeURIComponent(textMsg) + '&parse_mode=Markdown';
+    var now = new Date();
+    var jam = (now.getUTCHours() + 7) % 24;
+    var salamWaktu = 'Selamat Datang';
+    if (jam >= 4 && jam < 11) salamWaktu = 'Selamat Pagi';
+    else if (jam >= 11 && jam < 15) salamWaktu = 'Selamat Siang';
+    else if (jam >= 15 && jam < 18) salamWaktu = 'Selamat Sore';
+    else salamWaktu = 'Selamat Malam';
 
-    fetch(teleUrl)
-        .then(function (res) { return res.json(); })
-        .then(function (data) {
-            if (data.ok) {
-                if (typeof window.showToast === 'function') window.showToast('Pesan berhasil terkirim ke Telegram Anda!', 'success');
-            } else {
-                if (typeof window.showToast === 'function') window.showToast('Telegram: ' + (data.description || 'Gagal mengirim pesan'), 'error');
-            }
+    var textMsg = '👋 *' + salamWaktu + ', Bapak Owner!*\n' +
+        'Semoga hari ini penuh berkah, kelancaran rezeki, dan bisnis Bos Kroco semakin maju pesat. 📈✨\n\n' +
+        'Saya adalah *Asisten Bisnis Bos Kroco ERP*, asisten cerdas otomatis yang terhubung langsung secara *real-time* ke sistem database operasional usaha Anda.\n\n' +
+        '💼 *Layanan Informasi Cepat yang Siap Saya Bantu:*\n' +
+        '• 📊 *Ringkasan Hari Ini* : Laporan omzet penjualan, diskon & produk terlaris\n' +
+        '• 💰 *Cek Saldo Kas* : Posisi saldo kas operasional & rekap 3 mutasi kas terkini\n' +
+        '• 📦 *Cek Stok Kritis* : Peringatan dini bahan baku atau produk etalase yang menipis\n' +
+        '• 🛒 *Transaksi Terkini* : Pantau 5 transaksi kasir POS terbaru beserta metode bayar\n' +
+        '• 🏭 *Status Produksi* : Cek batch produksi yang berjalan & HPP unit\n' +
+        '• 📅 *Agenda & Jadwal* : Tagihan piutang belum lunas & agenda operasional toko\n' +
+        '• ❓ *Panduan Perintah* : Panduan lengkap kata kunci interaksi\n\n' +
+        '💡 *Silakan tekan tombol menu interaktif di bawah ini, atau ketik langsung kebutuhan Anda:*';
+
+    // Sinkronisasi otomatis ke server lokal agar bot polling langsung aktif
+    fetch('/api/telegram-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            teleToken: token,
+            teleChatId: chatId,
+            teleEnabled: true
         })
-        .catch(function () {
-            if (typeof window.showToast === 'function') {
-                window.showToast('Konfigurasi bot valid (Disimpan lokal)!', 'success');
+    }).catch(function () {});
+
+    var payload = {
+        chat_id: chatId,
+        text: textMsg,
+        parse_mode: 'Markdown',
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: '📊 Ringkasan Hari Ini', callback_data: 'btn_omzet' }, { text: '💰 Cek Saldo Kas', callback_data: 'btn_kas' }],
+                [{ text: '📦 Cek Stok Kritis', callback_data: 'btn_stok' }, { text: '🛒 Transaksi Terkini', callback_data: 'btn_transaksi' }],
+                [{ text: '🏭 Status Produksi', callback_data: 'btn_produksi' }, { text: '📅 Agenda & Jadwal', callback_data: 'btn_agenda' }],
+                [{ text: '❓ Panduan Perintah', callback_data: 'btn_help' }]
+            ]
+        }
+    };
+
+    var teleUrl = 'https://api.telegram.org/bot' + token + '/sendMessage';
+
+    fetch(teleUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+        if (data.ok) {
+            if (typeof window.showToast === 'function') window.showToast('Pesan sapaan berhasil dikirim ke Telegram Anda!', 'success');
+        } else {
+            var desc = data.description || 'Gagal mengirim pesan';
+            if (desc.toLowerCase().indexOf("can't send messages to the bot") !== -1) {
+                desc = "Chat ID salah (ID Bot). Masukkan ID akun Telegram Anda, bukan ID bot! (Gunakan tombol 'Deteksi Chat ID' di atas)";
+            } else if (desc.toLowerCase().indexOf('chat not found') !== -1) {
+                desc = "Chat ID tidak ditemukan. Buka bot Anda di Telegram dan klik tombol 'Start' terlebih dahulu!";
             }
-        });
+            if (typeof window.showToast === 'function') window.showToast('Telegram: ' + desc, 'error');
+        }
+    })
+    .catch(function () {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Konfigurasi bot valid (Disimpan lokal)!', 'success');
+        }
+    });
 };
 
 /**
@@ -494,3 +646,54 @@ function saveAppSettingsHelper(newObj) {
         console.warn('Gagal menyimpan app settings:', e);
     }
 }
+
+/**
+ * Salin Informasi & Spesifikasi Sistem ke Clipboard
+ */
+window.copyAboutSystemInfo = function () {
+    var info = [
+        '====================================',
+        '   BOS KROCO ERP - SYSTEM DETAILS   ',
+        '====================================',
+        'Aplikasi   : Bos Kroco ERP (FinTech Edition)',
+        'Versi      : 2.4.0 Production Build (Stable)',
+        'Basis Data : Supabase PostgreSQL Cloud Realtime',
+        'Fitur      : Kasir POS, Multi-Gudang, Produksi HPP, Buku Kas, Upah Pekerja, Bot Telegram',
+        'Lisensi    : © 2026 Bos Kroco Inc. Seluruh Hak Dilindungi.',
+        'Waktu Cek  : ' + new Date().toLocaleString('id-ID')
+    ].join('\n');
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(info).then(function () {
+            if (typeof window.showToast === 'function') {
+                window.showToast('Rincian spesifikasi sistem berhasil disalin!', 'success');
+            }
+        }).catch(function () {
+            fallbackClipboard(info);
+        });
+    } else {
+        fallbackClipboard(info);
+    }
+
+    function fallbackClipboard(text) {
+        try {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            if (typeof window.showToast === 'function') {
+                window.showToast('Rincian spesifikasi sistem berhasil disalin!', 'success');
+            }
+        } catch (err) {
+            if (typeof window.showToast === 'function') {
+                window.showToast('Gagal menyalin info ke clipboard.', 'error');
+            }
+        }
+    }
+};
+
