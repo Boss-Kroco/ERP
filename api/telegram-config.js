@@ -12,8 +12,8 @@ module.exports = (req, res) => {
         return res.status(200).json({
             success: true,
             config: {
-                teleToken: process.env.TELE_TOKEN || '',
-                teleChatId: process.env.TELE_CHAT_ID || '',
+                teleToken: process.env.TELE_TOKEN || '8872442838:AAHldgtZwM9MalYQU4UXtlX8orUTKf6GjbE',
+                teleChatId: process.env.TELE_CHAT_ID || '2102171167',
                 teleEnabled: true,
                 botName: 'Asisten Virtual Bos Kroco ERP'
             }

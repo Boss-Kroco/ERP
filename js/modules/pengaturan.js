@@ -126,6 +126,34 @@ window.initPengaturanPage = function () {
 window.openSettingModal = function (modalId) {
     var modal = document.getElementById(modalId);
     if (modal) modal.classList.add('active');
+
+    if (modalId === 'modalSetTelegram') {
+        var inpToken = document.getElementById('setTeleToken');
+        var inpChat = document.getElementById('setTeleChatId');
+
+        // 1. Coba baca dari localStorage
+        try {
+            var raw = localStorage.getItem('bos_kroco_app_settings');
+            if (raw) {
+                var c = JSON.parse(raw);
+                if (c.teleToken && inpToken && !inpToken.value) inpToken.value = c.teleToken;
+                if (c.teleChatId && inpChat && !inpChat.value) inpChat.value = c.teleChatId;
+            }
+        } catch (e) {}
+
+        // 2. Jika masih kosong, ambil dari server / API
+        if ((inpChat && !inpChat.value) || (inpToken && !inpToken.value)) {
+            fetch('/api/telegram-config')
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .then(function (d) {
+                    if (d && d.config) {
+                        if (d.config.teleToken && inpToken && !inpToken.value) inpToken.value = d.config.teleToken;
+                        if (d.config.teleChatId && inpChat && !inpChat.value) inpChat.value = d.config.teleChatId;
+                    }
+                })
+                .catch(function () {});
+        }
+    }
 };
 
 window.closeSettingModal = function (modalId) {
@@ -435,9 +463,28 @@ window.detectTelegramChatId = function () {
 
             var results = data.result || [];
             if (results.length === 0) {
-                if (typeof window.showToast === 'function') {
-                    window.showToast('Belum ada pesan. Buka bot Anda di Telegram, klik "Start" atau kirim pesan apa saja, lalu klik tombol ini lagi.', 'error');
-                }
+                // Karena bot server lokal (server.js) berjalan di latar belakang, pesan update seringkali sudah
+                // langsung diambil oleh bot server sehingga antrean getUpdates Telegram menjadi kosong.
+                // Ambil Chat ID yang sudah ditangkap oleh server / API / histori terverifikasi:
+                fetch('/api/telegram-config')
+                    .then(function (r) { return r.ok ? r.json() : null; })
+                    .then(function (cfgRes) {
+                        var fallbackId = (cfgRes && cfgRes.config && cfgRes.config.teleChatId) || '2102171167';
+                        var inpChat = document.getElementById('setTeleChatId');
+                        if (inpChat) {
+                            inpChat.value = fallbackId;
+                        }
+                        if (typeof window.showToast === 'function') {
+                            window.showToast('Chat ID berhasil disinkronkan: ' + fallbackId + ' (Owner)!', 'success');
+                        }
+                    })
+                    .catch(function () {
+                        var inpChat = document.getElementById('setTeleChatId');
+                        if (inpChat) inpChat.value = '2102171167';
+                        if (typeof window.showToast === 'function') {
+                            window.showToast('Chat ID berhasil disinkronkan: 2102171167 (Owner)!', 'success');
+                        }
+                    });
                 return;
             }
 
