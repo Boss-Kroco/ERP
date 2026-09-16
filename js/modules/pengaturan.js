@@ -396,12 +396,24 @@ window.savePengaturanTelegram = function () {
 };
 
 window.detectTelegramChatId = function () {
-    var token = document.getElementById('setTeleToken') ? document.getElementById('setTeleToken').value.trim() : '';
-    if (!token) {
+    var inpToken = document.getElementById('setTeleToken');
+    var rawToken = inpToken ? inpToken.value.trim() : '';
+    if (!rawToken) {
         if (typeof window.showToast === 'function') {
             window.showToast('Masukkan Bot Token terlebih dahulu.', 'error');
         }
         return;
+    }
+
+    // Auto-sanitasi format token Telegram: <digits>:<35 karakter alfanumerik/dash/underscore>
+    var token = rawToken;
+    var tokenMatch = rawToken.match(/^(\d{8,12}:[A-Za-z0-9_-]{35})/);
+    if (tokenMatch && rawToken.length > tokenMatch[1].length) {
+        token = tokenMatch[1];
+        if (inpToken) inpToken.value = token;
+        if (typeof window.showToast === 'function') {
+            window.showToast('Karakter tambahan di ujung token dibersihkan otomatis.', 'success');
+        }
     }
 
     if (typeof window.showToast === 'function') {
@@ -414,6 +426,9 @@ window.detectTelegramChatId = function () {
         .then(function (data) {
             if (!data.ok) {
                 var desc = data.description || 'Gagal terhubung ke Telegram API';
+                if (desc.toLowerCase().indexOf('unauthorized') !== -1) {
+                    desc = 'Bot Token tidak valid (Unauthorized). Periksa kembali token dari @BotFather (pastikan tidak ada huruf tambahan di ujung token).';
+                }
                 if (typeof window.showToast === 'function') window.showToast('Telegram: ' + desc, 'error');
                 return;
             }
@@ -461,8 +476,16 @@ window.detectTelegramChatId = function () {
 };
 
 window.testTelegramNotification = function () {
-    var token = document.getElementById('setTeleToken') ? document.getElementById('setTeleToken').value.trim() : '';
+    var inpToken = document.getElementById('setTeleToken');
+    var rawToken = inpToken ? inpToken.value.trim() : '';
     var chatId = document.getElementById('setTeleChatId') ? document.getElementById('setTeleChatId').value.trim() : '';
+
+    var token = rawToken;
+    var tokenMatch = rawToken.match(/^(\d{8,12}:[A-Za-z0-9_-]{35})/);
+    if (tokenMatch && rawToken.length > tokenMatch[1].length) {
+        token = tokenMatch[1];
+        if (inpToken) inpToken.value = token;
+    }
 
     if (!token || !chatId) {
         if (typeof window.showToast === 'function') {
