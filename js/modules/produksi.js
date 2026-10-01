@@ -5,6 +5,100 @@
  * ============================================================================
  */
 
+// ============================================================================
+// KALKULATOR HPP BERDASARKAN RESEP
+// ============================================================================
+
+window.resepItems = [
+    { nama: 'Tempe (1 kg)', qty: 1, hargaSatuan: 4000 },
+    { nama: 'Cabe (kg)', qty: 0.5, hargaSatuan: 60000 },
+    { nama: 'Gula (kg)', qty: 3, hargaSatuan: 14000 },
+    { nama: 'Garam (kg)', qty: 0.2, hargaSatuan: 4000 },
+    { nama: 'Gula Jawa (kg)', qty: 3, hargaSatuan: 50000 },
+    { nama: 'Kemasan (pcs)', qty: 30, hargaSatuan: 400 }
+];
+
+window.renderTabelResep = function() {
+    var tbody = document.getElementById('bodyResepHPP');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    window.resepItems.forEach(function(item, index) {
+        var tr = document.createElement('tr');
+        var subtotal = item.qty * item.hargaSatuan;
+        
+        tr.innerHTML = `
+            <td><input type="text" class="search-filter-input" style="width: 100%;" value="${item.nama}" oninput="window.updateResepItem(${index}, 'nama', this.value)"></td>
+            <td><input type="number" step="any" class="search-filter-input" style="width: 100%;" value="${item.qty}" oninput="window.updateResepItem(${index}, 'qty', this.value)"></td>
+            <td><input type="number" class="search-filter-input" style="width: 100%;" value="${item.hargaSatuan}" oninput="window.updateResepItem(${index}, 'hargaSatuan', this.value)"></td>
+            <td style="font-weight: bold;">Rp ${typeof window.formatRupiah === 'function' ? window.formatRupiah(subtotal) : subtotal}</td>
+            <td><button class="btn-pill-action" style="color: red; padding: 4px;" onclick="window.hapusResepItem(${index})">X</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+    window.hitungTotalResep();
+};
+
+window.updateResepItem = function(index, field, value) {
+    if(field === 'qty' || field === 'hargaSatuan') {
+        window.resepItems[index][field] = parseFloat(value) || 0;
+    } else {
+        window.resepItems[index][field] = value;
+    }
+    window.renderTabelResep();
+};
+
+window.hapusResepItem = function(index) {
+    window.resepItems.splice(index, 1);
+    window.renderTabelResep();
+};
+
+window.tambahBarisResep = function() {
+    window.resepItems.push({ nama: '', qty: 1, hargaSatuan: 0 });
+    window.renderTabelResep();
+};
+
+window.hitungTotalResep = function() {
+    var totalBiaya = 0;
+    window.resepItems.forEach(function(item) {
+        totalBiaya += item.qty * item.hargaSatuan;
+    });
+    
+    var elTotal = document.getElementById('totalBiayaResep');
+    if(elTotal) elTotal.textContent = 'Rp ' + (typeof window.formatRupiah === 'function' ? window.formatRupiah(totalBiaya) : totalBiaya);
+    
+    var targetPcs = parseFloat(document.getElementById('inpTargetHasilResep').value) || 1;
+    var hppPerPcs = targetPcs > 0 ? (totalBiaya / targetPcs) : 0;
+    
+    var elHpp = document.getElementById('hppPerPcsResep');
+    if(elHpp) elHpp.textContent = 'Rp ' + (typeof window.formatRupiah === 'function' ? window.formatRupiah(Math.round(hppPerPcs)) : Math.round(hppPerPcs)) + ' / pcs';
+};
+
+window.terapkanResepKeProduksi = function() {
+    var totalBiaya = 0;
+    window.resepItems.forEach(function(item) {
+        totalBiaya += item.qty * item.hargaSatuan;
+    });
+    
+    var targetPcs = document.getElementById('inpTargetHasilResep').value;
+    
+    document.getElementById('prodBiayaBahan').value = totalBiaya;
+    document.getElementById('prodBatchRencana').value = targetPcs;
+    
+    if(typeof window.showToast === 'function') {
+        window.showToast('Resep berhasil diterapkan ke kalkulator manufaktur!', 'success');
+    }
+    
+    if (typeof hitungLiveHppPreview === 'function') {
+        hitungLiveHppPreview();
+    }
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(window.renderTabelResep, 1000);
+});
+
+
 function hitungLiveHppPreview() {
     var elRencana = document.getElementById('prodBatchRencana');
     if (!elRencana) return;

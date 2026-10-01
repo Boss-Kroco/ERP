@@ -3,6 +3,56 @@
         <div class="order-header-row">
             <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
                 <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                    <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+                    <path d="M12 12v.01" />
+                </svg>
+                Kalkulator HPP Berdasarkan Resep
+            </span>
+            <button class="btn-pill-action btn-pill-secondary" onclick="window.tambahBarisResep()">
+                + Tambah Bahan
+            </button>
+        </div>
+        <div style="margin-top: 10px;">
+            <table class="custom-order-table" id="tabelResepHPP">
+                <thead>
+                    <tr>
+                        <th>Nama Bahan</th>
+                        <th>Jumlah/Berat</th>
+                        <th>Harga Satuan (Rp)</th>
+                        <th>Subtotal (Rp)</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="bodyResepHPP">
+                    <!-- Default Rows -->
+                </tbody>
+                <tfoot>
+                    <tr style="background: var(--bg-body); font-weight: bold;">
+                        <td colspan="3" style="text-align: right; padding-right: 15px;">TOTAL BIAYA BAHAN:</td>
+                        <td id="totalBiayaResep">Rp 0</td>
+                        <td></td>
+                    </tr>
+                    <tr style="background: var(--bg-body); font-weight: bold;">
+                        <td colspan="3" style="text-align: right; padding-right: 15px;">Target Hasil (Pcs):</td>
+                        <td><input type="number" id="inpTargetHasilResep" value="30" class="search-filter-input" style="width: 80px;" oninput="window.hitungTotalResep()"></td>
+                        <td></td>
+                    </tr>
+                    <tr style="background: var(--violet-light); color: var(--violet-dark); font-weight: bold; font-size: 14px;">
+                        <td colspan="3" style="text-align: right; padding-right: 15px;">HPP PER PCS:</td>
+                        <td id="hppPerPcsResep" colspan="2">Rp 0 / pcs</td>
+                    </tr>
+                </tfoot>
+            </table>
+            <div style="margin-top: 15px; text-align: right;">
+                <button class="btn-pill-action btn-pill-primary" onclick="window.terapkanResepKeProduksi()">Terapkan ke Biaya Bahan Baku Bawah &darr;</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="order-section-card" style="margin-top: 20px;">
+        <div class="order-header-row">
+            <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
                     <polygon points="12 2 2 7 12 12 22 7 12 2" />
                     <polyline points="2 17 12 22 22 17" />
                     <polyline points="2 12 12 17 22 12" />

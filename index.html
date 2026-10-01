@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bos Kroco ERP - POS &amp; Multi-Location Manufacturing</title>
+    <title>Mafaza Group ERP - Management System</title>
     <!-- Google Fonts: Plus Jakarta Sans & DM Sans (Curved 't' tail, No Cross Shape) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,9 +23,9 @@
     <div class="login-screen-overlay" id="loginScreen">
         <div class="login-card">
             <div class="login-card-header">
-                <div class="login-logo-badge">BK</div>
-                <div class="login-app-title">Bos Kroco ERP</div>
-                <div class="login-app-subtitle">POS &amp; Multi-Location Manufacturing</div>
+                <img src="assets/logo.jpg" alt="Mafaza Group" style="width: 72px; height: 72px; border-radius: 16px; object-fit: contain; background: white; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div class="login-app-title">Mafaza Group ERP</div>
+                <div class="login-app-subtitle">Business Management System</div>
             </div>
             <div class="login-card-body">
                 <div class="login-error-box" id="loginErrorBox"></div>
@@ -70,7 +70,7 @@
         <!-- Curved Violet Sidebar (Tahap 1 SVG Icons) -->
         <aside class="curved-sidebar-violet">
             <div class="sb-top-stack">
-                <div class="brand-logo-badge" title="Bos Kroco ERP">BK</div>
+                <img src="assets/logo.jpg" alt="Logo" title="Mafaza Group" style="width: 44px; height: 44px; border-radius: 12px; object-fit: contain; background: white; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
 
                 <nav class="sidebar-icon-nav" id="sidebarIconNav">
                     <div class="nav-icon-pill active" onclick="navigatePage('dashboard')" id="navPillDashboard" title="Dashboard">
@@ -100,6 +100,16 @@
                             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                         </svg>
                         <span class="tooltip-text">Pelanggan &amp; Mitra</span>
+                    </div>
+
+                    <div class="nav-icon-pill" onclick="navigatePage('sewa')" id="navPillSewa" title="Sewa Alat">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <path d="M3 3v18h18" />
+                            <path d="M7 16h8" />
+                            <path d="M7 11h12" />
+                            <path d="M7 6h4" />
+                        </svg>
+                        <span class="tooltip-text">Sewa Alat</span>
                     </div>
 
                     <div class="nav-icon-pill" onclick="navigatePage('produk')" id="navPillProduk" title="Master Produk">
@@ -313,6 +323,7 @@
     <script src="js/auth.js?v=4.3"></script>
     <script src="js/modules/dashboard.js?v=4.3"></script>
     <script src="js/modules/pos.js?v=4.3"></script>
+    <script src="js/modules/sewa.js?v=4.3"></script>
     <script src="js/modules/pelanggan.js?v=4.3"></script>
     <script src="js/modules/produk.js?v=4.3"></script>
     <script src="js/modules/produksi.js?v=4.3"></script>

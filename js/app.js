@@ -119,7 +119,7 @@ window.handleGlobalSearch = function (q) {
 
 // View Templates Loader
 window.VIEW_MODULES = [
-    'dashboard', 'pos', 'pelanggan', 'produk', 'produksi',
+    'dashboard', 'pos', 'sewa', 'pelanggan', 'produk', 'produksi',
     'multilokasi', 'opname', 'keuangan', 'tenagakerja', 'agenda', 'audit', 'profil', 'pengaturan', 'bantuan'
 ];
 
