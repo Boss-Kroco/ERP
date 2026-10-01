@@ -102,7 +102,7 @@
                         <span class="tooltip-text">Pelanggan &amp; Mitra</span>
                     </div>
 
-                    <div class="nav-icon-pill" onclick="navigatePage('sewa')" id="navPillSewa" title="Sewa Alat">
+                    <div class="nav-icon-pill" onclick="navigatePage('sewa'); if(window.renderAlatSewa) window.renderAlatSewa();" id="navPillSewa" title="Sewa Alat">
                         <svg class="svg-icon" viewBox="0 0 24 24">
                             <path d="M3 3v18h18" />
                             <path d="M7 16h8" />
