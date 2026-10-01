@@ -961,7 +961,7 @@ window.refreshTimRekanan = function () {
     var isAkt = tabAkt ? tabAkt.classList.contains('active') : true;
     
     if (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.isConfigured()) {
-        var sb = window.getSupabaseClient();
+        var sb = window.supabaseClient;
         
         // Fetch Audit Trail for Aktivitas
         sb.from('audit_trail').select('*').order('created_at', { ascending: false }).limit(5)

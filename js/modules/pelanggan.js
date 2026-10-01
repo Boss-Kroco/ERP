@@ -18,7 +18,7 @@ window.loadPelangganData = function() {
         return;
     }
 
-    var sb = window.getSupabaseClient();
+    var sb = window.supabaseClient;
     sb.from('pelanggan_toko').select('*').order('nama_toko', { ascending: true })
       .then(function(res) {
           if (res.error) {
@@ -66,7 +66,7 @@ window.renderPelangganTable = function() {
         
         // Aksi
         html += '  <td style="padding: 14px 16px; text-align: right;">';
-        html += '    <button onclick="window.editPelanggan(\\'' + p.pelanggan_id + '\\')" style="background: transparent; border: none; cursor: pointer; color: var(--violet-main); padding: 4px;" title="Edit Data"><svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>';
+        html += '    <button onclick="window.editPelanggan(\'' + p.pelanggan_id + '\')" style="background: transparent; border: none; cursor: pointer; color: var(--violet-main); padding: 4px;" title="Edit Data"><svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>';
         html += '  </td>';
         
         html += '</tr>';
@@ -164,7 +164,7 @@ window.savePelanggan = function() {
         return;
     }
     
-    var sb = window.getSupabaseClient();
+    var sb = window.supabaseClient;
     
     if (mode === 'NEW') {
         var newId = 'CUST-' + Date.now().toString().slice(-6);
