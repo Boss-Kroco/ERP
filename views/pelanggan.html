@@ -1,0 +1,125 @@
+<div id="view-pelanggan" style="display: none;">
+    <!-- Top Metrics -->
+    <div class="dashboard-top-metrics-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 20px;">
+        <div class="metric-card" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white;">
+            <div class="metric-card-header">
+                <span class="metric-card-title" style="color: rgba(255,255,255,0.8);">Total Pelanggan & Mitra</span>
+                <div class="metric-icon-box" style="background: rgba(255,255,255,0.2); color: white;">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2;">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                </div>
+            </div>
+            <div class="metric-card-value" id="lblTotalPelanggan" style="color: white;">0</div>
+            <div class="metric-card-trend">
+                <span style="color: rgba(255,255,255,0.9);">Data aktif</span>
+            </div>
+        </div>
+
+        <div class="metric-card" style="background: linear-gradient(135deg, #e11d48 0%, #f43f5e 100%); color: white;">
+            <div class="metric-card-header">
+                <span class="metric-card-title" style="color: rgba(255,255,255,0.8);">Total Piutang Belum Lunas</span>
+                <div class="metric-icon-box" style="background: rgba(255,255,255,0.2); color: white;">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2;">
+                        <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                    </svg>
+                </div>
+            </div>
+            <div class="metric-card-value" id="lblTotalPiutangPelanggan" style="color: white;">Rp 0</div>
+            <div class="metric-card-trend">
+                <span style="color: rgba(255,255,255,0.9);">Dalam antrean tagih</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table Section -->
+    <div class="order-section-card">
+        <div class="order-header-row">
+            <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
+                <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                Master Data Pelanggan & Piutang
+            </span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="search-filter-box">
+                    <span class="table-search-icon">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.3-4.3" />
+                        </svg>
+                    </span>
+                    <input type="text" class="search-filter-input" id="searchPelangganTable"
+                        placeholder="Cari pelanggan..." oninput="if(window.filterPelanggan) window.filterPelanggan()">
+                </div>
+                <button class="btn-pill-action btn-pill-primary" onclick="if(window.openPelangganModal) window.openPelangganModal()">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                        <path d="M5 12h14" />
+                        <path d="M12 5v14" />
+                    </svg>
+                    Tambah Pelanggan
+                </button>
+            </div>
+        </div>
+        <div class="table-responsive-wrapper">
+            <table class="custom-order-table">
+                <thead>
+                    <tr>
+                        <th>ID Pelanggan</th>
+                        <th>Nama Toko / Pelanggan</th>
+                        <th>Kontak</th>
+                        <th>Alamat</th>
+                        <th>Total Piutang</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tblPelangganLogs">
+                    <tr><td colspan="7" style="text-align: center; padding: 20px;">Memuat data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Form (Embedded for modularity) -->
+    <div id="modalFormPelanggan" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 16px; width: 100%; max-width: 500px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); overflow: hidden; transform: translateY(20px); opacity: 0; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);" id="modalFormPelangganContent">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border-soft); background: #f8fafc;">
+                <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--text-dark);" id="modalPelangganTitle">Tambah Pelanggan Baru</h3>
+                <button onclick="if(window.closePelangganModal) window.closePelangganModal()" style="background: transparent; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; display: flex;">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div style="padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+                <input type="hidden" id="inpPelangganIdMode" value="NEW">
+                <input type="hidden" id="inpPelangganId" value="">
+                
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Nama Toko / Pelanggan *</label>
+                    <input type="text" id="inpPelangganNama" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); outline: none; font-size: 13px;" placeholder="Misal: Minimarket Sentosa">
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Nomor Kontak (Opsional)</label>
+                    <input type="text" id="inpPelangganKontak" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); outline: none; font-size: 13px;" placeholder="Misal: 081234567890">
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Alamat Lengkap (Opsional)</label>
+                    <textarea id="inpPelangganAlamat" rows="3" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); outline: none; font-size: 13px; resize: none;" placeholder="Alamat lengkap..."></textarea>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 12px; padding: 16px 20px; border-top: 1px solid var(--border-soft); background: #f8fafc;">
+                <button onclick="if(window.closePelangganModal) window.closePelangganModal()" class="btn-pill-action btn-pill-secondary">Batal</button>
+                <button onclick="if(window.savePelanggan) window.savePelanggan()" class="btn-pill-action btn-pill-primary">Simpan Data</button>
+            </div>
+        </div>
+    </div>
+</div>

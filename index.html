@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bos Kroco ERP - POS &amp; Multi-Location Manufacturing</title>
+    <!-- Google Fonts: Plus Jakarta Sans & DM Sans (Curved 't' tail, No Cross Shape) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..800;1,9..40,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Modular CSS Stylesheet -->
+    <link rel="stylesheet" href="css/style.css?v=4.3">
+
+    <!-- Supabase JS Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <div class="login-screen-overlay" id="loginScreen">
+        <div class="login-card">
+            <div class="login-card-header">
+                <div class="login-logo-badge">BK</div>
+                <div class="login-app-title">Bos Kroco ERP</div>
+                <div class="login-app-subtitle">POS &amp; Multi-Location Manufacturing</div>
+            </div>
+            <div class="login-card-body">
+                <div class="login-error-box" id="loginErrorBox"></div>
+                <div class="login-field-group">
+                    <label for="loginUsername">Username</label>
+                    <div class="login-input-wrap">
+                        <svg class="svg-icon-sm login-input-icon" viewBox="0 0 24 24">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        <input type="text" id="loginUsername" class="login-input"
+                            placeholder="Masukkan username..." autocomplete="username">
+                    </div>
+                </div>
+                <div class="login-field-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="login-input-wrap">
+                        <svg class="svg-icon-sm login-input-icon" viewBox="0 0 24 24">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <input type="password" id="loginPassword" class="login-input"
+                            placeholder="Masukkan password..." autocomplete="current-password">
+                    </div>
+                </div>
+                <button id="loginSubmitBtn" class="btn-pill-action btn-pill-primary login-submit-btn"
+                    onclick="doLogin()">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                        <polyline points="10 17 15 12 10 7" />
+                        <line x1="15" x2="3" y1="12" y2="12" />
+                    </svg>
+                    <span>Masuk ke Sistem</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="app-viewport-frame">
+
+        <!-- Curved Violet Sidebar (Tahap 1 SVG Icons) -->
+        <aside class="curved-sidebar-violet">
+            <div class="sb-top-stack">
+                <div class="brand-logo-badge" title="Bos Kroco ERP">BK</div>
+
+                <nav class="sidebar-icon-nav" id="sidebarIconNav">
+                    <div class="nav-icon-pill active" onclick="navigatePage('dashboard')" id="navPillDashboard" title="Dashboard">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <rect width="7" height="7" x="3" y="3" rx="1.5" />
+                            <rect width="7" height="7" x="14" y="3" rx="1.5" />
+                            <rect width="7" height="7" x="14" y="14" rx="1.5" />
+                            <rect width="7" height="7" x="3" y="14" rx="1.5" />
+                        </svg>
+                        <span class="tooltip-text">Dashboard</span>
+                    </div>
+
+                    <div class="nav-icon-pill" onclick="navigatePage('pos')" id="navPillPos" title="Kasir &amp; POS">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                            <path d="M3 6h18" />
+                            <path d="M16 10a4 4 0 0 1-8 0" />
+                        </svg>
+                        <span class="tooltip-text">Kasir &amp; POS</span>
+                    </div>
+
+                    <div class="nav-icon-pill" onclick="navigatePage('pelanggan')" id="navPillPelanggan" title="Pelanggan &amp; Piutang">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        <span class="tooltip-text">Pelanggan</span>
+                    </div>
+
+                    <div class="nav-icon-pill" onclick="navigatePage('produk')" id="navPillProduk" title="Master Produk">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
+                            <path d="M7 7h.01" />
+                        </svg>
+                        <span class="tooltip-text">Master Produk</span>
+                    </div>
+
+                    <div class="nav-icon-pill" onclick="navigatePage('produksi')" id="navPillProduksi" title="Produksi &amp; HPP">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                            <polyline points="2 17 12 22 22 17" />
+                            <polyline points="2 12 12 17 22 12" />
+                        </svg>
+                        <span class="tooltip-text">Produksi &amp; HPP</span>
+                    </div>
+
+                    <div class="nav-icon-pill" onclick="navigatePage('multilokasi')" id="navPillMultilokasi" title="Transfer Stok &amp; Multi-Lokasi">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <path d="M8 3 4 7l4 4" />
+                            <path d="M4 7h16" />
+                            <path d="m16 21 4-4-4-4" />
+                            <path d="M20 17H4" />
+                        </svg>
+                        <span class="tooltip-text">Transfer Stok</span>
+                    </div>
+
+                    <div class="nav-icon-pill" onclick="navigatePage('opname')" id="navPillOpname" title="Stock Opname">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <rect width="8" height="4" x="8" y="2" rx="1" />
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                            <path d="m9 14 2 2 4-4" />
+                        </svg>
+                        <span class="tooltip-text">Stock Opname</span>
+                    </div>
+
+                    <div class="nav-icon-pill" onclick="navigatePage('keuangan')" id="navPillKeuangan" title="Kas &amp; Beban Pengeluaran">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <rect width="20" height="12" x="2" y="6" rx="2" />
+                            <circle cx="12" cy="12" r="2" />
+                            <path d="M6 12h.01M18 12h.01" />
+                        </svg>
+                        <span class="tooltip-text">Kas &amp; Beban</span>
+                    </div>
+
+                    <div class="nav-icon-pill" onclick="navigatePage('tenagakerja')" id="navPillTenagakerja" title="Tenaga Kerja &amp; Upah">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        <span class="tooltip-text">Upah Kerja</span>
+                    </div>
+
+                    <div class="nav-icon-pill" onclick="navigatePage('agenda')" id="navPillAgenda" title="Agenda &amp; Kalender">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <rect width="18" height="18" x="3" y="4" rx="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                            <path d="M8 14h.01" />
+                            <path d="M12 14h.01" />
+                            <path d="M16 14h.01" />
+                            <path d="M8 18h.01" />
+                            <path d="M12 18h.01" />
+                            <path d="M16 18h.01" />
+                        </svg>
+                        <span class="tooltip-text">Agenda &amp; Kalender</span>
+                    </div>
+
+                    <div class="nav-icon-pill" onclick="navigatePage('audit')" id="navPillAudit" title="Log Audit &amp; Aktivitas">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                            <path d="m9 12 2 2 4-4" />
+                        </svg>
+                        <span class="tooltip-text">Log Audit</span>
+                    </div>
+
+                    <div class="nav-icon-pill" onclick="navigatePage('pengaturan')" id="navPillPengaturan" title="Pengaturan Sistem">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <line x1="4" x2="20" y1="6" y2="6" />
+                            <line x1="4" x2="20" y1="12" y2="12" />
+                            <line x1="4" x2="20" y1="18" y2="18" />
+                            <circle cx="8" cy="6" r="2" />
+                            <circle cx="16" cy="12" r="2" />
+                            <circle cx="10" cy="18" r="2" />
+                        </svg>
+                        <span class="tooltip-text">Pengaturan</span>
+                    </div>
+
+                    <div class="nav-icon-pill" onclick="navigatePage('bantuan')" id="navPillBantuan" title="Pusat Bantuan &amp; FAQ">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                            <path d="M12 17h.01" />
+                        </svg>
+                        <span class="tooltip-text">Pusat Bantuan</span>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Logout Button (sb-bottom-btn) -->
+            <div class="sb-bottom-btn" title="Keluar dari Sistem" onclick="doLogout()">
+                <svg class="svg-icon" viewBox="0 0 24 24">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16 17 21 12 16 7" />
+                    <line x1="21" x2="9" y1="12" y2="12" />
+                </svg>
+            </div>
+        </aside>
+
+        <div class="main-body-container">
+
+            <!-- Top Bar Header with Centered Device Clock -->
+            <header class="dashboard-topbar-header">
+                <!-- Left Column: Branding & Module Title -->
+                <div class="header-left-meta">
+                    <button class="mobile-menu-btn" onclick="openMobileDrawer()" title="Buka Menu">
+                        <svg class="svg-icon" viewBox="0 0 24 24">
+                            <line x1="4" x2="20" y1="12" y2="12" />
+                            <line x1="4" x2="20" y1="6" y2="6" />
+                            <line x1="4" x2="20" y1="18" y2="18" />
+                        </svg>
+                    </button>
+                    <div class="header-brand-box">
+                        <div class="brand-title-main" id="pageHeaderTitle">Dashboard</div>
+                    </div>
+                </div>
+
+                <!-- Center Column: Balanced Live Clock Widget (Never Overlaps) -->
+                <div class="header-center-meta">
+                    <div class="topbar-center-clock" id="deviceClockWidget">
+                        <div class="clock-live-pulse-badge">
+                            <span class="clock-pulse-dot"></span>
+                            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                        </div>
+                        <span class="clock-live-time" id="clockLiveTime">00:00:00</span>
+                        <span class="clock-divider">•</span>
+                        <span class="clock-live-date" id="clockLiveDate">Senin, 7 Sep 2026</span>
+                    </div>
+                </div>
+
+                <!-- Right Column: Search & Simplified User Profile Pill (Role + Avatar) -->
+                <div class="header-right-actions">
+                    <div class="header-search-bar">
+                        <span class="header-search-icon">
+                            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="m21 21-4.3-4.3" />
+                            </svg>
+                        </span>
+                        <input type="text" class="header-search-input" id="globalSearchInput" placeholder="Cari data..."
+                            oninput="handleGlobalSearch(this.value)">
+                    </div>
+
+                    <!-- Lonceng Notifikasi Piutang Jatuh Tempo -->
+                    <div class="due-reminder-pill" onclick="openDueAlertModal()" title="Pengingat Piutang Jatuh Tempo">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+                            <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+                        </svg>
+                        <span>Jatuh Tempo</span>
+                        <span class="due-counter-circle" id="dueAlertCount">0</span>
+                    </div>
+
+                    <button class="topbar-help-btn" onclick="navigatePage('bantuan')" title="Pusat Bantuan &amp; FAQ" style="border: 1px solid var(--border-strong); background: #ffffff; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: all 0.2s ease;">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                            <path d="M12 17h.01" />
+                        </svg>
+                    </button>
+
+                    <div class="header-user-pill"
+                        onclick="navigatePage('profil')"
+                        title="Buka Profil Pengguna">
+                        <span id="headerUserRoleBadge" class="header-user-role-badge">Owner</span>
+                        <div class="header-user-avatar" id="headerUserAvatar" title="Profil Akun">--</div>
+                        <span id="headerUserName" style="display:none"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Dynamic Content Views Container (Loaded Modularly from views/*.html) -->
+            <main id="pageContainer">
+                <div id="viewLoader" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 350px; color: var(--text-muted); font-size: 13px; font-weight: 600; gap: 12px;">
+                    <div style="width: 28px; height: 28px; border: 3px solid rgba(108,71,255,0.2); border-top-color: var(--violet-main); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                    Memuat modul sistem...
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Modals & Slide-Out Drawers Container (Loaded from views/modals.html) -->
+    <div id="modalsContainer"></div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-pill-box" id="toastBox"></div>
+
+    <!-- Modular JavaScript Engine -->
+    <script src="js/config.js?v=4.3"></script>
+    <script src="js/supabaseClient.js?v=4.3"></script>
+    <script src="js/api.js?v=4.3"></script>
+    <script src="js/auth.js?v=4.3"></script>
+    <script src="js/modules/dashboard.js?v=4.3"></script>
+    <script src="js/modules/pos.js?v=4.3"></script>
+    <script src="js/modules/pelanggan.js?v=4.3"></script>
+    <script src="js/modules/produk.js?v=4.3"></script>
+    <script src="js/modules/produksi.js?v=4.3"></script>
+    <script src="js/modules/multilokasi.js?v=4.3"></script>
+    <script src="js/modules/opname.js?v=4.3"></script>
+    <script src="js/modules/keuangan.js?v=4.3"></script>
+    <script src="js/modules/tenagakerja.js?v=4.3"></script>
+    <script src="js/modules/agenda.js?v=4.3"></script>
+    <script src="js/modules/audit.js?v=4.3"></script>
+    <script src="js/modules/profil.js?v=4.3"></script>
+    <script src="js/modules/pengaturan.js?v=4.3"></script>
+    <script src="js/modules/bantuan.js?v=4.3"></script>
+    <script src="js/app.js?v=4.3"></script>
+</body>
+
+</html>

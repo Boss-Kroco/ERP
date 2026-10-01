@@ -1,0 +1,1080 @@
+<!-- Modal Export Date Range Picker -->
+<div class="modal-overlay-custom" id="modalExportDateRange">
+    <div class="modal-sheet-card">
+        <div class="modal-sheet-header">
+            <div class="modal-sheet-title">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                    <line x1="16" x2="16" y1="2" y2="6" />
+                    <line x1="8" x2="8" y1="2" y2="6" />
+                    <line x1="3" x2="21" y1="10" y2="10" />
+                </svg>
+                Pilih Rentang Tanggal Ekspor CSV
+            </div>
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeExportModal()">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="modal-sheet-body">
+            <div style="margin-bottom: 14px;">
+                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">Pilihan Preset Periode</label>
+                <select class="search-filter-input" style="width: 100%;" id="exportPresetSelect" onchange="onExportPresetChange()">
+                    <option value="all">Semua Waktu (Seluruh Data)</option>
+                    <option value="today">Hari Ini</option>
+                    <option value="last7">7 Hari Terakhir</option>
+                    <option value="thisMonth" selected id="optExportThisMonth">Bulan Ini</option>
+                    <option value="custom">Kustom Rentang Tanggal...</option>
+                </select>
+            </div>
+
+            <div id="exportCustomDateBox" style="display: none; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Dari Tanggal</label>
+                    <input type="date" class="search-filter-input" style="width: 100%;" id="exportDateStart">
+                </div>
+                <div>
+                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Sampai Tanggal</label>
+                    <input type="date" class="search-filter-input" style="width: 100%;" id="exportDateEnd">
+                </div>
+            </div>
+
+            <div>
+                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">Filter Status Pesanan</label>
+                <select class="search-filter-input" style="width: 100%;" id="exportStatusFilter">
+                    <option value="all">Semua Status (Lengkap)</option>
+                    <option value="delivered">Delivered Saja</option>
+                    <option value="on way">On Way Saja</option>
+                    <option value="await">Await Saja</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-sheet-footer">
+            <button class="btn-pill-action btn-pill-secondary" onclick="closeExportModal()">Batal</button>
+            <button class="btn-pill-action btn-pill-primary" onclick="generateFilteredCSVDownload()">Unduh CSV UTF-8</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Floating Due Alert (Tagihan Jatuh Tempo H-3) -->
+<div class="modal-overlay-custom" id="modalDueAlert">
+    <div class="modal-sheet-card" style="max-width: 540px;">
+        <div class="modal-sheet-header">
+            <div class="modal-sheet-title">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: var(--coral-pink);">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg>
+                Tagihan Mendekati Jatuh Tempo (H-3)
+            </div>
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeDueAlertModal()">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="modal-sheet-body">
+            <div class="table-responsive-wrapper">
+                <table class="custom-order-table">
+                    <thead>
+                        <tr>
+                            <th>Kontak</th>
+                            <th>Tipe</th>
+                            <th>Sisa Tagihan</th>
+                            <th>Jatuh Tempo</th>
+                            <th style="text-align:center;">Aksi Cepat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tblDueAlertList"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-sheet-footer">
+            <button class="btn-pill-action btn-pill-secondary" onclick="closeDueAlertModal()">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Detail Transaksi -->
+<div class="modal-overlay-custom" id="modalDetailTrx">
+    <div class="modal-sheet-card" style="max-width: 480px;">
+        <div class="modal-sheet-header">
+            <div class="modal-sheet-title">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" x2="8" y1="13" y2="13" />
+                    <line x1="16" x2="8" y1="17" y2="17" />
+                    <line x1="10" x2="8" y1="9" y2="9" />
+                </svg>
+                Detail Transaksi
+            </div>
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeDetailTrxModal()">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="modal-sheet-body" id="detailTrxBody">
+            <!-- Diisi dinamis oleh JS -->
+        </div>
+        <div class="modal-sheet-footer">
+            <button class="btn-pill-action btn-pill-secondary" onclick="closeDetailTrxModal()">Tutup</button>
+            <button class="btn-pill-action btn-pill-secondary" style="border-color: var(--violet-main); color: var(--violet-main);" onclick="editTransaksiDariModal()" id="btnEditDariModal">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                </svg>
+                Edit Transaksi
+            </button>
+            <button class="btn-pill-action btn-pill-primary" onclick="cetakStrukDariModal()" id="btnCetakDariModal">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                    <polyline points="6 9 6 2 18 2 18 9" />
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                    <rect width="12" height="8" x="6" y="14" />
+                </svg>
+                Cetak Struk
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tambah Master Produk Baru -->
+<div class="modal-overlay-custom" id="modalTambahProduk">
+    <div class="modal-sheet-card">
+        <div class="modal-sheet-header">
+            <div class="modal-sheet-title">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                    <path d="m7.5 4.27 9 5.15" />
+                    <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                </svg>
+                Tambah Master Produk Baru
+            </div>
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeModalTambahProduk()">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="modal-sheet-body">
+            <form onsubmit="event.preventDefault(); submitTambahProduk();">
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nama Produk</label>
+                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="newProdNama" required placeholder="Contoh: Kripik Tempe Rasa Keju">
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Satuan (Pcs/Toples/Botol)</label>
+                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="newProdSatuan" required placeholder="Pcs">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">HPP Acuan (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="newProdHpp" required placeholder="8000">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Harga Jual (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="newProdHargaJual" required placeholder="15000">
+                    </div>
+                </div>
+                <button type="submit" class="btn-pill-action btn-pill-primary" style="width: 100%; justify-content: center; margin-top: 10px;">Daftarkan Produk</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Mobile Slide-Out Drawer -->
+<div class="mobile-drawer-overlay" id="drawerOverlay" onclick="closeMobileDrawer()"></div>
+<div class="mobile-drawer-panel" id="drawerPanel">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+        <div style="font-weight: 800; font-size: 16px; color: var(--violet-main);">Bos Kroco ERP</div>
+        <button style="border: none; background: none; cursor: pointer;" onclick="closeMobileDrawer()">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+            </svg>
+        </button>
+    </div>
+
+    <input type="text" class="search-filter-input" style="width: 100%; margin-bottom: 14px;" id="drawerSearchInput" placeholder="Cari menu..." oninput="filterDrawerMenu()">
+
+    <div style="display: flex; flex-direction: column; gap: 8px; overflow-y: auto;" id="drawerMenuList">
+        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('dashboard')">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                <rect width="7" height="7" x="3" y="3" rx="1.5" />
+                <rect width="7" height="7" x="14" y="3" rx="1.5" />
+                <rect width="7" height="7" x="14" y="14" rx="1.5" />
+                <rect width="7" height="7" x="3" y="14" rx="1.5" />
+            </svg>
+            Dashboard
+        </div>
+        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('pos')">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+                <path d="M3 6h18" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+            Kasir &amp; POS
+        </div>
+        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('produk')">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
+                <path d="M7 7h.01" />
+            </svg>
+            Master Produk
+        </div>
+        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('produksi')">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                <polyline points="2 17 12 22 22 17" />
+                <polyline points="2 12 12 17 22 12" />
+            </svg>
+            Produksi &amp; HPP
+        </div>
+        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('multilokasi')">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                <path d="M8 3 4 7l4 4" />
+                <path d="M4 7h16" />
+                <path d="m16 21 4-4-4-4" />
+                <path d="M20 17H4" />
+            </svg>
+            Transfer Stok
+        </div>
+        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('opname')">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                <rect width="8" height="4" x="8" y="2" rx="1" />
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                <path d="m9 14 2 2 4-4" />
+            </svg>
+            Stock Opname
+        </div>
+        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('keuangan')">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                <rect width="20" height="12" x="2" y="6" rx="2" />
+                <circle cx="12" cy="12" r="2" />
+                <path d="M6 12h.01M18 12h.01" />
+            </svg>
+            Kas &amp; Beban
+        </div>
+        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('tenagakerja')">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            Upah Kerja
+        </div>
+        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('agenda')">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                <rect width="18" height="18" x="3" y="4" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+                <path d="M8 14h.01" />
+                <path d="M12 14h.01" />
+                <path d="M16 14h.01" />
+                <path d="M8 18h.01" />
+                <path d="M12 18h.01" />
+                <path d="M16 18h.01" />
+            </svg>
+            Agenda &amp; Kalender
+        </div>
+        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('audit')">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                <path d="m9 12 2 2 4-4" />
+            </svg>
+            Log Audit
+        </div>
+        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('profil')">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="5" />
+                <path d="M20 21a8 8 0 0 0-16 0" />
+            </svg>
+            Profil Akun
+        </div>
+        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('pengaturan')">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                <line x1="4" x2="20" y1="6" y2="6" />
+                <line x1="4" x2="20" y1="12" y2="12" />
+                <line x1="4" x2="20" y1="18" y2="18" />
+                <circle cx="8" cy="6" r="2" />
+                <circle cx="16" cy="12" r="2" />
+                <circle cx="10" cy="18" r="2" />
+            </svg>
+            Pengaturan
+        </div>
+        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('bantuan')">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <path d="M12 17h.01" />
+            </svg>
+            Pusat Bantuan
+        </div>
+    </div>
+</div>
+
+<!-- Floating Batch Action Toolbar (Tahap 4) -->
+<div class="batch-action-toolbar" id="batchActionBar">
+    <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="batch-count-badge" id="batchCountBadge">0 Terpilih</span>
+        <span style="font-size: 12px; font-weight: 700;">Aksi Massal:</span>
+    </div>
+
+    <select class="batch-select-action" id="batchStatusSelect" onchange="executeBatchStatusChange(this.value)">
+        <option value="">-- Ubah Status --</option>
+        <option value="delivered">Set: Delivered</option>
+        <option value="on way">Set: On Way</option>
+        <option value="await">Set: Await</option>
+    </select>
+
+    <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="exportSelectedOrdersCSV()">
+        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" x2="12" y1="15" y2="3" />
+        </svg>
+        Unduh Terpilih
+    </button>
+    <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 10px; font-size: 11px; color: var(--coral-pink);" onclick="clearBatchSelection()">
+        Batal
+    </button>
+</div>
+
+<!-- Modal Pembaca Panduan Fitur Bos Kroco -->
+<div class="modal-overlay-custom" id="modalBantuanGuide">
+    <div class="modal-sheet-card" style="max-width: 540px;">
+        <div class="modal-sheet-header">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span id="guideModalBadge" style="font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px;">Panduan</span>
+                <div class="modal-sheet-title" id="guideModalTitle" style="font-size: 14.5px;">Panduan Fitur</div>
+            </div>
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeGuideModal()">✕</button>
+        </div>
+        <div class="modal-sheet-body">
+            <p id="guideModalDesc" style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;"></p>
+            <div id="guideModalBody"></div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
+                <button type="button" class="btn-pill-action btn-pill-primary" onclick="closeGuideModal()">Saya Mengerti</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Lacak & Kelola Tiket Bantuan -->
+<div class="modal-overlay-custom" id="modalLacakTiket">
+    <div class="modal-sheet-card" style="max-width: 660px;">
+        <div class="modal-sheet-header">
+            <div class="modal-sheet-title" style="display: flex; align-items: center; gap: 8px;">
+                <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                Lacak &amp; Kelola Tiket Pertanyaan
+            </div>
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeLacakTiketModal()">✕</button>
+        </div>
+        <div class="modal-sheet-body">
+            <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
+                <input type="text" class="search-filter-input" id="searchTicketInput" placeholder="Cari No. Tiket (#TKT-BK-...) / Kategori / Nama..." style="flex: 1; min-width: 200px;" oninput="renderTicketList(this.value)">
+                <select class="search-filter-input" id="filterTicketStatus" style="width: 170px; cursor: pointer;" onchange="renderTicketList()">
+                    <option value="all">Semua Status</option>
+                    <option value="Menunggu Respon">Menunggu Respon</option>
+                    <option value="Diproses">Sedang Diproses</option>
+                    <option value="Selesai">Selesai Dijawab</option>
+                </select>
+            </div>
+            <div id="ticketListContainer" style="max-height: 420px; overflow-y: auto; padding-right: 4px;"></div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; border-top: 1px solid var(--border-strong); padding-top: 10px;">
+                <span style="font-size: 11px; color: var(--text-muted);">Owner &amp; Admin dapat langsung membalas pertanyaan dan memperbarui status tiket.</span>
+                <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeLacakTiketModal()">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Form Tambah & Edit Agenda Kegiatan -->
+<div class="modal-overlay-custom" id="modalAgendaForm">
+    <div class="modal-sheet-card" style="max-width: 540px;">
+        <div class="modal-sheet-header">
+            <div class="modal-sheet-title" style="display: flex; align-items: center; gap: 8px;">
+                <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                <span id="agendaModalHeaderTitle">Tambah Agenda Baru</span>
+            </div>
+            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeAgendaFormModal()">✕</button>
+        </div>
+        <form onsubmit="saveAgendaForm(event)">
+            <div class="modal-sheet-body" style="display: flex; flex-direction: column; gap: 14px;">
+                <input type="hidden" id="agendaFormId">
+
+                <div>
+                    <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Judul Kegiatan <span style="color:var(--coral-pink);">*</span></label>
+                    <input type="text" id="agendaInputTitle" class="search-filter-input" style="width: 100%;" placeholder="Contoh: Produksi Keripik Tempe Batch 4" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Kategori Kegiatan</label>
+                        <select id="agendaInputCategory" class="search-filter-input" style="width: 100%; cursor: pointer;">
+                            <option value="Produksi & HPP">Produksi &amp; HPP</option>
+                            <option value="Pengiriman Mitra">Pengiriman Mitra</option>
+                            <option value="Tagih Piutang">Tagih Piutang</option>
+                            <option value="Belanja Bahan">Belanja Bahan</option>
+                            <option value="Operasional Toko">Operasional Toko</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Tanggal Pelaksanaan <span style="color:var(--coral-pink);">*</span></label>
+                        <input type="date" id="agendaInputDate" class="search-filter-input" style="width: 100%; cursor: pointer;" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div>
+                        <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Jam Mulai</label>
+                        <input type="time" id="agendaInputStartTime" class="search-filter-input" style="width: 100%; cursor: pointer;" value="09:00">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Jam Selesai (Opsional)</label>
+                        <input type="time" id="agendaInputEndTime" class="search-filter-input" style="width: 100%; cursor: pointer;" value="11:00">
+                    </div>
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Keterangan &amp; Instruksi</label>
+                    <textarea id="agendaInputDescription" class="search-filter-input" rows="3" style="width: 100%; resize: vertical; min-height: 60px;" placeholder="Catatan detail kegiatan, target unit, PIC pelaksana, dll..."></textarea>
+                </div>
+
+                <div style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div>
+                            <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Pengingat / Alarm</label>
+                            <select id="agendaInputReminder" class="search-filter-input" style="width: 100%; background: #ffffff; cursor: pointer;">
+                                <option value="none">Tidak Ada</option>
+                                <option value="on_time">Tepat Waktu Pelaksanaan</option>
+                                <option value="15_min" selected>15 Menit Sebelumnya</option>
+                                <option value="1_hour">1 Jam Sebelumnya</option>
+                                <option value="1_day">1 Hari Sebelumnya</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Agenda Berulang</label>
+                            <select id="agendaInputRecurring" class="search-filter-input" style="width: 100%; background: #ffffff; cursor: pointer;">
+                                <option value="none">Tidak Berulang (Sekali Saja)</option>
+                                <option value="daily">Harian (Setiap Hari)</option>
+                                <option value="weekly">Mingguan (Setiap Minggu)</option>
+                                <option value="monthly">Bulanan (Setiap Bulan)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px; flex-wrap: wrap; gap: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-main);">
+                            <input type="checkbox" id="agendaInputTelegram" style="width: 16px; height: 16px; accent-color: var(--violet-main); cursor: pointer;" checked>
+                            Kirim notifikasi jadwal ke Bot Telegram
+                        </label>
+                        <div>
+                            <select id="agendaInputStatus" class="search-filter-input" style="padding: 3px 8px; font-size: 11px; background: #ffffff; cursor: pointer;">
+                                <option value="pending">Status: Belum Selesai</option>
+                                <option value="completed">Status: Selesai</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeAgendaFormModal()">Batal</button>
+                    <button type="submit" class="btn-pill-action btn-pill-primary">Simpan Agenda</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Rincian Kegiatan Agenda (Solusi 3: Pas di-klik muncul rinciannya) -->
+<div class="modal-overlay-custom" id="modalAgendaDetail">
+    <div class="modal-sheet-card" style="max-width: 520px;">
+        <div class="modal-sheet-header" style="border-bottom: 1px solid var(--border-strong); padding-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span id="agendaDetailCatBadge" class="agenda-badge-cat">Kategori</span>
+                <span id="agendaDetailStatusPill" class="agenda-status-pill">Status</span>
+            </div>
+            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeAgendaDetailModal()">✕</button>
+        </div>
+        <div class="modal-sheet-body" style="display: flex; flex-direction: column; gap: 14px; padding-top: 14px;">
+            <input type="hidden" id="agendaDetailId">
+            
+            <!-- Judul Kegiatan -->
+            <div id="agendaDetailTitle" style="font-size: 16.5px; font-weight: 800; color: var(--text-main); line-height: 1.35;">
+                Judul Kegiatan
+            </div>
+
+            <!-- Baris Waktu & Tanggal -->
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #475569; background: #f8fafc; padding: 8px 12px; border-radius: 9px; border: 1px solid var(--border-strong);">
+                <svg class="svg-icon-xs text-violet" viewBox="0 0 24 24" style="flex-shrink: 0;">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span id="agendaDetailDateTime">Kamis, 10 September 2026 • 09:00 - 10:30 WIB</span>
+            </div>
+
+            <!-- Kotak Catatan Deskripsi -->
+            <div>
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px;">Catatan &amp; Instruksi Kegiatan:</div>
+                <div class="agenda-desc-box" id="agendaDetailDescContainer" style="margin: 0;">
+                    <svg class="agenda-desc-box-icon" viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                    </svg>
+                    <span id="agendaDetailDescription">-</span>
+                </div>
+            </div>
+
+            <!-- Grid Metadata Pengingat, Telegram, & Pengulangan -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 11.5px;">
+                <div style="display: flex; align-items: center; gap: 7px; color: #64748b; background: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24" style="color: #ea580c; flex-shrink: 0;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Pengingat Alarm:</div>
+                        <div id="agendaDetailReminderText" style="font-weight: 700; color: var(--text-main);">15 Menit Sebelum</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 7px; color: #64748b; background: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24" style="color: #2563eb; flex-shrink: 0;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    <div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Bot Telegram:</div>
+                        <div id="agendaDetailTelegramText" style="font-weight: 700; color: var(--text-main);">Aktif Terkirim</div>
+                    </div>
+                </div>
+            </div>
+            <div id="agendaDetailRecurringRow" style="display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: #64748b; background: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24" style="color: #8b5cf6; flex-shrink: 0;"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                <div>
+                    <span style="font-size: 10px; color: var(--text-muted);">Pengulangan Jadwal: </span>
+                    <strong id="agendaDetailRecurringText" style="color: var(--text-main);">Mingguan</strong>
+                </div>
+            </div>
+
+            <!-- Tombol Aksi di Modal Rincian -->
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--border-strong); flex-wrap: wrap;">
+                <button type="button" class="btn-pill-action btn-pill-danger" id="agendaDetailDeleteBtn" onclick="deleteAgendaFromDetail()" title="Hapus kegiatan ini">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    <span>Hapus</span>
+                </button>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" class="btn-pill-action btn-pill-secondary" id="agendaDetailEditBtn" onclick="editAgendaFromDetail()">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                        <span>Edit</span>
+                    </button>
+                    <button type="button" class="btn-pill-action btn-pill-primary" id="agendaDetailToggleStatusBtn" onclick="toggleAgendaStatusFromDetail()">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span id="agendaDetailToggleStatusText">Tandai Selesai</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Daftar Agenda Harian (Untuk sel yang memiliki banyak agenda) -->
+<div class="modal-overlay-custom" id="modalAgendaDayList">
+    <div class="modal-sheet-card" style="max-width: 580px;">
+        <div class="modal-sheet-header">
+            <div class="modal-sheet-title" style="display: flex; align-items: center; gap: 8px;">
+                <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span id="agendaDayModalTitle">Agenda Kegiatan</span>
+            </div>
+            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeDayAgendaModal()">✕</button>
+        </div>
+        <div class="modal-sheet-body" style="display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div style="font-size: 12px; color: var(--text-muted);" id="agendaDayModalSub">Daftar agenda kegiatan yang dijadwalkan pada hari ini:</div>
+                <button type="button" class="btn-pill-action btn-pill-primary" style="padding: 5px 12px; font-size: 11.5px;" id="agendaDayModalAddBtn" onclick="addNewAgendaFromDayModal()">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span>Tambah di Tanggal Ini</span>
+                </button>
+            </div>
+            <div id="agendaDayModalItemsList" style="display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
+                <!-- Diisi dinamis -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 1. Modal Edit Transaksi Penjualan / POS -->
+<div class="modal-overlay-custom" id="modalEditTransaksi">
+    <div class="modal-sheet-card" style="max-width: 520px;">
+        <div class="modal-sheet-header">
+            <div class="modal-sheet-title">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                </svg>
+                Edit Transaksi Penjualan
+            </div>
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeModalEditTransaksi()">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="modal-sheet-body">
+            <form onsubmit="event.preventDefault(); submitEditTransaksi();">
+                <input type="hidden" id="editTrxId">
+                
+                <div style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <small style="color: var(--text-muted); font-size: 11px;">Nomor Order &amp; ID:</small>
+                        <div id="editTrxOrderNumBadge" style="font-weight: 800; font-size: 13px; color: var(--text-main);">-</div>
+                    </div>
+                    <div id="editTrxSubIdBadge" style="font-size: 10.5px; font-family: monospace; color: var(--text-muted);">-</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Tanggal Transaksi</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTrxTanggal" required placeholder="DD/MM/YYYY">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nama Pelanggan</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTrxCustomer" required placeholder="Nama Pembeli">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">No Kontak / HP</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTrxPhone" placeholder="0812...">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Ringkasan / Kategori Item</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTrxCategory" placeholder="Kripik Tempe / Retail POS">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Total Nilai (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTrxPrice" required min="0">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Metode Pembayaran</label>
+                        <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTrxPayment">
+                            <option value="Tunai">Tunai / Cash</option>
+                            <option value="Transfer">Transfer Bank</option>
+                            <option value="QRIS">QRIS</option>
+                            <option value="Tempo">Tempo (Piutang)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 14px;">
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Status Pengiriman / Pesanan</label>
+                    <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTrxStatus">
+                        <option value="delivered">Delivered (Selesai)</option>
+                        <option value="on way">On Way (Dalam Pengiriman)</option>
+                        <option value="await">Await (Menunggu / Pending)</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeModalEditTransaksi()">Batal</button>
+                    <button type="submit" class="btn-pill-action btn-pill-primary">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                            <polyline points="17 21 17 13 7 13 7 21" />
+                            <polyline points="7 3 7 8 15 8" />
+                        </svg>
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 2. Modal Edit Mutasi Kas Keuangan -->
+<div class="modal-overlay-custom" id="modalEditKas">
+    <div class="modal-sheet-card" style="max-width: 500px;">
+        <div class="modal-sheet-header">
+            <div class="modal-sheet-title">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                </svg>
+                Edit Transaksi Mutasi Kas
+            </div>
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeModalEditKas()">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="modal-sheet-body">
+            <form onsubmit="event.preventDefault(); submitEditKas();">
+                <input type="hidden" id="editKasId">
+
+                <div style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <small style="color: var(--text-muted); font-size: 11px;">Nomor Kas:</small>
+                        <div id="editKasIdBadge" style="font-weight: 800; font-size: 13px; color: var(--text-main);">-</div>
+                    </div>
+                    <div id="editKasRefBadge" style="font-size: 11px; font-family: monospace; color: var(--text-muted);">Ref: -</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Tanggal &amp; Waktu</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editKasTanggal" required placeholder="DD/MM/YYYY HH:mm">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Tipe Kas</label>
+                        <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editKasTipe" required>
+                            <option value="Masuk">🟢 Kas Masuk (Pemasukan)</option>
+                            <option value="Keluar">🔴 Kas Keluar (Pengeluaran)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Kategori Kas</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editKasKategori" required placeholder="Contoh: Operasional / Belanja Bahan">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nominal (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editKasNominal" required min="0">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Keterangan / Uraian</label>
+                    <textarea class="search-filter-input" style="width: 100%; margin-top: 4px; resize: vertical; min-height: 60px;" id="editKasKeterangan" placeholder="Uraian detail transaksi kas..."></textarea>
+                </div>
+
+                <div style="margin-bottom: 14px;">
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Dicatat Oleh (Petugas/Kasir)</label>
+                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editKasDicatatOleh" placeholder="Nama petugas">
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeModalEditKas()">Batal</button>
+                    <button type="submit" class="btn-pill-action btn-pill-primary">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                            <polyline points="17 21 17 13 7 13 7 21" />
+                            <polyline points="7 3 7 8 15 8" />
+                        </svg>
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Modal Edit Master Produk -->
+<div class="modal-overlay-custom" id="modalEditProduk">
+    <div class="modal-sheet-card" style="max-width: 480px;">
+        <div class="modal-sheet-header">
+            <div class="modal-sheet-title">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                </svg>
+                Edit Master Produk
+            </div>
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeModalEditProduk()">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="modal-sheet-body">
+            <form onsubmit="event.preventDefault(); submitEditProduk();">
+                <input type="hidden" id="editProdId">
+
+                <div style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <small style="color: var(--text-muted); font-size: 11px;">Kode Produk ID:</small>
+                        <div id="editProdIdBadge" style="font-weight: 800; font-size: 13px; color: var(--violet-main);">-</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nama Produk</label>
+                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdNama" required placeholder="Contoh: Kripik Tempe Keju">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Satuan</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdSatuan" required placeholder="Pcs / Toples / Botol">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Status Produk</label>
+                        <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdStatus">
+                            <option value="Aktif">Aktif</option>
+                            <option value="Non-Aktif">Non-Aktif</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">HPP Acuan (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdHpp" required min="0">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Harga Jual (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdHargaJual" required min="0">
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeModalEditProduk()">Batal</button>
+                    <button type="submit" class="btn-pill-action btn-pill-primary">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                            <polyline points="17 21 17 13 7 13 7 21" />
+                            <polyline points="7 3 7 8 15 8" />
+                        </svg>
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 4. Modal Edit Batch Produksi -->
+<div class="modal-overlay-custom" id="modalEditProduksi">
+    <div class="modal-sheet-card" style="max-width: 520px;">
+        <div class="modal-sheet-header">
+            <div class="modal-sheet-title">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                </svg>
+                Edit Data Batch Produksi
+            </div>
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeModalEditProduksi()">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="modal-sheet-body">
+            <form onsubmit="event.preventDefault(); submitEditProduksi();">
+                <input type="hidden" id="editProdBatchId">
+
+                <div style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <small style="color: var(--text-muted); font-size: 11px;">Batch ID &amp; Produk:</small>
+                        <div id="editProdBatchIdBadge" style="font-weight: 800; font-size: 13px; color: var(--text-main);">-</div>
+                    </div>
+                    <div id="editProdBatchProdukBadge" style="font-size: 12px; font-weight: 700; color: var(--violet-main);">-</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Jumlah Rencana (Pcs)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdBatchRencana" required min="0" oninput="hitungEditHppPreview()">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Jumlah Rusak (Pcs)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdBatchRusak" required min="0" oninput="hitungEditHppPreview()">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya Bahan Baku (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdBiayaBahan" required min="0" oninput="hitungEditHppPreview()">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya Kemasan (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdBiayaKemasan" required min="0" oninput="hitungEditHppPreview()">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya Utilitas / Ops (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdBiayaOperasional" required min="0" oninput="hitungEditHppPreview()">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya Upah Kerja (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdBiayaUpah" required min="0" oninput="hitungEditHppPreview()">
+                    </div>
+                </div>
+
+                <div style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 8px; padding: 8px 12px; margin-bottom: 14px; display: flex; justify-content: space-between; font-size: 12px;">
+                    <span>Produksi Bersih: <b id="editProdBersihLbl">-</b></span>
+                    <span>Total HPP: <b id="editProdTotalHppLbl" style="color: var(--violet-main);">-</b></span>
+                    <span>HPP/Unit: <b id="editProdHppUnitLbl" style="color: var(--emerald);">-</b></span>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeModalEditProduksi()">Batal</button>
+                    <button type="submit" class="btn-pill-action btn-pill-primary">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                            <polyline points="17 21 17 13 7 13 7 21" />
+                            <polyline points="7 3 7 8 15 8" />
+                        </svg>
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 5. Modal Edit Data Presensi & Upah Tenaga Kerja -->
+<div class="modal-overlay-custom" id="modalEditTenagaKerja">
+    <div class="modal-sheet-card" style="max-width: 480px;">
+        <div class="modal-sheet-header">
+            <div class="modal-sheet-title">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: var(--violet-main);">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                </svg>
+                Edit Data Presensi &amp; Upah
+            </div>
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeModalEditTenagaKerja()">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="modal-sheet-body">
+            <form onsubmit="event.preventDefault(); submitEditTenagaKerja();">
+                <input type="hidden" id="editTkId">
+
+                <div style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <small style="color: var(--text-muted); font-size: 11px;">ID Tenaga Kerja:</small>
+                        <div id="editTkIdBadge" style="font-weight: 800; font-size: 13px; color: var(--text-main);">-</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 10px;">
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nama Pekerja</label>
+                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTkNama" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Skema Tenaga Kerja</label>
+                        <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTkTipe">
+                            <option value="Pekerja harian">Pekerja harian</option>
+                            <option value="Karyawan tetap">Karyawan tetap</option>
+                            <option value="Pekerja per jam">Pekerja per jam</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Total Jam Kerja</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTkTotalJam" required min="0" oninput="hitungEditUpahPreview()">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Rate Upah (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTkRate" required min="0" oninput="hitungEditUpahPreview()">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Bonus / Lembur (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTkBonus" min="0" oninput="hitungEditUpahPreview()">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Potongan / Kasbon (Rp)</label>
+                    <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTkPotongan" min="0" oninput="hitungEditUpahPreview()">
+                </div>
+
+                <div style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">TOTAL UPAH BERSIH:</span>
+                    <span style="font-size: 15px; font-weight: 800; color: var(--violet-main);" id="editTkTotalBayarLbl">Rp 0</span>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeModalEditTenagaKerja()">Batal</button>
+                    <button type="submit" class="btn-pill-action btn-pill-primary">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                            <polyline points="17 21 17 13 7 13 7 21" />
+                            <polyline points="7 3 7 8 15 8" />
+                        </svg>
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 6. Modal Preview & Cetak Struk Transaksi POS Premium -->
+<div class="modal-overlay-custom" id="modalPreviewStruk">
+    <div class="modal-sheet-card" style="max-width: 440px; background: transparent; box-shadow: none; border: none; overflow: visible;">
+        <div class="receipt-paper-wrapper" style="position: relative;">
+            
+            <!-- Top Controls (Close & Status) -->
+            <div class="receipt-top-actions no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span class="badge-receipt-live" style="background: rgba(108,71,255,0.15); color: var(--violet-main); font-size: 11.5px; font-weight: 800; padding: 5px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(108,71,255,0.12);">
+                    <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--emerald); display: inline-block;"></span>
+                    Struk Resmi Siap Cetak
+                </span>
+                <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 5px 10px; background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.12); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;" onclick="closePreviewStrukModal()">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Receipt Paper Body (Printed Area) -->
+            <div id="printableReceiptArea" class="receipt-paper-slip">
+                <!-- Diisi dinamis oleh fungsi openPreviewStruk() -->
+            </div>
+
+            <!-- Receipt Bottom Action Bar (No Print) -->
+            <div class="receipt-bottom-actions no-print" style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <button type="button" class="btn-pill-action btn-pill-secondary" style="justify-content: center; background: #ffffff; padding: 10px; font-size: 12px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.06);" onclick="shareStrukWhatsApp()">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: #25D366;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                        Kirim ke WA
+                    </button>
+                    <button type="button" class="btn-pill-action btn-pill-secondary" style="justify-content: center; background: #ffffff; padding: 10px; font-size: 12px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.06);" onclick="copyStrukText()">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        Salin Teks
+                    </button>
+                </div>
+                <button type="button" class="btn-pill-action btn-pill-primary" style="justify-content: center; padding: 13px; font-size: 14px; font-weight: 800; box-shadow: 0 10px 25px -5px rgba(108,71,255,0.4);" onclick="triggerPrintStruk()">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                        <polyline points="6 9 6 2 18 2 18 9"/>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                        <rect width="12" height="8" x="6" y="14"/>
+                    </svg>
+                    Cetak Struk Sekarang (Print)
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
