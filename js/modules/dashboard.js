@@ -1231,21 +1231,21 @@ window.shareStrukWhatsApp = function () {
 
     var totalFormatted = (typeof window.formatRupiah === 'function') ? window.formatRupiah(trx.price || 0) : ('Rp ' + trx.price);
 
-    var text = '🧾 *STRUK RESMI - MAFAZA GROUP*\n'
-        + '━━━━━━━━━━━━━━━━━━━━\n'
-        + 'No. Nota  : ' + (trx.orderNum || trx.id) + ' (' + trx.id + ')\n'
-        + 'Tanggal   : ' + (trx.date || '-') + '\n'
-        + 'Pelanggan : ' + (trx.customer || '-') + '\n'
-        + 'Metode    : ' + (trx.payment || 'Tunai') + '\n'
-        + '━━━━━━━━━━━━━━━━━━━━\n'
-        + '*Rincian Belanja:*\n'
-        + itemsText.join('\n') + '\n'
-        + '━━━━━━━━━━━━━━━━━━━━\n'
-        + '*TOTAL BAYAR: ' + totalFormatted + '*\n'
-        + 'Status    : LUNAS / SELESAI\n'
-        + '━━━━━━━━━━━━━━━━━━━━\n'
-        + 'Terima kasih telah berbelanja di Mafaza Group!\n'
-        + '_Pabrik & Outlet Oleh-Oleh Nusantara_\n'
+    var text = '\uD83E\uDDFE *STRUK RESMI - MAFAZA GROUP*\r\n'
+        + '━━━━━━━━━━━━━━━━━━━━\r\n'
+        + 'No. Nota  : ' + (trx.orderNum || trx.id) + ' (' + trx.id + ')\r\n'
+        + 'Tanggal   : ' + (trx.date || '-') + '\r\n'
+        + 'Pelanggan : ' + (trx.customer || '-') + '\r\n'
+        + 'Metode    : ' + (trx.payment || 'Tunai') + '\r\n'
+        + '━━━━━━━━━━━━━━━━━━━━\r\n'
+        + '*Rincian Belanja:*\r\n'
+        + itemsText.join('\r\n') + '\r\n'
+        + '━━━━━━━━━━━━━━━━━━━━\r\n'
+        + '*TOTAL BAYAR: ' + totalFormatted + '*\r\n'
+        + 'Status    : LUNAS / SELESAI\r\n'
+        + '━━━━━━━━━━━━━━━━━━━━\r\n'
+        + 'Terima kasih telah berbelanja di Mafaza Group!\r\n'
+        + '_Pabrik & Outlet Oleh-Oleh Nusantara_\r\n'
         + 'Kritik & Pemesanan: wa.me/6281234567890';
 
     var phoneClean = String(trx.phone || '').replace(/[^0-9]/g, '');
@@ -1277,20 +1277,20 @@ window.copyStrukText = function () {
 
     var totalFormatted = (typeof window.formatRupiah === 'function') ? window.formatRupiah(trx.price || 0) : ('Rp ' + trx.price);
 
-    var text = '🧾 STRUK RESMI - MAFAZA GROUP\n'
-        + '------------------------------------\n'
-        + 'No. Nota  : ' + (trx.orderNum || trx.id) + ' (' + trx.id + ')\n'
-        + 'Tanggal   : ' + (trx.date || '-') + '\n'
-        + 'Pelanggan : ' + (trx.customer || '-') + '\n'
-        + 'Metode    : ' + (trx.payment || 'Tunai') + '\n'
-        + '------------------------------------\n'
-        + 'Rincian Belanja:\n'
-        + itemsText.join('\n') + '\n'
-        + '------------------------------------\n'
-        + 'TOTAL BAYAR: ' + totalFormatted + '\n'
-        + 'Status    : LUNAS / SELESAI\n'
-        + '------------------------------------\n'
-        + 'Terima kasih telah berbelanja di Mafaza Group!\n'
+    var text = '\uD83E\uDDFE STRUK RESMI - MAFAZA GROUP\r\n'
+        + '------------------------------------\r\n'
+        + 'No. Nota  : ' + (trx.orderNum || trx.id) + ' (' + trx.id + ')\r\n'
+        + 'Tanggal   : ' + (trx.date || '-') + '\r\n'
+        + 'Pelanggan : ' + (trx.customer || '-') + '\r\n'
+        + 'Metode    : ' + (trx.payment || 'Tunai') + '\r\n'
+        + '------------------------------------\r\n'
+        + 'Rincian Belanja:\r\n'
+        + itemsText.join('\r\n') + '\r\n'
+        + '------------------------------------\r\n'
+        + 'TOTAL BAYAR: ' + totalFormatted + '\r\n'
+        + 'Status    : LUNAS / SELESAI\r\n'
+        + '------------------------------------\r\n'
+        + 'Terima kasih telah berbelanja di Mafaza Group!\r\n'
         + 'Pabrik & Outlet Oleh-Oleh Nusantara';
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
