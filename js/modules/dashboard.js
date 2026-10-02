@@ -1023,7 +1023,7 @@ window.openPreviewStruk = function (trxId) {
         itemsList = trx.items;
     } else {
         itemsList = [{
-            namaProduk: trx.category || 'Paket Produk Bos Kroco',
+            namaProduk: trx.category || 'Paket Produk Mafaza Group',
             qty: 1,
             harga: Number(trx.price || 0),
             subtotal: Number(trx.price || 0)
@@ -1086,12 +1086,12 @@ window.openPreviewStruk = function (trxId) {
 
     container.innerHTML = 
         '<div class="receipt-header">'
-        + '<div class="receipt-logo-emblem">BK</div>'
-        + '<div class="receipt-brand-name">BOS KROCO FOOD &amp; SNACK</div>'
-        + '<div class="receipt-brand-desc">Pabrik &amp; Outlet Oleh-Oleh Nusantara</div>'
+        + '<img src="assets/logo.jpg" alt="Logo" style="width: 50px; height: 50px; object-fit: contain; border-radius: 8px; margin-bottom: 8px;">'
+        + '<div class="receipt-brand-name">MAFAZA GROUP</div>'
+        + '<div class="receipt-brand-desc">Business Management System</div>'
         + '<div class="receipt-contact-info">'
         + 'Jl. Industri Kreatif No. 88, Jawa Timur<br>'
-        + 'Telp / WA: 0812-3456-7890 | IG: @boskroco.id'
+        + 'Telp / WA: 0812-3456-7890 | IG: @mafazagroup.id'
         + '</div>'
         + '</div>'
 
@@ -1186,10 +1186,9 @@ window.openPreviewStruk = function (trxId) {
         + '</div>'
 
         + '<div class="receipt-footer-notes">'
-        + '<b>Terima kasih telah berbelanja di Bos Kroco!</b><br>'
-        + 'Kualitas Rasa No. 1, Gurih, Renyah &amp; Higienis.<br>'
-        + 'Simpan struk ini sebagai bukti transaksi yang sah.<br>'
-        + '<small style="color:#94a3b8; font-size: 9.5px;">Powered by Bos Kroco ERP Systems</small>'
+        + '<b>Terima kasih telah berbelanja di Mafaza Group!</b><br>'
+        + 'Semoga harimu menyenangkan.<br>'
+        + '<small style="color:#94a3b8; font-size: 9.5px;">Powered by Mafaza Group ERP</small>'
         + '</div>';
 
     var modal = document.getElementById('modalPreviewStruk');
@@ -1227,12 +1226,12 @@ window.shareStrukWhatsApp = function () {
         });
     } else {
         var sub = (typeof window.formatRupiah === 'function') ? window.formatRupiah(trx.price) : ('Rp ' + trx.price);
-        itemsText.push('• ' + (trx.category || 'Paket Produk Bos Kroco') + ' (1x) : ' + sub);
+        itemsText.push('• ' + (trx.category || 'Paket Produk Mafaza Group') + ' (1x) : ' + sub);
     }
 
     var totalFormatted = (typeof window.formatRupiah === 'function') ? window.formatRupiah(trx.price || 0) : ('Rp ' + trx.price);
 
-    var text = '🧾 *STRUK RESMI - BOS KROCO FOOD & SNACK*\n'
+    var text = '🧾 *STRUK RESMI - MAFAZA GROUP*\n'
         + '━━━━━━━━━━━━━━━━━━━━\n'
         + 'No. Nota  : ' + (trx.orderNum || trx.id) + ' (' + trx.id + ')\n'
         + 'Tanggal   : ' + (trx.date || '-') + '\n'
@@ -1245,7 +1244,7 @@ window.shareStrukWhatsApp = function () {
         + '*TOTAL BAYAR: ' + totalFormatted + '*\n'
         + 'Status    : LUNAS / SELESAI\n'
         + '━━━━━━━━━━━━━━━━━━━━\n'
-        + 'Terima kasih telah berbelanja di Bos Kroco!\n'
+        + 'Terima kasih telah berbelanja di Mafaza Group!\n'
         + '_Pabrik & Outlet Oleh-Oleh Nusantara_\n'
         + 'Kritik & Pemesanan: wa.me/6281234567890';
 
@@ -1273,12 +1272,12 @@ window.copyStrukText = function () {
         });
     } else {
         var sub = (typeof window.formatRupiah === 'function') ? window.formatRupiah(trx.price) : ('Rp ' + trx.price);
-        itemsText.push('• ' + (trx.category || 'Paket Produk Bos Kroco') + ' (1x) : ' + sub);
+        itemsText.push('• ' + (trx.category || 'Paket Produk Mafaza Group') + ' (1x) : ' + sub);
     }
 
     var totalFormatted = (typeof window.formatRupiah === 'function') ? window.formatRupiah(trx.price || 0) : ('Rp ' + trx.price);
 
-    var text = '🧾 STRUK RESMI - BOS KROCO FOOD & SNACK\n'
+    var text = '🧾 STRUK RESMI - MAFAZA GROUP\n'
         + '------------------------------------\n'
         + 'No. Nota  : ' + (trx.orderNum || trx.id) + ' (' + trx.id + ')\n'
         + 'Tanggal   : ' + (trx.date || '-') + '\n'
@@ -1291,7 +1290,7 @@ window.copyStrukText = function () {
         + 'TOTAL BAYAR: ' + totalFormatted + '\n'
         + 'Status    : LUNAS / SELESAI\n'
         + '------------------------------------\n'
-        + 'Terima kasih telah berbelanja di Bos Kroco!\n'
+        + 'Terima kasih telah berbelanja di Mafaza Group!\n'
         + 'Pabrik & Outlet Oleh-Oleh Nusantara';
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
