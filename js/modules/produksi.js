@@ -152,11 +152,15 @@ window.renderHppBahanBaku = function() {
         totalBahan += sub;
         var tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><input type="text" class="search-filter-input" style="width: 100%; padding: 4px;" value="${item.nama}" onchange="window.updateHppBahan(${idx}, 'nama', this.value)"></td>
-            <td><input type="number" class="search-filter-input" style="width: 100%; padding: 4px;" value="${item.qty}" oninput="window.updateHppBahan(${idx}, 'qty', this.value)"></td>
-            <td><input type="number" class="search-filter-input" style="width: 100%; padding: 4px;" value="${item.harga}" oninput="window.updateHppBahan(${idx}, 'harga', this.value)"></td>
-            <td style="font-weight: bold;">${window.formatRupiah ? window.formatRupiah(sub) : ('Rp ' + sub)}</td>
-            <td><button style="border: none; background: transparent; color: red; cursor: pointer; font-weight: bold;" onclick="window.hapusHppBahan(${idx})">X</button></td>
+            <td><input type="text" class="hpp-clean-input" value="${item.nama}" onchange="window.updateHppBahan(${idx}, 'nama', this.value)"></td>
+            <td><input type="number" class="hpp-clean-input" style="text-align: center;" value="${item.qty}" oninput="window.updateHppBahan(${idx}, 'qty', this.value)"></td>
+            <td><input type="number" class="hpp-clean-input" style="text-align: right;" value="${item.harga}" oninput="window.updateHppBahan(${idx}, 'harga', this.value)"></td>
+            <td style="font-weight: 700; text-align: right; color: var(--text-dark);">${window.formatRupiah ? window.formatRupiah(sub) : ('Rp ' + sub)}</td>
+            <td style="text-align: center;">
+                <button style="border: none; background: #fff1f2; color: #e11d48; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center;" onclick="window.hapusHppBahan(${idx})">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </td>
         `;
         tbody.appendChild(tr);
     });
