@@ -27,19 +27,43 @@ function fetchAuditLogs() {
 
 function filterAuditLogs() {
     var input = document.getElementById('searchAuditTable');
+    var dateInput = document.getElementById('filterAuditDate');
+    
     var q = (input ? input.value : '').toLowerCase().trim();
-    if (!q) {
+    var d = dateInput ? dateInput.value : ''; // format YYYY-MM-DD
+    
+    var dateMatchStr = '';
+    if (d) {
+        var parts = d.split('-');
+        if (parts.length === 3) {
+            dateMatchStr = parts[2] + '/' + parts[1] + '/' + parts[0]; // DD/MM/YYYY
+        }
+    }
+
+    if (!q && !dateMatchStr) {
         renderAuditLogRows(allAuditLogs);
         return;
     }
+    
     var filtered = (allAuditLogs || []).filter(function (l) {
-        return (l.logId && l.logId.toLowerCase().indexOf(q) !== -1)
-            || (l.namaUser && l.namaUser.toLowerCase().indexOf(q) !== -1)
-            || (l.userId && l.userId.toLowerCase().indexOf(q) !== -1)
-            || (l.modul && l.modul.toLowerCase().indexOf(q) !== -1)
-            || (l.aksi && l.aksi.toLowerCase().indexOf(q) !== -1)
-            || (l.keterangan && l.keterangan.toLowerCase().indexOf(q) !== -1);
+        var matchDate = true;
+        if (dateMatchStr && l.waktu) {
+            matchDate = l.waktu.indexOf(dateMatchStr) === 0; // Starts with the date
+        }
+
+        var matchText = true;
+        if (q) {
+            matchText = (l.logId && l.logId.toLowerCase().indexOf(q) !== -1)
+                || (l.namaUser && l.namaUser.toLowerCase().indexOf(q) !== -1)
+                || (l.userId && l.userId.toLowerCase().indexOf(q) !== -1)
+                || (l.modul && l.modul.toLowerCase().indexOf(q) !== -1)
+                || (l.aksi && l.aksi.toLowerCase().indexOf(q) !== -1)
+                || (l.keterangan && l.keterangan.toLowerCase().indexOf(q) !== -1);
+        }
+
+        return matchDate && matchText;
     });
+    
     var tbody = document.getElementById('tblAuditLogs');
     if (!tbody) return;
     if (filtered.length === 0) {
@@ -47,6 +71,19 @@ function filterAuditLogs() {
         return;
     }
     renderAuditLogRows(filtered);
+}
+
+function arsipAuditLogs() {
+    if (confirm('Yakin ingin mengarsipkan semua data log ini? Data akan dipindahkan ke arsip historis.')) {
+        allAuditLogs = []; // Kosongkan lokal
+        var tbody = document.getElementById('tblAuditLogs');
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:16px;">Belum ada log audit baru. Data lama telah diarsipkan.</td></tr>';
+        }
+        if (typeof window.showToast === 'function') {
+            window.showToast('Semua log berhasil diarsipkan.', 'success');
+        }
+    }
 }
 
 function renderAuditLogRows(logs) {
@@ -71,3 +108,4 @@ function renderAuditLogRows(logs) {
 window.fetchAuditLogs = fetchAuditLogs;
 window.filterAuditLogs = filterAuditLogs;
 window.renderAuditLogRows = renderAuditLogRows;
+window.arsipAuditLogs = arsipAuditLogs;

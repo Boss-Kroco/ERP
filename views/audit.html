@@ -9,6 +9,7 @@
                 Log Audit Trail Sensitif (Khusus Owner &amp; Admin)
             </span>
             <div style="display: flex; align-items: center; gap: 8px;">
+                <input type="date" class="search-filter-input" id="filterAuditDate" onchange="filterAuditLogs()" title="Filter berdasarkan tanggal">
                 <div class="search-filter-box">
                     <span class="table-search-icon">
                         <svg class="svg-icon-sm" viewBox="0 0 24 24">
@@ -19,6 +20,7 @@
                     <input type="text" class="search-filter-input" id="searchAuditTable"
                         placeholder="Cari log..." oninput="filterAuditLogs()">
                 </div>
+                <button class="btn-pill-action btn-pill-secondary" onclick="arsipAuditLogs()">Arsip Data</button>
                 <button class="btn-pill-action btn-pill-secondary" onclick="fetchAuditLogs()">Segarkan Log</button>
             </div>
         </div>
