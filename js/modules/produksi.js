@@ -42,11 +42,9 @@ window.switchHppTab = function(tabId) {
         var btn = document.getElementById(btnId);
         if(btn) {
             if(t === tabId) {
-                btn.classList.remove('btn-pill-secondary');
-                btn.classList.add('btn-pill-primary');
+                btn.classList.add('active');
             } else {
-                btn.classList.remove('btn-pill-primary');
-                btn.classList.add('btn-pill-secondary');
+                btn.classList.remove('active');
             }
         }
     });

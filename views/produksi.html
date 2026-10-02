@@ -99,42 +99,57 @@
         box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15) !important;
     }
 
-    /* Grand Total Box */
+    /* Grand Total Box - Redesigned to be lighter and more elegant */
     .hpp-total-box {
-        background: linear-gradient(135deg, #1e1b4b 0%, #4f46e5 100%);
-        border-radius: 20px;
-        padding: 24px;
-        color: white;
+        background: #ffffff;
+        border: 1px solid var(--border-soft);
+        border-radius: 16px;
+        padding: 20px 24px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 15px 35px -5px rgba(79, 70, 229, 0.4);
+        box-shadow: var(--shadow-subtle);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hpp-total-box::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 6px;
+        background: var(--violet-main);
+        border-radius: 6px 0 0 6px;
     }
 
     .hpp-total-item {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 6px;
+        z-index: 1;
     }
 
     .hpp-total-label {
         font-size: 12px;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.8);
+        font-weight: 700;
+        color: var(--text-secondary);
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
 
     .hpp-total-value {
-        font-size: 28px;
+        font-size: 24px;
         font-weight: 800;
+        color: var(--violet-dark);
         letter-spacing: -0.5px;
     }
 
     .hpp-per-item-value {
-        font-size: 36px;
-        color: #34d399; /* Emerald 400 */
-        text-shadow: 0 2px 10px rgba(52, 211, 153, 0.3);
+        font-size: 32px;
+        color: var(--emerald);
+        text-shadow: none;
     }
 </style>
 
@@ -288,7 +303,7 @@
                         <span class="hpp-total-value" id="lblHppGrandTotal">Rp 0</span>
                     </div>
                     <div class="hpp-total-item" style="text-align: right;">
-                        <span class="hpp-total-label" style="color: #6ee7b7;">HPP Ditemukan (Per Item)</span>
+                        <span class="hpp-total-label" style="color: var(--text-secondary);">HPP Ditemukan (Per Item)</span>
                         <span class="hpp-total-value hpp-per-item-value" id="lblHppPerItem">Rp 0</span>
                     </div>
                 </div>
