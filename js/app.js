@@ -213,8 +213,8 @@ window.initApp = async function () {
     if (typeof window.fetchDueAlerts === 'function') {
         window.fetchDueAlerts();
     }
-    if (typeof window.populateProductDropdowns === 'function') {
-        window.populateProductDropdowns();
+    if (typeof window.fetchMasterProducts === 'function') {
+        window.fetchMasterProducts();
     }
     if (typeof window.startAgendaReminderChecker === 'function') {
         window.startAgendaReminderChecker();
