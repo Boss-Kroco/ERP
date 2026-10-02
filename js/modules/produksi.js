@@ -299,6 +299,6 @@ window.simpanProdukBaruHpp = function() {
     document.getElementById('newProdSku').value = '';
     document.getElementById('newProdHarga').value = '';
     
-    document.getElementById('modalTambahProduk').style.display = 'none';
+    document.getElementById('modalTambahJenisHpp').style.display = 'none';
     if(window.showToast) window.showToast('Produk Makanan Baru berhasil ditambahkan!', 'success');
 };
