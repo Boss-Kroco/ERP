@@ -257,3 +257,48 @@ document.addEventListener('DOMContentLoaded', function() {
         window.renderDaftarHPP();
     }, 500);
 });
+
+window.simpanProdukBaruHpp = function() {
+    var nama = document.getElementById('newProdNama').value.trim();
+    var sku = document.getElementById('newProdSku').value.trim();
+    var satuan = document.getElementById('newProdSatuan').value.trim();
+    var harga = parseFloat(document.getElementById('newProdHarga').value) || 0;
+
+    if(!nama) {
+        if(window.showToast) window.showToast('Nama produk harus diisi!', 'error');
+        return;
+    }
+
+    var newId = 'PRD-' + Math.floor(Math.random() * 10000);
+    if(!sku) sku = 'SKU-' + Math.floor(Math.random() * 1000);
+    if(!satuan) satuan = 'Pcs';
+
+    var newProduct = {
+        id: newId,
+        nama: nama,
+        sku: sku,
+        satuan: satuan,
+        hppItem: 0,
+        hargaJual: harga,
+        status: 'Aktif',
+        rincian: {
+            bahan: 0, tk: 0, gas: 0, listrik: 0, kemasan: 0, overhead: 0, lainnya: 0
+        }
+    };
+
+    window.hppMasterData.push(newProduct);
+    
+    // Clear dropdown to force repopulation next time 'Tambah' tab is opened
+    var sel = document.getElementById('hppSelProduk');
+    if(sel) sel.innerHTML = '';
+    
+    window.renderDaftarHPP();
+    
+    // Reset Form
+    document.getElementById('newProdNama').value = '';
+    document.getElementById('newProdSku').value = '';
+    document.getElementById('newProdHarga').value = '';
+    
+    document.getElementById('modalTambahProduk').style.display = 'none';
+    if(window.showToast) window.showToast('Produk Makanan Baru berhasil ditambahkan!', 'success');
+};

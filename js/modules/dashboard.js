@@ -1202,7 +1202,17 @@ window.closePreviewStrukModal = function () {
 };
 
 window.triggerPrintStruk = function () {
-    window.print();
+    var container = document.getElementById('printableReceiptArea');
+    if (!container) return;
+    
+    var trx = window._currentReceiptTrx || {};
+    var trxId = trx.id || trx.orderNum || 'Baru';
+    
+    if (typeof window.downloadStrukPdf === 'function') {
+        window.downloadStrukPdf(container.innerHTML, 'Struk_POS_' + trxId + '.pdf');
+    } else {
+        window.print();
+    }
 };
 
 window.shareStrukWhatsApp = function () {

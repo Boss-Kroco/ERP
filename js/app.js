@@ -254,3 +254,36 @@ document.addEventListener('DOMContentLoaded', function () {
     // Jalankan inisialisasi aplikasi
     window.initApp();
 });
+
+// ==========================================
+// PDF GENERATION HELPER
+// ==========================================
+window.downloadStrukPdf = function(htmlContent, filename) {
+    if (typeof window.html2pdf !== 'function') {
+        if(window.showToast) window.showToast('Gagal memuat pembuat PDF. Coba ulangi atau muat ulang halaman.', 'error');
+        return;
+    }
+    
+    var container = document.createElement('div');
+    container.innerHTML = htmlContent;
+    container.style.padding = '10px';
+    container.style.background = '#fff';
+    container.style.color = '#000';
+    container.style.width = '300px'; // typical receipt width
+    container.style.fontFamily = 'monospace';
+    
+    var opt = {
+        margin:       5,
+        filename:     filename || 'Struk.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: [80, 200], orientation: 'portrait' }
+    };
+    
+    window.html2pdf().set(opt).from(container).save().then(function() {
+        if(window.showToast) window.showToast('Struk PDF berhasil diunduh.', 'success');
+    }).catch(function(err) {
+        console.error('PDF generation error:', err);
+        if(window.showToast) window.showToast('Terjadi kesalahan saat membuat PDF.', 'error');
+    });
+};

@@ -239,14 +239,18 @@ window.cetakStrukSewa = function(penyewa, durasi) {
         </div>
     `;
 
-    var printWindow = window.open('', '_blank', 'width=400,height=600');
-    printWindow.document.write('<html><head><title>Cetak Struk Sewa</title></head><body style="margin:0; padding:0; display:flex; justify-content:center;">' + strukHtml + '</body></html>');
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(function() {
-        printWindow.print();
-        printWindow.close();
-    }, 500);
+    if (typeof window.downloadStrukPdf === 'function') {
+        window.downloadStrukPdf(strukHtml, 'Struk_Sewa_' + penyewa.replace(/\s+/g, '_') + '.pdf');
+    } else {
+        var printWindow = window.open('', '_blank', 'width=400,height=600');
+        printWindow.document.write('<html><head><title>Cetak Struk Sewa</title></head><body style="margin:0; padding:0; display:flex; justify-content:center;">' + strukHtml + '</body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(function() {
+            printWindow.print();
+            printWindow.close();
+        }, 500);
+    }
 };
 
 // Auto render on load
