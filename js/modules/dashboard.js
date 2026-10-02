@@ -1091,7 +1091,7 @@ window.openPreviewStruk = function (trxId) {
         + '<div class="receipt-brand-desc">Business Management System</div>'
         + '<div class="receipt-contact-info">'
         + 'Jl. Industri Kreatif No. 88, Jawa Timur<br>'
-        + 'Telp / WA: 0812-3456-7890 | IG: @mafazagroup.id'
+        + 'Telp / WA: 0822-6866-0396 | IG: @mafazagroup.id'
         + '</div>'
         + '</div>'
 
@@ -1246,7 +1246,7 @@ window.shareStrukWhatsApp = function () {
         + '━━━━━━━━━━━━━━━━━━━━\r\n'
         + 'Terima kasih telah berbelanja di Mafaza Group!\r\n'
         + '_Pabrik & Outlet Oleh-Oleh Nusantara_\r\n'
-        + 'Kritik & Pemesanan: wa.me/6281234567890';
+        + 'Kritik & Pemesanan: wa.me/6282268660396';
 
     var phoneClean = String(trx.phone || '').replace(/[^0-9]/g, '');
     if (phoneClean.startsWith('0')) phoneClean = '62' + phoneClean.slice(1);
