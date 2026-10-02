@@ -37,7 +37,12 @@ window.renderAlatSewa = function(filterQuery) {
         card.onclick = function() { window.tambahKeKeranjangSewa(alat); };
         
         card.innerHTML = `
-            <div style="font-weight: 700; font-size: 13px; color: var(--text-dark); margin-bottom: 4px;">${alat.nama}</div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+                <div style="font-weight: 700; font-size: 13px; color: var(--text-dark);">${alat.nama}</div>
+                <button style="background: transparent; border: none; color: #dc2626; cursor: pointer; padding: 2px;" onclick="event.stopPropagation(); window.hapusAlat('${alat.id}')" title="Hapus Alat">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24" style="width: 14px; height: 14px;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                </button>
+            </div>
             <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Stok: ${alat.qty}</div>
             <div style="font-weight: 800; color: var(--violet-main); font-size: 14px; margin-top: auto;">Rp ${window.formatRupiah ? window.formatRupiah(alat.hargaSewa) : alat.hargaSewa} <span style="font-size: 10px; font-weight: normal; color: var(--text-muted);">/hari</span></div>
         `;
@@ -145,6 +150,9 @@ window.prosesSewa = function() {
     
     if(window.showToast) window.showToast('Transaksi Sewa berhasil diproses untuk ' + penyewa + ' selama ' + durasi + ' hari!', 'success');
     
+    // Cetak Struk
+    window.cetakStrukSewa(penyewa, durasi);
+
     // Clear keranjang
     window.keranjangSewa = [];
     document.getElementById('inpPenyewaSewa').value = '';
@@ -155,6 +163,90 @@ window.prosesSewa = function() {
     if(typeof window.addMockAuditLog === 'function') {
         window.addMockAuditLog('Sewa Alat', 'Transaksi Sewa Baru: ' + penyewa);
     }
+};
+
+window.bukaModalTambahAlat = function() {
+    document.getElementById('inpIdAlatBaru').value = 'AL-' + Math.floor(Math.random() * 1000);
+    document.getElementById('inpNamaAlatBaru').value = '';
+    document.getElementById('inpHargaAlatBaru').value = '';
+    document.getElementById('inpQtyAlatBaru').value = '1';
+    document.getElementById('modalTambahAlatSewa').style.display = 'flex';
+};
+
+window.simpanAlatBaru = function() {
+    var id = document.getElementById('inpIdAlatBaru').value;
+    var nama = document.getElementById('inpNamaAlatBaru').value;
+    var harga = parseInt(document.getElementById('inpHargaAlatBaru').value) || 0;
+    var qty = parseInt(document.getElementById('inpQtyAlatBaru').value) || 1;
+    
+    if(!nama || harga <= 0) {
+        if(window.showToast) window.showToast('Nama dan harga alat harus diisi!', 'error');
+        return;
+    }
+    
+    window.katalogAlat.push({ id: id, nama: nama, hargaSewa: harga, qty: qty });
+    document.getElementById('modalTambahAlatSewa').style.display = 'none';
+    window.renderAlatSewa();
+    if(window.showToast) window.showToast('Alat baru berhasil ditambahkan.', 'success');
+};
+
+window.hapusAlat = function(id) {
+    if(confirm('Yakin ingin menghapus alat ini?')) {
+        window.katalogAlat = window.katalogAlat.filter(function(a) { return a.id !== id; });
+        window.renderAlatSewa();
+        if(window.showToast) window.showToast('Alat berhasil dihapus.', 'success');
+    }
+};
+
+window.cetakStrukSewa = function(penyewa, durasi) {
+    var subtotal = 0;
+    var itemsHtml = '';
+    window.keranjangSewa.forEach(function(item) {
+        var lineTotal = item.hargaSewa * item.qty * durasi;
+        subtotal += lineTotal;
+        itemsHtml += `
+            <tr>
+                <td style="padding: 4px 0; border-bottom: 1px dashed #ccc;">${item.nama}<br><small>${item.qty} x Rp ${window.formatRupiah ? window.formatRupiah(item.hargaSewa) : item.hargaSewa}</small></td>
+                <td style="padding: 4px 0; text-align: right; border-bottom: 1px dashed #ccc;">Rp ${window.formatRupiah ? window.formatRupiah(lineTotal) : lineTotal}</td>
+            </tr>
+        `;
+    });
+
+    var strukHtml = `
+        <div style="width: 300px; padding: 20px; font-family: monospace; color: #000; background: #fff;">
+            <div style="text-align: center; margin-bottom: 10px;">
+                <h2 style="margin: 0; font-size: 18px;">MAFAZA GROUP</h2>
+                <p style="margin: 5px 0;">Struk Sewa Alat</p>
+                <p style="margin: 0; font-size: 12px;">Tanggal: ${new Date().toLocaleDateString()}</p>
+            </div>
+            <hr style="border: none; border-top: 1px dashed #000;">
+            <p style="margin: 5px 0;">Penyewa: ${penyewa}</p>
+            <p style="margin: 5px 0;">Durasi: ${durasi} Hari</p>
+            <hr style="border: none; border-top: 1px dashed #000;">
+            <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+                <tbody>
+                    ${itemsHtml}
+                </tbody>
+            </table>
+            <hr style="border: none; border-top: 1px dashed #000;">
+            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 14px;">
+                <span>TOTAL</span>
+                <span>Rp ${window.formatRupiah ? window.formatRupiah(subtotal) : subtotal}</span>
+            </div>
+            <div style="text-align: center; margin-top: 20px; font-size: 11px;">
+                Terima Kasih Atas Kepercayaannya
+            </div>
+        </div>
+    `;
+
+    var printWindow = window.open('', '_blank', 'width=400,height=600');
+    printWindow.document.write('<html><head><title>Cetak Struk Sewa</title></head><body style="margin:0; padding:0; display:flex; justify-content:center;">' + strukHtml + '</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(function() {
+        printWindow.print();
+        printWindow.close();
+    }, 500);
 };
 
 // Auto render on load

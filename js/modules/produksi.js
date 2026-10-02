@@ -1,343 +1,257 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - PRODUKSI & HPP BATCH MODULE
- * File: js/modules/produksi.js
+ * BOS KROCO ERP - MODUL HPP PRODUK
+ * File: js/modules/produksi.js (repurposed for HPP)
  * ============================================================================
  */
 
-// ============================================================================
-// KALKULATOR HPP BERDASARKAN RESEP
-// ============================================================================
-
-window.resepItems = [
-    { nama: 'Tempe (1 kg)', qty: 1, hargaSatuan: 4000 },
-    { nama: 'Cabe (kg)', qty: 0.5, hargaSatuan: 60000 },
-    { nama: 'Gula (kg)', qty: 3, hargaSatuan: 14000 },
-    { nama: 'Garam (kg)', qty: 0.2, hargaSatuan: 4000 },
-    { nama: 'Gula Jawa (kg)', qty: 3, hargaSatuan: 50000 },
-    { nama: 'Kemasan (pcs)', qty: 30, hargaSatuan: 400 }
+window.hppMasterData = [
+    {
+        id: 'PRD-001',
+        nama: 'Kue Kacang Original',
+        sku: 'KK-ORG',
+        satuan: 'Pcs',
+        hppItem: 192.46,
+        hargaJual: 500,
+        status: 'Aktif',
+        rincian: {
+            bahan: 100,
+            tk: 30,
+            gas: 20,
+            listrik: 5,
+            kemasan: 25,
+            overhead: 10,
+            lainnya: 2.46
+        }
+    }
 ];
 
-window.renderTabelResep = function() {
-    var tbody = document.getElementById('bodyResepHPP');
+window.hppRiwayatData = [
+    { tanggal: '2026-09-01', produk: 'Kue Kacang Original', hppLama: 180, hppBaru: 192.46, penyebab: 'Kenaikan harga kacang' }
+];
+
+window.tempBahanBaku = [
+    { nama: 'Kacang Tanah', qty: 1, harga: 25000 }
+];
+
+window.switchHppTab = function(tabId) {
+    var tabs = ['daftar', 'tambah', 'riwayat', 'pengaturan'];
+    tabs.forEach(function(t) {
+        document.getElementById('hpp-tab-' + t).style.display = (t === tabId) ? 'block' : 'none';
+        var btnId = 'btnTabHpp' + t.charAt(0).toUpperCase() + t.slice(1);
+        var btn = document.getElementById(btnId);
+        if(btn) {
+            if(t === tabId) {
+                btn.classList.remove('btn-pill-secondary');
+                btn.classList.add('btn-pill-primary');
+            } else {
+                btn.classList.remove('btn-pill-primary');
+                btn.classList.add('btn-pill-secondary');
+            }
+        }
+    });
+
+    if(tabId === 'daftar') window.renderDaftarHPP();
+    if(tabId === 'riwayat') window.renderRiwayatHPP();
+    if(tabId === 'tambah') window.initTambahHpp();
+};
+
+window.renderDaftarHPP = function() {
+    var tbody = document.getElementById('tblDaftarHPP');
     if(!tbody) return;
     tbody.innerHTML = '';
-    
-    window.resepItems.forEach(function(item, index) {
+
+    window.hppMasterData.forEach(function(item) {
         var tr = document.createElement('tr');
-        var subtotal = item.qty * item.hargaSatuan;
+        var laba = item.hargaJual - item.hppItem;
+        var margin = item.hargaJual > 0 ? (laba / item.hargaJual) * 100 : 0;
         
         tr.innerHTML = `
-            <td><input type="text" class="search-filter-input" style="width: 100%;" value="${item.nama}" oninput="window.updateResepItem(${index}, 'nama', this.value)"></td>
-            <td><input type="number" step="any" class="search-filter-input" style="width: 100%;" value="${item.qty}" oninput="window.updateResepItem(${index}, 'qty', this.value)"></td>
-            <td><input type="number" class="search-filter-input" style="width: 100%;" value="${item.hargaSatuan}" oninput="window.updateResepItem(${index}, 'hargaSatuan', this.value)"></td>
-            <td style="font-weight: bold;">Rp ${typeof window.formatRupiah === 'function' ? window.formatRupiah(subtotal) : subtotal}</td>
-            <td><button class="btn-pill-action" style="color: red; padding: 4px;" onclick="window.hapusResepItem(${index})">X</button></td>
+            <td style="font-weight: 600;">${item.nama}</td>
+            <td>${item.sku}</td>
+            <td>${item.satuan}</td>
+            <td style="text-align: right; font-weight: bold; color: var(--text-dark);">Rp ${window.formatRupiah ? window.formatRupiah(item.hppItem) : item.hppItem}</td>
+            <td style="text-align: right;">Rp ${window.formatRupiah ? window.formatRupiah(item.hargaJual) : item.hargaJual}</td>
+            <td style="text-align: right; color: var(--emerald); font-weight: bold;">Rp ${window.formatRupiah ? window.formatRupiah(laba) : laba}</td>
+            <td style="text-align: right; color: var(--violet-main); font-weight: bold;">${margin.toFixed(2)}%</td>
+            <td><span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">${item.status}</span></td>
+            <td style="text-align: center;">
+                <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="window.lihatDetailHpp('${item.id}')">Lihat Detail</button>
+            </td>
         `;
         tbody.appendChild(tr);
     });
-    window.hitungTotalResep();
 };
 
-window.updateResepItem = function(index, field, value) {
-    if(field === 'qty' || field === 'hargaSatuan') {
-        window.resepItems[index][field] = parseFloat(value) || 0;
-    } else {
-        window.resepItems[index][field] = value;
+window.lihatDetailHpp = function(id) {
+    var item = window.hppMasterData.find(function(i) { return i.id === id; });
+    if(!item) return;
+
+    var laba = item.hargaJual - item.hppItem;
+    var margin = item.hargaJual > 0 ? (laba / item.hargaJual) * 100 : 0;
+
+    document.getElementById('detHppNamaProduk').textContent = item.nama;
+    document.getElementById('detHppNilai').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(item.hppItem) : item.hppItem);
+    document.getElementById('detHppJual').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(item.hargaJual) : item.hargaJual);
+    document.getElementById('detHppLaba').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(laba) : laba);
+    document.getElementById('detHppMargin').textContent = margin.toFixed(2) + '%';
+
+    var r = item.rincian || {};
+    document.getElementById('detRincianBahan').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(r.bahan || 0) : r.bahan);
+    document.getElementById('detRincianTk').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(r.tk || 0) : r.tk);
+    document.getElementById('detRincianGas').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(r.gas || 0) : r.gas);
+    document.getElementById('detRincianKemasan').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(r.kemasan || 0) : r.kemasan);
+    document.getElementById('detRincianOverhead').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah((r.overhead || 0) + (r.listrik || 0) + (r.lainnya || 0)) : ((r.overhead || 0) + (r.listrik || 0) + (r.lainnya || 0)));
+
+    document.getElementById('modalDetailHpp').style.display = 'flex';
+};
+
+window.renderRiwayatHPP = function() {
+    var tbody = document.getElementById('tblRiwayatHPP');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+
+    window.hppRiwayatData.forEach(function(item) {
+        var tr = document.createElement('tr');
+        var selisih = item.hppBaru - item.hppLama;
+        var selisihWarna = selisih > 0 ? 'red' : (selisih < 0 ? 'green' : 'black');
+        var selisihTanda = selisih > 0 ? '+' : '';
+        
+        tr.innerHTML = `
+            <td>${item.tanggal}</td>
+            <td>${item.produk}</td>
+            <td style="text-align: right;">Rp ${window.formatRupiah ? window.formatRupiah(item.hppLama) : item.hppLama}</td>
+            <td style="text-align: right; font-weight: bold;">Rp ${window.formatRupiah ? window.formatRupiah(item.hppBaru) : item.hppBaru}</td>
+            <td style="text-align: right; color: ${selisihWarna}; font-weight: bold;">${selisihTanda} Rp ${window.formatRupiah ? window.formatRupiah(Math.abs(selisih)) : Math.abs(selisih)}</td>
+            <td>${item.penyebab}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+};
+
+window.initTambahHpp = function() {
+    var sel = document.getElementById('hppSelProduk');
+    if(sel && sel.options.length === 0) {
+        // Populate
+        window.hppMasterData.forEach(function(p) {
+            var opt = document.createElement('option');
+            opt.value = p.id;
+            opt.textContent = p.nama + ' (' + p.sku + ')';
+            sel.appendChild(opt);
+        });
     }
-    window.renderTabelResep();
+    window.renderHppBahanBaku();
 };
 
-window.hapusResepItem = function(index) {
-    window.resepItems.splice(index, 1);
-    window.renderTabelResep();
-};
-
-window.tambahBarisResep = function() {
-    window.resepItems.push({ nama: '', qty: 1, hargaSatuan: 0 });
-    window.renderTabelResep();
-};
-
-window.hitungTotalResep = function() {
-    var totalBiaya = 0;
-    window.resepItems.forEach(function(item) {
-        totalBiaya += item.qty * item.hargaSatuan;
+window.renderHppBahanBaku = function() {
+    var tbody = document.getElementById('bodyHppBahanBaku');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    var totalBahan = 0;
+    window.tempBahanBaku.forEach(function(item, idx) {
+        var sub = item.qty * item.harga;
+        totalBahan += sub;
+        var tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><input type="text" class="search-filter-input" style="width: 100%; padding: 4px;" value="${item.nama}" onchange="window.updateHppBahan(${idx}, 'nama', this.value)"></td>
+            <td><input type="number" class="search-filter-input" style="width: 100%; padding: 4px;" value="${item.qty}" oninput="window.updateHppBahan(${idx}, 'qty', this.value)"></td>
+            <td><input type="number" class="search-filter-input" style="width: 100%; padding: 4px;" value="${item.harga}" oninput="window.updateHppBahan(${idx}, 'harga', this.value)"></td>
+            <td style="font-weight: bold;">Rp ${window.formatRupiah ? window.formatRupiah(sub) : sub}</td>
+            <td><button style="border: none; background: transparent; color: red; cursor: pointer; font-weight: bold;" onclick="window.hapusHppBahan(${idx})">X</button></td>
+        `;
+        tbody.appendChild(tr);
     });
     
-    var elTotal = document.getElementById('totalBiayaResep');
-    if(elTotal) elTotal.textContent = 'Rp ' + (typeof window.formatRupiah === 'function' ? window.formatRupiah(totalBiaya) : totalBiaya);
-    
-    var targetPcs = parseFloat(document.getElementById('inpTargetHasilResep').value) || 1;
-    var hppPerPcs = targetPcs > 0 ? (totalBiaya / targetPcs) : 0;
-    
-    var elHpp = document.getElementById('hppPerPcsResep');
-    if(elHpp) elHpp.textContent = 'Rp ' + (typeof window.formatRupiah === 'function' ? window.formatRupiah(Math.round(hppPerPcs)) : Math.round(hppPerPcs)) + ' / pcs';
+    document.getElementById('lblHppTotalBahan').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(totalBahan) : totalBahan);
+    document.getElementById('lblHppTotalBahan').dataset.val = totalBahan;
+    window.kalkulasiTotalHpp();
 };
 
-window.terapkanResepKeProduksi = function() {
-    var totalBiaya = 0;
-    window.resepItems.forEach(function(item) {
-        totalBiaya += item.qty * item.hargaSatuan;
+window.updateHppBahan = function(idx, field, value) {
+    if(field === 'qty' || field === 'harga') value = parseFloat(value) || 0;
+    window.tempBahanBaku[idx][field] = value;
+    window.renderHppBahanBaku();
+};
+
+window.addHppBahanBaku = function() {
+    window.tempBahanBaku.push({ nama: '', qty: 1, harga: 0 });
+    window.renderHppBahanBaku();
+};
+
+window.hapusHppBahan = function(idx) {
+    window.tempBahanBaku.splice(idx, 1);
+    window.renderHppBahanBaku();
+};
+
+window.kalkulasiTotalHpp = function() {
+    var totalBahan = parseFloat(document.getElementById('lblHppTotalBahan').dataset.val || 0);
+    
+    var bTk = parseFloat(document.getElementById('hppBiayaTk').value) || 0;
+    var bGas = parseFloat(document.getElementById('hppBiayaGas').value) || 0;
+    var bListrik = parseFloat(document.getElementById('hppBiayaListrik').value) || 0;
+    var bKemasan = parseFloat(document.getElementById('hppBiayaKemasan').value) || 0;
+    var bOverhead = parseFloat(document.getElementById('hppBiayaOverhead').value) || 0;
+    var bLain = parseFloat(document.getElementById('hppBiayaLain').value) || 0;
+    
+    var totalProduksi = bTk + bGas + bListrik + bKemasan + bOverhead + bLain;
+    document.getElementById('lblHppTotalProduksi').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(totalProduksi) : totalProduksi);
+    
+    var grandTotal = totalBahan + totalProduksi;
+    document.getElementById('lblHppGrandTotal').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(grandTotal) : grandTotal);
+    
+    var jmlProd = parseFloat(document.getElementById('hppJmlProduksi').value) || 1;
+    var hppItem = grandTotal / jmlProd;
+    
+    document.getElementById('lblHppPerItem').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(hppItem) : hppItem);
+    
+    window.tempHppResult = {
+        totalBahan: totalBahan,
+        bTk: bTk, bGas: bGas, bListrik: bListrik, bKemasan: bKemasan, bOverhead: bOverhead, bLain: bLain,
+        grandTotal: grandTotal,
+        jmlProd: jmlProd,
+        hppItem: hppItem
+    };
+};
+
+window.simpanHppBaru = function() {
+    var selId = document.getElementById('hppSelProduk').value;
+    var prd = window.hppMasterData.find(function(p) { return p.id === selId; });
+    
+    if(!prd) {
+        if(window.showToast) window.showToast('Pilih produk terlebih dahulu!', 'error');
+        return;
+    }
+    
+    var oldHpp = prd.hppItem;
+    var res = window.tempHppResult;
+    
+    prd.hppItem = res.hppItem;
+    prd.rincian = {
+        bahan: res.totalBahan / res.jmlProd,
+        tk: res.bTk / res.jmlProd,
+        gas: res.bGas / res.jmlProd,
+        listrik: res.bListrik / res.jmlProd,
+        kemasan: res.bKemasan / res.jmlProd,
+        overhead: res.bOverhead / res.jmlProd,
+        lainnya: res.bLain / res.jmlProd
+    };
+    
+    var today = new Date().toISOString().split('T')[0];
+    window.hppRiwayatData.unshift({
+        tanggal: today,
+        produk: prd.nama,
+        hppLama: oldHpp,
+        hppBaru: res.hppItem,
+        penyebab: 'Kalkulasi ulang via form HPP'
     });
     
-    var targetPcs = document.getElementById('inpTargetHasilResep').value;
-    
-    document.getElementById('prodBiayaBahan').value = totalBiaya;
-    document.getElementById('prodBatchRencana').value = targetPcs;
-    
-    if(typeof window.showToast === 'function') {
-        window.showToast('Resep berhasil diterapkan ke kalkulator manufaktur!', 'success');
-    }
-    
-    if (typeof hitungLiveHppPreview === 'function') {
-        hitungLiveHppPreview();
-    }
+    if(window.showToast) window.showToast('HPP berhasil disimpan dan diperbarui!', 'success');
+    window.switchHppTab('daftar');
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(window.renderTabelResep, 1000);
+    setTimeout(function() {
+        window.renderDaftarHPP();
+    }, 500);
 });
-
-
-function hitungLiveHppPreview() {
-    var elRencana = document.getElementById('prodBatchRencana');
-    if (!elRencana) return;
-    var rencana = parseFloat(elRencana.value) || 0;
-    var elRusak = document.getElementById('prodBatchRusak');
-    var rusak = elRusak ? (parseFloat(elRusak.value) || 0) : 0;
-    var bersih = Math.max(0, rencana - rusak);
-
-    var elBahan = document.getElementById('prodBiayaBahan');
-    var elKemasan = document.getElementById('prodBiayaKemasan');
-    var elOps = document.getElementById('prodBiayaOperasional');
-    var elUpah = document.getElementById('prodBiayaUpah');
-
-    var bBahan = elBahan ? (parseFloat(elBahan.value) || 0) : 0;
-    var bKemasan = elKemasan ? (parseFloat(elKemasan.value) || 0) : 0;
-    var bOps = elOps ? (parseFloat(elOps.value) || 0) : 0;
-    var bUpah = elUpah ? (parseFloat(elUpah.value) || 0) : 0;
-
-    var totalHpp = bBahan + bKemasan + bOps + bUpah;
-    var hppUnit = bersih > 0 ? Math.round(totalHpp / bersih) : 0;
-
-    var elBersih = document.getElementById('prevJmlBersih');
-    var elTotalHpp = document.getElementById('prevTotalHpp');
-    var elHppPcs = document.getElementById('prevHppPcs');
-
-    if (elBersih) elBersih.textContent = bersih + ' Pcs';
-    if (elTotalHpp) elTotalHpp.textContent = formatRupiah(totalHpp);
-    if (elHppPcs) elHppPcs.textContent = formatRupiah(hppUnit) + ' / pcs';
-}
-
-function submitBatchProduksi() {
-    var sel = document.getElementById('prodBatchProdukId');
-    if (!sel || !sel.value) return showToast('Pilih produk produksi.', 'error');
-    var pid = sel.value;
-    var opt = (sel.selectedIndex >= 0 && sel.options[sel.selectedIndex]) ? sel.options[sel.selectedIndex] : null;
-    var namaPrd = opt ? (opt.getAttribute('data-nama') || opt.text) : 'Produk';
-    var elTk = document.getElementById('prodBatchTenagaKerja');
-    var tipeTk = elTk ? elTk.value : 'Pekerja harian';
-
-    var elRencana = document.getElementById('prodBatchRencana');
-    var elRusak = document.getElementById('prodBatchRusak');
-    var rencana = elRencana ? (parseFloat(elRencana.value) || 0) : 0;
-    var rusak = elRusak ? (parseFloat(elRusak.value) || 0) : 0;
-    var bersih = Math.max(0, rencana - rusak);
-
-    var bBahan = parseFloat((document.getElementById('prodBiayaBahan') || {}).value) || 0;
-    var bKemasan = parseFloat((document.getElementById('prodBiayaKemasan') || {}).value) || 0;
-    var bOps = parseFloat((document.getElementById('prodBiayaOperasional') || {}).value) || 0;
-    var bUpah = parseFloat((document.getElementById('prodBiayaUpah') || {}).value) || 0;
-    var totalHpp = bBahan + bKemasan + bOps + bUpah;
-    var hppUnit = bersih > 0 ? Math.round(totalHpp / bersih) : 0;
-
-    var payload = {
-        produkId: pid,
-        namaProduk: namaPrd,
-        tipeTenagaKerja: tipeTk,
-        jmlRencana: rencana,
-        jumlahRencana: rencana,
-        jmlRusak: rusak,
-        jumlahRusak: rusak,
-        jmlBersih: bersih,
-        jumlahBersih: bersih,
-        biayaBahan: bBahan,
-        biayaKemasan: bKemasan,
-        biayaOperasional: bOps,
-        biayaUpah: bUpah,
-        totalHpp: totalHpp,
-        totalHppBatch: totalHpp,
-        hppUnit: hppUnit
-    };
-
-    showToast('Membukukan batch produksi & memperbarui HPP...', 'success');
-    runBackend('apiCreateProductionBatch', [payload, window.currentUser], function (res) {
-        if (!res.success) {
-            showToast(res.message || 'Gagal membukukan batch produksi.', 'error');
-            return;
-        }
-        showToast(res.message, 'success');
-        fetchProductionBatches();
-        if (typeof window.fetchMasterProducts === 'function') window.fetchMasterProducts();
-        if (typeof window.loadDashboardData === 'function') window.loadDashboardData();
-    });
-}
-
-var productionBatches = [];
-
-function fetchProductionBatches() {
-    runBackend('apiGetProductionBatches', [], function (res) {
-        if (res.success && res.data) {
-            productionBatches = res.data;
-            renderProductionBatchesTable();
-        }
-    });
-}
-
-function renderProductionBatchesTable() {
-    var tbody = document.getElementById('tblProduksiBatchBody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-
-    if (!productionBatches || productionBatches.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 24px; color: var(--text-muted); font-size: 12px;">'
-            + 'Belum ada riwayat batch produksi. Silakan bukukan batch baru di atas.</td></tr>';
-        return;
-    }
-
-    productionBatches.forEach(function (b) {
-        var tr = document.createElement('tr');
-        tr.innerHTML = '<td>' + escapeHtml(b.tanggal || '-') + '</td>'
-            + '<td><b>' + escapeHtml(b.batchId || '-') + '</b></td>'
-            + '<td>' + escapeHtml(b.namaProduk || '-') + '</td>'
-            + '<td><span style="font-size: 11px; font-weight: 600; background: #f1f5f9; padding: 2px 8px; border-radius: 6px;">' + escapeHtml(b.tipeTenagaKerja || '-') + '</span></td>'
-            + '<td style="text-align: right;">' + (b.jmlRencana || 0) + '</td>'
-            + '<td style="text-align: right; color: #dc2626;">' + (b.jmlRusak || 0) + '</td>'
-            + '<td style="text-align: right; font-weight: 700; color: var(--emerald);">' + (b.jmlBersih || 0) + '</td>'
-            + '<td style="text-align: right; font-weight: 700;">' + formatRupiah(b.totalHpp || 0) + '</td>'
-            + '<td style="text-align: right; font-weight: 800; color: var(--violet-main);">' + formatRupiah(b.hppUnit || 0) + '</td>'
-            + '<td style="text-align: center; white-space: nowrap;">'
-            + '<button class="btn-pill-action btn-pill-secondary" style="padding: 2px 8px;" onclick="openModalEditProduksi(\'' + escapeHtml(b.batchId) + '\')" title="Edit Batch">'
-            + '<svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Edit'
-            + '</button>'
-            + '</td>';
-        tbody.appendChild(tr);
-    });
-}
-
-function hitungEditHppPreview() {
-    var rencana = parseFloat((document.getElementById('editProdBatchRencana') || {}).value) || 0;
-    var rusak = parseFloat((document.getElementById('editProdBatchRusak') || {}).value) || 0;
-    var bersih = Math.max(0, rencana - rusak);
-
-    var bBahan = parseFloat((document.getElementById('editProdBiayaBahan') || {}).value) || 0;
-    var bKemasan = parseFloat((document.getElementById('editProdBiayaKemasan') || {}).value) || 0;
-    var bOps = parseFloat((document.getElementById('editProdBiayaOperasional') || {}).value) || 0;
-    var bUpah = parseFloat((document.getElementById('editProdBiayaUpah') || {}).value) || 0;
-    var totalHpp = bBahan + bKemasan + bOps + bUpah;
-    var hppUnit = bersih > 0 ? Math.round(totalHpp / bersih) : 0;
-
-    var elBersih = document.getElementById('editProdBersihLbl');
-    var elTotal = document.getElementById('editProdTotalHppLbl');
-    var elUnit = document.getElementById('editProdHppUnitLbl');
-    if (elBersih) elBersih.textContent = bersih + ' Pcs';
-    if (elTotal) elTotal.textContent = formatRupiah(totalHpp);
-    if (elUnit) elUnit.textContent = formatRupiah(hppUnit) + ' / pcs';
-}
-
-function openModalEditProduksi(batchId) {
-    var item = (productionBatches || []).find(function (b) { return b.batchId === batchId; });
-    if (!item) {
-        showToast('Data batch produksi ' + batchId + ' tidak ditemukan.', 'error');
-        return;
-    }
-
-    var elId = document.getElementById('editProdBatchId');
-    if (elId) elId.value = item.batchId;
-    var elBadge = document.getElementById('editProdBatchIdBadge');
-    if (elBadge) elBadge.textContent = item.batchId;
-    var elProdBadge = document.getElementById('editProdBatchProdukBadge');
-    if (elProdBadge) elProdBadge.textContent = item.namaProduk;
-
-    var elRencana = document.getElementById('editProdBatchRencana');
-    if (elRencana) elRencana.value = item.jmlRencana || 0;
-    var elRusak = document.getElementById('editProdBatchRusak');
-    if (elRusak) elRusak.value = item.jmlRusak || 0;
-    var elBahan = document.getElementById('editProdBiayaBahan');
-    if (elBahan) elBahan.value = item.biayaBahan || 0;
-    var elKemasan = document.getElementById('editProdBiayaKemasan');
-    if (elKemasan) elKemasan.value = item.biayaKemasan || 0;
-    var elOps = document.getElementById('editProdBiayaOperasional');
-    if (elOps) elOps.value = item.biayaOperasional || 0;
-    var elUpah = document.getElementById('editProdBiayaUpah');
-    if (elUpah) elUpah.value = item.biayaUpah || 0;
-
-    hitungEditHppPreview();
-
-    var modal = document.getElementById('modalEditProduksi');
-    if (modal) modal.classList.add('active');
-}
-
-function closeModalEditProduksi() {
-    var modal = document.getElementById('modalEditProduksi');
-    if (modal) modal.classList.remove('active');
-}
-
-function submitEditProduksi() {
-    var bId = document.getElementById('editProdBatchId').value;
-    var payload = {
-        batchId: bId,
-        jmlRencana: parseFloat(document.getElementById('editProdBatchRencana').value) || 0,
-        jmlRusak: parseFloat(document.getElementById('editProdBatchRusak').value) || 0,
-        biayaBahan: parseFloat(document.getElementById('editProdBiayaBahan').value) || 0,
-        biayaKemasan: parseFloat(document.getElementById('editProdBiayaKemasan').value) || 0,
-        biayaOperasional: parseFloat(document.getElementById('editProdBiayaOperasional').value) || 0,
-        biayaUpah: parseFloat(document.getElementById('editProdBiayaUpah').value) || 0
-    };
-
-    showToast('Menyimpan perubahan batch ' + bId + '...', 'success');
-
-    runBackend('apiUpdateProductionBatch', [payload, window.currentUser], function (res) {
-        if (!res.success) {
-            showToast(res.message || 'Gagal memperbarui batch.', 'error');
-            return;
-        }
-
-        // Update lokal
-        for (var i = 0; i < productionBatches.length; i++) {
-            if (productionBatches[i].batchId === bId) {
-                productionBatches[i].jmlRencana = payload.jmlRencana;
-                productionBatches[i].jmlRusak = payload.jmlRusak;
-                productionBatches[i].jmlBersih = Math.max(0, payload.jmlRencana - payload.jmlRusak);
-                productionBatches[i].biayaBahan = payload.biayaBahan;
-                productionBatches[i].biayaKemasan = payload.biayaKemasan;
-                productionBatches[i].biayaOperasional = payload.biayaOperasional;
-                productionBatches[i].biayaUpah = payload.biayaUpah;
-                productionBatches[i].totalHpp = payload.biayaBahan + payload.biayaKemasan + payload.biayaOperasional + payload.biayaUpah;
-                productionBatches[i].hppUnit = productionBatches[i].jmlBersih > 0 ? Math.round(productionBatches[i].totalHpp / productionBatches[i].jmlBersih) : 0;
-                break;
-            }
-        }
-
-        renderProductionBatchesTable();
-        closeModalEditProduksi();
-        showToast(res.message || 'Batch produksi berhasil diperbarui.', 'success');
-    }, function (err) {
-        showToast('Gagal update batch: ' + (err.message || 'Koneksi terganggu'), 'error');
-    });
-}
-
-// Auto-fetch saat modul siap
-if (typeof document !== 'undefined') {
-    setTimeout(fetchProductionBatches, 300);
-}
-
-// Export produksi functions to window
-window.hitungLiveHppPreview = hitungLiveHppPreview;
-window.submitBatchProduksi = submitBatchProduksi;
-window.fetchProductionBatches = fetchProductionBatches;
-window.renderProductionBatchesTable = renderProductionBatchesTable;
-window.hitungEditHppPreview = hitungEditHppPreview;
-window.openModalEditProduksi = openModalEditProduksi;
-window.closeModalEditProduksi = closeModalEditProduksi;
-window.submitEditProduksi = submitEditProduksi;
