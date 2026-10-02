@@ -7,26 +7,47 @@
 
 window.currentCart = [];
 
-function tambahKeKeranjang() {
-    var sel = document.getElementById('posSelectProduk');
-    if (!sel) return;
-    var pid = sel.value;
-    if (!pid) return showToast('Pilih produk terlebih dahulu.', 'error');
-    var opt = sel.options[sel.selectedIndex];
-    var nama = opt.getAttribute('data-nama');
-    var harga = parseFloat(opt.getAttribute('data-harga')) || 0;
-    var qty = parseFloat(document.getElementById('posQty').value) || 1;
+function tambahKeKeranjangGrid(pid, nama, harga) {
+    if (!pid || !nama) return;
+    
+    // Check if already in cart
+    var existing = window.currentCart.find(function(i) { return i.produkId === pid; });
+    if (existing) {
+        existing.qty += 1;
+        existing.subtotal = existing.qty * existing.harga;
+    } else {
+        window.currentCart.push({
+            produkId: pid,
+            namaProduk: nama,
+            harga: parseFloat(harga) || 0,
+            qty: 1,
+            subtotal: parseFloat(harga) || 0
+        });
+    }
+    
+    renderCart();
+    if(typeof showToast === 'function') showToast(nama + ' ditambahkan ke keranjang.', 'success');
+}
 
+window.tambahBoronganPos = function() {
+    var namaPaket = prompt("Masukkan Nama Paket / Borongan:", "Paket Custom");
+    if(!namaPaket) return;
+    var hargaPaket = prompt("Masukkan Harga Paket (Rp):", "0");
+    if(hargaPaket === null) return;
+    hargaPaket = parseFloat(hargaPaket) || 0;
+    
+    var pid = 'PKT-' + Math.floor(Math.random() * 10000);
     window.currentCart.push({
         produkId: pid,
-        namaProduk: nama,
-        harga: harga,
-        qty: qty,
-        subtotal: qty * harga
+        namaProduk: namaPaket,
+        harga: hargaPaket,
+        qty: 1,
+        subtotal: hargaPaket
     });
+    
     renderCart();
-    showToast(nama + ' dimasukkan ke keranjang.', 'success');
-}
+    if(typeof showToast === 'function') showToast(namaPaket + ' berhasil dimasukkan.', 'success');
+};
 
 function getAppPajakRate() {
     try {
@@ -50,10 +71,10 @@ function renderCart() {
     (window.currentCart || []).forEach(function (item, idx) {
         grandTotal += item.subtotal;
         var tr = document.createElement('tr');
-        tr.innerHTML = '<td><b>' + escapeHtml(item.namaProduk) + '</b></td>'
-            + '<td>' + escapeHtml(String(item.qty)) + '</td>'
-            + '<td>' + formatRupiah(item.subtotal) + '</td>'
-            + '<td style="text-align:center;"><button style="border:none;background:none;color:var(--coral-pink);cursor:pointer;" onclick="hapusCart(' + idx + ')"><svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></td>';
+        tr.innerHTML = '<td style="padding: 10px 8px;"><b>' + escapeHtml(item.namaProduk) + '</b><br><span style="font-size:11px;color:var(--text-muted);">' + formatRupiah(item.harga) + '</span></td>'
+            + '<td style="padding: 10px 8px; text-align: center;"><input type="number" step="any" value="' + item.qty + '" style="width: 50px; text-align: center; border: 1px solid var(--border-soft); border-radius: 6px; padding: 4px;" onchange="window.updateCartQty(' + idx + ', this.value)"></td>'
+            + '<td style="padding: 10px 8px; text-align: right; font-weight: 700; color: var(--text-dark);">' + formatRupiah(item.subtotal) + '</td>'
+            + '<td style="padding: 10px 8px; text-align:center;"><button style="border:none;background:#fee2e2;color:var(--coral-pink);cursor:pointer;border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;" onclick="hapusCart(' + idx + ')"><svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></td>';
         tbody.appendChild(tr);
     });
 
@@ -206,23 +227,54 @@ function cetakStrukTerakhir() {
     }
 }
 
-function filterPosProducts(q) {
-    q = (q || '').toLowerCase().trim();
-    var sel = document.getElementById('posSelectProduk');
-    if (!sel) return;
-    for (var i = 0; i < sel.options.length; i++) {
-        var opt = sel.options[i];
-        if (!opt.value) continue;
-        var text = (opt.text || '').toLowerCase();
-        opt.style.display = (text.indexOf(q) !== -1) ? '' : 'none';
+window.updateCartQty = function(idx, newQty) {
+    newQty = parseFloat(newQty) || 1;
+    if(newQty <= 0) newQty = 1;
+    if (window.currentCart && window.currentCart[idx]) {
+        window.currentCart[idx].qty = newQty;
+        window.currentCart[idx].subtotal = newQty * window.currentCart[idx].harga;
+        renderCart();
     }
-}
+};
+
+window.renderPosProductGrid = function(filterText) {
+    var grid = document.getElementById('posProductGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    
+    var query = (filterText || '').toLowerCase().trim();
+    var cats = window.catalogProducts || [];
+    
+    cats.forEach(function(p) {
+        if (query && p.namaProduk.toLowerCase().indexOf(query) === -1) return;
+        
+        var safeNama = escapeHtml(p.namaProduk);
+        var initial = safeNama.substring(0, 2).toUpperCase();
+        var priceStr = formatRupiah(p.hargaJual || 0);
+        
+        var div = document.createElement('div');
+        div.style.cssText = "background: #ffffff; border: 1px solid var(--border-soft); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center; position: relative;";
+        div.onmouseover = function() { this.style.borderColor = 'var(--violet-main)'; this.style.transform = 'translateY(-2px)'; this.style.boxShadow = '0 6px 16px rgba(108,71,255,0.1)'; };
+        div.onmouseout = function() { this.style.borderColor = 'var(--border-soft)'; this.style.transform = 'none'; this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)'; };
+        div.onclick = function() { tambahKeKeranjangGrid(p.produkId, p.namaProduk, p.hargaJual); };
+        
+        div.innerHTML = `
+            <div style="width: 54px; height: 54px; border-radius: 12px; background: #e0e7ff; color: var(--violet-dark); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; margin-bottom: 12px;">
+                ${initial}
+            </div>
+            <div style="font-size: 13px; font-weight: 700; color: var(--text-dark); text-align: center; margin-bottom: 4px; line-height: 1.3;">${safeNama}</div>
+            <div style="font-size: 13px; font-weight: 800; color: var(--emerald);">${priceStr}</div>
+            <div style="position: absolute; top: 12px; right: 12px; background: var(--violet-main); color: #fff; width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0.8;">+</div>
+        `;
+        
+        grid.appendChild(div);
+    });
+};
 
 // Export POS functions to window
-window.tambahKeKeranjang = tambahKeKeranjang;
+window.tambahKeKeranjangGrid = tambahKeKeranjangGrid;
 window.renderCart = renderCart;
 window.hapusCart = hapusCart;
 window.submitTransaksiPOS = submitTransaksiPOS;
 window.formatDateNow = formatDateNow;
 window.cetakStrukTerakhir = cetakStrukTerakhir;
-window.filterPosProducts = filterPosProducts;

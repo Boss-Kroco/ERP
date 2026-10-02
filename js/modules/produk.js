@@ -78,6 +78,9 @@ function populateProductDropdowns() {
             if (typeof window.hitungLiveHppPreview === 'function') {
                 window.hitungLiveHppPreview();
             }
+            if (typeof window.renderPosProductGrid === 'function') {
+                window.renderPosProductGrid();
+            }
         }
 
 function openModalTambahProduk() { document.getElementById('modalTambahProduk').classList.add('active'); }

@@ -153,8 +153,8 @@ window.renderHppBahanBaku = function() {
         var tr = document.createElement('tr');
         tr.innerHTML = `
             <td><input type="text" class="hpp-clean-input" value="${item.nama}" onchange="window.updateHppBahan(${idx}, 'nama', this.value)"></td>
-            <td><input type="number" class="hpp-clean-input" style="text-align: center;" value="${item.qty}" oninput="window.updateHppBahan(${idx}, 'qty', this.value)"></td>
-            <td><input type="number" class="hpp-clean-input" style="text-align: right;" value="${item.harga}" oninput="window.updateHppBahan(${idx}, 'harga', this.value)"></td>
+            <td><input type="number" step="any" class="hpp-clean-input" style="text-align: center;" value="${item.qty}" oninput="window.updateHppBahan(${idx}, 'qty', this.value)"></td>
+            <td><input type="number" step="any" class="hpp-clean-input" style="text-align: right;" value="${item.harga}" oninput="window.updateHppBahan(${idx}, 'harga', this.value)"></td>
             <td style="font-weight: 700; text-align: right; color: var(--text-dark);">${window.formatRupiah ? window.formatRupiah(sub) : ('Rp ' + sub)}</td>
             <td style="text-align: center;">
                 <button style="border: none; background: #fff1f2; color: #e11d48; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center;" onclick="window.hapusHppBahan(${idx})">
