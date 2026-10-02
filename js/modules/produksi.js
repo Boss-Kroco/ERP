@@ -70,9 +70,9 @@ window.renderDaftarHPP = function() {
             <td style="font-weight: 600;">${item.nama}</td>
             <td>${item.sku}</td>
             <td>${item.satuan}</td>
-            <td style="text-align: right; font-weight: bold; color: var(--text-dark);">Rp ${window.formatRupiah ? window.formatRupiah(item.hppItem) : item.hppItem}</td>
-            <td style="text-align: right;">Rp ${window.formatRupiah ? window.formatRupiah(item.hargaJual) : item.hargaJual}</td>
-            <td style="text-align: right; color: var(--emerald); font-weight: bold;">Rp ${window.formatRupiah ? window.formatRupiah(laba) : laba}</td>
+            <td style="text-align: right; font-weight: bold; color: var(--text-dark);">${window.formatRupiah ? window.formatRupiah(item.hppItem) : ('Rp ' + item.hppItem)}</td>
+            <td style="text-align: right;">${window.formatRupiah ? window.formatRupiah(item.hargaJual) : ('Rp ' + item.hargaJual)}</td>
+            <td style="text-align: right; color: var(--emerald); font-weight: bold;">${window.formatRupiah ? window.formatRupiah(laba) : ('Rp ' + laba)}</td>
             <td style="text-align: right; color: var(--violet-main); font-weight: bold;">${margin.toFixed(2)}%</td>
             <td><span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">${item.status}</span></td>
             <td style="text-align: center;">
@@ -91,17 +91,17 @@ window.lihatDetailHpp = function(id) {
     var margin = item.hargaJual > 0 ? (laba / item.hargaJual) * 100 : 0;
 
     document.getElementById('detHppNamaProduk').textContent = item.nama;
-    document.getElementById('detHppNilai').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(item.hppItem) : item.hppItem);
-    document.getElementById('detHppJual').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(item.hargaJual) : item.hargaJual);
-    document.getElementById('detHppLaba').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(laba) : laba);
+    document.getElementById('detHppNilai').textContent = window.formatRupiah ? window.formatRupiah(item.hppItem) : ('Rp ' + item.hppItem);
+    document.getElementById('detHppJual').textContent = window.formatRupiah ? window.formatRupiah(item.hargaJual) : ('Rp ' + item.hargaJual);
+    document.getElementById('detHppLaba').textContent = window.formatRupiah ? window.formatRupiah(laba) : ('Rp ' + laba);
     document.getElementById('detHppMargin').textContent = margin.toFixed(2) + '%';
 
     var r = item.rincian || {};
-    document.getElementById('detRincianBahan').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(r.bahan || 0) : r.bahan);
-    document.getElementById('detRincianTk').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(r.tk || 0) : r.tk);
-    document.getElementById('detRincianGas').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(r.gas || 0) : r.gas);
-    document.getElementById('detRincianKemasan').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(r.kemasan || 0) : r.kemasan);
-    document.getElementById('detRincianOverhead').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah((r.overhead || 0) + (r.listrik || 0) + (r.lainnya || 0)) : ((r.overhead || 0) + (r.listrik || 0) + (r.lainnya || 0)));
+    document.getElementById('detRincianBahan').textContent = window.formatRupiah ? window.formatRupiah(r.bahan || 0) : ('Rp ' + r.bahan);
+    document.getElementById('detRincianTk').textContent = window.formatRupiah ? window.formatRupiah(r.tk || 0) : ('Rp ' + r.tk);
+    document.getElementById('detRincianGas').textContent = window.formatRupiah ? window.formatRupiah(r.gas || 0) : ('Rp ' + r.gas);
+    document.getElementById('detRincianKemasan').textContent = window.formatRupiah ? window.formatRupiah(r.kemasan || 0) : ('Rp ' + r.kemasan);
+    document.getElementById('detRincianOverhead').textContent = window.formatRupiah ? window.formatRupiah((r.overhead || 0) + (r.listrik || 0) + (r.lainnya || 0)) : ('Rp ' + ((r.overhead || 0) + (r.listrik || 0) + (r.lainnya || 0)));
 
     document.getElementById('modalDetailHpp').style.display = 'flex';
 };
@@ -120,9 +120,9 @@ window.renderRiwayatHPP = function() {
         tr.innerHTML = `
             <td>${item.tanggal}</td>
             <td>${item.produk}</td>
-            <td style="text-align: right;">Rp ${window.formatRupiah ? window.formatRupiah(item.hppLama) : item.hppLama}</td>
-            <td style="text-align: right; font-weight: bold;">Rp ${window.formatRupiah ? window.formatRupiah(item.hppBaru) : item.hppBaru}</td>
-            <td style="text-align: right; color: ${selisihWarna}; font-weight: bold;">${selisihTanda} Rp ${window.formatRupiah ? window.formatRupiah(Math.abs(selisih)) : Math.abs(selisih)}</td>
+            <td style="text-align: right;">${window.formatRupiah ? window.formatRupiah(item.hppLama) : ('Rp ' + item.hppLama)}</td>
+            <td style="text-align: right; font-weight: bold;">${window.formatRupiah ? window.formatRupiah(item.hppBaru) : ('Rp ' + item.hppBaru)}</td>
+            <td style="text-align: right; color: ${selisihWarna}; font-weight: bold;">${selisihTanda} ${window.formatRupiah ? window.formatRupiah(Math.abs(selisih)) : ('Rp ' + Math.abs(selisih))}</td>
             <td>${item.penyebab}</td>
         `;
         tbody.appendChild(tr);
@@ -157,13 +157,13 @@ window.renderHppBahanBaku = function() {
             <td><input type="text" class="search-filter-input" style="width: 100%; padding: 4px;" value="${item.nama}" onchange="window.updateHppBahan(${idx}, 'nama', this.value)"></td>
             <td><input type="number" class="search-filter-input" style="width: 100%; padding: 4px;" value="${item.qty}" oninput="window.updateHppBahan(${idx}, 'qty', this.value)"></td>
             <td><input type="number" class="search-filter-input" style="width: 100%; padding: 4px;" value="${item.harga}" oninput="window.updateHppBahan(${idx}, 'harga', this.value)"></td>
-            <td style="font-weight: bold;">Rp ${window.formatRupiah ? window.formatRupiah(sub) : sub}</td>
+            <td style="font-weight: bold;">${window.formatRupiah ? window.formatRupiah(sub) : ('Rp ' + sub)}</td>
             <td><button style="border: none; background: transparent; color: red; cursor: pointer; font-weight: bold;" onclick="window.hapusHppBahan(${idx})">X</button></td>
         `;
         tbody.appendChild(tr);
     });
     
-    document.getElementById('lblHppTotalBahan').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(totalBahan) : totalBahan);
+    document.getElementById('lblHppTotalBahan').textContent = window.formatRupiah ? window.formatRupiah(totalBahan) : ('Rp ' + totalBahan);
     document.getElementById('lblHppTotalBahan').dataset.val = totalBahan;
     window.kalkulasiTotalHpp();
 };
@@ -195,15 +195,15 @@ window.kalkulasiTotalHpp = function() {
     var bLain = parseFloat(document.getElementById('hppBiayaLain').value) || 0;
     
     var totalProduksi = bTk + bGas + bListrik + bKemasan + bOverhead + bLain;
-    document.getElementById('lblHppTotalProduksi').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(totalProduksi) : totalProduksi);
+    document.getElementById('lblHppTotalProduksi').textContent = window.formatRupiah ? window.formatRupiah(totalProduksi) : ('Rp ' + totalProduksi);
     
     var grandTotal = totalBahan + totalProduksi;
-    document.getElementById('lblHppGrandTotal').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(grandTotal) : grandTotal);
+    document.getElementById('lblHppGrandTotal').textContent = window.formatRupiah ? window.formatRupiah(grandTotal) : ('Rp ' + grandTotal);
     
     var jmlProd = parseFloat(document.getElementById('hppJmlProduksi').value) || 1;
     var hppItem = grandTotal / jmlProd;
     
-    document.getElementById('lblHppPerItem').textContent = 'Rp ' + (window.formatRupiah ? window.formatRupiah(hppItem) : hppItem);
+    document.getElementById('lblHppPerItem').textContent = window.formatRupiah ? window.formatRupiah(hppItem) : ('Rp ' + hppItem);
     
     window.tempHppResult = {
         totalBahan: totalBahan,
