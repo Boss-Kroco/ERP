@@ -116,6 +116,23 @@ function renderCart() {
     if (elPpnRate) elPpnRate.textContent = pajakRate + '%';
     if (elPpnLbl) elPpnLbl.textContent = window.formatAppCurrency(pajakNominal);
     if (elTotal) elTotal.textContent = window.formatAppCurrency(net);
+    
+    // Mode Wakil
+    var chkWakil = document.getElementById('posCheckWakil');
+    var boxWakil = document.getElementById('posWakilContainer');
+    if (chkWakil && boxWakil) {
+        if (chkWakil.checked) {
+            boxWakil.style.display = 'flex';
+            var pWakil = parseFloat(document.getElementById('posWakilPersen').value) || 0;
+            var valWakil = net * (pWakil / 100);
+            var valPerusahaan = net - valWakil;
+            
+            document.getElementById('posWakilLbl').textContent = window.formatAppCurrency(valWakil);
+            document.getElementById('posWakilPerusahaanLbl').textContent = window.formatAppCurrency(valPerusahaan);
+        } else {
+            boxWakil.style.display = 'none';
+        }
+    }
 }
 
 function hapusCart(idx) {
@@ -150,6 +167,18 @@ function submitTransaksiPOS() {
 
     var cartSnapshot = window.currentCart.slice();
 
+    var chkWakil = document.getElementById('posCheckWakil');
+    var isWakil = chkWakil ? chkWakil.checked : false;
+    var wakilPersen = 0;
+    var wakilNominal = 0;
+    var perusahaanNominal = totalNet;
+    
+    if (isWakil) {
+        wakilPersen = parseFloat(document.getElementById('posWakilPersen').value) || 0;
+        wakilNominal = totalNet * (wakilPersen / 100);
+        perusahaanNominal = totalNet - wakilNominal;
+    }
+
     var payload = {
         cartItems: cartSnapshot,
         items: cartSnapshot,
@@ -158,6 +187,10 @@ function submitTransaksiPOS() {
         pajakNominal: pajakNominal,
         pajakPersen: isPpnActive ? pajakRate : 0,
         totalNet: totalNet,
+        isWakil: isWakil,
+        wakilPersen: wakilPersen,
+        wakilNominal: wakilNominal,
+        perusahaanNominal: perusahaanNominal,
         metodeBayar: metode,
         pelangganId: custId,
         namaPelanggan: custName

@@ -99,6 +99,28 @@
                             <span id="posTotalLabel" style="font-size: 22px; font-weight: 900; color: var(--violet-main); letter-spacing: -0.5px;">Rp 0</span>
                         </div>
                     </div>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--text-dark);">
+                            <input type="checkbox" id="posCheckWakil" onchange="renderCart()" style="width: 16px; height: 16px; accent-color: var(--violet-main); cursor: pointer;">
+                            Aktifkan Mode Wakil (Reseller)
+                        </label>
+                        <div id="posWakilContainer" style="display: none; background: #fff8f1; border: 1px solid #ffd8a8; border-radius: 12px; padding: 12px; margin-top: 8px; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 11px; font-weight: 700; color: #d97706;">Persentase Wakil (%)</span>
+                                <input type="number" id="posWakilPersen" value="10" min="0" max="100" class="hpp-clean-input" style="width: 70px; text-align: center; border-color: #ffd8a8; color: #b45309;" oninput="renderCart()">
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--text-muted);">
+                                <span>Bagian Perusahaan:</span>
+                                <span id="posWakilPerusahaanLbl" style="color: var(--text-main); font-weight: 700;">Rp 0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; color: var(--text-muted);">
+                                <span>Bagian Wakil:</span>
+                                <span id="posWakilLbl" style="color: #ea580c; font-weight: 700;">Rp 0</span>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
                         <div>
