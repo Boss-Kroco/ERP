@@ -28,6 +28,9 @@ window.formatAppCurrency = function (num) {
     var rawSettings = localStorage.getItem('bos_kroco_app_settings');
     var currency = 'IDR';
     var prefix = 'Rp ';
+    var exchangeRate = 1;
+    var locale = 'id-ID';
+    var fraction = 0;
     
     if (rawSettings) {
         try {
@@ -36,11 +39,28 @@ window.formatAppCurrency = function (num) {
         } catch (e) {}
     }
 
-    if (currency === 'USD') prefix = '$ ';
-    else if (currency === 'EUR') prefix = '€ ';
-    else if (currency === 'GBP') prefix = '£ ';
+    if (currency === 'USD') {
+        prefix = '$';
+        exchangeRate = 15500; // Asumsi kurs IDR to USD
+        locale = 'en-US';
+        fraction = 2;
+    } else if (currency === 'EUR') {
+        prefix = '€';
+        exchangeRate = 16800; // Asumsi kurs IDR to EUR
+        locale = 'de-DE';
+        fraction = 2;
+    } else if (currency === 'GBP') {
+        prefix = '£';
+        exchangeRate = 19800; // Asumsi kurs IDR to GBP
+        locale = 'en-GB';
+        fraction = 2;
+    }
     
-    return prefix + Number(num || 0).toLocaleString('id-ID');
+    var convertedNum = Number(num || 0) / exchangeRate;
+    return prefix + convertedNum.toLocaleString(locale, {
+        minimumFractionDigits: fraction,
+        maximumFractionDigits: fraction
+    });
 };
 
 window.formatAppCurrency = window.formatAppCurrency;
