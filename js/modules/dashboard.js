@@ -245,7 +245,7 @@ function initSplineInteractivity() {
                 var item = splineState.data[nearestIdx];
                 var ptX = padX + (nearestIdx / (splineState.data.length - 1)) * drawW;
 
-                tooltipVal.textContent = formatRupiah(item.val);
+                tooltipVal.textContent = window.formatAppCurrency(item.val);
                 tooltipDate.textContent = item.label + ' • ' + (item.isPeak ? 'Peak Omzet' : 'Harian');
                 tooltip.style.left = ptX + 'px';
                 tooltip.classList.add('visible');
@@ -279,7 +279,7 @@ function renderOrderTable(dataset) {
                     + '<td><b>' + escapeHtml(item.orderNum) + '</b><br><small style="color:var(--text-muted);">' + escapeHtml(item.id) + '</small></td>'
                     + '<td><b>' + escapeHtml(item.customer) + '</b><br><small style="color:var(--text-muted);">' + escapeHtml(item.phone) + '</small></td>'
                     + '<td>' + escapeHtml(item.category) + '</td>'
-                    + '<td><b>' + formatRupiah(item.price) + '</b></td>'
+                    + '<td><b>' + window.formatAppCurrency(item.price) + '</b></td>'
                     + '<td>' + escapeHtml(item.date) + '</td>'
                     + '<td>' + escapeHtml(item.payment) + '</td>'
                     + '<td>'
@@ -356,8 +356,8 @@ function detailTransaksi(trxId) {
                     itemsHtml += '<tr style="border-bottom: 1px dashed var(--border-subtle);">'
                         + '<td style="padding: 6px 0;"><b>' + pName + '</b></td>'
                         + '<td style="text-align:center; padding: 6px 0;">' + pQty + '</td>'
-                        + '<td style="text-align:right; padding: 6px 0;">' + formatRupiah(pHarga) + '</td>'
-                        + '<td style="text-align:right; padding: 6px 0; font-weight: 700;">' + formatRupiah(pSub) + '</td>'
+                        + '<td style="text-align:right; padding: 6px 0;">' + window.formatAppCurrency(pHarga) + '</td>'
+                        + '<td style="text-align:right; padding: 6px 0; font-weight: 700;">' + window.formatAppCurrency(pSub) + '</td>'
                         + '</tr>';
                 });
                 itemsHtml += '</tbody></table></div>';
@@ -385,7 +385,7 @@ function detailTransaksi(trxId) {
                 + '<td style="font-size:12px; font-weight:700;">' + escapeHtml(item.payment) + '</td></tr>'
                 + '<tr style="border-top: 1px solid var(--border-subtle);">'
                 + '<td style="padding:10px 0 4px; font-size:13px; font-weight:800; color:var(--text-main);">Total Transaksi</td>'
-                + '<td style="padding:10px 0 4px; font-size:16px; font-weight:800; color:var(--violet-main);">' + formatRupiah(item.price) + '</td></tr>'
+                + '<td style="padding:10px 0 4px; font-size:16px; font-weight:800; color:var(--violet-main);">' + window.formatAppCurrency(item.price) + '</td></tr>'
                 + '</table>'
                 + itemsHtml
                 + '</div>';
@@ -756,7 +756,7 @@ function renderDueAlertsTable() {
         var tr = document.createElement('tr');
         tr.innerHTML = '<td><b>' + escapeHtml(item.kontakNama) + '</b>' + badgeHtml + '<br><small style="color:var(--text-muted);">' + escapeHtml(item.refId) + '</small></td>'
             + '<td>' + escapeHtml(item.tipe) + '</td>'
-            + '<td><b style="color:var(--coral-pink);">' + formatRupiah(item.sisa) + '</b></td>'
+            + '<td><b style="color:var(--coral-pink);">' + window.formatAppCurrency(item.sisa) + '</b></td>'
             + '<td>' + escapeHtml(item.jatuhTempo) + '</td>'
             + '<td style="text-align:center;"><button class="btn-pill-action btn-pill-primary" style="padding:4px 10px; font-size:11px;" onclick="eksekusiQuickPay(\'' + escapeHtml(item.refId) + '\', ' + Number(item.sisa) + ')">Bayar Lunas</button></td>';
         tbody.appendChild(tr);
@@ -798,13 +798,13 @@ function loadDashboardData() {
             var elKas = document.getElementById('statHeroKas');
             var elBeban = document.getElementById('statHeroBeban');
             var elLaba = document.getElementById('statHeroLaba');
-            if (elOmzet) elOmzet.textContent = formatRupiah(d.omzet);
-            if (elKas) elKas.textContent = formatRupiah(d.saldoKas);
-            if (elBeban) elBeban.textContent = formatRupiah(d.pengeluaran);
-            if (elLaba) elLaba.textContent = formatRupiah(d.labaBersih);
+            if (elOmzet) elOmzet.textContent = window.formatAppCurrency(d.omzet);
+            if (elKas) elKas.textContent = window.formatAppCurrency(d.saldoKas);
+            if (elBeban) elBeban.textContent = window.formatAppCurrency(d.pengeluaran);
+            if (elLaba) elLaba.textContent = window.formatAppCurrency(d.labaBersih);
             if (d.stokGudangTotal && document.getElementById('lblStokGudang')) document.getElementById('lblStokGudang').textContent = d.stokGudangTotal + ' Unit';
             if (d.stokEtalaseTotal && document.getElementById('lblStokEtalase')) document.getElementById('lblStokEtalase').textContent = d.stokEtalaseTotal + ' Unit';
-            if (d.totalPiutang && document.getElementById('lblTotalPiutang')) document.getElementById('lblTotalPiutang').textContent = formatRupiah(d.totalPiutang);
+            if (d.totalPiutang && document.getElementById('lblTotalPiutang')) document.getElementById('lblTotalPiutang').textContent = window.formatAppCurrency(d.totalPiutang);
 
             // 1. Peringatan Limit Saldo Kas Kritis dari Pengaturan
             var limitKas = 2000000;
@@ -827,8 +827,8 @@ function loadDashboardData() {
             var badgeKeuangan = document.getElementById('badgeKeuanganKasKritis');
             var alertKeuanganBox = document.getElementById('alertKasKritisBox');
 
-            if (elKeuanganSaldo) elKeuanganSaldo.textContent = formatRupiah(d.saldoKas || 0);
-            if (elKeuanganLimit) elKeuanganLimit.textContent = formatRupiah(limitKas);
+            if (elKeuanganSaldo) elKeuanganSaldo.textContent = window.formatAppCurrency(d.saldoKas || 0);
+            if (elKeuanganLimit) elKeuanganLimit.textContent = window.formatAppCurrency(limitKas);
             if (badgeKeuangan) badgeKeuangan.style.display = isKasKritis ? 'inline-block' : 'none';
             if (alertKeuanganBox) alertKeuanganBox.style.display = isKasKritis ? 'block' : 'none';
 
@@ -837,7 +837,7 @@ function loadDashboardData() {
             var elTargetPct = document.getElementById('dashboardTargetPct');
             if (targetOmzet > 0 && typeof d.omzet === 'number') {
                 var pct = ((d.omzet / targetOmzet) * 100).toFixed(1);
-                if (elTargetVal) elTargetVal.textContent = formatRupiah(targetOmzet);
+                if (elTargetVal) elTargetVal.textContent = window.formatAppCurrency(targetOmzet);
                 if (elTargetPct) elTargetPct.textContent = pct + '% Terpenuhi';
             }
 
@@ -936,7 +936,7 @@ window.renderTimRekanan = function (tabName) {
         window.mitraTokoList.forEach(function (m) {
             var li = document.createElement('li');
             li.className = 'act-user-row';
-            var formattedPiutang = typeof window.formatRupiah === 'function' ? window.formatRupiah(m.total_piutang) : 'Rp ' + m.total_piutang;
+            var formattedPiutang = typeof window.formatAppCurrency === 'function' ? window.formatAppCurrency(m.total_piutang) : 'Rp ' + m.total_piutang;
             
             var initials = m.nama_toko ? m.nama_toko.substring(0,2).toUpperCase() : 'TK';
             var colors = ['blue', 'pink', 'green', 'amber', 'purple'];
@@ -1041,8 +1041,8 @@ window.openPreviewStruk = function (trxId) {
         var pSub = Number(it.subtotal || (pQty * pHarga));
         subtotalCalc += pSub;
 
-        var formattedHarga = (typeof window.formatRupiah === 'function') ? window.formatRupiah(pHarga) : ('Rp ' + pHarga);
-        var formattedSub = (typeof window.formatRupiah === 'function') ? window.formatRupiah(pSub) : ('Rp ' + pSub);
+        var formattedHarga = window.formatAppCurrency(pHarga);
+        var formattedSub = window.formatAppCurrency(pSub);
 
         itemsRowsHtml += '<tr>'
             + '<td style="padding: 6px 0;">'
@@ -1072,12 +1072,12 @@ window.openPreviewStruk = function (trxId) {
     var safeKasir = (typeof window.escapeHtml === 'function') ? window.escapeHtml(kasirNama) : kasirNama;
     var safeMetode = (typeof window.escapeHtml === 'function') ? window.escapeHtml(metode) : metode;
 
-    var fmtGrandTotal = (typeof window.formatRupiah === 'function') ? window.formatRupiah(grandTotal) : ('Rp ' + grandTotal);
-    var fmtSubtotal = (typeof window.formatRupiah === 'function') ? window.formatRupiah(subtotalCalc || grandTotal) : ('Rp ' + (subtotalCalc || grandTotal));
-    var fmtDiskon = (typeof window.formatRupiah === 'function') ? window.formatRupiah(diskon) : ('Rp ' + diskon);
-    var fmtPajak = (typeof window.formatRupiah === 'function') ? window.formatRupiah(pajak) : ('Rp ' + pajak);
-    var fmtBayar = (typeof window.formatRupiah === 'function') ? window.formatRupiah(bayarNominal) : ('Rp ' + bayarNominal);
-    var fmtKembali = (typeof window.formatRupiah === 'function') ? window.formatRupiah(kembalian) : ('Rp ' + kembalian);
+    var fmtGrandTotal = window.formatAppCurrency(grandTotal);
+    var fmtSubtotal = window.formatAppCurrency(subtotalCalc || grandTotal));
+    var fmtDiskon = window.formatAppCurrency(diskon);
+    var fmtPajak = window.formatAppCurrency(pajak);
+    var fmtBayar = window.formatAppCurrency(bayarNominal);
+    var fmtKembali = window.formatAppCurrency(kembalian);
 
     var tglText = trx.date || new Date().toLocaleDateString('id-ID');
     if (tglText.indexOf(':') === -1) {
@@ -1221,15 +1221,15 @@ window.shareStrukWhatsApp = function () {
     var itemsText = [];
     if (trx.items && Array.isArray(trx.items) && trx.items.length > 0) {
         trx.items.forEach(function (it) {
-            var sub = (typeof window.formatRupiah === 'function') ? window.formatRupiah(it.subtotal) : ('Rp ' + it.subtotal);
+            var sub = window.formatAppCurrency(it.subtotal);
             itemsText.push('• ' + it.namaProduk + ' (' + it.qty + 'x) : ' + sub);
         });
     } else {
-        var sub = (typeof window.formatRupiah === 'function') ? window.formatRupiah(trx.price) : ('Rp ' + trx.price);
+        var sub = window.formatAppCurrency(trx.price);
         itemsText.push('• ' + (trx.category || 'Paket Produk Mafaza Group') + ' (1x) : ' + sub);
     }
 
-    var totalFormatted = (typeof window.formatRupiah === 'function') ? window.formatRupiah(trx.price || 0) : ('Rp ' + trx.price);
+    var totalFormatted = window.formatAppCurrency(trx.price || 0);
 
     var text = '\uD83E\uDDFE *STRUK RESMI - MAFAZA GROUP*\r\n'
         + '━━━━━━━━━━━━━━━━━━━━\r\n'
@@ -1267,15 +1267,15 @@ window.copyStrukText = function () {
     var itemsText = [];
     if (trx.items && Array.isArray(trx.items) && trx.items.length > 0) {
         trx.items.forEach(function (it) {
-            var sub = (typeof window.formatRupiah === 'function') ? window.formatRupiah(it.subtotal) : ('Rp ' + it.subtotal);
+            var sub = window.formatAppCurrency(it.subtotal);
             itemsText.push('• ' + it.namaProduk + ' (' + it.qty + 'x) : ' + sub);
         });
     } else {
-        var sub = (typeof window.formatRupiah === 'function') ? window.formatRupiah(trx.price) : ('Rp ' + trx.price);
+        var sub = window.formatAppCurrency(trx.price);
         itemsText.push('• ' + (trx.category || 'Paket Produk Mafaza Group') + ' (1x) : ' + sub);
     }
 
-    var totalFormatted = (typeof window.formatRupiah === 'function') ? window.formatRupiah(trx.price || 0) : ('Rp ' + trx.price);
+    var totalFormatted = window.formatAppCurrency(trx.price || 0);
 
     var text = '\uD83E\uDDFE STRUK RESMI - MAFAZA GROUP\r\n'
         + '------------------------------------\r\n'

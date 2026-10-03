@@ -5,7 +5,7 @@
 window._pelangganDataList = [];
 
 // Fungsi untuk format rupiah khusus tabel ini
-function formatRp(num) {
+function window.formatAppCurrency(num) {
     return 'Rp ' + Number(num || 0).toLocaleString('id-ID');
 }
 
@@ -62,8 +62,8 @@ window.renderPelangganTable = function() {
         html += '  <td style="padding: 14px 16px; font-size: 13px; font-weight: 700; color: var(--violet-main);">' + (window.escapeHtml ? window.escapeHtml(p.nama_toko) : p.nama_toko) + '</td>';
         html += '  <td style="padding: 14px 16px; font-size: 12.5px; color: var(--text-muted);">' + (window.escapeHtml ? window.escapeHtml(p.kontak || '-') : p.kontak || '-') + '</td>';
         html += '  <td style="padding: 14px 16px; font-size: 12.5px; color: var(--text-muted); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="'+(window.escapeHtml ? window.escapeHtml(p.alamat||'') : p.alamat||'')+'">' + (window.escapeHtml ? window.escapeHtml(p.alamat || '-') : p.alamat || '-') + '</td>';
-        html += '  <td style="padding: 14px 16px; font-size: 13px; font-weight: 700; color: ' + (isPiutang ? '#e11d48' : 'var(--text-dark)') + ';">' + formatRp(p.total_piutang) + '</td>';
-        html += '  <td style="padding: 14px 16px; font-size: 13px; font-weight: 700; color: var(--emerald);">' + formatRp(p.tabungan || 0) + '</td>';
+        html += '  <td style="padding: 14px 16px; font-size: 13px; font-weight: 700; color: ' + (isPiutang ? '#e11d48' : 'var(--text-dark)') + ';">' + window.formatAppCurrency(p.total_piutang) + '</td>';
+        html += '  <td style="padding: 14px 16px; font-size: 13px; font-weight: 700; color: var(--emerald);">' + window.formatAppCurrency(p.tabungan || 0) + '</td>';
         html += '  <td style="padding: 14px 16px;">' + statusBadge + '</td>';
         
         // Aksi
@@ -99,10 +99,10 @@ window.updatePelangganMetrics = function() {
         document.getElementById('lblTotalPelanggan').textContent = total;
     }
     if (document.getElementById('lblTotalPiutangPelanggan')) {
-        document.getElementById('lblTotalPiutangPelanggan').textContent = formatRp(totalPiutang);
+        document.getElementById('lblTotalPiutangPelanggan').textContent = window.formatAppCurrency(totalPiutang);
     }
     if (document.getElementById('lblTotalTabunganPelanggan')) {
-        document.getElementById('lblTotalTabunganPelanggan').textContent = formatRp(totalTabungan);
+        document.getElementById('lblTotalTabunganPelanggan').textContent = window.formatAppCurrency(totalTabungan);
     }
 };
 

@@ -51,9 +51,9 @@ window.renderDaftarHPP = function() {
             <td style="font-weight: 600;">${item.namaProduk}</td>
             <td>${item.produkId}</td>
             <td>${item.satuan}</td>
-            <td style="text-align: right; font-weight: bold; color: var(--text-dark);">${window.formatRupiah ? window.formatRupiah(hpp) : ('Rp ' + hpp)}</td>
-            <td style="text-align: right;">${window.formatRupiah ? window.formatRupiah(jual) : ('Rp ' + jual)}</td>
-            <td style="text-align: right; color: var(--emerald); font-weight: bold;">${window.formatRupiah ? window.formatRupiah(laba) : ('Rp ' + laba)}</td>
+            <td style="text-align: right; font-weight: bold; color: var(--text-dark);">${window.formatAppCurrency(hpp)}</td>
+            <td style="text-align: right;">${window.formatAppCurrency(jual)}</td>
+            <td style="text-align: right; color: var(--emerald); font-weight: bold;">${window.formatAppCurrency(laba)}</td>
             <td style="text-align: right; color: var(--violet-main); font-weight: bold;">${margin.toFixed(2)}%</td>
             <td><span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">${item.status}</span></td>
             <td style="text-align: center;">
@@ -74,18 +74,18 @@ window.lihatDetailHpp = function(id) {
     var margin = jual > 0 ? (laba / jual) * 100 : 0;
 
     document.getElementById('detHppNamaProduk').textContent = item.namaProduk;
-    document.getElementById('detHppNilai').textContent = window.formatRupiah ? window.formatRupiah(hpp) : ('Rp ' + hpp);
-    document.getElementById('detHppJual').textContent = window.formatRupiah ? window.formatRupiah(jual) : ('Rp ' + jual);
-    document.getElementById('detHppLaba').textContent = window.formatRupiah ? window.formatRupiah(laba) : ('Rp ' + laba);
+    document.getElementById('detHppNilai').textContent = window.formatAppCurrency(hpp);
+    document.getElementById('detHppJual').textContent = window.formatAppCurrency(jual);
+    document.getElementById('detHppLaba').textContent = window.formatAppCurrency(laba);
     document.getElementById('detHppMargin').textContent = margin.toFixed(2) + '%';
 
     window.hppRincian = window.hppRincian || {};
     var r = window.hppRincian[id] || { bahan: hpp };
-    document.getElementById('detRincianBahan').textContent = window.formatRupiah ? window.formatRupiah(r.bahan || 0) : ('Rp ' + r.bahan);
-    document.getElementById('detRincianTk').textContent = window.formatRupiah ? window.formatRupiah(r.tk || 0) : ('Rp ' + r.tk);
-    document.getElementById('detRincianGas').textContent = window.formatRupiah ? window.formatRupiah(r.gas || 0) : ('Rp ' + r.gas);
-    document.getElementById('detRincianKemasan').textContent = window.formatRupiah ? window.formatRupiah(r.kemasan || 0) : ('Rp ' + r.kemasan);
-    document.getElementById('detRincianOverhead').textContent = window.formatRupiah ? window.formatRupiah((r.overhead || 0) + (r.listrik || 0) + (r.lainnya || 0)) : ('Rp ' + ((r.overhead || 0) + (r.listrik || 0) + (r.lainnya || 0)));
+    document.getElementById('detRincianBahan').textContent = window.formatAppCurrency(r.bahan || 0);
+    document.getElementById('detRincianTk').textContent = window.formatAppCurrency(r.tk || 0);
+    document.getElementById('detRincianGas').textContent = window.formatAppCurrency(r.gas || 0);
+    document.getElementById('detRincianKemasan').textContent = window.formatAppCurrency(r.kemasan || 0);
+    document.getElementById('detRincianOverhead').textContent = window.formatAppCurrency ? window.formatAppCurrency((r.overhead || 0) + (r.listrik || 0) + (r.lainnya || 0)) : ('Rp ' + ((r.overhead || 0) + (r.listrik || 0) + (r.lainnya || 0)));
 
     document.getElementById('modalDetailHpp').style.display = 'flex';
 };
@@ -104,9 +104,9 @@ window.renderRiwayatHPP = function() {
         tr.innerHTML = `
             <td>${item.tanggal}</td>
             <td>${item.produk}</td>
-            <td style="text-align: right;">${window.formatRupiah ? window.formatRupiah(item.hppLama) : ('Rp ' + item.hppLama)}</td>
-            <td style="text-align: right; font-weight: bold;">${window.formatRupiah ? window.formatRupiah(item.hppBaru) : ('Rp ' + item.hppBaru)}</td>
-            <td style="text-align: right; color: ${selisihWarna}; font-weight: bold;">${selisihTanda} ${window.formatRupiah ? window.formatRupiah(Math.abs(selisih)) : ('Rp ' + Math.abs(selisih))}</td>
+            <td style="text-align: right;">${window.formatAppCurrency(item.hppLama)}</td>
+            <td style="text-align: right; font-weight: bold;">${window.formatAppCurrency(item.hppBaru)}</td>
+            <td style="text-align: right; color: ${selisihWarna}; font-weight: bold;">${selisihTanda} ${window.formatAppCurrency ? window.formatAppCurrency(Math.abs(selisih)) : ('Rp ' + Math.abs(selisih))}</td>
             <td>${item.penyebab}</td>
         `;
         tbody.appendChild(tr);
@@ -151,7 +151,7 @@ window.renderHppBahanBaku = function() {
             <td><input type="text" class="hpp-clean-input" value="${item.nama}" onchange="window.updateHppBahan(${idx}, 'nama', this.value)"></td>
             <td><input type="number" step="any" class="hpp-clean-input" style="text-align: center;" value="${item.qty}" oninput="window.updateHppBahan(${idx}, 'qty', this.value)"></td>
             <td><input type="number" step="any" class="hpp-clean-input" style="text-align: right;" value="${item.harga}" oninput="window.updateHppBahan(${idx}, 'harga', this.value)"></td>
-            <td style="font-weight: 700; text-align: right; color: var(--text-dark);">${window.formatRupiah ? window.formatRupiah(sub) : ('Rp ' + sub)}</td>
+            <td style="font-weight: 700; text-align: right; color: var(--text-dark);">${window.formatAppCurrency(sub)}</td>
             <td style="text-align: center;">
                 <button style="border: none; background: #fff1f2; color: #e11d48; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center;" onclick="window.hapusHppBahan(${idx})">
                     <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -161,7 +161,7 @@ window.renderHppBahanBaku = function() {
         tbody.appendChild(tr);
     });
     
-    document.getElementById('lblHppTotalBahan').textContent = window.formatRupiah ? window.formatRupiah(totalBahan) : ('Rp ' + totalBahan);
+    document.getElementById('lblHppTotalBahan').textContent = window.formatAppCurrency(totalBahan);
     document.getElementById('lblHppTotalBahan').dataset.val = totalBahan;
     window.kalkulasiTotalHpp();
 };
@@ -193,15 +193,15 @@ window.kalkulasiTotalHpp = function() {
     var bLain = parseFloat(document.getElementById('hppBiayaLain').value) || 0;
     
     var totalProduksi = bTk + bGas + bListrik + bKemasan + bOverhead + bLain;
-    document.getElementById('lblHppTotalProduksi').textContent = window.formatRupiah ? window.formatRupiah(totalProduksi) : ('Rp ' + totalProduksi);
+    document.getElementById('lblHppTotalProduksi').textContent = window.formatAppCurrency(totalProduksi);
     
     var grandTotal = totalBahan + totalProduksi;
-    document.getElementById('lblHppGrandTotal').textContent = window.formatRupiah ? window.formatRupiah(grandTotal) : ('Rp ' + grandTotal);
+    document.getElementById('lblHppGrandTotal').textContent = window.formatAppCurrency(grandTotal);
     
     var jmlProd = parseFloat(document.getElementById('hppJmlProduksi').value) || 1;
     var hppItem = grandTotal / jmlProd;
     
-    document.getElementById('lblHppPerItem').textContent = window.formatRupiah ? window.formatRupiah(hppItem) : ('Rp ' + hppItem);
+    document.getElementById('lblHppPerItem').textContent = window.formatAppCurrency(hppItem);
     
     window.tempHppResult = {
         totalBahan: totalBahan,

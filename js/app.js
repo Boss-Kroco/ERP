@@ -43,7 +43,7 @@ window.formatAppCurrency = function (num) {
     return prefix + Number(num || 0).toLocaleString('id-ID');
 };
 
-window.formatRupiah = window.formatAppCurrency;
+window.formatAppCurrency = window.formatAppCurrency;
 
 window.escapeHtml = function (text) {
     if (!text) return '';

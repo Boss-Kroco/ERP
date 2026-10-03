@@ -62,7 +62,7 @@ function fetchKeuanganKas() {
             var latestKas = allKeuanganKas[0];
             var elSaldo = document.getElementById('keuanganSaldoKas');
             if (elSaldo && latestKas.saldoBerjalan !== undefined && latestKas.saldoBerjalan !== null) {
-                elSaldo.textContent = formatRupiah(latestKas.saldoBerjalan);
+                elSaldo.textContent = window.formatAppCurrency(latestKas.saldoBerjalan);
             }
         }
 
@@ -149,11 +149,11 @@ function renderKeuanganTable(items) {
         var tr = document.createElement('tr');
 
         var nominalMasukHtml = isMasuk
-            ? '<span style="color: #059669; font-weight: 800;">+ ' + formatRupiah(k.nominal || 0) + '</span>'
+            ? '<span style="color: #059669; font-weight: 800;">+ ' + window.formatAppCurrency(k.nominal || 0) + '</span>'
             : '<span style="color: var(--text-muted);">-</span>';
 
         var nominalKeluarHtml = !isMasuk
-            ? '<span style="color: #dc2626; font-weight: 800;">- ' + formatRupiah(k.nominal || 0) + '</span>'
+            ? '<span style="color: #dc2626; font-weight: 800;">- ' + window.formatAppCurrency(k.nominal || 0) + '</span>'
             : '<span style="color: var(--text-muted);">-</span>';
 
         var tipePill = isMasuk
@@ -171,7 +171,7 @@ function renderKeuanganTable(items) {
             + '<td style="font-size: 12px; color: var(--text-main); max-width: 240px; word-break: break-word;">' + escapeHtml(k.keterangan || '-') + '</td>'
             + '<td style="text-align: right;">' + nominalMasukHtml + '</td>'
             + '<td style="text-align: right;">' + nominalKeluarHtml + '</td>'
-            + '<td style="text-align: right; font-weight: 800; color: var(--violet-main);">' + formatRupiah(k.saldoBerjalan || 0) + '</td>'
+            + '<td style="text-align: right; font-weight: 800; color: var(--violet-main);">' + window.formatAppCurrency(k.saldoBerjalan || 0) + '</td>'
             + '<td><small style="font-weight: 600; color: var(--text-main);">' + escapeHtml(k.dicatatOleh || '-') + '</small></td>'
             + '<td style="text-align: center; white-space: nowrap;">'
             + '<button class="btn-pill-action btn-pill-secondary" style="padding: 2px 8px;" onclick="openModalEditKas(\'' + escapeHtml(k.kasId) + '\')" title="Edit Transaksi Kas">'
@@ -208,18 +208,18 @@ function updateKeuanganMetrics(items) {
     var elSubKeluar = document.getElementById('keuanganSubKeluar');
     var elNetFlow = document.getElementById('keuanganNetFlow');
 
-    if (elTotalMasuk) elTotalMasuk.textContent = formatRupiah(totalMasuk);
+    if (elTotalMasuk) elTotalMasuk.textContent = window.formatAppCurrency(totalMasuk);
     if (elSubMasuk) elSubMasuk.textContent = countMasuk + ' transaksi masuk';
 
-    if (elTotalKeluar) elTotalKeluar.textContent = formatRupiah(totalKeluar);
+    if (elTotalKeluar) elTotalKeluar.textContent = window.formatAppCurrency(totalKeluar);
     if (elSubKeluar) elSubKeluar.textContent = countKeluar + ' transaksi keluar';
 
     if (elNetFlow) {
         if (netFlow > 0) {
-            elNetFlow.textContent = '+' + formatRupiah(netFlow);
+            elNetFlow.textContent = '+' + window.formatAppCurrency(netFlow);
             if (elNetFlow.style) elNetFlow.style.color = '#059669';
         } else if (netFlow < 0) {
-            elNetFlow.textContent = '-' + formatRupiah(Math.abs(netFlow));
+            elNetFlow.textContent = '-' + window.formatAppCurrency(Math.abs(netFlow));
             if (elNetFlow.style) elNetFlow.style.color = '#dc2626';
         } else {
             elNetFlow.textContent = 'Rp 0';
@@ -289,7 +289,7 @@ function submitKasManual() {
             var teleMsg = icon + ' *TRANSAKSI KAS ' + tipe.toUpperCase() + ' - BOS KROCO ERP*\n'
                 + '━━━━━━━━━━━━━━━━━━━━\n'
                 + '📂 *Kategori:* ' + payload.kategori + '\n'
-                + '💰 *Nominal:* ' + (window.formatRupiah ? window.formatRupiah(nominal) : ('Rp ' + nominal)) + '\n'
+                + '💰 *Nominal:* ' + (window.formatAppCurrency(nominal)) + '\n'
                 + '📝 *Keterangan:* ' + (payload.keterangan || '-') + '\n'
                 + '👨‍💼 *Petugas:* ' + userNama + '\n'
                 + '📅 *Waktu:* ' + new Date().toLocaleString('id-ID');

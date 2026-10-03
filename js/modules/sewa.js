@@ -44,7 +44,7 @@ window.renderAlatSewa = function(filterQuery) {
                 </button>
             </div>
             <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">Stok: ${alat.qty}</div>
-            <div style="font-weight: 800; color: var(--violet-main); font-size: 14px; margin-top: auto;">${window.formatRupiah ? window.formatRupiah(alat.hargaSewa) : ('Rp ' + alat.hargaSewa)} <span style="font-size: 10px; font-weight: normal; color: var(--text-muted);">/hari</span></div>
+            <div style="font-weight: 800; color: var(--violet-main); font-size: 14px; margin-top: auto;">${window.formatAppCurrency(alat.hargaSewa)} <span style="font-size: 10px; font-weight: normal; color: var(--text-muted);">/hari</span></div>
         `;
         
         grid.appendChild(card);
@@ -103,7 +103,7 @@ window.renderKeranjangSewa = function() {
             row.innerHTML = `
                 <div style="flex: 1;">
                     <div style="font-weight: 700; font-size: 12px; color: var(--text-dark);">${item.nama}</div>
-                    <div style="font-size: 11px; color: var(--violet-main); font-weight: 600;">${window.formatRupiah ? window.formatRupiah(item.hargaSewa) : ('Rp ' + item.hargaSewa)}</div>
+                    <div style="font-size: 11px; color: var(--violet-main); font-weight: 600;">${window.formatAppCurrency(item.hargaSewa)}</div>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <button style="width: 24px; height: 24px; border-radius: 4px; border: 1px solid var(--border-soft); background: white; cursor: pointer; color: red;" onclick="window.kurangiKeranjangSewa('${item.id}')">-</button>
@@ -135,8 +135,8 @@ window.hitungTotalSewa = function() {
     var lblSub = document.getElementById('lblSubtotalSewa');
     var lblTotal = document.getElementById('lblTotalSewa');
     
-    if(lblSub) lblSub.textContent = window.formatRupiah ? window.formatRupiah(subtotal) : ('Rp ' + subtotal);
-    if(lblTotal) lblTotal.textContent = window.formatRupiah ? window.formatRupiah(totalBayar) : ('Rp ' + totalBayar);
+    if(lblSub) lblSub.textContent = window.formatAppCurrency(subtotal);
+    if(lblTotal) lblTotal.textContent = window.formatAppCurrency(totalBayar);
 };
 
 window.prosesSewa = function() {
@@ -206,8 +206,8 @@ window.cetakStrukSewa = function(penyewa, durasi) {
         subtotal += lineTotal;
         itemsHtml += `
             <tr>
-                <td style="padding: 4px 0; border-bottom: 1px dashed #ccc;">${item.nama}<br><small>${item.qty} x ${window.formatRupiah ? window.formatRupiah(item.hargaSewa) : ('Rp ' + item.hargaSewa)}</small></td>
-                <td style="padding: 4px 0; text-align: right; border-bottom: 1px dashed #ccc;">${window.formatRupiah ? window.formatRupiah(lineTotal) : ('Rp ' + lineTotal)}</td>
+                <td style="padding: 4px 0; border-bottom: 1px dashed #ccc;">${item.nama}<br><small>${item.qty} x ${window.formatAppCurrency(item.hargaSewa)}</small></td>
+                <td style="padding: 4px 0; text-align: right; border-bottom: 1px dashed #ccc;">${window.formatAppCurrency(lineTotal)}</td>
             </tr>
         `;
     });
@@ -231,7 +231,7 @@ window.cetakStrukSewa = function(penyewa, durasi) {
             <hr style="border: none; border-top: 1px dashed #000;">
             <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 14px;">
                 <span>TOTAL</span>
-                <span>${window.formatRupiah ? window.formatRupiah(subtotal) : ('Rp ' + subtotal)}</span>
+                <span>${window.formatAppCurrency(subtotal)}</span>
             </div>
             <div style="text-align: center; margin-top: 20px; font-size: 11px;">
                 Terima Kasih Atas Kepercayaannya

@@ -62,9 +62,9 @@ window.initPengaturanPage = function () {
     var estLaba = sumOmzet - estPengeluaran;
     var pctCapaian = targetOmzet > 0 ? ((sumOmzet / targetOmzet) * 100).toFixed(1) : '0';
 
-    if (elOmzet) elOmzet.textContent = window.formatRupiah ? window.formatRupiah(sumOmzet) : ('Rp ' + Number(sumOmzet).toLocaleString('id-ID'));
-    if (elLaba) elLaba.textContent = window.formatRupiah ? window.formatRupiah(estLaba) : ('Rp ' + Number(estLaba).toLocaleString('id-ID'));
-    if (elTarget) elTarget.textContent = window.formatRupiah ? window.formatRupiah(targetOmzet) : ('Rp ' + Number(targetOmzet).toLocaleString('id-ID'));
+    if (elOmzet) elOmzet.textContent = window.formatAppCurrency(sumOmzet).toLocaleString('id-ID'));
+    if (elLaba) elLaba.textContent = window.formatAppCurrency(estLaba).toLocaleString('id-ID'));
+    if (elTarget) elTarget.textContent = window.formatAppCurrency(targetOmzet).toLocaleString('id-ID'));
     if (elSubTarget) elSubTarget.textContent = pctCapaian + '% Terpenuhi';
     if (elTrx) elTrx.textContent = trxList.length;
 
@@ -78,9 +78,9 @@ window.initPengaturanPage = function () {
                 var realLaba = (typeof d.labaBersih === 'number') ? d.labaBersih : (realOmzet - realPengeluaran);
                 var realPct = targetOmzet > 0 ? ((realOmzet / targetOmzet) * 100).toFixed(1) : '0';
 
-                if (elOmzet) elOmzet.textContent = window.formatRupiah ? window.formatRupiah(realOmzet) : ('Rp ' + Number(realOmzet).toLocaleString('id-ID'));
-                if (elLaba) elLaba.textContent = window.formatRupiah ? window.formatRupiah(realLaba) : ('Rp ' + Number(realLaba).toLocaleString('id-ID'));
-                if (elTarget) elTarget.textContent = window.formatRupiah ? window.formatRupiah(targetOmzet) : ('Rp ' + Number(targetOmzet).toLocaleString('id-ID'));
+                if (elOmzet) elOmzet.textContent = window.formatAppCurrency(realOmzet).toLocaleString('id-ID'));
+                if (elLaba) elLaba.textContent = window.formatAppCurrency(realLaba).toLocaleString('id-ID'));
+                if (elTarget) elTarget.textContent = window.formatAppCurrency(targetOmzet).toLocaleString('id-ID'));
                 if (elSubTarget) elSubTarget.textContent = realPct + '% Terpenuhi';
                 if (elTrx) elTrx.textContent = typeof d.totalTransactions === 'number' ? d.totalTransactions : trxList.length;
             }

@@ -1151,11 +1151,11 @@
         } else if (functionName === 'apiQuickPayHutangPiutang') {
             var pData = args[0] || {};
             window.addMockAuditLog('HutangPiutang', 'QUICK_PAY', String(pData.nominalBayar), '0', 'Pelunasan tagihan: ' + pData.refId, args[1]);
-            successCb({ success: true, message: 'Tagihan ' + pData.refId + ' sebesar ' + (window.formatRupiah ? window.formatRupiah(pData.nominalBayar) : pData.nominalBayar) + ' berhasil dilunasi.' });
+            successCb({ success: true, message: 'Tagihan ' + pData.refId + ' sebesar ' + (window.formatAppCurrency ? window.formatAppCurrency(pData.nominalBayar) : pData.nominalBayar) + ' berhasil dilunasi.' });
         } else if (functionName === 'apiCreateTransaction') {
             var pTrx = args[0] || {};
             var newId = 'TRX-' + new Date().getTime();
-            window.addMockAuditLog('POS', 'TRANSAKSI_BARU', '-', newId, 'Penjualan ' + (window.formatRupiah ? window.formatRupiah(pTrx.totalNet) : pTrx.totalNet), args[1]);
+            window.addMockAuditLog('POS', 'TRANSAKSI_BARU', '-', newId, 'Penjualan ' + (window.formatAppCurrency ? window.formatAppCurrency(pTrx.totalNet) : pTrx.totalNet), args[1]);
             successCb({ success: true, message: 'Transaksi kasir berhasil disimpan.', trxId: newId });
         } else if (functionName === 'apiUpdateTransactionStatus') {
             var pUp = args[0] || {};
@@ -1260,7 +1260,7 @@
             };
             window.mockKeuanganKas.unshift(newEntry);
             window.addMockAuditLog('Kas', 'MANUAL_' + tip.toUpperCase(), '-', String(nom), 'Pencatatan kas manual: ' + (pKas.keterangan || pKas.kategori), args[1]);
-            successCb({ success: true, message: 'Kas ' + tip + ' sebesar ' + (window.formatRupiah ? window.formatRupiah(nom) : ('Rp ' + nom)) + ' berhasil dibukukan.' });
+            successCb({ success: true, message: 'Kas ' + tip + ' sebesar ' + (window.formatAppCurrency(nom)) + ' berhasil dibukukan.' });
         } else if (functionName === 'apiSaveTenagaKerja') {
             window.addMockAuditLog('TenagaKerja', 'CATAT_UPAH', '-', (args[0] ? args[0].namaPekerja : ''), 'Presensi dan upah kerja', args[1]);
             successCb({ success: true, message: 'Presensi dan upah kerja berhasil disimpan.' });

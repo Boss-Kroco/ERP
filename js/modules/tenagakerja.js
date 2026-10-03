@@ -18,7 +18,7 @@ function hitungLiveUpahPreview() {
     var total = Math.max(0, (jam * rate) + bonus - pot);
 
     var elLbl = document.getElementById('lblLiveTotalUpah');
-    if (elLbl) elLbl.textContent = formatRupiah(total);
+    if (elLbl) elLbl.textContent = window.formatAppCurrency(total);
     return total;
 }
 
@@ -93,10 +93,10 @@ function renderTenagaKerjaTable() {
             + '<td><b>' + escapeHtml(t.namaPekerja || '-') + '</b></td>'
             + '<td><span style="font-size: 11px; font-weight: 600; background: #f1f5f9; padding: 2px 8px; border-radius: 6px;">' + escapeHtml(t.tipePekerja || '-') + '</span></td>'
             + '<td style="text-align: right;">' + (t.totalJam || 0) + ' Jam</td>'
-            + '<td style="text-align: right;">' + formatRupiah(t.upahRate || 0) + '</td>'
-            + '<td style="text-align: right; color: var(--emerald); font-weight: 600;">+ ' + formatRupiah(t.bonus || 0) + '</td>'
-            + '<td style="text-align: right; color: #dc2626; font-weight: 600;">- ' + formatRupiah(t.potongan || 0) + '</td>'
-            + '<td style="text-align: right; font-weight: 800; color: var(--violet-main);">' + formatRupiah(t.totalBayar || 0) + '</td>'
+            + '<td style="text-align: right;">' + window.formatAppCurrency(t.upahRate || 0) + '</td>'
+            + '<td style="text-align: right; color: var(--emerald); font-weight: 600;">+ ' + window.formatAppCurrency(t.bonus || 0) + '</td>'
+            + '<td style="text-align: right; color: #dc2626; font-weight: 600;">- ' + window.formatAppCurrency(t.potongan || 0) + '</td>'
+            + '<td style="text-align: right; font-weight: 800; color: var(--violet-main);">' + window.formatAppCurrency(t.totalBayar || 0) + '</td>'
             + '<td style="text-align: center;"><span class="prog-status-pill green">' + escapeHtml(t.statusBayar || 'Lunas') + '</span></td>'
             + '<td style="text-align: center; white-space: nowrap;">'
             + '<button class="btn-pill-action btn-pill-secondary" style="padding: 2px 8px;" onclick="openModalEditTenagaKerja(\'' + escapeHtml(t.pekerjaId) + '\')" title="Edit Data Upah">'
@@ -115,7 +115,7 @@ function hitungEditUpahPreview() {
     var total = Math.max(0, (jam * rate) + bonus - pot);
 
     var elLbl = document.getElementById('editTkTotalBayarLbl');
-    if (elLbl) elLbl.textContent = formatRupiah(total);
+    if (elLbl) elLbl.textContent = window.formatAppCurrency(total);
 }
 
 function openModalEditTenagaKerja(pekerjaId) {
