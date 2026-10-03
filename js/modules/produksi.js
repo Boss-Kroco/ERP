@@ -131,6 +131,10 @@ window.initTambahHpp = function() {
             if (elHj && !elHj.dataset.modified) {
                 elHj.value = prd.hargaJual || 0;
             }
+            var elHmg = document.getElementById('hppMinGrosir');
+            if (elHmg) elHmg.value = prd.minQtyGrosir || '';
+            var elHhg = document.getElementById('hppHargaGrosir');
+            if (elHhg) elHhg.value = prd.hargaGrosir || '';
         }
     }
 
@@ -227,9 +231,17 @@ window.simpanHppBaru = function() {
     var hargaJualInput = document.getElementById('hppHargaJual');
     var hargaJualValue = hargaJualInput ? (parseFloat(hargaJualInput.value) || prd.hargaJual) : prd.hargaJual;
 
+    var minGrosirInput = document.getElementById('hppMinGrosir');
+    var minGrosirValue = (minGrosirInput && minGrosirInput.value) ? parseFloat(minGrosirInput.value) : null;
+    
+    var hargaGrosirInput = document.getElementById('hppHargaGrosir');
+    var hargaGrosirValue = (hargaGrosirInput && hargaGrosirInput.value) ? parseFloat(hargaGrosirInput.value) : null;
+
     // Update locally
     prd.hargaBeliHPP = res.hppItem;
     prd.hargaJual = hargaJualValue;
+    prd.minQtyGrosir = minGrosirValue;
+    prd.hargaGrosir = hargaGrosirValue;
     
     window.hppRincian = window.hppRincian || {};
     window.hppRincian[selId] = {
@@ -248,6 +260,8 @@ window.simpanHppBaru = function() {
         satuan: prd.satuan,
         hargaBeliHPP: prd.hargaBeliHPP,
         hargaJual: prd.hargaJual,
+        minQtyGrosir: prd.minQtyGrosir,
+        hargaGrosir: prd.hargaGrosir,
         status: prd.status
     };
     
