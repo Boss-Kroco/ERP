@@ -5,26 +5,7 @@
  * ============================================================================
  */
 
-window.hppMasterData = [
-    {
-        id: 'PRD-001',
-        nama: 'Kue Kacang Original',
-        sku: 'KK-ORG',
-        satuan: 'Pcs',
-        hppItem: 192.46,
-        hargaJual: 500,
-        status: 'Aktif',
-        rincian: {
-            bahan: 100,
-            tk: 30,
-            gas: 20,
-            listrik: 5,
-            kemasan: 25,
-            overhead: 10,
-            lainnya: 2.46
-        }
-    }
-];
+window.hppRincian = window.hppRincian || {};
 
 window.hppRiwayatData = [
     { tanggal: '2026-09-01', produk: 'Kue Kacang Original', hppLama: 180, hppBaru: 192.46, penyebab: 'Kenaikan harga kacang' }
@@ -59,22 +40,24 @@ window.renderDaftarHPP = function() {
     if(!tbody) return;
     tbody.innerHTML = '';
 
-    window.hppMasterData.forEach(function(item) {
+    (window.catalogProducts || []).forEach(function(item) {
         var tr = document.createElement('tr');
-        var laba = item.hargaJual - item.hppItem;
-        var margin = item.hargaJual > 0 ? (laba / item.hargaJual) * 100 : 0;
+        var hpp = item.hargaBeliHPP || 0;
+        var jual = item.hargaJual || 0;
+        var laba = jual - hpp;
+        var margin = jual > 0 ? (laba / jual) * 100 : 0;
         
         tr.innerHTML = `
-            <td style="font-weight: 600;">${item.nama}</td>
-            <td>${item.sku}</td>
+            <td style="font-weight: 600;">${item.namaProduk}</td>
+            <td>${item.produkId}</td>
             <td>${item.satuan}</td>
-            <td style="text-align: right; font-weight: bold; color: var(--text-dark);">${window.formatRupiah ? window.formatRupiah(item.hppItem) : ('Rp ' + item.hppItem)}</td>
-            <td style="text-align: right;">${window.formatRupiah ? window.formatRupiah(item.hargaJual) : ('Rp ' + item.hargaJual)}</td>
+            <td style="text-align: right; font-weight: bold; color: var(--text-dark);">${window.formatRupiah ? window.formatRupiah(hpp) : ('Rp ' + hpp)}</td>
+            <td style="text-align: right;">${window.formatRupiah ? window.formatRupiah(jual) : ('Rp ' + jual)}</td>
             <td style="text-align: right; color: var(--emerald); font-weight: bold;">${window.formatRupiah ? window.formatRupiah(laba) : ('Rp ' + laba)}</td>
             <td style="text-align: right; color: var(--violet-main); font-weight: bold;">${margin.toFixed(2)}%</td>
             <td><span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">${item.status}</span></td>
             <td style="text-align: center;">
-                <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="window.lihatDetailHpp('${item.id}')">Lihat Detail</button>
+                <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="window.lihatDetailHpp('${item.produkId}')">Lihat Detail</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -82,19 +65,22 @@ window.renderDaftarHPP = function() {
 };
 
 window.lihatDetailHpp = function(id) {
-    var item = window.hppMasterData.find(function(i) { return i.id === id; });
+    var item = (window.catalogProducts || []).find(function(i) { return i.produkId === id; });
     if(!item) return;
 
-    var laba = item.hargaJual - item.hppItem;
-    var margin = item.hargaJual > 0 ? (laba / item.hargaJual) * 100 : 0;
+    var hpp = item.hargaBeliHPP || 0;
+    var jual = item.hargaJual || 0;
+    var laba = jual - hpp;
+    var margin = jual > 0 ? (laba / jual) * 100 : 0;
 
-    document.getElementById('detHppNamaProduk').textContent = item.nama;
-    document.getElementById('detHppNilai').textContent = window.formatRupiah ? window.formatRupiah(item.hppItem) : ('Rp ' + item.hppItem);
-    document.getElementById('detHppJual').textContent = window.formatRupiah ? window.formatRupiah(item.hargaJual) : ('Rp ' + item.hargaJual);
+    document.getElementById('detHppNamaProduk').textContent = item.namaProduk;
+    document.getElementById('detHppNilai').textContent = window.formatRupiah ? window.formatRupiah(hpp) : ('Rp ' + hpp);
+    document.getElementById('detHppJual').textContent = window.formatRupiah ? window.formatRupiah(jual) : ('Rp ' + jual);
     document.getElementById('detHppLaba').textContent = window.formatRupiah ? window.formatRupiah(laba) : ('Rp ' + laba);
     document.getElementById('detHppMargin').textContent = margin.toFixed(2) + '%';
 
-    var r = item.rincian || {};
+    window.hppRincian = window.hppRincian || {};
+    var r = window.hppRincian[id] || { bahan: hpp };
     document.getElementById('detRincianBahan').textContent = window.formatRupiah ? window.formatRupiah(r.bahan || 0) : ('Rp ' + r.bahan);
     document.getElementById('detRincianTk').textContent = window.formatRupiah ? window.formatRupiah(r.tk || 0) : ('Rp ' + r.tk);
     document.getElementById('detRincianGas').textContent = window.formatRupiah ? window.formatRupiah(r.gas || 0) : ('Rp ' + r.gas);
@@ -130,14 +116,24 @@ window.renderRiwayatHPP = function() {
 window.initTambahHpp = function() {
     var sel = document.getElementById('hppSelProduk');
     if(sel && sel.options.length === 0) {
-        // Populate
-        window.hppMasterData.forEach(function(p) {
-            var opt = document.createElement('option');
-            opt.value = p.id;
-            opt.textContent = p.nama + ' (' + p.sku + ')';
-            sel.appendChild(opt);
+        var optHtml = '<option value="">-- Pilih Produk --</option>';
+        (window.catalogProducts || []).forEach(function(p) {
+            optHtml += '<option value="' + p.produkId + '">' + p.namaProduk + ' (' + p.produkId + ')</option>';
         });
+        sel.innerHTML = optHtml;
     }
+    
+    // Auto-fill Harga Jual if selected
+    if (sel && sel.value) {
+        var prd = (window.catalogProducts || []).find(function(p) { return p.produkId === sel.value; });
+        if (prd) {
+            var elHj = document.getElementById('hppHargaJual');
+            if (elHj && !elHj.dataset.modified) {
+                elHj.value = prd.hargaJual || 0;
+            }
+        }
+    }
+
     window.renderHppBahanBaku();
 };
 
@@ -218,18 +214,25 @@ window.kalkulasiTotalHpp = function() {
 
 window.simpanHppBaru = function() {
     var selId = document.getElementById('hppSelProduk').value;
-    var prd = window.hppMasterData.find(function(p) { return p.id === selId; });
+    var prd = (window.catalogProducts || []).find(function(p) { return p.produkId === selId; });
     
     if(!prd) {
         if(window.showToast) window.showToast('Pilih produk terlebih dahulu!', 'error');
         return;
     }
     
-    var oldHpp = prd.hppItem;
+    var oldHpp = prd.hargaBeliHPP;
     var res = window.tempHppResult;
     
-    prd.hppItem = res.hppItem;
-    prd.rincian = {
+    var hargaJualInput = document.getElementById('hppHargaJual');
+    var hargaJualValue = hargaJualInput ? (parseFloat(hargaJualInput.value) || prd.hargaJual) : prd.hargaJual;
+
+    // Update locally
+    prd.hargaBeliHPP = res.hppItem;
+    prd.hargaJual = hargaJualValue;
+    
+    window.hppRincian = window.hppRincian || {};
+    window.hppRincian[selId] = {
         bahan: res.totalBahan / res.jmlProd,
         tk: res.bTk / res.jmlProd,
         gas: res.bGas / res.jmlProd,
@@ -239,16 +242,32 @@ window.simpanHppBaru = function() {
         lainnya: res.bLain / res.jmlProd
     };
     
+    var payload = {
+        produkId: prd.produkId,
+        namaProduk: prd.namaProduk,
+        satuan: prd.satuan,
+        hargaBeliHPP: prd.hargaBeliHPP,
+        hargaJual: prd.hargaJual,
+        status: prd.status
+    };
+    
+    if (window.runBackend) {
+        window.runBackend('apiUpdateProduct', [payload, window.currentUser], function(apiRes) {
+            if(window.populateProductDropdowns) window.populateProductDropdowns();
+            if(window.renderMasterProdukTable) window.renderMasterProdukTable();
+        });
+    }
+    
     var today = new Date().toISOString().split('T')[0];
     window.hppRiwayatData.unshift({
         tanggal: today,
-        produk: prd.nama,
+        produk: prd.namaProduk,
         hppLama: oldHpp,
         hppBaru: res.hppItem,
         penyebab: 'Kalkulasi ulang via form HPP'
     });
     
-    if(window.showToast) window.showToast('HPP berhasil disimpan dan diperbarui!', 'success');
+    if(window.showToast) window.showToast('HPP dan Harga Jual berhasil diperbarui!', 'success');
     window.switchHppTab('daftar');
 };
 
@@ -269,36 +288,52 @@ window.simpanProdukBaruHpp = function() {
         return;
     }
 
-    var newId = 'PRD-' + Math.floor(Math.random() * 10000);
-    if(!sku) sku = 'SKU-' + Math.floor(Math.random() * 1000);
     if(!satuan) satuan = 'Pcs';
 
-    var newProduct = {
-        id: newId,
-        nama: nama,
-        sku: sku,
+    var payload = {
+        namaProduk: nama,
         satuan: satuan,
-        hppItem: 0,
-        hargaJual: harga,
-        status: 'Aktif',
-        rincian: {
-            bahan: 0, tk: 0, gas: 0, listrik: 0, kemasan: 0, overhead: 0, lainnya: 0
-        }
+        hargaBeliHPP: 0,
+        hargaJual: harga
     };
 
-    window.hppMasterData.push(newProduct);
-    
-    // Clear dropdown to force repopulation next time 'Tambah' tab is opened
-    var sel = document.getElementById('hppSelProduk');
-    if(sel) sel.innerHTML = '';
-    
-    window.renderDaftarHPP();
-    
-    // Reset Form
-    document.getElementById('newProdNama').value = '';
-    document.getElementById('newProdSku').value = '';
-    document.getElementById('newProdHarga').value = '';
-    
-    document.getElementById('modalTambahJenisHpp').style.display = 'none';
-    if(window.showToast) window.showToast('Produk Makanan Baru berhasil ditambahkan!', 'success');
+    if (window.runBackend) {
+        window.showToast('Menyimpan produk ke master...', 'info');
+        window.runBackend('apiSaveProduct', [payload, window.currentUser], function (res) {
+            if (!res.success) {
+                if(window.showToast) window.showToast(res.message || 'Gagal menyimpan produk.', 'error');
+                return;
+            }
+            
+            // Optimistic update
+            if (!window.catalogProducts) window.catalogProducts = [];
+            window.catalogProducts.unshift({
+                produkId: res.produkId,
+                namaProduk: payload.namaProduk,
+                satuan: payload.satuan,
+                hargaBeliHPP: payload.hargaBeliHPP,
+                hargaJual: payload.hargaJual,
+                stokEtalase: 0,
+                stokGudang: 0,
+                status: 'Aktif'
+            });
+            
+            if(window.renderMasterProdukTable) window.renderMasterProdukTable();
+            if(window.populateProductDropdowns) window.populateProductDropdowns();
+            
+            // Clear dropdown to force repopulation next time 'Tambah' tab is opened
+            var sel = document.getElementById('hppSelProduk');
+            if(sel) sel.innerHTML = '';
+            
+            window.renderDaftarHPP();
+            
+            // Reset Form
+            document.getElementById('newProdNama').value = '';
+            document.getElementById('newProdSku').value = '';
+            document.getElementById('newProdHarga').value = '';
+            
+            document.getElementById('modalTambahJenisHpp').style.display = 'none';
+            if(window.showToast) window.showToast('Produk Makanan Baru berhasil ditambahkan ke Master Produk!', 'success');
+        });
+    }
 };
