@@ -29,6 +29,7 @@ window.loadPelangganData = function() {
           window._pelangganDataList = res.data || [];
           window.renderPelangganTable();
           window.updatePelangganMetrics();
+          if (typeof window.populatePosCustomers === 'function') window.populatePosCustomers();
       })
       .catch(function(err) {
           console.error(err);
@@ -62,6 +63,7 @@ window.renderPelangganTable = function() {
         html += '  <td style="padding: 14px 16px; font-size: 12.5px; color: var(--text-muted);">' + (window.escapeHtml ? window.escapeHtml(p.kontak || '-') : p.kontak || '-') + '</td>';
         html += '  <td style="padding: 14px 16px; font-size: 12.5px; color: var(--text-muted); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="'+(window.escapeHtml ? window.escapeHtml(p.alamat||'') : p.alamat||'')+'">' + (window.escapeHtml ? window.escapeHtml(p.alamat || '-') : p.alamat || '-') + '</td>';
         html += '  <td style="padding: 14px 16px; font-size: 13px; font-weight: 700; color: ' + (isPiutang ? '#e11d48' : 'var(--text-dark)') + ';">' + formatRp(p.total_piutang) + '</td>';
+        html += '  <td style="padding: 14px 16px; font-size: 13px; font-weight: 700; color: var(--emerald);">' + formatRp(p.tabungan || 0) + '</td>';
         html += '  <td style="padding: 14px 16px;">' + statusBadge + '</td>';
         
         // Aksi
@@ -87,8 +89,10 @@ window.filterPelanggan = function() {
 window.updatePelangganMetrics = function() {
     var total = window._pelangganDataList.length;
     var totalPiutang = 0;
+    var totalTabungan = 0;
     window._pelangganDataList.forEach(function(p) {
         totalPiutang += Number(p.total_piutang || 0);
+        totalTabungan += Number(p.tabungan || 0);
     });
     
     if (document.getElementById('lblTotalPelanggan')) {
@@ -96,6 +100,9 @@ window.updatePelangganMetrics = function() {
     }
     if (document.getElementById('lblTotalPiutangPelanggan')) {
         document.getElementById('lblTotalPiutangPelanggan').textContent = formatRp(totalPiutang);
+    }
+    if (document.getElementById('lblTotalTabunganPelanggan')) {
+        document.getElementById('lblTotalTabunganPelanggan').textContent = formatRp(totalTabungan);
     }
 };
 
@@ -105,6 +112,8 @@ window.openPelangganModal = function() {
     document.getElementById('inpPelangganNama').value = '';
     document.getElementById('inpPelangganKontak').value = '';
     document.getElementById('inpPelangganAlamat').value = '';
+    var elTab = document.getElementById('inpPelangganTabungan');
+    if (elTab) elTab.value = '';
     document.getElementById('modalPelangganTitle').textContent = 'Tambah Pelanggan Baru';
     
     var modal = document.getElementById('modalFormPelanggan');
@@ -136,6 +145,8 @@ window.editPelanggan = function(id) {
     document.getElementById('inpPelangganNama').value = p.nama_toko || '';
     document.getElementById('inpPelangganKontak').value = p.kontak || '';
     document.getElementById('inpPelangganAlamat').value = p.alamat || '';
+    var elTab = document.getElementById('inpPelangganTabungan');
+    if (elTab) elTab.value = p.tabungan || 0;
     document.getElementById('modalPelangganTitle').textContent = 'Edit Data Pelanggan';
     
     var modal = document.getElementById('modalFormPelanggan');
@@ -153,6 +164,8 @@ window.savePelanggan = function() {
     var nama = (document.getElementById('inpPelangganNama').value || '').trim();
     var kontak = (document.getElementById('inpPelangganKontak').value || '').trim();
     var alamat = (document.getElementById('inpPelangganAlamat').value || '').trim();
+    var elTab = document.getElementById('inpPelangganTabungan');
+    var tabungan = elTab ? (parseFloat(elTab.value) || 0) : 0;
     
     if (!nama) {
         if(window.showToast) window.showToast('Nama pelanggan wajib diisi', 'error');
@@ -175,6 +188,7 @@ window.savePelanggan = function() {
             alamat: alamat || '-',
             total_beli: 0,
             total_piutang: 0,
+            tabungan: tabungan,
             status: 'Aktif'
         }]).then(function(res) {
             if (res.error) {
@@ -190,7 +204,8 @@ window.savePelanggan = function() {
         sb.from('pelanggan_toko').update({
             nama_toko: nama,
             kontak: kontak || '-',
-            alamat: alamat || '-'
+            alamat: alamat || '-',
+            tabungan: tabungan
         }).eq('pelanggan_id', id).then(function(res) {
             if (res.error) {
                 console.error(res.error);

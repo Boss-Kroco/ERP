@@ -24,9 +24,26 @@ window.showToast = function (msg, type) {
     }, 3200);
 };
 
-window.formatRupiah = function (num) {
-    return 'Rp ' + Number(num || 0).toLocaleString('id-ID');
+window.formatAppCurrency = function (num) {
+    var rawSettings = localStorage.getItem('bos_kroco_app_settings');
+    var currency = 'IDR';
+    var prefix = 'Rp ';
+    
+    if (rawSettings) {
+        try {
+            var cfgObj = JSON.parse(rawSettings);
+            if (cfgObj && cfgObj.currency) currency = cfgObj.currency;
+        } catch (e) {}
+    }
+
+    if (currency === 'USD') prefix = '$ ';
+    else if (currency === 'EUR') prefix = '€ ';
+    else if (currency === 'GBP') prefix = '£ ';
+    
+    return prefix + Number(num || 0).toLocaleString('id-ID');
 };
+
+window.formatRupiah = window.formatAppCurrency;
 
 window.escapeHtml = function (text) {
     if (!text) return '';

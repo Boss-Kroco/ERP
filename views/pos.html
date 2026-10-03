@@ -68,8 +68,14 @@
                 <!-- Checkout Summary -->
                 <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-subtle);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Diskon (Rp)</span>
-                        <input type="number" step="any" class="hpp-clean-input" style="width: 100px; padding: 6px 12px !important; text-align: right;" id="posDiskon" value="0" oninput="renderCart()">
+                        <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Diskon</span>
+                        <div style="display: flex; gap: 4px;">
+                            <select id="posDiskonType" class="hpp-clean-input" style="width: 70px; padding: 6px !important; font-size: 12px; cursor: pointer;" onchange="renderCart()">
+                                <option value="rp">Rp</option>
+                                <option value="persen">%</option>
+                            </select>
+                            <input type="number" step="any" class="hpp-clean-input" style="width: 100px; padding: 6px 12px !important; text-align: right;" id="posDiskon" value="0" oninput="renderCart()">
+                        </div>
                     </div>
                     
                     <div style="background: #f8fafc; border: 1px dashed var(--border-strong); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; font-size: 12px; display: flex; flex-direction: column; gap: 8px;">

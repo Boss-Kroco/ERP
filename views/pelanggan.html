@@ -110,6 +110,24 @@
             </div>
         </div>
 
+        <div class="premium-metric-card" style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);">
+            <div class="card-bg-shape"></div>
+            <div class="premium-metric-header">
+                <span class="premium-metric-title">Total Tabungan</span>
+                <div class="premium-metric-icon">
+                    <svg class="svg-icon" style="width:28px; height:28px; color:white; stroke-width: 2;" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <rect width="20" height="14" x="2" y="5" rx="2" />
+                        <line x1="2" x2="22" y1="10" y2="10" />
+                    </svg>
+                </div>
+            </div>
+            <div class="premium-metric-value" id="lblTotalTabunganPelanggan">Rp 0</div>
+            <div class="premium-metric-trend">
+                <svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                Saldo deposit tersimpan
+            </div>
+        </div>
+
     </div>
 
     <!-- Data Table Section -->
@@ -153,12 +171,13 @@
                         <th>Kontak</th>
                         <th>Alamat</th>
                         <th>Total Piutang</th>
+                        <th>Saldo Tabungan</th>
                         <th>Status</th>
                         <th style="text-align: right;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="tblPelangganLogs">
-                    <tr><td colspan="7" style="text-align: center; padding: 20px;">Memuat data...</td></tr>
+                    <tr><td colspan="8" style="text-align: center; padding: 20px;">Memuat data...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -190,6 +209,11 @@
                 <div style="display: flex; flex-direction: column; gap: 6px;">
                     <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Alamat Lengkap (Opsional)</label>
                     <textarea id="inpPelangganAlamat" rows="3" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); outline: none; font-size: 13px; resize: none;" placeholder="Alamat lengkap..."></textarea>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Saldo Tabungan (Opsional)</label>
+                    <input type="number" step="any" id="inpPelangganTabungan" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); outline: none; font-size: 13px;" placeholder="0">
                 </div>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 12px; padding: 16px 20px; border-top: 1px solid var(--border-soft); background: #f8fafc;">

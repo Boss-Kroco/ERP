@@ -13,16 +13,17 @@ function tambahKeKeranjangGrid(pid, nama, harga) {
     // Check if already in cart
     var existing = window.currentCart.find(function(i) { return i.produkId === pid; });
     if (existing) {
-        existing.qty += 1;
-        existing.subtotal = existing.qty * existing.harga;
+        window.updateCartQty(window.currentCart.indexOf(existing), existing.qty + 1);
     } else {
         window.currentCart.push({
             produkId: pid,
             namaProduk: nama,
+            hargaDefault: parseFloat(harga) || 0,
             harga: parseFloat(harga) || 0,
             qty: 1,
             subtotal: parseFloat(harga) || 0
         });
+        window.updateCartQty(window.currentCart.length - 1, 1); // trigger wholesale calc
     }
     
     renderCart();
@@ -71,16 +72,32 @@ function renderCart() {
     (window.currentCart || []).forEach(function (item, idx) {
         grandTotal += item.subtotal;
         var tr = document.createElement('tr');
-        tr.innerHTML = '<td style="padding: 10px 8px;"><b>' + escapeHtml(item.namaProduk) + '</b><br><span style="font-size:11px;color:var(--text-muted);">' + formatRupiah(item.harga) + '</span></td>'
-            + '<td style="padding: 10px 8px; text-align: center;"><input type="number" step="any" value="' + item.qty + '" style="width: 50px; text-align: center; border: 1px solid var(--border-soft); border-radius: 6px; padding: 4px;" onchange="window.updateCartQty(' + idx + ', this.value)"></td>'
-            + '<td style="padding: 10px 8px; text-align: right; font-weight: 700; color: var(--text-dark);">' + formatRupiah(item.subtotal) + '</td>'
+        var qtyInputHtml = '<div style="display: flex; align-items: center; justify-content: center; gap: 4px;">' +
+            '<button style="width: 24px; height: 24px; border: 1px solid var(--border-soft); background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: var(--text-dark);" onclick="window.updateCartQty(' + idx + ', ' + (item.qty - 1) + ')">-</button>' +
+            '<input type="number" step="any" value="' + item.qty + '" style="width: 44px; text-align: center; border: 1px solid var(--border-soft); border-radius: 4px; padding: 2px;" onchange="window.updateCartQty(' + idx + ', this.value)">' +
+            '<button style="width: 24px; height: 24px; border: 1px solid var(--border-soft); background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: var(--text-dark);" onclick="window.updateCartQty(' + idx + ', ' + (item.qty + 1) + ')">+</button>' +
+            '</div>';
+
+        tr.innerHTML = '<td style="padding: 10px 8px;"><b>' + escapeHtml(item.namaProduk) + '</b><br><span style="font-size:11px;color:var(--text-muted);">' + window.formatAppCurrency(item.harga) + '</span></td>'
+            + '<td style="padding: 10px 8px; text-align: center;">' + qtyInputHtml + '</td>'
+            + '<td style="padding: 10px 8px; text-align: right; font-weight: 700; color: var(--text-dark);">' + window.formatAppCurrency(item.subtotal) + '</td>'
             + '<td style="padding: 10px 8px; text-align:center;"><button style="border:none;background:#fee2e2;color:var(--coral-pink);cursor:pointer;border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;" onclick="hapusCart(' + idx + ')"><svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></td>';
         tbody.appendChild(tr);
     });
 
+    var elDiskonType = document.getElementById('posDiskonType');
     var elDiskon = document.getElementById('posDiskon');
-    var diskon = elDiskon ? (parseFloat(elDiskon.value) || 0) : 0;
-    var taxableAmount = Math.max(0, grandTotal - diskon);
+    var diskonValue = elDiskon ? (parseFloat(elDiskon.value) || 0) : 0;
+    var diskonType = elDiskonType ? elDiskonType.value : 'rp';
+    var diskonNominal = 0;
+    
+    if (diskonType === 'persen') {
+        diskonNominal = grandTotal * (diskonValue / 100);
+    } else {
+        diskonNominal = diskonValue;
+    }
+
+    var taxableAmount = Math.max(0, grandTotal - diskonNominal);
 
     var pajakRate = getAppPajakRate();
     var chkPpn = document.getElementById('posCheckPpn');
@@ -94,11 +111,11 @@ function renderCart() {
     var elPpnLbl = document.getElementById('posPpnLabel');
     var elTotal = document.getElementById('posTotalLabel');
 
-    if (elSubtotal) elSubtotal.textContent = formatRupiah(grandTotal);
-    if (elDiskonLbl) elDiskonLbl.textContent = (diskon > 0 ? '-' : '') + formatRupiah(diskon);
+    if (elSubtotal) elSubtotal.textContent = window.formatAppCurrency(grandTotal);
+    if (elDiskonLbl) elDiskonLbl.textContent = (diskonNominal > 0 ? '-' : '') + window.formatAppCurrency(diskonNominal);
     if (elPpnRate) elPpnRate.textContent = pajakRate + '%';
-    if (elPpnLbl) elPpnLbl.textContent = formatRupiah(pajakNominal);
-    if (elTotal) elTotal.textContent = formatRupiah(net);
+    if (elPpnLbl) elPpnLbl.textContent = window.formatAppCurrency(pajakNominal);
+    if (elTotal) elTotal.textContent = window.formatAppCurrency(net);
 }
 
 function hapusCart(idx) {
@@ -112,8 +129,11 @@ function submitTransaksiPOS() {
     if (!window.currentCart || window.currentCart.length === 0) return showToast('Keranjang belanja kosong.', 'error');
     var grandTotal = 0;
     window.currentCart.forEach(function (i) { grandTotal += i.subtotal; });
+    var elDiskonType = document.getElementById('posDiskonType');
     var elDiskon = document.getElementById('posDiskon');
-    var diskon = elDiskon ? (parseFloat(elDiskon.value) || 0) : 0;
+    var diskonValue = elDiskon ? (parseFloat(elDiskon.value) || 0) : 0;
+    var diskonType = elDiskonType ? elDiskonType.value : 'rp';
+    var diskon = (diskonType === 'persen') ? (grandTotal * (diskonValue / 100)) : diskonValue;
     var taxableAmount = Math.max(0, grandTotal - diskon);
 
     var pajakRate = getAppPajakRate();
@@ -178,7 +198,7 @@ function submitTransaksiPOS() {
             // Kirim notifikasi otomatis ke Bot Telegram jika terkonfigurasi
             if (typeof window.sendTelegramNotification === 'function') {
                 var itemsText = cartSnapshot.map(function (ci) {
-                    return '• ' + ci.namaProduk + ' (' + ci.qty + 'x) : ' + (window.formatRupiah ? window.formatRupiah(ci.subtotal) : ('Rp ' + ci.subtotal));
+                    return '• ' + ci.namaProduk + ' (' + ci.qty + 'x) : ' + (window.formatAppCurrency ? window.formatAppCurrency(ci.subtotal) : ('Rp ' + ci.subtotal));
                 }).join('\n');
 
                 var userNama = (window.currentUser && (window.currentUser.namaLengkap || window.currentUser.username)) || 'Kasir';
@@ -189,10 +209,10 @@ function submitTransaksiPOS() {
                     + '💳 *Metode:* ' + metode + '\n'
                     + '👨‍💼 *Petugas:* ' + userNama + '\n\n'
                     + '📦 *Rincian Belanja:*\n' + itemsText + '\n\n'
-                    + '💵 *Subtotal:* ' + (window.formatRupiah ? window.formatRupiah(grandTotal) : ('Rp ' + grandTotal)) + '\n'
-                    + (diskon > 0 ? ('🏷️ *Diskon:* -' + (window.formatRupiah ? window.formatRupiah(diskon) : ('Rp ' + diskon)) + '\n') : '')
-                    + (pajakNominal > 0 ? ('🏛️ *PPN (' + pajakRate + '%):* ' + (window.formatRupiah ? window.formatRupiah(pajakNominal) : ('Rp ' + pajakNominal)) + '\n') : '')
-                    + '💰 *TOTAL BAYAR: ' + (window.formatRupiah ? window.formatRupiah(totalNet) : ('Rp ' + totalNet)) + '*\n'
+                    + '💵 *Subtotal:* ' + (window.formatAppCurrency ? window.formatAppCurrency(grandTotal) : ('Rp ' + grandTotal)) + '\n'
+                    + (diskon > 0 ? ('🏷️ *Diskon:* -' + (window.formatAppCurrency ? window.formatAppCurrency(diskon) : ('Rp ' + diskon)) + '\n') : '')
+                    + (pajakNominal > 0 ? ('🏛️ *PPN (' + pajakRate + '%):* ' + (window.formatAppCurrency ? window.formatAppCurrency(pajakNominal) : ('Rp ' + pajakNominal)) + '\n') : '')
+                    + '💰 *TOTAL BAYAR: ' + (window.formatAppCurrency ? window.formatAppCurrency(totalNet) : ('Rp ' + totalNet)) + '*\n'
                     + '📅 *Waktu:* ' + new Date().toLocaleString('id-ID');
 
                 window.sendTelegramNotification(teleMsg);
@@ -229,10 +249,25 @@ function cetakStrukTerakhir() {
 
 window.updateCartQty = function(idx, newQty) {
     newQty = parseFloat(newQty) || 1;
-    if(newQty <= 0) newQty = 1;
+    if(newQty <= 0) {
+        hapusCart(idx);
+        return;
+    }
     if (window.currentCart && window.currentCart[idx]) {
-        window.currentCart[idx].qty = newQty;
-        window.currentCart[idx].subtotal = newQty * window.currentCart[idx].harga;
+        var item = window.currentCart[idx];
+        item.qty = newQty;
+        
+        // Cek harga grosir dari master produk
+        var prod = (window.catalogProducts || []).find(function(p) { return p.produkId === item.produkId; });
+        if (prod && prod.minQtyGrosir && prod.hargaGrosir) {
+            if (item.qty >= parseFloat(prod.minQtyGrosir)) {
+                item.harga = parseFloat(prod.hargaGrosir);
+            } else {
+                item.harga = item.hargaDefault || parseFloat(prod.hargaJual);
+            }
+        }
+        
+        item.subtotal = item.qty * item.harga;
         renderCart();
     }
 };
@@ -250,7 +285,9 @@ window.renderPosProductGrid = function(filterText) {
         
         var safeNama = escapeHtml(p.namaProduk);
         var initial = safeNama.substring(0, 2).toUpperCase();
-        var priceStr = formatRupiah(p.hargaJual || 0);
+        var priceStr = window.formatAppCurrency(p.hargaJual || 0);
+        var stok = p.stokEtalase || 0;
+        var grosirBadge = (p.minQtyGrosir && p.hargaGrosir) ? `<div style="position: absolute; top: 6px; left: 6px; background: var(--coral-pink); color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Grosir: ${window.formatAppCurrency(p.hargaGrosir)}</div>` : '';
         
         var div = document.createElement('div');
         div.style.cssText = "background: #ffffff; border: 1px solid var(--border-soft); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center; position: relative;";
@@ -259,16 +296,32 @@ window.renderPosProductGrid = function(filterText) {
         div.onclick = function() { tambahKeKeranjangGrid(p.produkId, p.namaProduk, p.hargaJual); };
         
         div.innerHTML = `
+            ${grosirBadge}
             <div style="width: 54px; height: 54px; border-radius: 12px; background: #e0e7ff; color: var(--violet-dark); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; margin-bottom: 12px;">
                 ${initial}
             </div>
             <div style="font-size: 13px; font-weight: 700; color: var(--text-dark); text-align: center; margin-bottom: 4px; line-height: 1.3;">${safeNama}</div>
             <div style="font-size: 13px; font-weight: 800; color: var(--emerald);">${priceStr}</div>
+            <div style="font-size: 10px; font-weight: 600; color: var(--text-muted); margin-top: 4px;">Sisa Stok: ${stok}</div>
             <div style="position: absolute; top: 12px; right: 12px; background: var(--violet-main); color: #fff; width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0.8;">+</div>
         `;
         
         grid.appendChild(div);
     });
+};
+
+// Auto-sync Pelanggan to POS Dropdown
+window.populatePosCustomers = function() {
+    var custSelect = document.getElementById('posCustomer');
+    if (custSelect && window._pelangganDataList) {
+        custSelect.innerHTML = '<option value="CUST-UMUM">Pelanggan Umum</option>';
+        window._pelangganDataList.forEach(function(p) {
+            var opt = document.createElement('option');
+            opt.value = p.pelanggan_id;
+            opt.textContent = p.nama_toko;
+            custSelect.appendChild(opt);
+        });
+    }
 };
 
 // Export POS functions to window

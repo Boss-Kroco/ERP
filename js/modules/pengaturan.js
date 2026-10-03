@@ -99,6 +99,7 @@ window.initPengaturanPage = function () {
             if (cfg.targetOmzet && document.getElementById('setFinTargetOmzet')) document.getElementById('setFinTargetOmzet').value = cfg.targetOmzet;
             if (cfg.pajak && document.getElementById('setFinPajak')) document.getElementById('setFinPajak').value = cfg.pajak;
             if (cfg.limitKas && document.getElementById('setFinLimitKas')) document.getElementById('setFinLimitKas').value = cfg.limitKas;
+            if (cfg.currency && document.getElementById('setFinCurrency')) document.getElementById('setFinCurrency').value = cfg.currency;
             if (cfg.teleToken && document.getElementById('setTeleToken')) document.getElementById('setTeleToken').value = cfg.teleToken;
             if (cfg.teleChatId && document.getElementById('setTeleChatId')) document.getElementById('setTeleChatId').value = cfg.teleChatId;
             if (typeof cfg.teleEnabled === 'boolean' && document.getElementById('setTeleEnable')) document.getElementById('setTeleEnable').checked = cfg.teleEnabled;
@@ -339,8 +340,9 @@ window.savePengaturanFinance = function () {
     var targetOmzet = document.getElementById('setFinTargetOmzet') ? document.getElementById('setFinTargetOmzet').value : '5000000';
     var pajak = document.getElementById('setFinPajak') ? document.getElementById('setFinPajak').value : '11';
     var limitKas = document.getElementById('setFinLimitKas') ? document.getElementById('setFinLimitKas').value : '2000000';
+    var currency = document.getElementById('setFinCurrency') ? document.getElementById('setFinCurrency').value : 'IDR';
 
-    saveAppSettingsHelper({ targetOmzet: targetOmzet, pajak: pajak, limitKas: limitKas });
+    saveAppSettingsHelper({ targetOmzet: targetOmzet, pajak: pajak, limitKas: limitKas, currency: currency });
     window.closeSettingModal('modalSetFinance');
     window.initPengaturanPage();
     if (typeof window.loadDashboardData === 'function') window.loadDashboardData();
