@@ -1073,7 +1073,7 @@ window.openPreviewStruk = function (trxId) {
     var safeMetode = (typeof window.escapeHtml === 'function') ? window.escapeHtml(metode) : metode;
 
     var fmtGrandTotal = window.formatAppCurrency(grandTotal);
-    var fmtSubtotal = window.formatAppCurrency(subtotalCalc || grandTotal));
+    var fmtSubtotal = window.formatAppCurrency(subtotalCalc || grandTotal);
     var fmtDiskon = window.formatAppCurrency(diskon);
     var fmtPajak = window.formatAppCurrency(pajak);
     var fmtBayar = window.formatAppCurrency(bayarNominal);

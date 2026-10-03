@@ -4,10 +4,7 @@
 
 window._pelangganDataList = [];
 
-// Fungsi untuk format rupiah khusus tabel ini
-function window.formatAppCurrency(num) {
-    return 'Rp ' + Number(num || 0).toLocaleString('id-ID');
-}
+// Global formatAppCurrency is used instead
 
 window.loadPelangganData = function() {
     var tbl = document.getElementById('tblPelangganLogs');
