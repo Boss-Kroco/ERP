@@ -148,6 +148,59 @@ window.prosesSewa = function() {
     var penyewa = document.getElementById('inpPenyewaSewa').value || 'Pelanggan Umum';
     var durasi = document.getElementById('inpDurasiSewa').value || 1;
     
+    var subtotal = 0;
+    var cartItems = [];
+    window.keranjangSewa.forEach(function(item) {
+        subtotal += item.hargaSewa * item.qty;
+        cartItems.push({
+            id: item.id,
+            namaProduk: '(SEWA ' + durasi + 'H) ' + item.nama,
+            qty: item.qty,
+            hargaJual: item.hargaSewa * durasi,
+            subtotal: item.hargaSewa * item.qty * durasi
+        });
+    });
+    var totalBayar = subtotal * durasi;
+    
+    if (window.orderTransactions) {
+        var now = new Date();
+        var timeStr = ('0' + now.getDate()).slice(-2) + '/' + ('0' + (now.getMonth() + 1)).slice(-2) + '/' + now.getFullYear() + ' ' +
+            ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
+        
+        var newTrx = {
+            id: 'SEWA-' + now.getTime(),
+            orderNum: 'S' + Math.floor(600000 + Math.random() * 90000),
+            customer: penyewa,
+            phone: 'Penyewa',
+            category: 'Sewa Alat',
+            price: totalBayar,
+            date: timeStr,
+            payment: 'Tunai',
+            status: 'delivered',
+            items: cartItems
+        };
+        window.orderTransactions.unshift(newTrx);
+        
+        if (typeof window.renderOrderTable === 'function') window.renderOrderTable();
+        if (typeof window.loadDashboardData === 'function') window.loadDashboardData();
+        
+        // Also update Kas Operasional
+        if (window.mockKeuanganKas) {
+            var lastSaldo = window.mockKeuanganKas.length > 0 ? window.mockKeuanganKas[0].saldoBerjalan : 15000000;
+            window.mockKeuanganKas.unshift({
+                kasId: 'KAS-' + now.getTime(),
+                tanggal: timeStr,
+                tipe: 'Masuk',
+                kategori: 'Pendapatan Sewa',
+                nominal: totalBayar,
+                keterangan: 'Sewa Alat: ' + penyewa,
+                refId: newTrx.id,
+                saldoBerjalan: lastSaldo + totalBayar,
+                dicatatOleh: 'Sistem'
+            });
+        }
+    }
+    
     if(window.showToast) window.showToast('Transaksi Sewa berhasil diproses untuk ' + penyewa + ' selama ' + durasi + ' hari!', 'success');
     
     // Cetak Struk
