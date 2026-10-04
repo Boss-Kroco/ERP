@@ -76,6 +76,16 @@
     --transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Hide number input spin buttons globally */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
         /* ============================================================
          * LOGIN SCREEN OVERLAY & CARD (HIGH-END FINTECH MODAL)
          * ============================================================ */

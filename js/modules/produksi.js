@@ -152,9 +152,9 @@ window.renderHppBahanBaku = function() {
         totalBahan += sub;
         var tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><input type="text" class="hpp-clean-input" value="${item.nama}" onchange="window.updateHppBahan(${idx}, 'nama', this.value)"></td>
-            <td><input type="number" step="any" class="hpp-clean-input" style="text-align: center;" value="${item.qty}" onchange="window.updateHppBahan(${idx}, 'qty', this.value)"></td>
-            <td><input type="number" step="any" class="hpp-clean-input" style="text-align: right;" value="${item.harga}" onchange="window.updateHppBahan(${idx}, 'harga', this.value)"></td>
+            <td><input type="text" class="hpp-clean-input" style="width: 100%; min-width: 120px;" value="${item.nama}" onchange="window.updateHppBahan(${idx}, 'nama', this.value)"></td>
+            <td><input type="number" step="any" class="hpp-clean-input" style="text-align: center; width: 60px;" value="${item.qty}" onchange="window.updateHppBahan(${idx}, 'qty', this.value)"></td>
+            <td><input type="number" step="any" class="hpp-clean-input" style="text-align: right; width: 90px;" value="${item.harga}" onchange="window.updateHppBahan(${idx}, 'harga', this.value)"></td>
             <td style="font-weight: 700; text-align: right; color: var(--text-dark);">${window.formatAppCurrency(sub)}</td>
             <td style="text-align: center;">
                 <button style="border: none; background: #fff1f2; color: #e11d48; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center;" onclick="window.hapusHppBahan(${idx})">
