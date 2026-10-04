@@ -4982,11 +4982,11 @@
            ========================================================================== */
         .receipt-paper-slip {
             background: #ffffff;
-            color: #0f172a;
+            color: #000000;
             font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace, sans-serif;
-            border-radius: 16px;
-            padding: 24px 22px;
-            box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.2), 0 0 0 1px rgba(226, 232, 240, 0.9);
+            border-radius: 4px;
+            padding: 28px 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05);
             position: relative;
             overflow: hidden;
             max-height: 80vh;
@@ -4999,8 +4999,8 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: repeating-linear-gradient(-45deg, var(--violet-main), var(--violet-main) 6px, #ffffff 6px, #ffffff 12px);
+            height: 6px;
+            background: #000000;
         }
 
         .receipt-header {
@@ -5025,10 +5025,10 @@
         }
 
         .receipt-brand-name {
-            font-size: 15.5px;
+            font-size: 16px;
             font-weight: 900;
-            letter-spacing: 0.5px;
-            color: #0f172a;
+            letter-spacing: 1px;
+            color: #000000;
             margin-bottom: 2px;
             text-transform: uppercase;
         }
@@ -5036,19 +5036,20 @@
         .receipt-brand-desc {
             font-size: 11px;
             font-weight: 600;
-            color: #64748b;
+            color: #444444;
             margin-bottom: 4px;
+            text-transform: uppercase;
         }
 
         .receipt-contact-info {
             font-size: 10px;
-            color: #64748b;
-            line-height: 1.4;
+            color: #555555;
+            line-height: 1.5;
         }
 
         .receipt-dashed-line {
-            border-bottom: 1.5px dashed #cbd5e1;
-            margin: 12px 0;
+            border-bottom: 1.5px dashed #cccccc;
+            margin: 14px 0;
         }
 
         .receipt-meta-grid {
@@ -5065,15 +5066,17 @@
         }
 
         .receipt-meta-label {
-            font-size: 9.5px;
-            color: #94a3b8;
+            font-size: 9px;
+            color: #666666;
             text-transform: uppercase;
-            font-weight: 700;
+            font-weight: 800;
+            letter-spacing: 0.5px;
         }
 
         .receipt-meta-val {
-            font-weight: 700;
-            color: #1e293b;
+            font-weight: 800;
+            color: #000000;
+            font-size: 11.5px;
         }
 
         .receipt-table {
@@ -5086,20 +5089,21 @@
         .receipt-table th {
             font-size: 9.5px;
             text-transform: uppercase;
-            color: #64748b;
-            font-weight: 800;
+            color: #000000;
+            font-weight: 900;
             padding: 4px 0 6px;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 2px solid #000000;
         }
 
         .receipt-table td {
-            padding: 6px 0;
+            padding: 8px 0;
             vertical-align: top;
+            border-bottom: 1px dashed #eeeeee;
         }
 
         .receipt-item-name {
-            font-weight: 700;
-            color: #0f172a;
+            font-weight: 800;
+            color: #000000;
             display: block;
         }
 
@@ -5113,32 +5117,32 @@
             justify-content: space-between;
             align-items: center;
             font-size: 11px;
-            margin-bottom: 4px;
-            color: #475569;
+            margin-bottom: 6px;
+            color: #333333;
         }
 
         .receipt-grand-total-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 10px 12px;
-            margin: 10px 0;
+            border-top: 2px solid #000000;
+            border-bottom: 2px solid #000000;
+            padding: 12px 0;
+            margin: 14px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .receipt-grand-total-label {
-            font-size: 12px;
-            font-weight: 800;
-            color: #0f172a;
+            font-size: 13px;
+            font-weight: 900;
+            color: #000000;
             text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .receipt-grand-total-num {
             font-size: 18px;
             font-weight: 900;
-            color: var(--violet-main, #6c47ff);
+            color: #000000;
         }
 
         .receipt-barcode-wrap {

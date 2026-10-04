@@ -1152,7 +1152,7 @@ window.openPreviewStruk = function (trxId, mode) {
             + '<span class="receipt-item-name">' + pName + '</span>'
             + '<span class="receipt-item-sub">' + pQty + ' x ' + formattedHarga + '</span>'
             + '</td>'
-            + '<td style="text-align: right; padding: 6px 0; font-weight: 800; color: #0f172a; vertical-align: bottom;">'
+            + '<td style="text-align: right; padding: 6px 0; font-weight: 800; color: #000000; vertical-align: bottom;">'
             + formattedSub
             + '</td>'
             + '</tr>';
@@ -1166,7 +1166,7 @@ window.openPreviewStruk = function (trxId, mode) {
     if (bayarNominal < grandTotal) bayarNominal = grandTotal;
     var kembalian = isTunai ? Math.max(0, bayarNominal - grandTotal) : 0;
     var statusText = (trx.status === 'delivered' ? 'LUNAS / SELESAI' : (trx.status === 'on way' ? 'DALAM PENGIRIMAN' : 'TEMPO / PENDING'));
-    var statusColor = (trx.status === 'delivered' ? '#16a34a' : '#d97706');
+    var statusColor = '#000000';
 
     var safeOrderNum = (typeof window.escapeHtml === 'function') ? window.escapeHtml(trx.orderNum || trx.id) : trx.orderNum;
     var safeTrxId = (typeof window.escapeHtml === 'function') ? window.escapeHtml(trx.id) : trx.id;
@@ -1203,11 +1203,11 @@ window.openPreviewStruk = function (trxId, mode) {
         + '<div class="receipt-meta-grid">'
         + '<div class="receipt-meta-item">'
         + '<span class="receipt-meta-label">No. Transaksi</span>'
-        + '<span class="receipt-meta-val" style="font-size:12px; color:var(--violet-main);">' + safeOrderNum + '</span>'
+        + '<span class="receipt-meta-val" style="font-size:12px; color:#000000;">' + safeOrderNum + '</span>'
         + '</div>'
         + '<div class="receipt-meta-item" style="text-align: right;">'
         + '<span class="receipt-meta-label">Status</span>'
-        + '<span class="receipt-meta-val" style="color:' + statusColor + ';">● ' + statusText + '</span>'
+        + '<span class="receipt-meta-val" style="color:' + statusColor + ';">' + statusText + '</span>'
         + '</div>'
         + '<div class="receipt-meta-item">'
         + '<span class="receipt-meta-label">Waktu</span>'
@@ -1246,7 +1246,7 @@ window.openPreviewStruk = function (trxId, mode) {
         + (diskon > 0 ? (
             '<div class="receipt-calc-row">'
             + '<span>Diskon Potongan</span>'
-            + '<span style="font-weight: 700; color: #dc2626;">-' + fmtDiskon + '</span>'
+            + '<span style="font-weight: 700; color: #000000;">-' + fmtDiskon + '</span>'
             + '</div>'
         ) : '')
         + (pajak > 0 ? (
@@ -1272,16 +1272,16 @@ window.openPreviewStruk = function (trxId, mode) {
             + '</div>'
             + '<div class="receipt-calc-row">'
             + '<span>Kembalian</span>'
-            + '<span style="font-weight: 800; color: #16a34a;">' + fmtKembali + '</span>'
+            + '<span style="font-weight: 800; color: #000000;">' + fmtKembali + '</span>'
             + '</div>'
         ) : '')
         + (mode === 'wakil' && trx.isWakil ? (
             '<div class="receipt-dashed-line"></div>'
-            + '<div class="receipt-calc-row" style="color: var(--violet-main);">'
+            + '<div class="receipt-calc-row" style="color: #000000;">'
             + '<span>Komisi Wakil (' + (trx.wakilPersen || 0) + '%)</span>'
             + '<span style="font-weight: 800;">' + window.formatAppCurrency(trx.wakilNominal || 0) + '</span>'
             + '</div>'
-            + '<div class="receipt-calc-row" style="color: var(--emerald);">'
+            + '<div class="receipt-calc-row" style="color: #000000;">'
             + '<span>Setoran ke Perusahaan</span>'
             + '<span style="font-weight: 800;">' + window.formatAppCurrency(trx.perusahaanNominal || 0) + '</span>'
             + '</div>'
@@ -1302,7 +1302,7 @@ window.openPreviewStruk = function (trxId, mode) {
         + '<div class="receipt-footer-notes">'
         + '<b>Terima kasih telah berbelanja di Mafaza Group!</b><br>'
         + 'Semoga harimu menyenangkan.<br>'
-        + '<small style="color:#94a3b8; font-size: 9.5px;">Powered by Mafaza Group ERP</small>'
+        + '<small style="color:#777777; font-size: 9.5px;">Powered by Mafaza Group ERP</small>'
         + '</div>';
 
     var modal = document.getElementById('modalPreviewStruk');
