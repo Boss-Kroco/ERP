@@ -45,14 +45,14 @@ window.formatAppCurrency = function (num) {
         locale = 'en-US';
         fraction = 2;
     } else if (currency === 'YER') {
-        prefix = '﷼';
-        exchangeRate = 62; // Asumsi kurs IDR to YER
-        locale = 'ar-YE';
+        prefix = '﷼ ';
+        exchangeRate = 75.87; // Real market exchange rate IDR to YER
+        locale = 'id-ID';
         fraction = 2;
     } else if (currency === 'SAR') {
-        prefix = '﷼';
-        exchangeRate = 4133; // Asumsi kurs IDR to SAR
-        locale = 'ar-SA';
+        prefix = '﷼ ';
+        exchangeRate = 4770; // Kurs real ~ 4770 IDR to SAR
+        locale = 'id-ID';
         fraction = 2;
     }
     
