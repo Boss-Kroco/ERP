@@ -324,3 +324,32 @@ window.downloadStrukPdf = function(htmlContent, filename) {
         if(window.showToast) window.showToast('Terjadi kesalahan saat membuat PDF.', 'error');
     });
 };
+
+window.downloadStrukImage = function(htmlContent, filename) {
+    if (typeof window.html2canvas !== 'function') {
+        if(window.showToast) window.showToast('Gagal memuat pembuat Gambar.', 'error');
+        return;
+    }
+    var container = document.createElement('div');
+    container.innerHTML = htmlContent;
+    container.style.padding = '20px';
+    container.style.background = '#fff';
+    container.style.color = '#000';
+    container.style.width = '340px'; 
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    document.body.appendChild(container);
+    
+    window.html2canvas(container, { scale: 2 }).then(function(canvas) {
+        document.body.removeChild(container);
+        var link = document.createElement('a');
+        link.download = (filename || 'Struk') + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        if(window.showToast) window.showToast('Struk Gambar berhasil diunduh.', 'success');
+    }).catch(function(err) {
+        if(container.parentNode) document.body.removeChild(container);
+        console.error('Image generation error:', err);
+        if(window.showToast) window.showToast('Terjadi kesalahan saat membuat Gambar.', 'error');
+    });
+};

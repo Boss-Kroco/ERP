@@ -393,6 +393,8 @@ function detailTransaksi(trxId) {
             // Simpan trxId untuk tombol cetak & edit
             var btnCetak = document.getElementById('btnCetakDariModal');
             if (btnCetak) btnCetak.setAttribute('data-trxid', item.id);
+            var btnCetakWakil = document.getElementById('btnCetakWakilDariModal');
+            if (btnCetakWakil) btnCetakWakil.setAttribute('data-trxid', item.id);
             var btnEdit = document.getElementById('btnEditDariModal');
             if (btnEdit) btnEdit.setAttribute('data-trxid', item.id);
             document.getElementById('modalDetailTrx').classList.add('active');
@@ -402,12 +404,12 @@ function closeDetailTrxModal() {
             document.getElementById('modalDetailTrx').classList.remove('active');
         }
 
-function cetakStrukDariModal() {
+function cetakStrukDariModal(mode) {
             var btn = document.getElementById('btnCetakDariModal');
             var trxId = btn ? btn.getAttribute('data-trxid') : null;
             if (!trxId) return;
             closeDetailTrxModal();
-            window.openPreviewStruk(trxId);
+            window.openPreviewStruk(trxId, mode);
         }
 
         function editTransaksiDariModal() {
@@ -427,6 +429,22 @@ function cetakStrukDariModal() {
 
             var elId = document.getElementById('editTrxId');
             if (elId) elId.value = item.id;
+            
+            // Initialize items for editor
+            window.currentEditTrxItems = [];
+            if (item.items && Array.isArray(item.items) && item.items.length > 0) {
+                window.currentEditTrxItems = JSON.parse(JSON.stringify(item.items));
+            } else {
+                window.currentEditTrxItems.push({
+                    namaProduk: item.category || 'Item Pembelian',
+                    qty: 1,
+                    harga: Number(item.price || 0),
+                    subtotal: Number(item.price || 0)
+                });
+            }
+            if (typeof window.renderEditTrxItems === 'function') {
+                window.renderEditTrxItems();
+            }
             var elOrderNum = document.getElementById('editTrxOrderNumBadge');
             if (elOrderNum) elOrderNum.textContent = item.orderNum || item.id;
             var elSubId = document.getElementById('editTrxSubIdBadge');
@@ -439,8 +457,6 @@ function cetakStrukDariModal() {
             if (elPhone) elPhone.value = item.phone || '';
             var elCat = document.getElementById('editTrxCategory');
             if (elCat) elCat.value = item.category || '';
-            var elPrice = document.getElementById('editTrxPrice');
-            if (elPrice) elPrice.value = item.price || 0;
             var elPay = document.getElementById('editTrxPayment');
             if (elPay) elPay.value = item.payment || 'Tunai';
             var elStatus = document.getElementById('editTrxStatus');
@@ -465,7 +481,8 @@ function cetakStrukDariModal() {
                 category: document.getElementById('editTrxCategory').value.trim(),
                 price: parseFloat(document.getElementById('editTrxPrice').value) || 0,
                 payment: document.getElementById('editTrxPayment').value,
-                status: document.getElementById('editTrxStatus').value
+                status: document.getElementById('editTrxStatus').value,
+                items: window.currentEditTrxItems || []
             };
 
             showToast('Menyimpan perubahan transaksi ' + trxId + '...', 'success');
@@ -485,6 +502,7 @@ function cetakStrukDariModal() {
                         orderTransactions[i].price = payload.price;
                         orderTransactions[i].payment = payload.payment;
                         orderTransactions[i].status = payload.status;
+                        orderTransactions[i].items = JSON.parse(JSON.stringify(payload.items));
                         break;
                     }
                 }
@@ -500,6 +518,91 @@ function cetakStrukDariModal() {
                 showToast('Gagal update transaksi: ' + (err.message || 'Koneksi terganggu'), 'error');
             });
         }
+
+        window.renderEditTrxItems = function() {
+            var container = document.getElementById('editTrxItemsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            var grandTotal = 0;
+
+            (window.currentEditTrxItems || []).forEach(function(item, idx) {
+                grandTotal += item.subtotal;
+                
+                var row = document.createElement('div');
+                row.style.cssText = 'display: flex; gap: 8px; align-items: flex-end; padding-bottom: 8px; border-bottom: 1px dashed var(--border-soft);';
+                
+                row.innerHTML = `
+                    <div style="flex: 2;">
+                        <label style="font-size: 10px; color: var(--text-muted); font-weight: 700;">Nama Produk</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; padding: 4px; font-size: 12px;" value="${escapeHtml(item.namaProduk || '')}" onchange="window.updateItemEditTrx(${idx}, 'namaProduk', this.value)">
+                    </div>
+                    <div style="flex: 1; max-width: 60px;">
+                        <label style="font-size: 10px; color: var(--text-muted); font-weight: 700;">Qty</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; padding: 4px; font-size: 12px; text-align: center;" value="${item.qty}" min="1" step="any" onchange="window.updateItemEditTrx(${idx}, 'qty', this.value)">
+                    </div>
+                    <div style="flex: 1.5;">
+                        <label style="font-size: 10px; color: var(--text-muted); font-weight: 700;">Harga (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; padding: 4px; font-size: 12px;" value="${item.harga}" min="0" step="any" onchange="window.updateItemEditTrx(${idx}, 'harga', this.value)">
+                    </div>
+                    <div style="flex: 1.5;">
+                        <label style="font-size: 10px; color: var(--text-muted); font-weight: 700;">Subtotal (Rp)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; padding: 4px; font-size: 12px; font-weight: 800; background: #f1f5f9; cursor: not-allowed;" value="${item.subtotal}" readonly>
+                    </div>
+                    <div>
+                        <button type="button" style="border: none; background: #fee2e2; color: var(--coral-pink); width: 28px; height: 28px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="window.hapusItemEditTrx(${idx})">
+                            <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+
+            var elPrice = document.getElementById('editTrxPrice');
+            if (elPrice) elPrice.value = grandTotal;
+        };
+
+        window.tambahItemEditTrx = function() {
+            if (!window.currentEditTrxItems) window.currentEditTrxItems = [];
+            window.currentEditTrxItems.push({
+                namaProduk: '',
+                qty: 1,
+                harga: 0,
+                subtotal: 0
+            });
+            window.renderEditTrxItems();
+        };
+
+        window.hapusItemEditTrx = function(idx) {
+            if (window.currentEditTrxItems && window.currentEditTrxItems.length > 1) {
+                window.currentEditTrxItems.splice(idx, 1);
+                window.renderEditTrxItems();
+            } else {
+                showToast('Transaksi minimal memiliki 1 item produk.', 'error');
+            }
+        };
+
+        window.updateItemEditTrx = function(idx, field, value) {
+            var item = window.currentEditTrxItems[idx];
+            if (!item) return;
+            
+            if (field === 'namaProduk') {
+                item.namaProduk = value;
+            } else if (field === 'qty') {
+                item.qty = parseFloat(value) || 1;
+                if(item.qty <= 0) item.qty = 1;
+            } else if (field === 'harga') {
+                item.harga = parseFloat(value) || 0;
+            }
+            
+            item.subtotal = item.qty * item.harga;
+            window.renderEditTrxItems();
+            
+            // Generate category name summary
+            var cat = window.currentEditTrxItems.map(function(i) { return i.namaProduk; }).join(', ');
+            if (cat.length > 50) cat = cat.substring(0, 47) + '...';
+            var elCat = document.getElementById('editTrxCategory');
+            if (elCat) elCat.value = cat;
+        };
 
 function filterOrderTable() {
             var query = (document.getElementById('searchOrderTable').value || '').toLowerCase();
@@ -999,7 +1102,7 @@ window.submitEditTransaksi = submitEditTransaksi;
 // ==========================================================================
 window._currentReceiptTrx = null;
 
-window.openPreviewStruk = function (trxId) {
+window.openPreviewStruk = function (trxId, mode) {
     var orders = window.orderTransactions || [];
     var trx = orders.find(function (o) { return o.id === trxId || o.orderNum === trxId; });
     if (!trx) {
@@ -1172,6 +1275,17 @@ window.openPreviewStruk = function (trxId) {
             + '<span style="font-weight: 800; color: #16a34a;">' + fmtKembali + '</span>'
             + '</div>'
         ) : '')
+        + (mode === 'wakil' && trx.isWakil ? (
+            '<div class="receipt-dashed-line"></div>'
+            + '<div class="receipt-calc-row" style="color: var(--violet-main);">'
+            + '<span>Komisi Wakil (' + (trx.wakilPersen || 0) + '%)</span>'
+            + '<span style="font-weight: 800;">' + window.formatAppCurrency(trx.wakilNominal || 0) + '</span>'
+            + '</div>'
+            + '<div class="receipt-calc-row" style="color: var(--emerald);">'
+            + '<span>Setoran ke Perusahaan</span>'
+            + '<span style="font-weight: 800;">' + window.formatAppCurrency(trx.perusahaanNominal || 0) + '</span>'
+            + '</div>'
+        ) : '')
 
         + '<div class="receipt-dashed-line"></div>'
 
@@ -1201,16 +1315,26 @@ window.closePreviewStrukModal = function () {
 };
 
 window.triggerPrintStruk = function () {
+    window.print();
+};
+
+window.triggerDownloadStrukPdf = function () {
     var container = document.getElementById('printableReceiptArea');
     if (!container) return;
-    
     var trx = window._currentReceiptTrx || {};
     var trxId = trx.id || trx.orderNum || 'Baru';
-    
     if (typeof window.downloadStrukPdf === 'function') {
         window.downloadStrukPdf(container.innerHTML, 'Struk_POS_' + trxId + '.pdf');
-    } else {
-        window.print();
+    }
+};
+
+window.triggerDownloadStrukImage = function () {
+    var container = document.getElementById('printableReceiptArea');
+    if (!container) return;
+    var trx = window._currentReceiptTrx || {};
+    var trxId = trx.id || trx.orderNum || 'Baru';
+    if (typeof window.downloadStrukImage === 'function') {
+        window.downloadStrukImage(container.innerHTML, 'Struk_POS_' + trxId);
     }
 };
 
