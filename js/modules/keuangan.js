@@ -145,20 +145,23 @@ function renderKeuanganTable(items) {
     }
 
     items.forEach(function (k) {
-        var isMasuk = (k.tipe === 'Masuk');
+        var isMasuk = (k.tipe === 'Masuk' || k.tipe === 'Tabungan Keluar');
+        var isKeluar = (k.tipe === 'Keluar' || k.tipe === 'Tabungan Masuk');
         var tr = document.createElement('tr');
 
         var nominalMasukHtml = isMasuk
             ? '<span style="color: #059669; font-weight: 800;">+ ' + window.formatAppCurrency(k.nominal || 0) + '</span>'
             : '<span style="color: var(--text-muted);">-</span>';
 
-        var nominalKeluarHtml = !isMasuk
+        var nominalKeluarHtml = isKeluar
             ? '<span style="color: #dc2626; font-weight: 800;">- ' + window.formatAppCurrency(k.nominal || 0) + '</span>'
             : '<span style="color: var(--text-muted);">-</span>';
 
-        var tipePill = isMasuk
-            ? '<span class="prog-status-pill green">MASUK</span>'
-            : '<span class="prog-status-pill coral">KELUAR</span>';
+        var tipePill = '';
+        if (k.tipe === 'Masuk') tipePill = '<span class="prog-status-pill green">MASUK</span>';
+        else if (k.tipe === 'Keluar') tipePill = '<span class="prog-status-pill coral">KELUAR</span>';
+        else if (k.tipe === 'Tabungan Masuk') tipePill = '<span class="prog-status-pill blue" style="background: #eff6ff; color: #3b82f6;">NABUNG</span>';
+        else if (k.tipe === 'Tabungan Keluar') tipePill = '<span class="prog-status-pill orange" style="background: #fff7ed; color: #ea580c;">TARIK TAB</span>';
 
         var refBadge = (k.refId && k.refId !== '-' && k.refId !== 'MANUAL')
             ? '<br><small style="color: var(--text-muted); font-size: 10px; font-family: monospace;">Ref: ' + escapeHtml(k.refId) + '</small>'
@@ -191,14 +194,22 @@ function updateKeuanganMetrics(items) {
 
     (items || []).forEach(function (k) {
         var nom = Number(k.nominal || 0);
-        if (k.tipe === 'Masuk') {
+        if (k.tipe === 'Masuk' || k.tipe === 'Tabungan Keluar') {
             totalMasuk += nom;
             countMasuk++;
-        } else if (k.tipe === 'Keluar') {
+        } else if (k.tipe === 'Keluar' || k.tipe === 'Tabungan Masuk') {
             totalKeluar += nom;
             countKeluar++;
         }
     });
+
+    var tabunganTotal = 0;
+    (window.allKeuanganKas || []).forEach(function (k) {
+        if (k.tipe === 'Tabungan Masuk') tabunganTotal += Number(k.nominal || 0);
+        if (k.tipe === 'Tabungan Keluar') tabunganTotal -= Number(k.nominal || 0);
+    });
+    var elTabungan = document.getElementById('keuanganSaldoTabungan');
+    if (elTabungan) elTabungan.textContent = window.formatAppCurrency(tabunganTotal);
 
     var netFlow = totalMasuk - totalKeluar;
 

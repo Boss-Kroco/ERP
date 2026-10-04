@@ -37,6 +37,15 @@
             <div style="font-size: 22px; font-weight: 900; color: var(--text-main); margin-top: 6px;" id="keuanganNetFlow">Rp 0</div>
             <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Selisih Masuk &minus; Keluar</div>
         </div>
+
+        <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 14px; padding: 14px 18px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+            <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+                <span>SALDO TABUNGAN</span>
+                <span class="prog-status-pill blue">TABUNGAN</span>
+            </div>
+            <div style="font-size: 22px; font-weight: 900; color: #3b82f6; margin-top: 6px;" id="keuanganSaldoTabungan">Rp 0</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Dana tersimpan di luar kas/tangan</div>
+        </div>
     </div>
 
     <!-- Alert Box Kas Kritis -->
@@ -67,6 +76,8 @@
                     <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="kasTipe">
                         <option value="Keluar">🔴 Kas Keluar (Biaya / Beban / Pengeluaran)</option>
                         <option value="Masuk">🟢 Kas Masuk (Pendapatan Lain / Setoran Modal)</option>
+                        <option value="Tabungan Masuk">🔵 Kas Keluar ➡ Masuk ke Tabungan (Nabung)</option>
+                        <option value="Tabungan Keluar">🟠 Tabungan Keluar ➡ Masuk ke Kas (Tarik)</option>
                     </select>
                 </div>
                 <div>

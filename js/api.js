@@ -1245,7 +1245,12 @@
             var nom = Number(pKas.nominal || 0);
             var tip = pKas.tipe || 'Masuk';
             var lastSaldo = window.mockKeuanganKas.length > 0 ? window.mockKeuanganKas[0].saldoBerjalan : 15000000;
-            var newSal = tip === 'Masuk' ? (lastSaldo + nom) : (lastSaldo - nom);
+            var newSal = lastSaldo;
+            if (tip === 'Masuk' || tip === 'Tabungan Keluar') {
+                newSal += nom;
+            } else if (tip === 'Keluar' || tip === 'Tabungan Masuk') {
+                newSal -= nom;
+            }
 
             var newEntry = {
                 kasId: 'KAS-' + now.getTime(),
