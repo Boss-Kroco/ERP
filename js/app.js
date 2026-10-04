@@ -44,15 +44,15 @@ window.formatAppCurrency = function (num) {
         exchangeRate = 15500; // Asumsi kurs IDR to USD
         locale = 'en-US';
         fraction = 2;
-    } else if (currency === 'EUR') {
-        prefix = '€';
-        exchangeRate = 16800; // Asumsi kurs IDR to EUR
-        locale = 'de-DE';
+    } else if (currency === 'YER') {
+        prefix = '﷼';
+        exchangeRate = 62; // Asumsi kurs IDR to YER
+        locale = 'ar-YE';
         fraction = 2;
-    } else if (currency === 'GBP') {
-        prefix = '£';
-        exchangeRate = 19800; // Asumsi kurs IDR to GBP
-        locale = 'en-GB';
+    } else if (currency === 'SAR') {
+        prefix = '﷼';
+        exchangeRate = 4133; // Asumsi kurs IDR to SAR
+        locale = 'ar-SA';
         fraction = 2;
     }
     
