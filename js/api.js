@@ -1141,10 +1141,10 @@
             successCb({ success: true, data: (window.orderTransactions || []).slice() });
         } else if (functionName === 'apiGetProductsPaginated') {
             var catalogProducts = window.catalogProducts || [
-                { produkId: 'PRD-001', namaProduk: 'Kripik Tempe Premium 250g', satuan: 'Pcs', hargaBeliHPP: '8500', hargaJual: '15000', stokEtalase: '45', stokGudang: '150', status: 'Aktif' },
-                { produkId: 'PRD-002', namaProduk: 'Kue Kacang Gurih 500g', satuan: 'Toples', hargaBeliHPP: '18000', hargaJual: '30000', stokEtalase: '15', stokGudang: '80', status: 'Aktif' },
+                { produkId: 'PRD-001', namaProduk: 'Kripik Tempe Premium 250g', satuan: 'Pcs', hargaBeliHPP: '8500', hargaJual: '15000', minQtyGrosir: '10', hargaGrosir: '14000', stokEtalase: '45', stokGudang: '150', status: 'Aktif' },
+                { produkId: 'PRD-002', namaProduk: 'Kue Kacang Gurih 500g', satuan: 'Toples', hargaBeliHPP: '18000', hargaJual: '30000', minQtyGrosir: '5', hargaGrosir: '28000', stokEtalase: '15', stokGudang: '80', status: 'Aktif' },
                 { produkId: 'PRD-003', namaProduk: 'Sambal Bawang Botol 150g', satuan: 'Botol', hargaBeliHPP: '9000', hargaJual: '16000', stokEtalase: '8', stokGudang: '120', status: 'Aktif' },
-                { produkId: 'PRD-004', namaProduk: 'Keripik Singkong Pedas 200g', satuan: 'Pcs', hargaBeliHPP: '6000', hargaJual: '12000', stokEtalase: '50', stokGudang: '200', status: 'Aktif' },
+                { produkId: 'PRD-004', namaProduk: 'Keripik Singkong Pedas 200g', satuan: 'Pcs', hargaBeliHPP: '6000', hargaJual: '12000', minQtyGrosir: '20', hargaGrosir: '10000', stokEtalase: '50', stokGudang: '200', status: 'Aktif' },
                 { produkId: 'PRD-005', namaProduk: 'Abon Sapi Gurih 100g', satuan: 'Pouch', hargaBeliHPP: '22000', hargaJual: '35000', stokEtalase: '12', stokGudang: '60', status: 'Aktif' }
             ];
             successCb({ success: true, data: catalogProducts, total: catalogProducts.length });
