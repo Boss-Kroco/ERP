@@ -48,7 +48,7 @@ var GUIDE_CONTENTS = {
         title: 'Panduan Produksi & HPP Otomatis',
         badge: 'Manufaktur',
         badgeColor: '#ea580c',
-        iconSvg: '<svg class="svg-icon-sm" viewBox="0 0 24 24" style="stroke:#ea580c;width:18px;height:18px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/></svg>',
+        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: ' + badgeColor + '\"></i>',
         desc: 'Cara mencatat proses produksi harian, menghitung biaya bahan baku dan overhead, serta kalkulasi otomatis HPP per unit.',
         steps: [
             {
@@ -73,7 +73,7 @@ var GUIDE_CONTENTS = {
         title: 'Panduan Kasir POS & Cetak Struk',
         badge: 'Penjualan',
         badgeColor: '#dc2626',
-        iconSvg: '<svg class="svg-icon-sm" viewBox="0 0 24 24" style="stroke:#dc2626;width:18px;height:18px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>',
+        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: ' + badgeColor + '\"></i>',
         desc: 'Langkah memproses penjualan kasir cepat, memberikan diskon potongan, menerapkan PPN, dan mencetak nota struk.',
         steps: [
             {
@@ -102,7 +102,7 @@ var GUIDE_CONTENTS = {
         title: 'Panduan Sewa Alat & Kirim Struk via WA',
         badge: 'Sewa',
         badgeColor: '#8b5cf6',
-        iconSvg: '<svg class="svg-icon-sm" viewBox="0 0 24 24" style="stroke:#8b5cf6;width:18px;height:18px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>',
+        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: ' + badgeColor + '\"></i>',
         desc: 'Langkah memproses sewa alat produksi atau acara, serta cara mengirim bukti struk langsung ke nomor WhatsApp penyewa.',
         steps: [
             {
@@ -127,7 +127,7 @@ var GUIDE_CONTENTS = {
         title: 'Panduan Transfer Multi-Lokasi & Opname',
         badge: 'Inventori',
         badgeColor: '#2563eb',
-        iconSvg: '<svg class="svg-icon-sm" viewBox="0 0 24 24" style="stroke:#2563eb;width:18px;height:18px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>',
+        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: ' + badgeColor + '\"></i>',
         desc: 'Alur mutasi barang antar gudang pabrik dan etalase toko, serta penyesuaian selisih fisik via stock opname.',
         steps: [
             {
@@ -152,7 +152,7 @@ var GUIDE_CONTENTS = {
         title: 'Panduan Buku Kas & Upah Tenaga Kerja',
         badge: 'Keuangan',
         badgeColor: '#16a34a',
-        iconSvg: '<svg class="svg-icon-sm" viewBox="0 0 24 24" style="stroke:#16a34a;width:18px;height:18px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>',
+        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: ' + badgeColor + '\"></i>',
         desc: 'Pencatatan pengeluaran operasional harian, pemantauan batas kas kritis, dan pembukuan upah tenaga kerja.',
         steps: [
             {

@@ -19,17 +19,17 @@
 }
 
 :root {
-    /* High-End Luxury FinTech Design System & Premium Typography */
+    /* High-End Premium SaaS Design System */
     --font-primary: 'Plus Jakarta Sans', 'DM Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-heading: 'Plus Jakarta Sans', 'DM Sans', sans-serif;
     --font-number: 'Plus Jakarta Sans', 'DM Sans', sans-serif;
-    --bg-page: #f8fafc;
-    --violet-main: #4f46e5;
-    --violet-dark: #1e1b4b;
-    --violet-light: #6366f1;
+    --bg-page: #f9fafb;
+    --violet-main: #6366f1; /* Premium Soft Indigo */
+    --violet-dark: #312e81; /* Deep Rich Blue/Violet */
+    --violet-light: #818cf8;
     --violet-surface: #eef2ff;
-    --violet-gradient: linear-gradient(135deg, #4f46e5 0%, #3730a3 50%, #312e81 100%);
-    --violet-glow: 0 10px 25px -4px rgba(79, 70, 229, 0.32);
+    --violet-gradient: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #7c3aed 100%);
+    --violet-glow: 0 12px 30px -8px rgba(99, 102, 241, 0.45);
     
     --coral-pink: #f43f5e;
     --coral-gradient: linear-gradient(135deg, #fb7185 0%, #e11d48 100%);
@@ -43,7 +43,7 @@
     --amber-surface: #fffbeb;
     --amber-border: #fde68a;
     
-    --blue: #2563eb;
+    --blue: #3b82f6;
     --blue-surface: #eff6ff;
     --blue-border: #bfdbfe;
     
@@ -57,7 +57,7 @@
     
     --border-subtle: #f1f5f9;
     --border-strong: #e2e8f0;
-    --border-focus: rgba(99, 102, 241, 0.35);
+    --border-focus: rgba(99, 102, 241, 0.45);
     
     --card-bg: #ffffff;
     --radius-sm: 10px;
@@ -330,7 +330,7 @@ input[type=number] {
         .svg-icon-sm,
         .svg-icon-xs {
             stroke: currentColor;
-            stroke-width: 2;
+            stroke-width: 1.75;
             stroke-linecap: round;
             stroke-linejoin: round;
             fill: none !important;
@@ -338,7 +338,7 @@ input[type=number] {
             vertical-align: middle;
             flex-shrink: 0;
             transition: var(--transition);
-            shape-rendering: geometricPrecision;
+            shape-rendering: auto;
         }
 
         svg.svg-icon,
@@ -351,20 +351,20 @@ input[type=number] {
 
         svg.svg-icon-sm,
         .svg-icon-sm {
-            width: 15px !important;
-            height: 15px !important;
-            max-width: 15px !important;
-            max-height: 15px !important;
-            stroke-width: 2;
+            width: 16px !important;
+            height: 16px !important;
+            max-width: 16px !important;
+            max-height: 16px !important;
+            stroke-width: 1.75;
         }
 
         svg.svg-icon-xs,
         .svg-icon-xs {
-            width: 12px !important;
-            height: 12px !important;
-            max-width: 12px !important;
-            max-height: 12px !important;
-            stroke-width: 2.2;
+            width: 14px !important;
+            height: 14px !important;
+            max-width: 14px !important;
+            max-height: 14px !important;
+            stroke-width: 2;
         }
 
         .login-input-icon {
@@ -491,31 +491,33 @@ input[type=number] {
         }
 
         .nav-icon-pill {
-    width: 38px;
-    height: 38px;
-    border-radius: 11px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: rgba(255, 255, 255, 0.72);
-    cursor: pointer;
-    transition: var(--transition);
-    position: relative;
-    flex-shrink: 0;
-}
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.65);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            flex-shrink: 0;
+            background: transparent;
+        }
 
         .nav-icon-pill:hover {
-    background: rgba(255, 255, 255, 0.18);
-    color: #ffffff;
-    transform: translateY(-1px);
-}
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
 
         .nav-icon-pill.active {
-    background: #ffffff;
-    color: var(--violet-main);
-    box-shadow: 0 8px 20px -2px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.4);
-    transform: scale(1.03);
-}
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 100%);
+            color: #ffffff;
+            box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.15);
+            transform: scale(1.03);
+        }
 
         .nav-icon-pill svg {
     width: 18px !important;
