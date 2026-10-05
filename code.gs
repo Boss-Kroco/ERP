@@ -438,6 +438,8 @@ function apiGetProductsPaginated(params) {
           hargaJual: r[4],
           targetProduksi: r[5],
           status: status,
+          minQtyGrosir: r[7] || '',
+          hargaGrosir: r[8] || '',
           stokGudang: sm.gudang,
           stokEtalase: sm.etalase,
           statusStok: sm.statusStok
@@ -478,7 +480,9 @@ function apiSaveProduct(payload, userSession) {
       String(payload.hargaBeliHPP || '0'),
       String(payload.hargaJual || '0'),
       String(payload.targetProduksi || '0'),
-      'Aktif'
+      'Aktif',
+      String(payload.minQtyGrosir || '0'),
+      String(payload.hargaGrosir || '0')
     ]);
 
     sheetStok.appendRow([

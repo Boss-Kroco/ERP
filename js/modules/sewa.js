@@ -201,11 +201,15 @@ window.prosesSewa = function() {
         }
     }
     
+    window.lastSewa = {
+        penyewa: penyewa,
+        durasi: durasi,
+        items: JSON.parse(JSON.stringify(window.keranjangSewa)),
+        total: totalSewa
+    };
+
     if(window.showToast) window.showToast('Transaksi Sewa berhasil diproses untuk ' + penyewa + ' selama ' + durasi + ' hari!', 'success');
     
-    // Cetak Struk
-    window.cetakStrukSewa(penyewa, durasi);
-
     // Clear keranjang
     window.keranjangSewa = [];
     document.getElementById('inpPenyewaSewa').value = '';
@@ -216,6 +220,32 @@ window.prosesSewa = function() {
     if(typeof window.addMockAuditLog === 'function') {
         window.addMockAuditLog('Sewa Alat', 'Transaksi Sewa Baru: ' + penyewa);
     }
+};
+
+window.cetakStrukSewaCurrent = function() {
+    if (!window.lastSewa) {
+        if(window.showToast) window.showToast('Belum ada transaksi sewa yang diproses.', 'warning');
+        return;
+    }
+    window.cetakStrukSewa(window.lastSewa.penyewa, window.lastSewa.durasi, window.lastSewa.items);
+};
+
+window.kirimWaSewa = function() {
+    if (!window.lastSewa) {
+        if(window.showToast) window.showToast('Belum ada transaksi sewa yang diproses.', 'warning');
+        return;
+    }
+    var ls = window.lastSewa;
+    var waText = "Halo " + ls.penyewa + ", berikut adalah nota sewa alat Anda di MAFAZA GROUP:\n\n";
+    waText += "Durasi: " + ls.durasi + " Hari\n\n";
+    ls.items.forEach(function(item) {
+        var lineTotal = item.hargaSewa * item.qty * ls.durasi;
+        waText += "- " + item.nama + " (" + item.qty + "x) : Rp " + (lineTotal).toLocaleString('id-ID') + "\n";
+    });
+    waText += "\nTotal: Rp " + ls.total.toLocaleString('id-ID') + "\n\nTerima Kasih!";
+    
+    var waUrl = "https://api.whatsapp.com/send?text=" + encodeURIComponent(waText);
+    window.open(waUrl, '_blank');
 };
 
 window.bukaModalTambahAlat = function() {
@@ -251,10 +281,11 @@ window.hapusAlat = function(id) {
     }
 };
 
-window.cetakStrukSewa = function(penyewa, durasi) {
+window.cetakStrukSewa = function(penyewa, durasi, items) {
+    var itemsToPrint = items || window.keranjangSewa;
     var subtotal = 0;
     var itemsHtml = '';
-    window.keranjangSewa.forEach(function(item) {
+    itemsToPrint.forEach(function(item) {
         var lineTotal = item.hargaSewa * item.qty * durasi;
         subtotal += lineTotal;
         itemsHtml += `

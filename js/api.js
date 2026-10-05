@@ -392,6 +392,8 @@
                         satuan: p.satuan,
                         hargaBeliHPP: p.harga_beli_hpp,
                         hargaJual: p.harga_jual,
+                        minQtyGrosir: p.min_qty_grosir,
+                        hargaGrosir: p.harga_grosir,
                         stokGudang: s.gudang_produksi || 0,
                         stokEtalase: s.etalase_toko || 0,
                         status: p.status
@@ -411,6 +413,8 @@
                     satuan: pObj.satuan || 'Pcs',
                     harga_beli_hpp: Number(pObj.hargaBeliHPP || 0),
                     harga_jual: Number(pObj.hargaJual || 0),
+                    min_qty_grosir: Number(pObj.minQtyGrosir || 0),
+                    harga_grosir: Number(pObj.hargaGrosir || 0),
                     target_produksi: 100,
                     status: 'Aktif'
                 }]);
@@ -881,6 +885,8 @@
                     satuan: pProd.satuan || 'Pcs',
                     harga_beli_hpp: Number(pProd.hargaBeliHPP || 0),
                     harga_jual: Number(pProd.hargaJual || 0),
+                    min_qty_grosir: Number(pProd.minQtyGrosir || 0),
+                    harga_grosir: Number(pProd.hargaGrosir || 0),
                     status: pProd.status || 'Aktif'
                 };
 
@@ -1310,6 +1316,8 @@
                 targetPrd.satuan = pUpPrd.satuan || targetPrd.satuan;
                 targetPrd.hargaBeliHPP = Number(pUpPrd.hargaBeliHPP !== undefined ? pUpPrd.hargaBeliHPP : targetPrd.hargaBeliHPP);
                 targetPrd.hargaJual = Number(pUpPrd.hargaJual !== undefined ? pUpPrd.hargaJual : targetPrd.hargaJual);
+                targetPrd.minQtyGrosir = Number(pUpPrd.minQtyGrosir !== undefined ? pUpPrd.minQtyGrosir : targetPrd.minQtyGrosir);
+                targetPrd.hargaGrosir = Number(pUpPrd.hargaGrosir !== undefined ? pUpPrd.hargaGrosir : targetPrd.hargaGrosir);
                 targetPrd.status = pUpPrd.status || targetPrd.status;
             }
             window.addMockAuditLog('MasterProduk', 'EDIT_PRODUK', '-', (pUpPrd.namaProduk || ''), 'Edit produk: ' + (pUpPrd.produkId || ''), args[1]);
