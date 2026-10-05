@@ -257,36 +257,45 @@
                             </div>
                         </div>
 
-                        <div class="live-map-metric-card">
-                            <div class="panel-widget-header" style="margin-bottom: 4px;">
+                        <div class="live-map-metric-card" style="padding-bottom: 12px;">
+                            <div class="panel-widget-header" style="margin-bottom: 12px;">
                                 <span class="widget-title-bold">
-                                    <i class="ph-duotone ph-map-pin" style="color: var(--coral-pink); font-size: 1.1em; margin-right: 4px;"></i>
-                                    Live Distribusi Stok
+                                    <i class="ph-duotone ph-package" style="color: var(--violet-main); font-size: 1.1em; margin-right: 4px;"></i>
+                                    Distribusi Stok Aktif
                                 </span>
                                 <span class="widget-action-link" onclick="navigatePage('multilokasi')">Transfer</span>
                             </div>
 
-                            <div class="map-canvas-box" onclick="navigatePage('multilokasi')"
-                                title="Klik untuk Buka Form Transfer Stok">
-                                <div class="map-road-line"
-                                    style="width: 140%; height: 6px; top: 28px; left: -20px; transform: rotate(-12deg);">
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--bg-subtle); border: 1px solid var(--border-soft); border-radius: 12px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--violet-main)'" onmouseout="this.style.borderColor='var(--border-soft)'" onclick="navigatePage('multilokasi')">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(79, 70, 229, 0.1); color: var(--violet-main); display: flex; align-items: center; justify-content: center;">
+                                            <i class="ph-duotone ph-stack" style="font-size: 1.4em;"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 12px; font-weight: 800; color: var(--text-main);">Gudang Produksi</div>
+                                            <div style="font-size: 10.5px; color: var(--text-muted); font-weight: 600;">Penyimpanan Utama</div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 15px; font-weight: 800; color: var(--text-main);"><span id="lblStokGudang">1.145</span> <span style="font-size: 10px; color: var(--text-muted); font-weight: 700;">Unit</span></div>
+                                    </div>
                                 </div>
-                                <div class="map-road-line"
-                                    style="width: 6px; height: 120%; top: -10px; left: 52%; transform: rotate(18deg);">
-                                </div>
-                                <div class="map-pin-badge pabrik" title="Gudang Produksi">
-                                    <i class="ph-duotone ph-stack"></i>
-                                    <div class="map-pin-label">Gudang: <span id="lblStokGudang">1.145</span></div>
-                                </div>
-                                <div class="map-pin-badge toko" title="Etalase Toko">
-                                    <i class="ph-duotone ph-tote"></i>
-                                    <div class="map-pin-label">Toko: <span id="lblStokEtalase">230</span></div>
-                                </div>
-                            </div>
 
-                            <div class="map-card-footer">
-                                <span>2 Titik Lokasi Aktif</span>
-                                <span class="status-sync-dot">● Semua Sinkron</span>
+                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--bg-subtle); border: 1px solid var(--border-soft); border-radius: 12px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#f97316'" onmouseout="this.style.borderColor='var(--border-soft)'" onclick="navigatePage('multilokasi')">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(249, 115, 22, 0.1); color: #f97316; display: flex; align-items: center; justify-content: center;">
+                                            <i class="ph-duotone ph-storefront" style="font-size: 1.4em;"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 12px; font-weight: 800; color: var(--text-main);">Etalase Toko</div>
+                                            <div style="font-size: 10.5px; color: var(--text-muted); font-weight: 600;">Barang Siap Jual</div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 15px; font-weight: 800; color: var(--text-main);"><span id="lblStokEtalase">230</span> <span style="font-size: 10px; color: var(--text-muted); font-weight: 700;">Unit</span></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
