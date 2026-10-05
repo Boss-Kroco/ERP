@@ -161,9 +161,50 @@ function submitTransaksiPOS() {
 
     var elMetode = document.getElementById('posPaymentMethod');
     var metode = elMetode ? elMetode.value : 'Tunai';
+    var isTunai = String(metode).toLowerCase() === 'tunai';
+    
     var custSelect = document.getElementById('posCustomer');
     var custId = custSelect ? custSelect.value : 'CUST-UMUM';
     var custName = (custSelect && custSelect.selectedIndex >= 0) ? custSelect.options[custSelect.selectedIndex].text : 'Pelanggan Umum Kasir';
+
+    var elUangBayar = document.getElementById('posUangBayar');
+    var uangBayar = elUangBayar ? (parseFloat(elUangBayar.value) || 0) : 0;
+    if (isTunai && uangBayar < totalNet && uangBayar > 0) {
+        return showToast('Jumlah uang bayar kurang dari total!', 'error');
+    }
+    
+    // Automatically round up if not provided and it's cash
+    var bayarNominal = isTunai ? (uangBayar || (totalNet <= 50000 ? (Math.ceil(totalNet / 10000) * 10000 || totalNet) : totalNet)) : totalNet;
+    if (bayarNominal < totalNet) bayarNominal = totalNet;
+    
+    var kembalian = isTunai ? Math.max(0, bayarNominal - totalNet) : 0;
+    
+    var chkTabungan = document.getElementById('posSimpanTabungan');
+    var isSimpanTabungan = (chkTabungan && chkTabungan.checked && kembalian > 0 && custId !== 'CUST-UMUM');
+
+    if (isSimpanTabungan) {
+        // Save kembalian to customer's tabungan
+        var pel = (window.allPelanggan || []).find(function(p) { return p.id === custId; });
+        if (pel) {
+            pel.tabungan = (parseFloat(pel.tabungan) || 0) + kembalian;
+            
+            // Log to Keuangan as Tabungan Masuk
+            window.allKeuanganKas = window.allKeuanganKas || [];
+            window.allKeuanganKas.unshift({
+                id: 'KAS-' + Date.now(),
+                tanggal: new Date().toISOString().split('T')[0],
+                kategori: 'Tabungan Pelanggan',
+                tipe: 'Tabungan Masuk',
+                nominal: kembalian,
+                keterangan: 'Simpan kembalian transaksi ' + (window.orderTransactions ? window.orderTransactions.length + 1 : 1)
+            });
+            
+            if (typeof window.renderTabelPelanggan === 'function') window.renderTabelPelanggan();
+            if (typeof window.renderKeuanganTable === 'function') window.renderKeuanganTable();
+        } else {
+            showToast('Tabungan gagal disimpan: Pelanggan bukan anggota.', 'warning');
+        }
+    }
 
     var cartSnapshot = window.currentCart.slice();
 
@@ -193,7 +234,8 @@ function submitTransaksiPOS() {
         perusahaanNominal: perusahaanNominal,
         metodeBayar: metode,
         pelangganId: custId,
-        namaPelanggan: custName
+        namaPelanggan: custName,
+        bayarNominal: bayarNominal
     };
 
     // Optimistic addition to orders table dengan rincian items
@@ -206,6 +248,7 @@ function submitTransaksiPOS() {
         price: totalNet,
         date: formatDateNow(),
         payment: metode,
+        bayarNominal: bayarNominal,
         status: (metode === 'Tunai' ? 'delivered' : 'await'),
         items: cartSnapshot
     };
@@ -364,3 +407,15 @@ window.hapusCart = hapusCart;
 window.submitTransaksiPOS = submitTransaksiPOS;
 window.formatDateNow = formatDateNow;
 window.cetakStrukTerakhir = cetakStrukTerakhir;
+
+window.togglePosPaymentInputs = function() {
+    var elMetode = document.getElementById('posPaymentMethod');
+    var elInputs = document.getElementById('posPaymentInputs');
+    if (elMetode && elInputs) {
+        if (elMetode.value === 'Tempo') {
+            elInputs.style.display = 'none';
+        } else {
+            elInputs.style.display = 'block';
+        }
+    }
+};

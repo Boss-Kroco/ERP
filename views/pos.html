@@ -122,7 +122,7 @@
                     </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
                         <div>
                             <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Pelanggan</label>
                             <select class="search-filter-input" style="width: 100%; padding: 8px; font-size: 12px;" id="posCustomer">
@@ -132,11 +132,20 @@
                         </div>
                         <div>
                             <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Pembayaran</label>
-                            <select class="search-filter-input" style="width: 100%; padding: 8px; font-size: 12px;" id="posPaymentMethod">
+                            <select class="search-filter-input" style="width: 100%; padding: 8px; font-size: 12px;" id="posPaymentMethod" onchange="window.togglePosPaymentInputs()">
                                 <option value="Tunai">Tunai (Kas)</option>
                                 <option value="Tempo">Tempo (Piutang)</option>
                             </select>
                         </div>
+                    </div>
+                    
+                    <div id="posPaymentInputs" style="margin-bottom: 20px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid var(--border-soft);">
+                        <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Jumlah Uang Diterima (Rp)</label>
+                        <input type="number" id="posUangBayar" class="search-filter-input" style="width: 100%; padding: 10px; font-size: 14px; font-weight: bold; color: var(--text-dark); margin-bottom: 8px;" placeholder="Masukkan jumlah uang...">
+                        <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-main); cursor: pointer;">
+                            <input type="checkbox" id="posSimpanTabungan" style="width: 16px; height: 16px; accent-color: var(--primary);">
+                            <span>Taruh sisa kembalian di <b>Tabungan Pelanggan</b></span>
+                        </label>
                     </div>
 
                     <button class="btn-pill-action btn-pill-primary" style="width: 100%; justify-content: center; padding: 14px; font-size: 15px; border-radius: 99px; box-shadow: 0 8px 25px rgba(79,70,229,0.3);" onclick="submitTransaksiPOS()">

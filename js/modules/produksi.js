@@ -123,19 +123,44 @@ window.initTambahHpp = function() {
         sel.innerHTML = optHtml;
     }
     
-    // Auto-fill Harga Jual if selected
+    // Auto-fill Harga Jual and Restore saved recipe if selected
     if (sel && sel.value) {
-        var prd = (window.catalogProducts || []).find(function(p) { return p.produkId === sel.value; });
+        var prdId = sel.value;
+        var prd = (window.catalogProducts || []).find(function(p) { return p.produkId === prdId; });
         if (prd) {
             var elHj = document.getElementById('hppHargaJual');
-            if (elHj && !elHj.dataset.modified) {
-                elHj.value = prd.hargaJual || 0;
-            }
+            if (elHj && !elHj.dataset.modified) elHj.value = prd.hargaJual || 0;
             var elHmg = document.getElementById('hppMinGrosir');
             if (elHmg) elHmg.value = prd.minQtyGrosir || '';
             var elHhg = document.getElementById('hppHargaGrosir');
             if (elHhg) elHhg.value = prd.hargaGrosir || '';
         }
+
+        window.hppRincian = window.hppRincian || {};
+        var savedState = window.hppRincian[prdId];
+        
+        if (savedState && savedState.bahanList) {
+            window.tempBahanBaku = JSON.parse(JSON.stringify(savedState.bahanList));
+            if (savedState.rawBiaya) {
+                if (document.getElementById('hppBiayaTk')) document.getElementById('hppBiayaTk').value = savedState.rawBiaya.tk || '';
+                if (document.getElementById('hppBiayaGas')) document.getElementById('hppBiayaGas').value = savedState.rawBiaya.gas || '';
+                if (document.getElementById('hppBiayaListrik')) document.getElementById('hppBiayaListrik').value = savedState.rawBiaya.listrik || '';
+                if (document.getElementById('hppBiayaKemasan')) document.getElementById('hppBiayaKemasan').value = savedState.rawBiaya.kemasan || '';
+                if (document.getElementById('hppBiayaOverhead')) document.getElementById('hppBiayaOverhead').value = savedState.rawBiaya.overhead || '';
+                if (document.getElementById('hppBiayaLain')) document.getElementById('hppBiayaLain').value = savedState.rawBiaya.lainnya || '';
+                if (document.getElementById('hppJmlProduksi')) document.getElementById('hppJmlProduksi').value = savedState.rawBiaya.jmlProd || 1;
+            }
+        } else {
+            // Reset to defaults
+            window.tempBahanBaku = [{ nama: 'Bahan Baku 1', qty: 1, harga: 0 }];
+            ['hppBiayaTk', 'hppBiayaGas', 'hppBiayaListrik', 'hppBiayaKemasan', 'hppBiayaOverhead', 'hppBiayaLain'].forEach(function(id) {
+                if (document.getElementById(id)) document.getElementById(id).value = '';
+            });
+            if (document.getElementById('hppJmlProduksi')) document.getElementById('hppJmlProduksi').value = 1;
+        }
+    } else {
+        // Clear if no selection
+        window.tempBahanBaku = [];
     }
 
     window.renderHppBahanBaku();
@@ -251,7 +276,18 @@ window.simpanHppBaru = function() {
         listrik: res.bListrik / res.jmlProd,
         kemasan: res.bKemasan / res.jmlProd,
         overhead: res.bOverhead / res.jmlProd,
-        lainnya: res.bLain / res.jmlProd
+        lainnya: res.bLain / res.jmlProd,
+        // Save form state to prevent data loss
+        bahanList: JSON.parse(JSON.stringify(window.tempBahanBaku)),
+        rawBiaya: {
+            tk: res.bTk,
+            gas: res.bGas,
+            listrik: res.bListrik,
+            kemasan: res.bKemasan,
+            overhead: res.bOverhead,
+            lainnya: res.bLain,
+            jmlProd: res.jmlProd
+        }
     };
     
     var payload = {
