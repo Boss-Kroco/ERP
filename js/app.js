@@ -303,18 +303,16 @@ window.downloadStrukPdf = function(htmlContent, filename) {
     
     var container = document.createElement('div');
     container.innerHTML = htmlContent;
-    container.style.padding = '10px';
+    container.style.padding = '0';
     container.style.background = '#fff';
-    container.style.color = '#000';
-    container.style.width = '300px'; // typical receipt width
-    container.style.fontFamily = 'monospace';
+    container.style.width = '360px'; // Support wider premium receipt
     
     var opt = {
         margin:       5,
         filename:     filename || 'Struk.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'mm', format: [80, 200], orientation: 'portrait' }
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'mm', format: [95, 220], orientation: 'portrait' }
     };
     
     window.html2pdf().set(opt).from(container).save().then(function() {
