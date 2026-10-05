@@ -205,7 +205,7 @@ window.prosesSewa = function() {
         penyewa: penyewa,
         durasi: durasi,
         items: JSON.parse(JSON.stringify(window.keranjangSewa)),
-        total: totalSewa
+        total: totalBayar
     };
 
     if(window.showToast) window.showToast('Transaksi Sewa berhasil diproses untuk ' + penyewa + ' selama ' + durasi + ' hari!', 'success');

@@ -48,7 +48,7 @@ var GUIDE_CONTENTS = {
         title: 'Panduan Produksi & HPP Otomatis',
         badge: 'Manufaktur',
         badgeColor: '#ea580c',
-        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: ' + badgeColor + '\"></i>',
+        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: #ea580c\"></i>',
         desc: 'Cara mencatat proses produksi harian, menghitung biaya bahan baku dan overhead, serta kalkulasi otomatis HPP per unit.',
         steps: [
             {
@@ -73,7 +73,7 @@ var GUIDE_CONTENTS = {
         title: 'Panduan Kasir POS & Cetak Struk',
         badge: 'Penjualan',
         badgeColor: '#dc2626',
-        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: ' + badgeColor + '\"></i>',
+        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: #dc2626\"></i>',
         desc: 'Langkah memproses penjualan kasir cepat, memberikan diskon potongan, menerapkan PPN, dan mencetak nota struk.',
         steps: [
             {
@@ -102,7 +102,7 @@ var GUIDE_CONTENTS = {
         title: 'Panduan Sewa Alat & Kirim Struk via WA',
         badge: 'Sewa',
         badgeColor: '#8b5cf6',
-        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: ' + badgeColor + '\"></i>',
+        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: #8b5cf6\"></i>',
         desc: 'Langkah memproses sewa alat produksi atau acara, serta cara mengirim bukti struk langsung ke nomor WhatsApp penyewa.',
         steps: [
             {
@@ -127,7 +127,7 @@ var GUIDE_CONTENTS = {
         title: 'Panduan Transfer Multi-Lokasi & Opname',
         badge: 'Inventori',
         badgeColor: '#2563eb',
-        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: ' + badgeColor + '\"></i>',
+        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: #2563eb\"></i>',
         desc: 'Alur mutasi barang antar gudang pabrik dan etalase toko, serta penyesuaian selisih fisik via stock opname.',
         steps: [
             {
@@ -152,7 +152,7 @@ var GUIDE_CONTENTS = {
         title: 'Panduan Buku Kas & Upah Tenaga Kerja',
         badge: 'Keuangan',
         badgeColor: '#16a34a',
-        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: ' + badgeColor + '\"></i>',
+        iconSvg: '<i class=\"ph-duotone ph-book-open-text\" style=\"font-size: 20px; color: #16a34a\"></i>',
         desc: 'Pencatatan pengeluaran operasional harian, pemantauan batas kas kritis, dan pembukuan upah tenaga kerja.',
         steps: [
             {
