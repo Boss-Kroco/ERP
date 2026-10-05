@@ -472,22 +472,12 @@ input[type=number] {
             overflow-y: auto;
             overflow-x: hidden;
             padding: 2px 2px 8px 2px;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
         }
 
         .sidebar-icon-nav::-webkit-scrollbar {
-            width: 3px;
-        }
-        .sidebar-icon-nav::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .sidebar-icon-nav::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.25);
-            border-radius: 3px;
-        }
-        .sidebar-icon-nav::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.45);
+            display: none; /* Chrome/Safari/Webkit */
         }
 
         .nav-icon-pill {
