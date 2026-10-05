@@ -306,18 +306,24 @@ window.downloadStrukPdf = function(htmlContent, filename) {
     container.style.padding = '0';
     container.style.background = '#fff';
     container.style.width = '280px'; // Exact width for 80mm thermal printer
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    document.body.appendChild(container);
     
     var opt = {
         margin:       2,
         filename:     filename || 'Struk.pdf',
         image:        { type: 'jpeg', quality: 1.0 },
-        html2canvas:  { scale: 2, useCORS: true, windowWidth: 280 },
+        html2canvas:  { scale: 2, useCORS: true },
         jsPDF:        { unit: 'mm', format: [80, 200], orientation: 'portrait' }
     };
     
     window.html2pdf().set(opt).from(container).save().then(function() {
+        document.body.removeChild(container);
         if(window.showToast) window.showToast('Struk PDF berhasil diunduh.', 'success');
     }).catch(function(err) {
+        if (container.parentNode) document.body.removeChild(container);
         console.error('PDF generation error:', err);
         if(window.showToast) window.showToast('Terjadi kesalahan saat membuat PDF.', 'error');
     });
