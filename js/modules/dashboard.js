@@ -905,8 +905,22 @@ function loadDashboardData() {
             if (elKas) elKas.textContent = window.formatAppCurrency(d.saldoKas);
             if (elBeban) elBeban.textContent = window.formatAppCurrency(d.pengeluaran);
             if (elLaba) elLaba.textContent = window.formatAppCurrency(d.labaBersih);
-            if (d.stokGudangTotal && document.getElementById('lblStokGudang')) document.getElementById('lblStokGudang').textContent = d.stokGudangTotal + ' Unit';
-            if (d.stokEtalaseTotal && document.getElementById('lblStokEtalase')) document.getElementById('lblStokEtalase').textContent = d.stokEtalaseTotal + ' Unit';
+            // Kalkulasi real stok dari data produk lokal (opsi 2)
+            if (window.catalogProducts && Array.isArray(window.catalogProducts)) {
+                var realGudang = 0;
+                var realToko = 0;
+                window.catalogProducts.forEach(function(p) {
+                    realGudang += (parseFloat(p.stokGudang) || 0);
+                    realToko += (parseFloat(p.stokEtalase) || 0);
+                });
+                if (document.getElementById('lblStokGudang')) document.getElementById('lblStokGudang').textContent = realGudang.toLocaleString('id-ID');
+                if (document.getElementById('lblStokEtalase')) document.getElementById('lblStokEtalase').textContent = realToko.toLocaleString('id-ID');
+            } else {
+                // Fallback jika belum ter-load
+                if (d.stokGudangTotal && document.getElementById('lblStokGudang')) document.getElementById('lblStokGudang').textContent = d.stokGudangTotal.toLocaleString('id-ID');
+                if (d.stokEtalaseTotal && document.getElementById('lblStokEtalase')) document.getElementById('lblStokEtalase').textContent = d.stokEtalaseTotal.toLocaleString('id-ID');
+            }
+
             if (d.totalPiutang && document.getElementById('lblTotalPiutang')) document.getElementById('lblTotalPiutang').textContent = window.formatAppCurrency(d.totalPiutang);
 
             // 1. Peringatan Limit Saldo Kas Kritis dari Pengaturan
