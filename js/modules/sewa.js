@@ -304,6 +304,7 @@ window.cetakStrukSewa = function(penyewa, durasi, items) {
     var strukHtml = `
         <div style="width: 280px; padding: 16px; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1e293b; background: #ffffff; box-sizing: border-box; margin: 0 auto;">
             <div style="text-align: center; margin-bottom: 16px;">
+                <img src="assets/logo.jpg" alt="Logo" style="width: 50px; height: 50px; object-fit: contain; border-radius: 8px; margin-bottom: 8px;">
                 <h2 style="margin: 0; font-size: 18px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">MAFAZA GROUP</h2>
                 <p style="margin: 2px 0 0 0; font-size: 11px; font-weight: 600; color: #64748b;">Struk Sewa Alat</p>
             </div>
