@@ -302,20 +302,20 @@ window.cetakStrukSewa = function(penyewa, durasi, items) {
     });
 
     var strukHtml = `
-        <div style="width: 340px; padding: 24px; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1e293b; background: #ffffff; box-sizing: border-box; border: 1px solid #e2e8f0; border-radius: 12px; margin: 0 auto; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">MAFAZA GROUP</h2>
-                <p style="margin: 4px 0 0 0; font-size: 13px; font-weight: 600; color: #64748b;">Struk Sewa Alat</p>
+        <div style="width: 280px; padding: 16px; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1e293b; background: #ffffff; box-sizing: border-box; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 16px;">
+                <h2 style="margin: 0; font-size: 18px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">MAFAZA GROUP</h2>
+                <p style="margin: 2px 0 0 0; font-size: 11px; font-weight: 600; color: #64748b;">Struk Sewa Alat</p>
             </div>
             
-            <div style="background: #f8fafc; border-radius: 8px; padding: 12px; margin-bottom: 20px; font-size: 13px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <div style="background: #f8fafc; border-radius: 6px; padding: 10px; margin-bottom: 16px; font-size: 11px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
                     <span style="color: #64748b;">Tanggal:</span>
-                    <span style="font-weight: 600;">${new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'long', year: 'numeric'})}</span>
+                    <span style="font-weight: 600;">${new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric'})}</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
                     <span style="color: #64748b;">Penyewa:</span>
-                    <span style="font-weight: 600;">${penyewa}</span>
+                    <span style="font-weight: 600; text-align: right; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${penyewa}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between;">
                     <span style="color: #64748b;">Durasi:</span>
@@ -323,11 +323,11 @@ window.cetakStrukSewa = function(penyewa, durasi, items) {
                 </div>
             </div>
 
-            <table style="width: 100%; font-size: 13px; border-collapse: collapse; margin-bottom: 16px;">
+            <table style="width: 100%; font-size: 11px; border-collapse: collapse; margin-bottom: 14px;">
                 <thead>
                     <tr>
-                        <th style="text-align: left; padding-bottom: 8px; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Item</th>
-                        <th style="text-align: right; padding-bottom: 8px; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Subtotal</th>
+                        <th style="text-align: left; padding-bottom: 6px; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Item</th>
+                        <th style="text-align: right; padding-bottom: 6px; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Subtotal</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -335,14 +335,14 @@ window.cetakStrukSewa = function(penyewa, durasi, items) {
                 </tbody>
             </table>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 2px dashed #e2e8f0; border-bottom: 2px dashed #e2e8f0; margin-bottom: 20px;">
-                <span style="font-size: 14px; font-weight: 700; color: #0f172a;">TOTAL BAYAR</span>
-                <span style="font-size: 18px; font-weight: 800; color: #4f46e5;">${window.formatAppCurrency(subtotal)}</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1.5px dashed #e2e8f0; border-bottom: 1.5px dashed #e2e8f0; margin-bottom: 16px;">
+                <span style="font-size: 12px; font-weight: 700; color: #0f172a;">TOTAL</span>
+                <span style="font-size: 15px; font-weight: 800; color: #4f46e5;">${window.formatAppCurrency(subtotal)}</span>
             </div>
 
-            <div style="text-align: center; font-size: 12px; color: #64748b; line-height: 1.5;">
+            <div style="text-align: center; font-size: 10px; color: #64748b; line-height: 1.4;">
                 <p style="margin: 0; font-weight: 600;">Terima Kasih Atas Kepercayaan Anda</p>
-                <p style="margin: 4px 0 0 0;">Barang yang disewa wajib dikembalikan<br>tepat waktu sesuai durasi.</p>
+                <p style="margin: 3px 0 0 0;">Barang wajib dikembalikan tepat waktu.</p>
             </div>
         </div>
     `;

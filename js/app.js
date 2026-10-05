@@ -305,14 +305,14 @@ window.downloadStrukPdf = function(htmlContent, filename) {
     container.innerHTML = htmlContent;
     container.style.padding = '0';
     container.style.background = '#fff';
-    container.style.width = '360px'; // Support wider premium receipt
+    container.style.width = '280px'; // Exact width for 80mm thermal printer
     
     var opt = {
-        margin:       5,
+        margin:       2,
         filename:     filename || 'Struk.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: [95, 220], orientation: 'portrait' }
+        image:        { type: 'jpeg', quality: 1.0 },
+        html2canvas:  { scale: 2, useCORS: true, windowWidth: 280 },
+        jsPDF:        { unit: 'mm', format: [80, 200], orientation: 'portrait' }
     };
     
     window.html2pdf().set(opt).from(container).save().then(function() {
