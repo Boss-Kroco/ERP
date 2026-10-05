@@ -4,6 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mafaza Group ERP - Management System</title>
     <!-- Google Fonts: Plus Jakarta Sans & DM Sans (Curved 't' tail, No Cross Shape) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -276,6 +280,18 @@
     <script src="js/modules/pengaturan.js?v=4.3"></script>
     <script src="js/modules/bantuan.js?v=4.3"></script>
     <script src="js/app.js?v=4.3"></script>
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => {
+                    console.log('ServiceWorker registered:', reg.scope);
+                }).catch(err => {
+                    console.log('ServiceWorker registration failed:', err);
+                });
+            });
+        }
+    </script>
 </body>
 
 </html>
