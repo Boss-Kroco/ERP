@@ -90,6 +90,32 @@
                         Selama transaksi belum disimpan, kasir cukup mengklik tombol ikon sampah berwarna merah pada baris barang di tabel keranjang belanja. Subtotal, diskon potongan, PPN, dan total akhir akan langsung dikalkulasi ulang secara otomatis.
                     </div>
                 </div>
+
+                <!-- FAQ 7 -->
+                <div class="faq-item" id="faqItem6">
+                    <div class="faq-header" onclick="toggleFaqAccordion(6)">
+                        <span>Bagaimana cara kerja otomatisasi Harga Grosir di POS?</span>
+                        <svg class="svg-icon-xs faq-chevron" viewBox="0 0 24 24">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-body">
+                        Anda dapat mengatur <b>Minimal Pembelian (Min Qty)</b> dan <b>Harga Grosir</b> pada menu master produk. Saat bertransaksi di POS, jika jumlah barang yang dimasukkan mencapai minimal kuantitas tersebut, sistem akan otomatis menyesuaikan harganya menjadi harga grosir.
+                    </div>
+                </div>
+
+                <!-- FAQ 8 -->
+                <div class="faq-item" id="faqItem7">
+                    <div class="faq-header" onclick="toggleFaqAccordion(7)">
+                        <span>Apakah saya bisa mengirimkan struk Sewa Alat via WhatsApp?</span>
+                        <svg class="svg-icon-xs faq-chevron" viewBox="0 0 24 24">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="faq-body">
+                        Bisa! Pada menu <b>Sewa Alat</b>, setelah Anda menekan <i>Proses Transaksi</i>, klik tombol hijau <b>Kirim WA</b>. Sistem akan membuatkan <i>draft</i> rincian sewa (termasuk durasi, item, dan total harga) yang bisa langsung dikirimkan ke WhatsApp penyewa. Anda juga masih bisa mencetak struk secara fisik jika diperlukan.
+                    </div>
+                </div>
             </div>
 
             <!-- Panduan Fitur (4 Kotak Grid) -->
@@ -166,6 +192,21 @@
                             </svg>
                         </div>
                         <div class="guide-name">Buku Kas &amp; Upah Kerja</div>
+                    </div>
+                    <div class="guide-link-btn">
+                        Baca →
+                    </div>
+                </div>
+
+                <!-- Panduan 5: Sewa Alat -->
+                <div class="guide-card" onclick="openGuideModal('sewa')">
+                    <div class="guide-card-left">
+                        <div class="guide-icon-box" style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.25);">
+                            <svg class="svg-icon-sm" viewBox="0 0 24 24" style="stroke: #8b5cf6; width: 18px; height: 18px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            </svg>
+                        </div>
+                        <div class="guide-name">Sewa Alat &amp; Kirim Struk WA</div>
                     </div>
                     <div class="guide-link-btn">
                         Baca →

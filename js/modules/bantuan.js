@@ -89,8 +89,37 @@ var GUIDE_CONTENTS = {
                 text: 'Pilih Pelanggan Umum atau Toko Mitra. Pilih metode "Tunai" untuk kas langsung masuk, atau "Tempo" untuk pencatatan piutang konsinyasi.'
             },
             {
-                title: '4. Selesaikan & Cetak Struk PDF',
+                title: '4. Otomatisasi Harga Grosir',
+                text: 'Sistem akan otomatis menyesuaikan harga barang menjadi Harga Grosir jika jumlah barang yang Anda beli mencapai Minimum Qty yang telah ditetapkan pada Master Produk.'
+            },
+            {
+                title: '5. Selesaikan & Cetak Struk PDF',
                 text: 'Klik "Selesaikan Transaksi & Simpan". Struk langsung tercatat, terkirim otomatis ke Telegram Owner (jika bot aktif), dan dapat dicetak via tombol "Cetak PDF Struk".'
+            }
+        ]
+    },
+    'sewa': {
+        title: 'Panduan Sewa Alat & Kirim Struk via WA',
+        badge: 'Sewa',
+        badgeColor: '#8b5cf6',
+        iconSvg: '<svg class="svg-icon-sm" viewBox="0 0 24 24" style="stroke:#8b5cf6;width:18px;height:18px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>',
+        desc: 'Langkah memproses sewa alat produksi atau acara, serta cara mengirim bukti struk langsung ke nomor WhatsApp penyewa.',
+        steps: [
+            {
+                title: '1. Masukkan Detail Penyewa & Durasi',
+                text: 'Tulis nama penyewa dan tentukan durasi sewa (dalam hitungan hari) di kolom yang disediakan.'
+            },
+            {
+                title: '2. Tambahkan Alat ke Keranjang',
+                text: 'Pilih alat yang ingin disewa dari daftar alat yang tersedia lalu klik "Tambahkan ke Keranjang Sewa". Subtotal dan Total akan terupdate otomatis berdasarkan durasi.'
+            },
+            {
+                title: '3. Proses Transaksi',
+                text: 'Klik tombol utama "Proses Transaksi". Transaksi akan tersimpan ke dalam riwayat sistem.'
+            },
+            {
+                title: '4. Kirim Struk Via WA atau Cetak',
+                text: 'Setelah transaksi diproses, Anda bisa mengeklik tombol hijau "Kirim WA" untuk mengirimkan detail struk (rincian item, durasi, dan total harga) ke aplikasi WhatsApp secara instan.'
             }
         ]
     },
