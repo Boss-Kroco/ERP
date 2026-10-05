@@ -290,35 +290,59 @@ window.cetakStrukSewa = function(penyewa, durasi, items) {
         subtotal += lineTotal;
         itemsHtml += `
             <tr>
-                <td style="padding: 4px 0; border-bottom: 1px dashed #ccc;">${item.nama}<br><small>${item.qty} x ${window.formatAppCurrency(item.hargaSewa)}</small></td>
-                <td style="padding: 4px 0; text-align: right; border-bottom: 1px dashed #ccc;">${window.formatAppCurrency(lineTotal)}</td>
+                <td style="padding: 10px 0; border-bottom: 1px dashed #e2e8f0; color: #0f172a; font-weight: 500;">
+                    ${item.nama}<br>
+                    <span style="font-size: 11px; color: #64748b; font-weight: 400;">${item.qty} x ${window.formatAppCurrency(item.hargaSewa)}</span>
+                </td>
+                <td style="padding: 10px 0; text-align: right; border-bottom: 1px dashed #e2e8f0; color: #0f172a; font-weight: 600;">
+                    ${window.formatAppCurrency(lineTotal)}
+                </td>
             </tr>
         `;
     });
 
     var strukHtml = `
-        <div style="width: 300px; padding: 20px; font-family: monospace; color: #000; background: #fff;">
-            <div style="text-align: center; margin-bottom: 10px;">
-                <h2 style="margin: 0; font-size: 18px;">MAFAZA GROUP</h2>
-                <p style="margin: 5px 0;">Struk Sewa Alat</p>
-                <p style="margin: 0; font-size: 12px;">Tanggal: ${new Date().toLocaleDateString()}</p>
+        <div style="width: 340px; padding: 24px; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1e293b; background: #ffffff; box-sizing: border-box; border: 1px solid #e2e8f0; border-radius: 12px; margin: 0 auto; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">MAFAZA GROUP</h2>
+                <p style="margin: 4px 0 0 0; font-size: 13px; font-weight: 600; color: #64748b;">Struk Sewa Alat</p>
             </div>
-            <hr style="border: none; border-top: 1px dashed #000;">
-            <p style="margin: 5px 0;">Penyewa: ${penyewa}</p>
-            <p style="margin: 5px 0;">Durasi: ${durasi} Hari</p>
-            <hr style="border: none; border-top: 1px dashed #000;">
-            <table style="width: 100%; font-size: 12px; border-collapse: collapse;">
+            
+            <div style="background: #f8fafc; border-radius: 8px; padding: 12px; margin-bottom: 20px; font-size: 13px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="color: #64748b;">Tanggal:</span>
+                    <span style="font-weight: 600;">${new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'long', year: 'numeric'})}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="color: #64748b;">Penyewa:</span>
+                    <span style="font-weight: 600;">${penyewa}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #64748b;">Durasi:</span>
+                    <span style="font-weight: 600;">${durasi} Hari</span>
+                </div>
+            </div>
+
+            <table style="width: 100%; font-size: 13px; border-collapse: collapse; margin-bottom: 16px;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; padding-bottom: 8px; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Item</th>
+                        <th style="text-align: right; padding-bottom: 8px; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0;">Subtotal</th>
+                    </tr>
+                </thead>
                 <tbody>
                     ${itemsHtml}
                 </tbody>
             </table>
-            <hr style="border: none; border-top: 1px dashed #000;">
-            <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 14px;">
-                <span>TOTAL</span>
-                <span>${window.formatAppCurrency(subtotal)}</span>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-top: 2px dashed #e2e8f0; border-bottom: 2px dashed #e2e8f0; margin-bottom: 20px;">
+                <span style="font-size: 14px; font-weight: 700; color: #0f172a;">TOTAL BAYAR</span>
+                <span style="font-size: 18px; font-weight: 800; color: #4f46e5;">${window.formatAppCurrency(subtotal)}</span>
             </div>
-            <div style="text-align: center; margin-top: 20px; font-size: 11px;">
-                Terima Kasih Atas Kepercayaannya
+
+            <div style="text-align: center; font-size: 12px; color: #64748b; line-height: 1.5;">
+                <p style="margin: 0; font-weight: 600;">Terima Kasih Atas Kepercayaan Anda</p>
+                <p style="margin: 4px 0 0 0;">Barang yang disewa wajib dikembalikan<br>tepat waktu sesuai durasi.</p>
             </div>
         </div>
     `;
