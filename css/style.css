@@ -437,12 +437,45 @@ input[type=number] {
     align-items: stretch;
 }
 
-.curved-sidebar-violet:hover .sb-top-stack > img {
-    align-self: center;
-    width: 56px !important;
-    height: 56px !important;
+.sidebar-brand-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
     margin-bottom: 24px;
+    padding: 0 8px;
+    box-sizing: border-box;
+}
+
+.sidebar-brand-logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    object-fit: contain;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    flex-shrink: 0;
     transition: all 0.3s ease;
+}
+
+.sidebar-brand-text {
+    display: none;
+    color: white;
+    font-weight: 800;
+    font-size: 18px;
+    margin-left: 14px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.curved-sidebar-violet:hover .sidebar-brand-wrapper {
+    justify-content: flex-start;
+}
+
+.curved-sidebar-violet:hover .sidebar-brand-text {
+    display: block;
+    opacity: 1;
 }
 
         .sb-top-stack {
@@ -586,7 +619,10 @@ input[type=number] {
             border-radius: var(--radius-md);
             padding: 0 16px;
             justify-content: flex-start;
-            margin-bottom: 12px;
+            margin-bottom: 0px;
+            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.2); /* Solid enough over the violet gradient */
+            backdrop-filter: blur(10px);
         }
         .curved-sidebar-violet:hover .sb-bottom-btn::after {
             content: "Keluar";
@@ -596,19 +632,22 @@ input[type=number] {
         }
 
         .sb-bottom-btn {
-            width: 36px;
-            height: 36px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.12);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: rgba(255, 255, 255, 0.82);
+            color: rgba(255, 255, 255, 0.9);
             cursor: pointer;
             transition: var(--transition);
             flex-shrink: 0;
             margin-top: auto;
-            margin-bottom: 2px;
+            margin-bottom: 0px;
+            position: relative;
+            z-index: 10;
+            box-sizing: border-box;
         }
 
         .sb-bottom-btn:hover {
