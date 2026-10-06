@@ -179,6 +179,29 @@ function submitTransaksiPOS() {
     
     var kembalian = isTunai ? Math.max(0, bayarNominal - totalNet) : 0;
     
+    var isTabunganMethod = String(metode).toLowerCase() === 'tabungan';
+    if (isTabunganMethod) {
+        if (custId === 'CUST-UMUM') return showToast('Pilih pelanggan member untuk bayar pakai Tabungan!', 'error');
+        var pel = (window.allPelanggan || []).find(function(p) { return p.id === custId; });
+        if (!pel || (parseFloat(pel.tabungan) || 0) < totalNet) {
+            return showToast('Saldo Tabungan tidak cukup! Saldo: Rp ' + (pel ? window.formatRupiah(pel.tabungan) : '0'), 'error');
+        }
+        // Deduct
+        pel.tabungan -= totalNet;
+        // Log to Keuangan as Tabungan Keluar
+        window.allKeuanganKas = window.allKeuanganKas || [];
+        window.allKeuanganKas.unshift({
+            id: 'KAS-' + Date.now(),
+            tanggal: new Date().toISOString().split('T')[0],
+            kategori: 'Tabungan Pelanggan',
+            tipe: 'Tabungan Keluar',
+            nominal: totalNet,
+            keterangan: 'Pembayaran POS (' + custName + ')'
+        });
+        if (typeof window.renderTabelPelanggan === 'function') window.renderTabelPelanggan();
+        if (typeof window.renderKeuanganTable === 'function') window.renderKeuanganTable();
+    }
+    
     var chkTabungan = document.getElementById('posSimpanTabungan');
     var isSimpanTabungan = (chkTabungan && chkTabungan.checked && kembalian > 0 && custId !== 'CUST-UMUM');
 
@@ -412,7 +435,7 @@ window.togglePosPaymentInputs = function() {
     var elMetode = document.getElementById('posPaymentMethod');
     var elInputs = document.getElementById('posPaymentInputs');
     if (elMetode && elInputs) {
-        if (elMetode.value === 'Tempo') {
+        if (elMetode.value === 'Tempo' || elMetode.value === 'Tabungan') {
             elInputs.style.display = 'none';
         } else {
             elInputs.style.display = 'block';

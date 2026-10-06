@@ -164,6 +164,7 @@ window.initTambahHpp = function() {
     }
 
     window.renderHppBahanBaku();
+    if(typeof window.kalkulasiHpp === 'function') window.kalkulasiHpp();
 };
 
 window.renderHppBahanBaku = function() {
@@ -257,10 +258,10 @@ window.simpanHppBaru = function() {
     var hargaJualValue = hargaJualInput ? (parseFloat(hargaJualInput.value) || prd.hargaJual) : prd.hargaJual;
 
     var minGrosirInput = document.getElementById('hppMinGrosir');
-    var minGrosirValue = (minGrosirInput && minGrosirInput.value) ? parseFloat(minGrosirInput.value) : null;
+    var minGrosirValue = (minGrosirInput && minGrosirInput.value !== '') ? parseFloat(minGrosirInput.value) : prd.minQtyGrosir;
     
     var hargaGrosirInput = document.getElementById('hppHargaGrosir');
-    var hargaGrosirValue = (hargaGrosirInput && hargaGrosirInput.value) ? parseFloat(hargaGrosirInput.value) : null;
+    var hargaGrosirValue = (hargaGrosirInput && hargaGrosirInput.value !== '') ? parseFloat(hargaGrosirInput.value) : prd.hargaGrosir;
 
     // Update locally
     prd.hargaBeliHPP = res.hppItem;
