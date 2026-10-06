@@ -953,7 +953,7 @@ function loadDashboardData() {
                 if (d.stokEtalaseTotal && document.getElementById('lblStokEtalase')) document.getElementById('lblStokEtalase').textContent = d.stokEtalaseTotal.toLocaleString('id-ID');
             }
 
-            if (d.totalPiutang && document.getElementById('lblTotalPiutang')) document.getElementById('lblTotalPiutang').textContent = window.formatAppCurrency(d.totalPiutang);
+            if (d.piutang !== undefined && document.getElementById('lblTotalPiutang')) document.getElementById('lblTotalPiutang').textContent = window.formatAppCurrency(d.piutang);
 
             // 1. Peringatan Limit Saldo Kas Kritis dari Pengaturan
             var limitKas = 2000000;
