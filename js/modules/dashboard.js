@@ -995,16 +995,22 @@ function loadDashboardData() {
                 var now = new Date();
                 var months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
                 var newData = [];
+                var maxVal = 0;
                 for (var di = 6; di >= 0; di--) {
                     var day = new Date(now.getTime() - di * 24 * 60 * 60 * 1000);
                     var label = String(day.getDate()).padStart(2,'0') + '/' + months[day.getMonth()];
                     var factor = di === 0 ? 1.0 : (0.3 + Math.random() * 0.5);
+                    var val = Math.round(d.omzet * factor);
+                    if (val > maxVal) maxVal = val;
                     newData.push({
                         label: label,
-                        val: Math.round(d.omzet * factor),
+                        val: val,
                         isPeak: di === 0
                     });
                 }
+                var elPeak = document.getElementById('overviewPeakVal');
+                if (elPeak) elPeak.textContent = window.formatAppCurrency(maxVal);
+                
                 splineState.data = newData;
                 drawSplineWaveChart();
             }
