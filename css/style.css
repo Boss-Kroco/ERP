@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+
 /* ============================================================
  * LOCAL HIGH-PERFORMANCE WEBFONTS (0ms Latency & Offline-Ready)
  * Sempurna, modern & huruf 't' memiliki lengkungan natural (bukan salib)
@@ -5298,4 +5300,23 @@ input[type=number] {
 .goog-te-banner-frame.skiptranslate, .skiptranslate > iframe.skiptranslate { display: none !important; }
 body { top: 0px !important; position: static !important; }
 .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
+
+
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+
+/* Google Translate UI & Layout Fixes */
+#goog-gt-tt, .goog-te-balloon-frame { display: none !important; }
+.goog-text-highlight { background-color: transparent !important; box-shadow: none !important; border: none !important; }
+
+/* Force LTR to prevent Dashboard Layout from breaking when Arabic is selected */
+html, body { 
+    direction: ltr !important; 
+    font-family: 'Tajawal', 'Plus Jakarta Sans', sans-serif !important;
+}
+
+/* Ensure sidebar pill icon and text stays aligned */
+.nav-icon-pill {
+    text-align: left !important;
+    direction: ltr !important;
+}
 
