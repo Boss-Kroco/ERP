@@ -1092,14 +1092,19 @@
             }
         } else if (functionName === 'apiGetDashboardData') {
             var pPeriod = (typeof args[0] === 'object' && args[0] !== null) ? args[0].period : (args[0] || 'Bulanan');
+            
+            var periodFactor = 1.0;
+            if (pPeriod === 'Harian') periodFactor = 0.05;
+            else if (pPeriod === 'Mingguan') periodFactor = 0.25;
+
             var trxList = window.orderTransactions || [];
-            var totalTrx = trxList.length;
+            var totalTrx = Math.max(1, Math.round(trxList.length * periodFactor));
             var omzetReal = 0;
             trxList.forEach(function (t) {
                 omzetReal += Number(t.price || t.amount || t.totalNet || 0);
             });
-            var baseOmzet = omzetReal > 0 ? omzetReal : (pPeriod === 'Harian' ? 1631000 : pPeriod === 'Mingguan' ? 3076000 : 18500000);
-            var pengeluaranReal = 2730000;
+            var baseOmzet = omzetReal > 0 ? (omzetReal * periodFactor) : (pPeriod === 'Harian' ? 1631000 : pPeriod === 'Mingguan' ? 3076000 : 18500000);
+            var pengeluaranReal = 2730000 * periodFactor;
             var result = {
                 success: true,
                 totalTransactions: totalTrx,
