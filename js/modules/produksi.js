@@ -164,7 +164,7 @@ window.initTambahHpp = function() {
     }
 
     window.renderHppBahanBaku();
-    if(typeof window.kalkulasiHpp === 'function') window.kalkulasiHpp();
+    if(typeof window.kalkulasiTotalHpp === 'function') window.kalkulasiTotalHpp();
 };
 
 window.renderHppBahanBaku = function() {
@@ -254,18 +254,23 @@ window.simpanHppBaru = function() {
     var oldHpp = prd.hargaBeliHPP;
     var res = window.tempHppResult;
     
+    if (!res || res.hppItem === undefined) {
+        if(window.showToast) window.showToast('Silakan lengkapi tabel bahan baku terlebih dahulu!', 'error');
+        return;
+    }
+    
     var hargaJualInput = document.getElementById('hppHargaJual');
     var hargaJualValue = hargaJualInput ? (parseFloat(hargaJualInput.value) || prd.hargaJual) : prd.hargaJual;
 
     var minGrosirInput = document.getElementById('hppMinGrosir');
-    var minGrosirValue = (minGrosirInput && minGrosirInput.value !== '') ? parseFloat(minGrosirInput.value) : prd.minQtyGrosir;
+    var minGrosirValue = (minGrosirInput && minGrosirInput.value !== '') ? parseFloat(minGrosirInput.value) : (prd.minQtyGrosir || 0);
     
     var hargaGrosirInput = document.getElementById('hppHargaGrosir');
-    var hargaGrosirValue = (hargaGrosirInput && hargaGrosirInput.value !== '') ? parseFloat(hargaGrosirInput.value) : prd.hargaGrosir;
+    var hargaGrosirValue = (hargaGrosirInput && hargaGrosirInput.value !== '') ? parseFloat(hargaGrosirInput.value) : (prd.hargaGrosir || 0);
 
     // Update locally
-    prd.hargaBeliHPP = res.hppItem;
-    prd.hargaJual = hargaJualValue;
+    prd.hargaBeliHPP = res.hppItem || 0;
+    prd.hargaJual = hargaJualValue || 0;
     prd.minQtyGrosir = minGrosirValue;
     prd.hargaGrosir = hargaGrosirValue;
     
@@ -374,7 +379,13 @@ window.simpanProdukBaruHpp = function() {
             
             // Clear dropdown to force repopulation next time 'Tambah' tab is opened
             var sel = document.getElementById('hppSelProduk');
-            if(sel) sel.innerHTML = '';
+            if(sel) {
+                sel.innerHTML = '';
+                if(typeof window.initTambahHpp === 'function') window.initTambahHpp();
+                // Select the newly created product
+                sel.value = res.produkId;
+                if(typeof window.initTambahHpp === 'function') window.initTambahHpp(); // Trigger auto-fill for the new product
+            }
             
             window.renderDaftarHPP();
             
