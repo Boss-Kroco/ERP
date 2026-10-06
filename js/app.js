@@ -351,3 +351,27 @@ window.downloadStrukImage = function(htmlContent, filename) {
         if(window.showToast) window.showToast('Terjadi kesalahan saat membuat Gambar.', 'error');
     });
 };
+
+window.toggleLanguage = function() {
+    var selectElement = document.querySelector('.goog-te-combo');
+    if (!selectElement) {
+        if(window.showToast) window.showToast('Sedang memuat modul bahasa, coba sebentar lagi...', 'info');
+        return;
+    }
+    
+    var currentLangLbl = document.getElementById('langSwitchLabel');
+    var isArabic = (currentLangLbl.innerText === 'ID'); // If label shows ID, it means current is Arabic and we want to switch back to ID. Wait, no. If label says 'AR', it means "Switch to AR".
+    
+    // Let's refine: The label tells you what it will switch TO.
+    if (currentLangLbl.innerText === 'AR') {
+        selectElement.value = 'ar';
+        currentLangLbl.innerText = 'ID';
+        currentLangLbl.parentElement.title = 'Ubah ke Bahasa Indonesia';
+    } else {
+        selectElement.value = 'id';
+        currentLangLbl.innerText = 'AR';
+        currentLangLbl.parentElement.title = 'Ubah ke Bahasa Arab';
+    }
+    
+    selectElement.dispatchEvent(new Event('change'));
+};

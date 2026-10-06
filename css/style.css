@@ -5293,3 +5293,9 @@ input[type=number] {
                 border-bottom-color: #000000 !important;
             }
         }
+/* Google Translate Overrides */
+.VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
+.goog-te-banner-frame.skiptranslate, .skiptranslate > iframe.skiptranslate { display: none !important; }
+body { top: 0px !important; position: static !important; }
+.goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
+
