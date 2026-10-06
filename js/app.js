@@ -353,39 +353,55 @@ window.downloadStrukImage = function(htmlContent, filename) {
 };
 
 window.toggleLanguage = function() {
-    var selectElement = document.querySelector('.goog-te-combo');
-    if (!selectElement) {
-        if(window.showToast) window.showToast('Sedang memuat modul bahasa, coba sebentar lagi...', 'info');
-        return;
-    }
-    
     var currentLangLbl = document.getElementById('langSwitchLabel');
-    var currentIsID = (currentLangLbl.innerText === 'ID'); 
+    var currentIsID = (currentLangLbl.innerText === 'ID');
     
-    if (currentIsID) {
-        // Change to Arabic
-        selectElement.value = 'ar';
-        var evt = document.createEvent("HTMLEvents");
-        evt.initEvent("change", true, true);
-        selectElement.dispatchEvent(evt);
-        currentLangLbl.innerText = 'AR';
+    var selectElement = document.querySelector('.goog-te-combo');
+    
+    if (selectElement) {
+        if (currentIsID) {
+            selectElement.value = 'ar';
+            var evt = document.createEvent("HTMLEvents");
+            evt.initEvent("change", true, true);
+            selectElement.dispatchEvent(evt);
+            currentLangLbl.innerText = 'AR';
+            document.cookie = 'googtrans=/id/ar; path=/';
+        } else {
+            selectElement.value = '';
+            var evt2 = document.createEvent("HTMLEvents");
+            evt2.initEvent("change", true, true);
+            selectElement.dispatchEvent(evt2);
+            
+            try {
+                var iframe = document.querySelector('iframe.goog-te-banner-frame');
+                if (iframe) {
+                    var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    var restoreBtn = innerDoc.getElementById('restore');
+                    if (restoreBtn) restoreBtn.click();
+                }
+            } catch(e) {}
+            
+            currentLangLbl.innerText = 'ID';
+            document.cookie = 'googtrans=/id/id; path=/';
+            document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        }
     } else {
-        // Change back to Indonesian
-        selectElement.value = ''; // Google translate uses empty string or original language code to revert
-        var evt = document.createEvent("HTMLEvents");
-        evt.initEvent("change", true, true);
-        selectElement.dispatchEvent(evt);
-        
-        // Fallback for iframe revert
-        try {
-            var iframe = document.querySelector('iframe.goog-te-banner-frame');
-            if(iframe) {
-                var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-                var restoreBtn = innerDoc.getElementById('restore');
-                if(restoreBtn) restoreBtn.click();
-            }
-        } catch(e) {}
-        
-        currentLangLbl.innerText = 'ID';
+        // Fallback: Use cookie and reload
+        if (currentIsID) {
+            document.cookie = 'googtrans=/id/ar; path=/';
+            window.location.reload();
+        } else {
+            document.cookie = 'googtrans=/id/id; path=/';
+            document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            window.location.reload();
+        }
     }
 };
+
+// Check language state on load
+window.addEventListener('load', function() {
+    var lbl = document.getElementById('langSwitchLabel');
+    if (lbl && document.cookie.indexOf('/ar') !== -1) {
+        lbl.innerText = 'AR';
+    }
+});

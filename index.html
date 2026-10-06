@@ -235,7 +235,7 @@
                         </svg>
                     </button>
                     
-                    <div id="google_translate_element" style="display:none;"></div>
+                    <div id="google_translate_element" style="opacity:0; width:1px; height:1px; position:absolute; top:-9999px; overflow:hidden;"></div>
                     <button class="topbar-help-btn" onclick="toggleLanguage()" title="Ubah Bahasa" style="border: 1px solid var(--border-strong); background: #eff6ff; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); transition: all 0.2s ease;">
                         <span id="langSwitchLabel" style="font-size: 11px; font-weight: 900;">ID</span>
                     </button>
@@ -307,8 +307,7 @@
             new google.translate.TranslateElement({
                 pageLanguage: 'id',
                 includedLanguages: 'ar,id',
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-                autoDisplay: false
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
             }, 'google_translate_element');
         }
     </script>
