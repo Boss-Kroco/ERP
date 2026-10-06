@@ -522,10 +522,25 @@ function cetakStrukDariModal(mode) {
         window.renderEditTrxItems = function() {
             var container = document.getElementById('editTrxItemsContainer');
             if (!container) return;
+            
+            // Generate datalist for autocomplete
+            var dl = document.getElementById('editTrxProductList');
+            if (!dl) {
+                dl = document.createElement('datalist');
+                dl.id = 'editTrxProductList';
+                document.body.appendChild(dl);
+            }
+            dl.innerHTML = '';
+            (window.catalogProducts || []).forEach(function(p) {
+                dl.innerHTML += '<option value="' + escapeHtml(p.namaProduk) + '">';
+            });
+
             container.innerHTML = '';
             var grandTotal = 0;
 
             (window.currentEditTrxItems || []).forEach(function(item, idx) {
+                // Ensure subtotal is correct before rendering
+                item.subtotal = item.qty * item.harga;
                 grandTotal += item.subtotal;
                 
                 var row = document.createElement('div');
@@ -534,7 +549,7 @@ function cetakStrukDariModal(mode) {
                 row.innerHTML = `
                     <div style="flex: 2;">
                         <label style="font-size: 10px; color: var(--text-muted); font-weight: 700;">Nama Produk</label>
-                        <input type="text" class="search-filter-input" style="width: 100%; padding: 4px; font-size: 12px;" value="${escapeHtml(item.namaProduk || '')}" onchange="window.updateItemEditTrx(${idx}, 'namaProduk', this.value)">
+                        <input type="text" list="editTrxProductList" class="search-filter-input" style="width: 100%; padding: 4px; font-size: 12px;" value="${escapeHtml(item.namaProduk || '')}" onchange="window.updateItemEditTrx(${idx}, 'namaProduk', this.value)">
                     </div>
                     <div style="flex: 1; max-width: 60px;">
                         <label style="font-size: 10px; color: var(--text-muted); font-weight: 700;">Qty</label>
@@ -587,9 +602,26 @@ function cetakStrukDariModal(mode) {
             
             if (field === 'namaProduk') {
                 item.namaProduk = value;
+                var prd = (window.catalogProducts || []).find(function(p) { return p.namaProduk === item.namaProduk; });
+                if (prd) {
+                    if (prd.minQtyGrosir && prd.hargaGrosir && item.qty >= prd.minQtyGrosir) {
+                        item.harga = prd.hargaGrosir;
+                    } else {
+                        item.harga = prd.hargaJual;
+                    }
+                }
             } else if (field === 'qty') {
                 item.qty = parseFloat(value) || 1;
                 if(item.qty <= 0) item.qty = 1;
+                
+                var prd2 = (window.catalogProducts || []).find(function(p) { return p.namaProduk === item.namaProduk; });
+                if (prd2) {
+                    if (prd2.minQtyGrosir && prd2.hargaGrosir && item.qty >= prd2.minQtyGrosir) {
+                        item.harga = prd2.hargaGrosir;
+                    } else {
+                        item.harga = prd2.hargaJual;
+                    }
+                }
             } else if (field === 'harga') {
                 item.harga = parseFloat(value) || 0;
             }
