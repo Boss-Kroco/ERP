@@ -360,18 +360,32 @@ window.toggleLanguage = function() {
     }
     
     var currentLangLbl = document.getElementById('langSwitchLabel');
-    var isArabic = (currentLangLbl.innerText === 'ID'); // If label shows ID, it means current is Arabic and we want to switch back to ID. Wait, no. If label says 'AR', it means "Switch to AR".
+    var currentIsID = (currentLangLbl.innerText === 'ID'); 
     
-    // Let's refine: The label tells you what it will switch TO.
-    if (currentLangLbl.innerText === 'AR') {
+    if (currentIsID) {
+        // Change to Arabic
         selectElement.value = 'ar';
-        currentLangLbl.innerText = 'ID';
-        currentLangLbl.parentElement.title = 'Ubah ke Bahasa Indonesia';
-    } else {
-        selectElement.value = 'id';
+        var evt = document.createEvent("HTMLEvents");
+        evt.initEvent("change", true, true);
+        selectElement.dispatchEvent(evt);
         currentLangLbl.innerText = 'AR';
-        currentLangLbl.parentElement.title = 'Ubah ke Bahasa Arab';
+    } else {
+        // Change back to Indonesian
+        selectElement.value = ''; // Google translate uses empty string or original language code to revert
+        var evt = document.createEvent("HTMLEvents");
+        evt.initEvent("change", true, true);
+        selectElement.dispatchEvent(evt);
+        
+        // Fallback for iframe revert
+        try {
+            var iframe = document.querySelector('iframe.goog-te-banner-frame');
+            if(iframe) {
+                var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+                var restoreBtn = innerDoc.getElementById('restore');
+                if(restoreBtn) restoreBtn.click();
+            }
+        } catch(e) {}
+        
+        currentLangLbl.innerText = 'ID';
     }
-    
-    selectElement.dispatchEvent(new Event('change'));
 };
