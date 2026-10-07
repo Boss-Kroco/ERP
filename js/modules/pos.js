@@ -10,6 +10,25 @@ window.currentCart = [];
 function tambahKeKeranjangGrid(pid, nama, harga) {
     if (!pid || !nama) return;
     
+    // Validasi stok etalase produk
+    var prod = (window.catalogProducts || []).find(function(p) { return p.produkId === pid; });
+    if (pid && !pid.startsWith('PKT-')) {
+        var stokTersedia = prod ? (parseFloat(prod.stokEtalase) || 0) : 0;
+        if (stokTersedia <= 0) {
+            if (typeof showToast === 'function') {
+                showToast('Stok "' + nama + '" habis (0)! Tidak dapat transaksi.', 'error');
+            }
+            return;
+        }
+        var existingInCart = window.currentCart.find(function(i) { return i.produkId === pid; });
+        if (existingInCart && existingInCart.qty >= stokTersedia) {
+            if (typeof showToast === 'function') {
+                showToast('Jumlah di keranjang sudah mencapai sisa stok maksimum (' + stokTersedia + ' unit)!', 'warning');
+            }
+            return;
+        }
+    }
+    
     // Check if already in cart
     var existing = window.currentCart.find(function(i) { return i.produkId === pid; });
     if (existing) {
@@ -149,6 +168,21 @@ function hapusCart(idx) {
 
 function submitTransaksiPOS() {
     if (!window.currentCart || window.currentCart.length === 0) return showToast('Keranjang belanja kosong.', 'error');
+    
+    // Validasi stok seluruh item sebelum memproses transaksi
+    for (var k = 0; k < window.currentCart.length; k++) {
+        var cartItem = window.currentCart[k];
+        if (cartItem.produkId && !cartItem.produkId.startsWith('PKT-')) {
+            var pCheck = (window.catalogProducts || []).find(function(p) { return p.produkId === cartItem.produkId; });
+            var curStok = pCheck ? (parseFloat(pCheck.stokEtalase) || 0) : 0;
+            if (curStok <= 0) {
+                return showToast('Transaksi ditolak: Stok "' + cartItem.namaProduk + '" habis (0)!', 'error');
+            }
+            if (cartItem.qty > curStok) {
+                return showToast('Transaksi ditolak: Stok "' + cartItem.namaProduk + '" hanya tersisa ' + curStok + ' unit (permintaan: ' + cartItem.qty + ')!', 'error');
+            }
+        }
+    }
     var grandTotal = 0;
     window.currentCart.forEach(function (i) { grandTotal += i.subtotal; });
     var elDiskonType = document.getElementById('posDiskonType');
@@ -290,6 +324,20 @@ function submitTransaksiPOS() {
     window.currentCart = [];
     var elUangBayar = document.getElementById('posUangBayar');
     if (elUangBayar) elUangBayar.value = '';
+    
+    // Kurangi stok lokal etalase dan refresh tampilan grid seketika
+    cartSnapshot.forEach(function (ci) {
+        if (ci.produkId && !ci.produkId.startsWith('PKT-')) {
+            var pMatch = (window.catalogProducts || []).find(function (p) { return p.produkId === ci.produkId; });
+            if (pMatch) {
+                pMatch.stokEtalase = Math.max(0, (parseFloat(pMatch.stokEtalase) || 0) - (parseFloat(ci.qty) || 1));
+            }
+        }
+    });
+    if (typeof window.renderPosProductGrid === 'function') {
+        window.renderPosProductGrid();
+    }
+    
     renderCart();
     showToast('Memproses transaksi POS...', 'success');
 
@@ -361,10 +409,29 @@ window.updateCartQty = function(idx, newQty) {
     }
     if (window.currentCart && window.currentCart[idx]) {
         var item = window.currentCart[idx];
+        
+        // Cek stok etalase
+        var prod = (window.catalogProducts || []).find(function(p) { return p.produkId === item.produkId; });
+        if (prod && item.produkId && !item.produkId.startsWith('PKT-')) {
+            var stokTersedia = parseFloat(prod.stokEtalase) || 0;
+            if (stokTersedia <= 0) {
+                hapusCart(idx);
+                if (typeof showToast === 'function') {
+                    showToast('Stok "' + item.namaProduk + '" habis (0)! Item dihapus dari keranjang.', 'error');
+                }
+                return;
+            }
+            if (newQty > stokTersedia) {
+                newQty = stokTersedia;
+                if (typeof showToast === 'function') {
+                    showToast('Jumlah dibatasi sesuai sisa stok etalase: ' + stokTersedia + ' unit.', 'warning');
+                }
+            }
+        }
+        
         item.qty = newQty;
         
         // Cek harga grosir dari master produk
-        var prod = (window.catalogProducts || []).find(function(p) { return p.produkId === item.produkId; });
         if (prod && prod.minQtyGrosir && prod.hargaGrosir) {
             if (item.qty >= parseFloat(prod.minQtyGrosir)) {
                 item.harga = parseFloat(prod.hargaGrosir);
@@ -392,24 +459,46 @@ window.renderPosProductGrid = function(filterText) {
         var safeNama = escapeHtml(p.namaProduk);
         var initial = safeNama.substring(0, 2).toUpperCase();
         var priceStr = window.formatAppCurrency(p.hargaJual || 0);
-        var stok = p.stokEtalase || 0;
-        var grosirBadge = (p.minQtyGrosir && p.hargaGrosir) ? `<div style="position: absolute; top: 6px; left: 6px; background: var(--coral-pink); color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Grosir: ${window.formatAppCurrency(p.hargaGrosir)}</div>` : '';
+        var stok = parseFloat(p.stokEtalase) || 0;
+        var isHabis = stok <= 0;
+        
+        var grosirBadge = (!isHabis && p.minQtyGrosir && p.hargaGrosir) 
+            ? `<div style="position: absolute; top: 6px; left: 6px; background: var(--coral-pink); color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Grosir: ${window.formatAppCurrency(p.hargaGrosir)}</div>` 
+            : '';
+        var statusBadge = isHabis 
+            ? `<div style="position: absolute; top: 6px; left: 6px; background: #ef4444; color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 800; letter-spacing: 0.3px;">STOK HABIS</div>` 
+            : grosirBadge;
         
         var div = document.createElement('div');
-        div.style.cssText = "background: #ffffff; border: 1px solid var(--border-soft); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center; position: relative;";
-        div.onmouseover = function() { this.style.borderColor = 'var(--violet-main)'; this.style.transform = 'translateY(-2px)'; this.style.boxShadow = '0 6px 16px rgba(108,71,255,0.1)'; };
-        div.onmouseout = function() { this.style.borderColor = 'var(--border-soft)'; this.style.transform = 'none'; this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)'; };
-        div.onclick = function() { tambahKeKeranjangGrid(p.produkId, p.namaProduk, p.hargaJual); };
+        if (isHabis) {
+            div.style.cssText = "background: #fdf2f2; border: 1.5px solid #fecaca; border-radius: 12px; padding: 16px; cursor: not-allowed; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; position: relative; opacity: 0.7;";
+            div.onclick = function() { 
+                if (typeof showToast === 'function') showToast('Stok produk "' + safeNama + '" habis (0)! Tidak bisa ditambahkan.', 'error'); 
+            };
+        } else {
+            div.style.cssText = "background: #ffffff; border: 1px solid var(--border-soft); border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; align-items: center; position: relative;";
+            div.onmouseover = function() { this.style.borderColor = 'var(--violet-main)'; this.style.transform = 'translateY(-2px)'; this.style.boxShadow = '0 6px 16px rgba(108,71,255,0.1)'; };
+            div.onmouseout = function() { this.style.borderColor = 'var(--border-soft)'; this.style.transform = 'none'; this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)'; };
+            div.onclick = function() { tambahKeKeranjangGrid(p.produkId, p.namaProduk, p.hargaJual); };
+        }
         
+        var iconAction = isHabis 
+            ? `<div style="position: absolute; top: 12px; right: 12px; background: #fee2e2; color: #ef4444; width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 11px;">✕</div>`
+            : `<div style="position: absolute; top: 12px; right: 12px; background: var(--violet-main); color: #fff; width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0.8;">+</div>`;
+
+        var stokLabel = isHabis
+            ? `<div style="font-size: 10px; font-weight: 800; color: #dc2626; margin-top: 4px; background: #fee2e2; padding: 2px 6px; border-radius: 4px;">Sisa Stok: 0 (Habis)</div>`
+            : `<div style="font-size: 10px; font-weight: 600; color: var(--text-muted); margin-top: 4px;">Sisa Stok: ${stok}</div>`;
+
         div.innerHTML = `
-            ${grosirBadge}
-            <div style="width: 54px; height: 54px; border-radius: 12px; background: #e0e7ff; color: var(--violet-dark); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; margin-bottom: 12px;">
+            ${statusBadge}
+            <div style="width: 54px; height: 54px; border-radius: 12px; background: ${isHabis ? '#fee2e2' : '#e0e7ff'}; color: ${isHabis ? '#b91c1c' : 'var(--violet-dark)'}; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; margin-bottom: 12px;">
                 ${initial}
             </div>
-            <div style="font-size: 13px; font-weight: 700; color: var(--text-dark); text-align: center; margin-bottom: 4px; line-height: 1.3;">${safeNama}</div>
-            <div style="font-size: 13px; font-weight: 800; color: var(--emerald);">${priceStr}</div>
-            <div style="font-size: 10px; font-weight: 600; color: var(--text-muted); margin-top: 4px;">Sisa Stok: ${stok}</div>
-            <div style="position: absolute; top: 12px; right: 12px; background: var(--violet-main); color: #fff; width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: bold; opacity: 0.8;">+</div>
+            <div style="font-size: 13px; font-weight: 700; color: ${isHabis ? '#991b1b' : 'var(--text-dark)'}; text-align: center; margin-bottom: 4px; line-height: 1.3;">${safeNama}</div>
+            <div style="font-size: 13px; font-weight: 800; color: ${isHabis ? '#991b1b' : 'var(--emerald)'};">${priceStr}</div>
+            ${stokLabel}
+            ${iconAction}
         `;
         
         grid.appendChild(div);
@@ -444,12 +533,6 @@ window.updatePosKembalian = function() {
     var elFeedbackTitle = document.getElementById('posFeedbackTitle');
     var elFeedbackSub = document.getElementById('posFeedbackSub');
     var elFeedbackAmount = document.getElementById('posFeedbackAmount');
-    var elStatusMini = document.getElementById('posStatusUangMini');
-
-    var elSummaryRow = document.getElementById('posSummaryKembalianRow');
-    var elSummaryUang = document.getElementById('posSummaryUangBayar');
-    var elSummaryLabel = document.getElementById('posSummaryKembalianLabel');
-    var elSummaryVal = document.getElementById('posSummaryKembalianVal');
 
     var total = window.currentPosTotalNet || 0;
     var rawVal = elUangBayar ? elUangBayar.value.trim() : '';
@@ -458,8 +541,6 @@ window.updatePosKembalian = function() {
 
     if (!rawVal || isNaN(parseFloat(rawVal))) {
         elFeedbackBox.style.display = 'none';
-        if (elStatusMini) elStatusMini.style.display = 'none';
-        if (elSummaryRow) elSummaryRow.style.display = 'none';
         return;
     }
 
@@ -467,15 +548,7 @@ window.updatePosKembalian = function() {
 
     if (total <= 0) {
         elFeedbackBox.style.display = 'none';
-        if (elStatusMini) elStatusMini.style.display = 'none';
-        if (elSummaryRow) elSummaryRow.style.display = 'none';
         return;
-    }
-
-    // Tampilkan di ringkasan nota bawah TOTAL
-    if (elSummaryRow) {
-        elSummaryRow.style.display = 'flex';
-        if (elSummaryUang) elSummaryUang.textContent = window.formatAppCurrency(bayar);
     }
 
     if (bayar > total) {
@@ -491,21 +564,6 @@ window.updatePosKembalian = function() {
         elFeedbackSub.style.color = '#059669';
         elFeedbackAmount.textContent = window.formatAppCurrency(kembali);
         elFeedbackAmount.style.color = '#047857';
-
-        if (elStatusMini) {
-            elStatusMini.style.display = 'inline-block';
-            elStatusMini.style.color = '#10b981';
-            elStatusMini.textContent = 'Kembali: ' + window.formatAppCurrency(kembali);
-        }
-
-        if (elSummaryLabel) {
-            elSummaryLabel.textContent = 'Kembalian:';
-            elSummaryLabel.style.color = '#16a34a';
-        }
-        if (elSummaryVal) {
-            elSummaryVal.textContent = window.formatAppCurrency(kembali);
-            elSummaryVal.style.color = '#16a34a';
-        }
     } else if (bayar === total) {
         elFeedbackBox.style.display = 'flex';
         elFeedbackBox.style.background = '#f0fdf4';
@@ -518,21 +576,6 @@ window.updatePosKembalian = function() {
         elFeedbackSub.style.color = '#16a34a';
         elFeedbackAmount.textContent = 'Rp 0';
         elFeedbackAmount.style.color = '#15803d';
-
-        if (elStatusMini) {
-            elStatusMini.style.display = 'inline-block';
-            elStatusMini.style.color = '#16a34a';
-            elStatusMini.textContent = '✓ Uang Pas';
-        }
-
-        if (elSummaryLabel) {
-            elSummaryLabel.textContent = 'Status:';
-            elSummaryLabel.style.color = '#16a34a';
-        }
-        if (elSummaryVal) {
-            elSummaryVal.textContent = 'Uang Pas (Lunas)';
-            elSummaryVal.style.color = '#16a34a';
-        }
     } else {
         // bayar < total
         var kurang = total - bayar;
@@ -547,21 +590,6 @@ window.updatePosKembalian = function() {
         elFeedbackSub.style.color = '#dc2626';
         elFeedbackAmount.textContent = '- ' + window.formatAppCurrency(kurang);
         elFeedbackAmount.style.color = '#b91c1c';
-
-        if (elStatusMini) {
-            elStatusMini.style.display = 'inline-block';
-            elStatusMini.style.color = '#ef4444';
-            elStatusMini.textContent = 'Kurang: ' + window.formatAppCurrency(kurang);
-        }
-
-        if (elSummaryLabel) {
-            elSummaryLabel.textContent = 'Kurang:';
-            elSummaryLabel.style.color = '#dc2626';
-        }
-        if (elSummaryVal) {
-            elSummaryVal.textContent = '- ' + window.formatAppCurrency(kurang);
-            elSummaryVal.style.color = '#dc2626';
-        }
     }
 };
 
@@ -579,11 +607,9 @@ window.posQuickCash = function(val) {
 window.togglePosPaymentInputs = function() {
     var elMetode = document.getElementById('posPaymentMethod');
     var elInputs = document.getElementById('posPaymentInputs');
-    var elSummaryRow = document.getElementById('posSummaryKembalianRow');
     if (elMetode && elInputs) {
         if (elMetode.value === 'Tempo' || elMetode.value === 'Tabungan') {
             elInputs.style.display = 'none';
-            if (elSummaryRow) elSummaryRow.style.display = 'none';
         } else {
             elInputs.style.display = 'block';
             window.updatePosKembalian();

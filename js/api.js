@@ -1220,6 +1220,15 @@
         } else if (functionName === 'apiCreateTransaction') {
             var pTrx = args[0] || {};
             var newId = 'TRX-' + new Date().getTime();
+            var cartItems = pTrx.cartItems || pTrx.items || [];
+            cartItems.forEach(function (ci) {
+                if (ci.produkId && window.catalogProducts) {
+                    var prodItem = window.catalogProducts.find(function (p) { return p.produkId === ci.produkId; });
+                    if (prodItem) {
+                        prodItem.stokEtalase = Math.max(0, (parseFloat(prodItem.stokEtalase) || 0) - (parseFloat(ci.qty) || 1));
+                    }
+                }
+            });
             window.addMockAuditLog('POS', 'TRANSAKSI_BARU', '-', newId, 'Penjualan ' + (window.formatAppCurrency ? window.formatAppCurrency(pTrx.totalNet) : pTrx.totalNet), args[1]);
             successCb({ success: true, message: 'Transaksi kasir berhasil disimpan.', trxId: newId });
         } else if (functionName === 'apiUpdateTransactionStatus') {
