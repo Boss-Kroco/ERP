@@ -222,52 +222,77 @@ function submitTransaksiPOS() {
     var kembalian = isTunai ? Math.max(0, bayarNominal - totalNet) : 0;
     
     var isTabunganMethod = String(metode).toLowerCase() === 'tabungan';
+    var simpanTabunganNominal = 0;
+    
     if (isTabunganMethod) {
         if (custId === 'CUST-UMUM') return showToast('Pilih pelanggan member untuk bayar pakai Tabungan!', 'error');
-        var pel = (window.allPelanggan || []).find(function(p) { return p.id === custId; });
-        if (!pel || (parseFloat(pel.tabungan) || 0) < totalNet) {
-            return showToast('Saldo Tabungan tidak cukup! Saldo: Rp ' + (pel ? window.formatRupiah(pel.tabungan) : '0'), 'error');
+        var custData = window._pelangganDataList || window.allPelanggan || [];
+        var pel = custData.find(function(p) { return p.pelanggan_id === custId || p.id === custId; });
+        var saldoTab = pel ? (parseFloat(pel.tabungan) || 0) : 0;
+        if (!pel || saldoTab < totalNet) {
+            return showToast('Saldo Tabungan tidak cukup! Saldo: ' + (window.formatAppCurrency ? window.formatAppCurrency(saldoTab) : ('Rp ' + saldoTab.toLocaleString('id-ID'))), 'error');
         }
-        // Deduct
-        pel.tabungan -= totalNet;
-        // Log to Keuangan as Tabungan Keluar
+        
+        // Potong saldo tabungan
+        var sisaTab = Math.max(0, saldoTab - totalNet);
+        if (typeof window.updateCustomerTabungan === 'function') {
+            window.updateCustomerTabungan(custId, sisaTab);
+        } else if (pel) {
+            pel.tabungan = sisaTab;
+        }
+
+        // Log ke buku kas lokal
         window.allKeuanganKas = window.allKeuanganKas || [];
         window.allKeuanganKas.unshift({
-            id: 'KAS-' + Date.now(),
-            tanggal: new Date().toISOString().split('T')[0],
+            kasId: 'KAS-' + Date.now(),
+            tanggal: new Date().toLocaleDateString('id-ID'),
             kategori: 'Tabungan Pelanggan',
             tipe: 'Tabungan Keluar',
             nominal: totalNet,
-            keterangan: 'Pembayaran POS (' + custName + ')'
+            keterangan: 'Pembayaran POS via Tabungan (' + custName + ')',
+            saldoBerjalan: 0,
+            dicatatOleh: (window.currentUser ? (window.currentUser.namaLengkap || window.currentUser.username) : 'Kasir')
         });
-        if (typeof window.renderTabelPelanggan === 'function') window.renderTabelPelanggan();
-        if (typeof window.renderKeuanganTable === 'function') window.renderKeuanganTable();
+        if (typeof window.renderPelangganTable === 'function') window.renderPelangganTable();
+        if (typeof window.updatePelangganMetrics === 'function') window.updatePelangganMetrics();
+        if (typeof window.filterKeuanganKas === 'function') window.filterKeuanganKas();
     }
     
     var chkTabungan = document.getElementById('posSimpanTabungan');
     var isSimpanTabungan = (chkTabungan && chkTabungan.checked && kembalian > 0 && custId !== 'CUST-UMUM');
 
     if (isSimpanTabungan) {
-        // Save kembalian to customer's tabungan
-        var pel = (window.allPelanggan || []).find(function(p) { return p.id === custId; });
-        if (pel) {
-            pel.tabungan = (parseFloat(pel.tabungan) || 0) + kembalian;
+        var custData2 = window._pelangganDataList || window.allPelanggan || [];
+        var pel2 = custData2.find(function(p) { return p.pelanggan_id === custId || p.id === custId; });
+        if (pel2) {
+            var currTab = parseFloat(pel2.tabungan) || 0;
+            var newTab = currTab + kembalian;
+            simpanTabunganNominal = kembalian;
+            if (typeof window.updateCustomerTabungan === 'function') {
+                window.updateCustomerTabungan(custId, newTab);
+            } else {
+                pel2.tabungan = newTab;
+            }
             
-            // Log to Keuangan as Tabungan Masuk
+            // Log ke buku kas lokal
             window.allKeuanganKas = window.allKeuanganKas || [];
             window.allKeuanganKas.unshift({
-                id: 'KAS-' + Date.now(),
-                tanggal: new Date().toISOString().split('T')[0],
+                kasId: 'KAS-' + (Date.now() + 2),
+                tanggal: new Date().toLocaleDateString('id-ID'),
                 kategori: 'Tabungan Pelanggan',
                 tipe: 'Tabungan Masuk',
                 nominal: kembalian,
-                keterangan: 'Simpan kembalian transaksi ' + (window.orderTransactions ? window.orderTransactions.length + 1 : 1)
+                keterangan: 'Simpan Kembalian POS ke Tabungan (' + custName + ')',
+                saldoBerjalan: 0,
+                dicatatOleh: (window.currentUser ? (window.currentUser.namaLengkap || window.currentUser.username) : 'Kasir')
             });
             
-            if (typeof window.renderTabelPelanggan === 'function') window.renderTabelPelanggan();
-            if (typeof window.renderKeuanganTable === 'function') window.renderKeuanganTable();
+            showToast('Kembalian ' + (window.formatAppCurrency ? window.formatAppCurrency(kembalian) : ('Rp ' + kembalian.toLocaleString('id-ID'))) + ' disimpan ke Tabungan Member!', 'success');
+            if (typeof window.renderPelangganTable === 'function') window.renderPelangganTable();
+            if (typeof window.updatePelangganMetrics === 'function') window.updatePelangganMetrics();
+            if (typeof window.filterKeuanganKas === 'function') window.filterKeuanganKas();
         } else {
-            showToast('Tabungan gagal disimpan: Pelanggan bukan anggota.', 'warning');
+            showToast('Tabungan gagal disimpan: Pelanggan bukan anggota member.', 'warning');
         }
     }
 
@@ -300,7 +325,8 @@ function submitTransaksiPOS() {
         metodeBayar: metode,
         pelangganId: custId,
         namaPelanggan: custName,
-        bayarNominal: bayarNominal
+        bayarNominal: bayarNominal,
+        simpanTabunganNominal: simpanTabunganNominal
     };
 
     // Optimistic addition to orders table dengan rincian items
@@ -511,14 +537,19 @@ window.renderPosProductGrid = function(filterText) {
 // Auto-sync Pelanggan to POS Dropdown
 window.populatePosCustomers = function() {
     var custSelect = document.getElementById('posCustomer');
-    if (custSelect && window._pelangganDataList) {
+    var list = window._pelangganDataList || window.allPelanggan;
+    if (custSelect && list) {
+        var currentVal = custSelect.value || 'CUST-UMUM';
         custSelect.innerHTML = '<option value="CUST-UMUM">Pelanggan Umum</option>';
-        window._pelangganDataList.forEach(function(p) {
+        list.forEach(function(p) {
             var opt = document.createElement('option');
             opt.value = p.pelanggan_id;
-            opt.textContent = p.nama_toko;
+            var tabVal = (typeof p.tabungan !== 'undefined') ? Number(p.tabungan || 0) : 0;
+            var tabText = tabVal > 0 ? ' (Tab: ' + (window.formatAppCurrency ? window.formatAppCurrency(tabVal) : ('Rp ' + tabVal.toLocaleString('id-ID'))) + ')' : '';
+            opt.textContent = p.nama_toko + tabText;
             custSelect.appendChild(opt);
         });
+        if (currentVal) custSelect.value = currentVal;
     }
 };
 
@@ -654,15 +685,78 @@ window.updatePosKembalian = function() {
         }
     });
 
-    // Proteksi Tombol Submit jika uang tunai kurang
+    // Proteksi & Tampilan Tombol Submit
     if (elSubmitBtn) {
-        if (isTunai && rawDigits && bayarNum < total) {
+        var elCustomer = document.getElementById('posCustomer');
+        var custId = elCustomer ? elCustomer.value : 'CUST-UMUM';
+        var metodeVal = elMetode ? elMetode.value : 'Tunai';
+
+        if (metodeVal === 'Tabungan') {
+            var elTabCurrent = document.getElementById('posTabunganCurrentAmount');
+            var elTabRemaining = document.getElementById('posTabunganRemainingAmount');
+            var elTabBadge = document.getElementById('posTabunganBadgeStatus');
+            var elTabAlert = document.getElementById('posTabunganAlertMsg');
+
+            var custData = window._pelangganDataList || window.allPelanggan || [];
+            var pel = custData.find(function(p) { return p.pelanggan_id === custId || p.id === custId; });
+            var saldoTab = (pel && custId !== 'CUST-UMUM') ? (parseFloat(pel.tabungan) || 0) : 0;
+            var sisaTab = saldoTab - total;
+
+            if (elTabCurrent) elTabCurrent.textContent = window.formatAppCurrency ? window.formatAppCurrency(saldoTab) : ('Rp ' + saldoTab.toLocaleString('id-ID'));
+            if (elTabRemaining) {
+                var prefix = sisaTab >= 0 ? '' : '- ';
+                elTabRemaining.textContent = prefix + (window.formatAppCurrency ? window.formatAppCurrency(Math.abs(sisaTab)) : ('Rp ' + Math.abs(sisaTab).toLocaleString('id-ID')));
+                elTabRemaining.style.color = sisaTab >= 0 ? 'var(--emerald)' : '#dc2626';
+            }
+
+            if (custId === 'CUST-UMUM') {
+                if (elTabBadge) {
+                    elTabBadge.textContent = 'Bukan Member';
+                    elTabBadge.style.background = '#fef2f2';
+                    elTabBadge.style.color = '#ef4444';
+                }
+                if (elTabAlert) elTabAlert.innerHTML = '<span style="color: #ef4444;">⚠️ Pelanggan umum tidak memiliki saldo tabungan. Silakan pilih member terdaftar.</span>';
+                elSubmitBtn.disabled = true;
+                elSubmitBtn.style.opacity = '0.55';
+                elSubmitBtn.style.cursor = 'not-allowed';
+                elSubmitBtn.style.background = '#94a3b8';
+                elSubmitBtn.style.boxShadow = 'none';
+                elSubmitBtn.innerHTML = '<svg style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Pilih Member untuk Tabungan';
+            } else if (saldoTab < total) {
+                if (elTabBadge) {
+                    elTabBadge.textContent = 'Saldo Kurang';
+                    elTabBadge.style.background = '#fef2f2';
+                    elTabBadge.style.color = '#ef4444';
+                }
+                var selisihStr = window.formatAppCurrency ? window.formatAppCurrency(Math.abs(sisaTab)) : ('Rp ' + Math.abs(sisaTab).toLocaleString('id-ID'));
+                if (elTabAlert) elTabAlert.innerHTML = '<span style="color: #ef4444;">⚠️ Saldo tabungan kurang ' + selisihStr + '. Silakan tambah tabungan atau gunakan metode lain.</span>';
+                elSubmitBtn.disabled = true;
+                elSubmitBtn.style.opacity = '0.55';
+                elSubmitBtn.style.cursor = 'not-allowed';
+                elSubmitBtn.style.background = '#94a3b8';
+                elSubmitBtn.style.boxShadow = 'none';
+                elSubmitBtn.innerHTML = '<svg style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Saldo Tabungan Kurang';
+            } else {
+                if (elTabBadge) {
+                    elTabBadge.textContent = 'Saldo Cukup';
+                    elTabBadge.style.background = '#ecfdf5';
+                    elTabBadge.style.color = '#059669';
+                }
+                if (elTabAlert) elTabAlert.innerHTML = '<span style="color: #059669;">✅ Saldo tabungan mencukupi untuk pembayaran pesanan ini.</span>';
+                elSubmitBtn.disabled = false;
+                elSubmitBtn.style.opacity = '1';
+                elSubmitBtn.style.cursor = 'pointer';
+                elSubmitBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                elSubmitBtn.style.boxShadow = '0 8px 24px -4px rgba(16, 185, 129, 0.35)';
+                elSubmitBtn.innerHTML = '<svg style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2;" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Potong Saldo Tabungan';
+            }
+        } else if (isTunai && rawDigits && bayarNum < total) {
             elSubmitBtn.disabled = true;
             elSubmitBtn.style.opacity = '0.55';
             elSubmitBtn.style.cursor = 'not-allowed';
             elSubmitBtn.style.background = '#94a3b8';
             elSubmitBtn.style.boxShadow = 'none';
-            elSubmitBtn.innerHTML = '<svg style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg> Uang Belum Cukup';
+            elSubmitBtn.innerHTML = '<svg style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Uang Belum Cukup';
         } else {
             elSubmitBtn.disabled = false;
             elSubmitBtn.style.opacity = '1';
@@ -712,13 +806,36 @@ window.updatePosKembalian = function() {
     }
 };
 
+window.handlePosCustomerChange = function() {
+    window.togglePosPaymentInputs();
+};
+
 window.posHandleEnterSubmit = function() {
     var elUangBayar = document.getElementById('posUangBayar');
     var total = window.currentPosTotalNet || 0;
     var rawDigits = elUangBayar ? elUangBayar.value.replace(/\D/g, '') : '';
     var bayarNum = rawDigits ? (parseInt(rawDigits, 10) || 0) : 0;
     var elMetode = document.getElementById('posPaymentMethod');
-    var isTunai = !elMetode || String(elMetode.value).toLowerCase() === 'tunai';
+    var elCustomer = document.getElementById('posCustomer');
+    var metode = elMetode ? elMetode.value : 'Tunai';
+    var isTunai = metode === 'Tunai';
+
+    if (metode === 'Tabungan') {
+        var custId = elCustomer ? elCustomer.value : 'CUST-UMUM';
+        if (custId === 'CUST-UMUM') {
+            if (typeof showToast === 'function') showToast('Pilih pelanggan member untuk bayar pakai Tabungan!', 'warning');
+            return;
+        }
+        var custData = window._pelangganDataList || window.allPelanggan || [];
+        var pel = custData.find(function(p) { return p.pelanggan_id === custId || p.id === custId; });
+        var saldoTab = pel ? (parseFloat(pel.tabungan) || 0) : 0;
+        if (saldoTab < total) {
+            if (typeof showToast === 'function') showToast('Saldo Tabungan tidak cukup!', 'warning');
+            return;
+        }
+        submitTransaksiPOS();
+        return;
+    }
 
     if (isTunai && rawDigits && bayarNum < total) {
         if (typeof showToast === 'function') {
@@ -760,12 +877,18 @@ if (!window._posHotkeysAttached) {
 window.togglePosPaymentInputs = function() {
     var elMetode = document.getElementById('posPaymentMethod');
     var elInputs = document.getElementById('posPaymentInputs');
-    if (elMetode && elInputs) {
-        if (elMetode.value === 'Tempo' || elMetode.value === 'Tabungan') {
-            elInputs.style.display = 'none';
-        } else {
-            elInputs.style.display = 'block';
-            window.updatePosKembalian();
-        }
+    var elTabCard = document.getElementById('posTabunganInfoCard');
+    var metode = elMetode ? elMetode.value : 'Tunai';
+
+    if (metode === 'Tabungan') {
+        if (elInputs) elInputs.style.display = 'none';
+        if (elTabCard) elTabCard.style.display = 'block';
+    } else if (metode === 'Tempo') {
+        if (elInputs) elInputs.style.display = 'none';
+        if (elTabCard) elTabCard.style.display = 'none';
+    } else {
+        if (elInputs) elInputs.style.display = 'block';
+        if (elTabCard) elTabCard.style.display = 'none';
     }
+    window.updatePosKembalian();
 };

@@ -3,15 +3,75 @@
  */
 
 window._pelangganDataList = [];
+window.allPelanggan = window._pelangganDataList;
+window.TABUNGAN_STORAGE_KEY = 'bos_kroco_tabungan_map';
 
-// Global formatAppCurrency is used instead
+window.getPelangganTabunganMap = function() {
+    try {
+        var raw = localStorage.getItem(window.TABUNGAN_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : {};
+    } catch (e) {
+        console.warn('Gagal membaca tabungan map:', e);
+        return {};
+    }
+};
+
+window.savePelangganTabunganMap = function(map) {
+    try {
+        localStorage.setItem(window.TABUNGAN_STORAGE_KEY, JSON.stringify(map || {}));
+    } catch (e) {
+        console.warn('Gagal menyimpan tabungan map:', e);
+    }
+};
+
+window.updateCustomerTabungan = function(pelangganId, amount) {
+    if (!pelangganId) return;
+    var map = window.getPelangganTabunganMap();
+    map[pelangganId] = Math.max(0, Number(amount || 0));
+    window.savePelangganTabunganMap(map);
+
+    // Update in-memory lists
+    if (window._pelangganDataList) {
+        var found = window._pelangganDataList.find(function(p) {
+            return p.pelanggan_id === pelangganId || p.id === pelangganId;
+        });
+        if (found) {
+            found.tabungan = map[pelangganId];
+            found.id = found.pelanggan_id;
+        }
+    }
+    window.allPelanggan = window._pelangganDataList;
+
+    if (typeof window.renderPelangganTable === 'function') window.renderPelangganTable();
+    if (typeof window.updatePelangganMetrics === 'function') window.updatePelangganMetrics();
+    if (typeof window.populatePosCustomers === 'function') window.populatePosCustomers();
+    if (typeof window.updatePosKembalian === 'function') window.updatePosKembalian();
+    if (typeof window.updateKeuanganMetrics === 'function') window.updateKeuanganMetrics();
+};
 
 window.loadPelangganData = function() {
     var tbl = document.getElementById('tblPelangganLogs');
-    if (!tbl) return;
+
+    var finishLoading = function(list) {
+        var tabMap = window.getPelangganTabunganMap();
+        window._pelangganDataList = (list || []).map(function(p) {
+            p.id = p.pelanggan_id;
+            if (tabMap[p.pelanggan_id] !== undefined) {
+                p.tabungan = Number(tabMap[p.pelanggan_id] || 0);
+            } else {
+                p.tabungan = Number(p.tabungan || 0);
+            }
+            return p;
+        });
+        window.allPelanggan = window._pelangganDataList;
+        window.renderPelangganTable();
+        window.updatePelangganMetrics();
+        if (typeof window.populatePosCustomers === 'function') window.populatePosCustomers();
+        if (typeof window.updateKeuanganMetrics === 'function') window.updateKeuanganMetrics();
+    };
 
     if (!window.SUPABASE_CONFIG || !window.SUPABASE_CONFIG.isConfigured()) {
-        tbl.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px;">Sistem Offline. Konfigurasi database belum tersedia.</td></tr>';
+        if (tbl) tbl.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px;">Sistem Offline. Konfigurasi database belum tersedia.</td></tr>';
         return;
     }
 
@@ -20,13 +80,10 @@ window.loadPelangganData = function() {
       .then(function(res) {
           if (res.error) {
               console.error(res.error);
-              tbl.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 20px; color: red;">Gagal memuat data pelanggan.</td></tr>';
+              if (tbl) tbl.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px; color: red;">Gagal memuat data pelanggan.</td></tr>';
               return;
           }
-          window._pelangganDataList = res.data || [];
-          window.renderPelangganTable();
-          window.updatePelangganMetrics();
-          if (typeof window.populatePosCustomers === 'function') window.populatePosCustomers();
+          finishLoading(res.data || []);
       })
       .catch(function(err) {
           console.error(err);
@@ -178,36 +235,38 @@ window.savePelanggan = function() {
     
     if (mode === 'NEW') {
         var newId = 'CUST-' + Date.now().toString().slice(-6);
-        sb.from('pelanggan_toko').insert([{
+        var insertPayload = {
             pelanggan_id: newId,
             nama_toko: nama,
             kontak: kontak || '-',
             alamat: alamat || '-',
             total_beli: 0,
             total_piutang: 0,
-            tabungan: tabungan,
             status: 'Aktif'
-        }]).then(function(res) {
+        };
+        sb.from('pelanggan_toko').insert([insertPayload]).then(function(res) {
             if (res.error) {
                 console.error(res.error);
-                if(window.showToast) window.showToast('Gagal menyimpan pelanggan', 'error');
+                if(window.showToast) window.showToast('Gagal menyimpan pelanggan: ' + res.error.message, 'error');
             } else {
+                window.updateCustomerTabungan(newId, tabungan);
                 if(window.showToast) window.showToast('Pelanggan berhasil ditambahkan!', 'success');
                 window.closePelangganModal();
                 window.loadPelangganData();
             }
         });
     } else {
-        sb.from('pelanggan_toko').update({
+        var updatePayload = {
             nama_toko: nama,
             kontak: kontak || '-',
-            alamat: alamat || '-',
-            tabungan: tabungan
-        }).eq('pelanggan_id', id).then(function(res) {
+            alamat: alamat || '-'
+        };
+        sb.from('pelanggan_toko').update(updatePayload).eq('pelanggan_id', id).then(function(res) {
             if (res.error) {
                 console.error(res.error);
-                if(window.showToast) window.showToast('Gagal memperbarui pelanggan', 'error');
+                if(window.showToast) window.showToast('Gagal memperbarui pelanggan: ' + res.error.message, 'error');
             } else {
+                window.updateCustomerTabungan(id, tabungan);
                 if(window.showToast) window.showToast('Data pelanggan diperbarui!', 'success');
                 window.closePelangganModal();
                 window.loadPelangganData();

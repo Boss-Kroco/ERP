@@ -124,7 +124,7 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
                         <div>
                             <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Pelanggan</label>
-                            <select class="search-filter-input" style="width: 100%; padding: 8px; font-size: 12px;" id="posCustomer">
+                            <select class="search-filter-input" style="width: 100%; padding: 8px; font-size: 12px;" id="posCustomer" onchange="window.handlePosCustomerChange()">
                                 <option value="CUST-UMUM">Pelanggan Umum</option>
                                 <option value="CUST-001">Oleh-Oleh Barokah</option>
                             </select>
@@ -185,6 +185,30 @@
                             </div>
                             <input type="checkbox" id="posSimpanTabungan" style="width: 17px; height: 17px; accent-color: var(--violet-main); cursor: pointer;">
                         </label>
+                    </div>
+
+                    <!-- Tabungan Payment Info Card (Active when payment method is Tabungan) -->
+                    <div id="posTabunganInfoCard" style="display: none; margin-bottom: 18px; background: #ffffff; padding: 16px; border-radius: 16px; border: 1.5px solid #818cf8; box-shadow: 0 4px 16px -4px rgba(99, 102, 241, 0.1);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 6px; background: #e0e7ff; color: #4338ca;">
+                                    <svg style="width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2;" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
+                                </span>
+                                <span style="font-size: 12px; font-weight: 800; color: #1e1b4b;">Pembayaran Saldo Tabungan</span>
+                            </div>
+                            <span id="posTabunganBadgeStatus" style="font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: #e0e7ff; color: #4338ca;">Member</span>
+                        </div>
+                        <div style="background: #f8fafc; border-radius: 12px; padding: 12px; border: 1px solid #e2e8f0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 600;">Saldo Tabungan:</span>
+                                <span id="posTabunganCurrentAmount" style="font-size: 14px; font-weight: 800; color: var(--emerald);">Rp 0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #cbd5e1; padding-top: 6px;">
+                                <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 600;">Sisa Setelah Bayar:</span>
+                                <span id="posTabunganRemainingAmount" style="font-size: 14px; font-weight: 800; color: var(--violet-main);">Rp 0</span>
+                            </div>
+                        </div>
+                        <div id="posTabunganAlertMsg" style="font-size: 11px; font-weight: 600; color: #64748b; margin-top: 8px;"></div>
                     </div>
 
                     <button id="posBtnSubmit" class="btn-pill-action btn-pill-primary" style="width: 100%; justify-content: center; padding: 14px; font-size: 15px; font-weight: 800; border-radius: 99px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); box-shadow: 0 8px 24px -4px rgba(79, 70, 229, 0.35); transition: all 0.2s ease; display: flex; align-items: center; gap: 8px;" onclick="submitTransaksiPOS()" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 10px 28px -4px rgba(79, 70, 229, 0.45)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 8px 24px -4px rgba(79, 70, 229, 0.35)';">

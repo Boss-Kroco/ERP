@@ -204,10 +204,29 @@ function updateKeuanganMetrics(items) {
     });
 
     var tabunganTotal = 0;
+    var hasKasTabungan = false;
     (window.allKeuanganKas || []).forEach(function (k) {
-        if (k.tipe === 'Tabungan Masuk') tabunganTotal += Number(k.nominal || 0);
-        if (k.tipe === 'Tabungan Keluar') tabunganTotal -= Number(k.nominal || 0);
+        if (k.tipe === 'Tabungan Masuk') {
+            tabunganTotal += Number(k.nominal || 0);
+            hasKasTabungan = true;
+        }
+        if (k.tipe === 'Tabungan Keluar') {
+            tabunganTotal -= Number(k.nominal || 0);
+            hasKasTabungan = true;
+        }
     });
+
+    if (!hasKasTabungan) {
+        var custList = window._pelangganDataList || window.allPelanggan || [];
+        var sumMemberTab = 0;
+        custList.forEach(function(p) {
+            sumMemberTab += Number(p.tabungan || 0);
+        });
+        if (sumMemberTab > 0) {
+            tabunganTotal = sumMemberTab;
+        }
+    }
+
     var elTabungan = document.getElementById('keuanganSaldoTabungan');
     if (elTabungan) elTabungan.textContent = window.formatAppCurrency(tabunganTotal);
 

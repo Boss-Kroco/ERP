@@ -484,6 +484,8 @@
                 var diskon = Number(pTrx.diskon || 0);
                 var metode = pTrx.metodeBayar || 'Tunai';
 
+                var statusBayar = (metode === 'Tempo') ? 'Belum Lunas' : 'Lunas';
+
                 await sb.from('penjualan').insert([{
                     trx_id: newTrxId,
                     tanggal: new Date().toLocaleDateString('id-ID'),
@@ -494,7 +496,7 @@
                     diskon: diskon,
                     total_net: totalNet,
                     metode_bayar: metode,
-                    status_bayar: (metode === 'Tunai' ? 'Lunas' : 'Belum Lunas'),
+                    status_bayar: statusBayar,
                     kasir: uSession ? (uSession.namaLengkap || uSession.username) : 'Kasir'
                 }]);
 
@@ -510,7 +512,20 @@
                         saldo_berjalan: 0,
                         dicatat_oleh: uSession ? (uSession.namaLengkap || uSession.username) : 'Kasir'
                     }]);
-                } else {
+                } else if (metode === 'Tabungan') {
+                    // Kas toko menerima pembayaran dari saldo tabungan member
+                    await sb.from('keuangan_kas').insert([{
+                        kas_id: 'KAS-' + Date.now(),
+                        tanggal: new Date().toLocaleDateString('id-ID'),
+                        tipe: 'Masuk',
+                        kategori: 'Tabungan Pelanggan',
+                        nominal: totalNet,
+                        keterangan: 'Pembayaran POS via Tabungan: ' + custName + ' (' + newTrxId + ')',
+                        ref_id: 'TABUNGAN_KELUAR',
+                        saldo_berjalan: 0,
+                        dicatat_oleh: uSession ? (uSession.namaLengkap || uSession.username) : 'Kasir'
+                    }]);
+                } else if (metode === 'Tempo') {
                     // Piutang
                     await sb.from('hutang_piutang').insert([{
                         ref_id: 'PIU-' + Date.now(),
@@ -522,6 +537,21 @@
                         sisa: totalNet,
                         jatuh_tempo: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('id-ID'),
                         status: 'Belum Lunas'
+                    }]);
+                }
+
+                // Jika kembalian disimpan ke tabungan pelanggan
+                if (pTrx.simpanTabunganNominal && Number(pTrx.simpanTabunganNominal) > 0) {
+                    await sb.from('keuangan_kas').insert([{
+                        kas_id: 'KAS-' + (Date.now() + 5),
+                        tanggal: new Date().toLocaleDateString('id-ID'),
+                        tipe: 'Keluar',
+                        kategori: 'Tabungan Pelanggan',
+                        nominal: Number(pTrx.simpanTabunganNominal),
+                        keterangan: 'Simpan Kembalian POS ke Tabungan: ' + custName + ' (' + newTrxId + ')',
+                        ref_id: 'TABUNGAN_MASUK',
+                        saldo_berjalan: 0,
+                        dicatat_oleh: uSession ? (uSession.namaLengkap || uSession.username) : 'Kasir'
                     }]);
                 }
 
@@ -700,10 +730,16 @@
                     .limit(300);
                 if (error) throw error;
                 var mapped = (data || []).map(function (d) {
+                    var rawTipe = d.tipe;
+                    if (d.ref_id === 'TABUNGAN_MASUK' || (d.kategori && d.kategori.indexOf('Tabungan Masuk') !== -1)) {
+                        rawTipe = 'Tabungan Masuk';
+                    } else if (d.ref_id === 'TABUNGAN_KELUAR' || (d.kategori && d.kategori.indexOf('Tabungan Keluar') !== -1)) {
+                        rawTipe = 'Tabungan Keluar';
+                    }
                     return {
                         kasId: d.kas_id,
                         tanggal: d.tanggal,
-                        tipe: d.tipe,
+                        tipe: rawTipe,
                         kategori: d.kategori,
                         nominal: Number(d.nominal || 0),
                         keterangan: d.keterangan || '-',
@@ -725,6 +761,16 @@
                 var nom = Number(pKas.nominal || 0);
                 var tip = pKas.tipe || 'Masuk';
 
+                var dbTipe = tip;
+                var refId = 'MANUAL';
+                if (tip === 'Tabungan Masuk') {
+                    dbTipe = 'Keluar';
+                    refId = 'TABUNGAN_MASUK';
+                } else if (tip === 'Tabungan Keluar') {
+                    dbTipe = 'Masuk';
+                    refId = 'TABUNGAN_KELUAR';
+                }
+
                 var lastSaldo = 0;
                 try {
                     var { data: lastRec } = await sb.from('keuangan_kas').select('saldo_berjalan').order('created_at', { ascending: false }).limit(1);
@@ -734,16 +780,16 @@
                 } catch (e) {
                     console.warn('Gagal ambil saldo terakhir:', e);
                 }
-                var newSaldo = (tip === 'Masuk') ? (lastSaldo + nom) : (lastSaldo - nom);
+                var newSaldo = (tip === 'Masuk' || tip === 'Tabungan Keluar') ? (lastSaldo + nom) : (lastSaldo - nom);
 
                 await sb.from('keuangan_kas').insert([{
                     kas_id: 'KAS-' + Date.now(),
                     tanggal: timeStr,
-                    tipe: tip,
-                    kategori: pKas.kategori || 'Lain-lain',
+                    tipe: dbTipe,
+                    kategori: pKas.kategori || 'Tabungan',
                     nominal: nom,
                     keterangan: pKas.keterangan || '-',
-                    ref_id: 'MANUAL',
+                    ref_id: refId,
                     saldo_berjalan: newSaldo,
                     dicatat_oleh: uSession ? (uSession.namaLengkap || uSession.username) : 'Bendahara'
                 }]);
