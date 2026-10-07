@@ -562,9 +562,6 @@ window.updatePosKembalian = function() {
     var elUangBayar = document.getElementById('posUangBayar');
     var elReset = document.getElementById('posBtnResetUang');
     var elFeedbackBox = document.getElementById('posKembalianFeedbackBox');
-    var elFeedbackIcon = document.getElementById('posFeedbackIconCircle');
-    var elFeedbackTitle = document.getElementById('posFeedbackTitle');
-    var elFeedbackSub = document.getElementById('posFeedbackSub');
     var elFeedbackAmount = document.getElementById('posFeedbackAmount');
 
     var total = window.currentPosTotalNet || 0;
@@ -589,7 +586,7 @@ window.updatePosKembalian = function() {
         }
     });
 
-    if (!elFeedbackBox) return;
+    if (!elFeedbackBox || !elFeedbackAmount) return;
 
     if (!rawDigits || bayarNum <= 0) {
         elFeedbackBox.style.display = 'none';
@@ -604,60 +601,27 @@ window.updatePosKembalian = function() {
     if (bayarNum > total) {
         var kembali = bayarNum - total;
         elFeedbackBox.style.display = 'flex';
-        elFeedbackBox.style.background = 'linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%)';
-        elFeedbackBox.style.border = '1.5px solid #6ee7b7';
-        elFeedbackBox.style.boxShadow = '0 4px 14px -2px rgba(16, 185, 129, 0.14)';
-
-        if (elFeedbackIcon) {
-            elFeedbackIcon.style.background = '#d1fae5';
-            elFeedbackIcon.style.color = '#047857';
-            elFeedbackIcon.innerHTML = '<svg style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>';
-        }
-
-        elFeedbackTitle.textContent = 'KEMBALIAN';
-        elFeedbackTitle.style.color = '#065f46';
-        elFeedbackSub.textContent = 'Wajib diserahkan ke pelanggan';
-        elFeedbackSub.style.color = '#059669';
+        elFeedbackBox.style.background = '#ecfdf5';
+        elFeedbackBox.style.border = '1.5px solid #a7f3d0';
+        elFeedbackBox.style.boxShadow = '0 2px 8px rgba(16, 185, 129, 0.08)';
         elFeedbackAmount.textContent = window.formatAppCurrency(kembali);
-        elFeedbackAmount.style.color = '#047857';
+        elFeedbackAmount.style.color = '#059669';
     } else if (bayarNum === total) {
         elFeedbackBox.style.display = 'flex';
-        elFeedbackBox.style.background = 'linear-gradient(135deg, #f0fdf4 0%, #f7fee7 100%)';
-        elFeedbackBox.style.border = '1.5px solid #86efac';
-        elFeedbackBox.style.boxShadow = '0 4px 14px -2px rgba(34, 197, 94, 0.14)';
-
-        if (elFeedbackIcon) {
-            elFeedbackIcon.style.background = '#dcfce7';
-            elFeedbackIcon.style.color = '#15803d';
-            elFeedbackIcon.innerHTML = '<svg style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
-        }
-
-        elFeedbackTitle.textContent = 'UANG PAS (LUNAS)';
-        elFeedbackTitle.style.color = '#15803d';
-        elFeedbackSub.textContent = 'Pembayaran tepat, tanpa kembalian';
-        elFeedbackSub.style.color = '#16a34a';
+        elFeedbackBox.style.background = '#f0fdf4';
+        elFeedbackBox.style.border = '1.5px solid #bbf7d0';
+        elFeedbackBox.style.boxShadow = '0 2px 8px rgba(34, 197, 94, 0.08)';
         elFeedbackAmount.textContent = 'Rp 0';
-        elFeedbackAmount.style.color = '#15803d';
+        elFeedbackAmount.style.color = '#16a34a';
     } else {
-        // bayarNum < total
+        // bayarNum < total (Kurang -> merah dengan minus)
         var kurang = total - bayarNum;
         elFeedbackBox.style.display = 'flex';
-        elFeedbackBox.style.background = 'linear-gradient(135deg, #fff1f2 0%, #fef2f2 100%)';
-        elFeedbackBox.style.border = '1.5px solid #fca5a5';
-        elFeedbackBox.style.boxShadow = '0 4px 14px -2px rgba(239, 68, 68, 0.12)';
-
-        if (elFeedbackIcon) {
-            elFeedbackIcon.style.background = '#fee2e2';
-            elFeedbackIcon.style.color = '#b91c1c';
-            elFeedbackIcon.innerHTML = '<svg style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>';
-        }
-
-        elFeedbackTitle.textContent = 'UANG KURANG';
-        elFeedbackTitle.style.color = '#b91c1c';
-        elFeedbackSub.textContent = 'Nominal belum mencukupi tagihan';
-        elFeedbackSub.style.color = '#dc2626';
+        elFeedbackBox.style.background = '#fef2f2';
+        elFeedbackBox.style.border = '1.5px solid #fecaca';
+        elFeedbackBox.style.boxShadow = '0 2px 8px rgba(239, 68, 68, 0.08)';
         elFeedbackAmount.textContent = '- ' + window.formatAppCurrency(kurang);
-        elFeedbackAmount.style.color = '#b91c1c';
+        elFeedbackAmount.style.color = '#dc2626';
     }
 };
 

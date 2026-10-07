@@ -160,8 +160,8 @@
 
                         <!-- Quick Denomination Chips -->
                         <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;" id="posQuickCashGroup">
-                            <button type="button" onclick="window.posQuickCash('pas')" class="pos-chip-btn" id="btnChipPas" style="flex: 1.2; min-width: 85px; padding: 7px 10px; font-size: 11.5px; font-weight: 800; border-radius: 8px; border: 1.5px solid #818cf8; background: linear-gradient(135deg, #eef2ff 0%, #ede9fe 100%); color: #4338ca; cursor: pointer; transition: all 0.15s ease; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
-                                <span>⚡</span> Uang Pas
+                            <button type="button" onclick="window.posQuickCash('pas')" class="pos-chip-btn" id="btnChipPas" style="flex: 1.2; min-width: 85px; padding: 7px 10px; font-size: 11.5px; font-weight: 800; border-radius: 8px; border: 1.5px solid #818cf8; background: linear-gradient(135deg, #eef2ff 0%, #ede9fe 100%); color: #4338ca; cursor: pointer; transition: all 0.15s ease; display: inline-flex; align-items: center; justify-content: center;">
+                                Uang Pas
                             </button>
                             <button type="button" onclick="window.posQuickCash(10000)" class="pos-chip-btn" style="flex: 1; min-width: 58px; padding: 7px 8px; font-size: 11.5px; font-weight: 700; border-radius: 8px; border: 1.5px solid #e2e8f0; background: #ffffff; color: #334155; cursor: pointer; transition: all 0.15s ease;">10.000</button>
                             <button type="button" onclick="window.posQuickCash(20000)" class="pos-chip-btn" style="flex: 1; min-width: 58px; padding: 7px 8px; font-size: 11.5px; font-weight: 700; border-radius: 8px; border: 1.5px solid #e2e8f0; background: #ffffff; color: #334155; cursor: pointer; transition: all 0.15s ease;">20.000</button>
@@ -169,16 +169,9 @@
                             <button type="button" onclick="window.posQuickCash(100000)" class="pos-chip-btn" style="flex: 1; min-width: 58px; padding: 7px 8px; font-size: 11.5px; font-weight: 700; border-radius: 8px; border: 1.5px solid #e2e8f0; background: #ffffff; color: #334155; cursor: pointer; transition: all 0.15s ease;">100.000</button>
                         </div>
 
-                        <!-- Feedback Banner Card (Kembalian / Uang Pas / Kurang) -->
-                        <div id="posKembalianFeedbackBox" style="display: none; padding: 12px 16px; border-radius: 12px; margin-bottom: 12px; align-items: center; justify-content: space-between; transition: all 0.2s ease;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div id="posFeedbackIconCircle" style="width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0;"></div>
-                                <div>
-                                    <div id="posFeedbackTitle" style="font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.6px; line-height: 1.2;"></div>
-                                    <div id="posFeedbackSub" style="font-size: 11px; margin-top: 2px;"></div>
-                                </div>
-                            </div>
-                            <div id="posFeedbackAmount" style="font-size: 22px; font-weight: 900; letter-spacing: -0.5px; line-height: 1;"></div>
+                        <!-- Direct Resulting Amount Display (Kembalian / Minus Kurang) -->
+                        <div id="posKembalianFeedbackBox" style="display: none; padding: 12px 16px; border-radius: 12px; margin-bottom: 12px; align-items: center; justify-content: center; text-align: center; transition: all 0.2s ease;">
+                            <span id="posFeedbackAmount" style="font-size: 24px; font-weight: 900; letter-spacing: -0.5px; line-height: 1;"></span>
                         </div>
 
                         <!-- Tabungan Pelanggan Switch Card -->
