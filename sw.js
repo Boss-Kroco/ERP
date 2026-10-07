@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mafaza-erp-v1';
+const CACHE_NAME = 'mafaza-erp-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

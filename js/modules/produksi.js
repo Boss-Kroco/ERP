@@ -229,25 +229,29 @@ window.hapusHppBahan = function(idx) {
 };
 
 window.kalkulasiTotalHpp = function() {
-    var totalBahan = parseFloat(document.getElementById('lblHppTotalBahan').dataset.val || 0);
+    var lblTotalBahan = document.getElementById('lblHppTotalBahan');
+    var totalBahan = lblTotalBahan ? parseFloat(lblTotalBahan.dataset.val || 0) : 0;
     
-    var bTk = parseFloat(document.getElementById('hppBiayaTk').value) || 0;
-    var bGas = parseFloat(document.getElementById('hppBiayaGas').value) || 0;
-    var bListrik = parseFloat(document.getElementById('hppBiayaListrik').value) || 0;
-    var bKemasan = parseFloat(document.getElementById('hppBiayaKemasan').value) || 0;
-    var bOverhead = parseFloat(document.getElementById('hppBiayaOverhead').value) || 0;
-    var bLain = parseFloat(document.getElementById('hppBiayaLain').value) || 0;
+    var bTk = parseFloat((document.getElementById('hppBiayaTk') || {}).value) || 0;
+    var bGas = parseFloat((document.getElementById('hppBiayaGas') || {}).value) || 0;
+    var bListrik = parseFloat((document.getElementById('hppBiayaListrik') || {}).value) || 0;
+    var bKemasan = parseFloat((document.getElementById('hppBiayaKemasan') || {}).value) || 0;
+    var bOverhead = parseFloat((document.getElementById('hppBiayaOverhead') || {}).value) || 0;
+    var bLain = parseFloat((document.getElementById('hppBiayaLain') || {}).value) || 0;
     
     var totalProduksi = bTk + bGas + bListrik + bKemasan + bOverhead + bLain;
-    document.getElementById('lblHppTotalProduksi').textContent = window.formatAppCurrency(totalProduksi);
+    var lblTotalProd = document.getElementById('lblHppTotalProduksi');
+    if (lblTotalProd) lblTotalProd.textContent = window.formatAppCurrency(totalProduksi);
     
     var grandTotal = totalBahan + totalProduksi;
-    document.getElementById('lblHppGrandTotal').textContent = window.formatAppCurrency(grandTotal);
+    var lblGrandTotal = document.getElementById('lblHppGrandTotal');
+    if (lblGrandTotal) lblGrandTotal.textContent = window.formatAppCurrency(grandTotal);
     
-    var jmlProd = parseFloat(document.getElementById('hppJmlProduksi').value) || 1;
+    var jmlProd = parseFloat((document.getElementById('hppJmlProduksi') || {}).value) || 1;
     var hppItem = grandTotal / jmlProd;
     
-    document.getElementById('lblHppPerItem').textContent = window.formatAppCurrency(hppItem);
+    var lblPerItem = document.getElementById('lblHppPerItem');
+    if (lblPerItem) lblPerItem.textContent = window.formatAppCurrency(hppItem);
     
     window.tempHppResult = {
         totalBahan: totalBahan,
