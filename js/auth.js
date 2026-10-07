@@ -134,7 +134,12 @@ window.navigatePage = function (viewId) {
     if (viewId === 'dashboard' && typeof window.loadDashboardData === 'function') window.loadDashboardData();
     if (viewId === 'pos' && typeof window.populateProductDropdowns === 'function') window.populateProductDropdowns();
     if (viewId === 'produk' && typeof window.fetchMasterProducts === 'function') window.fetchMasterProducts();
-    if (viewId === 'produksi' && typeof window.fetchProductionBatches === 'function') window.fetchProductionBatches();
+    if (viewId === 'produksi') {
+        if (typeof window.fetchMasterProducts === 'function') window.fetchMasterProducts();
+        if (typeof window.renderDaftarHPP === 'function') window.renderDaftarHPP();
+        if (typeof window.initTambahHpp === 'function') window.initTambahHpp();
+        if (typeof window.fetchProductionBatches === 'function') window.fetchProductionBatches();
+    }
     if (viewId === 'tenagakerja' && typeof window.fetchTenagaKerjaLogs === 'function') window.fetchTenagaKerjaLogs();
     if (viewId === 'agenda' && typeof window.initAgendaPage === 'function') window.initAgendaPage();
     if (viewId === 'audit' && typeof window.fetchAuditLogs === 'function') window.fetchAuditLogs();

@@ -382,16 +382,22 @@
                 var sMap = {};
                 if (sList) sList.forEach(function (s) { sMap[s.produk_id] = s; });
 
+                var wholesaleMap = {};
+                try {
+                    wholesaleMap = JSON.parse(localStorage.getItem('bos_kroco_grosir_map') || '{}');
+                } catch (e) {}
+
                 var combined = (pList || []).map(function (p) {
                     var s = sMap[p.produk_id] || {};
+                    var w = wholesaleMap[p.produk_id] || {};
                     return {
                         produkId: p.produk_id,
                         namaProduk: p.nama_produk,
                         satuan: p.satuan,
-                        hargaBeliHPP: p.harga_beli_hpp,
-                        hargaJual: p.harga_jual,
-                        minQtyGrosir: p.min_qty_grosir,
-                        hargaGrosir: p.harga_grosir,
+                        hargaBeliHPP: Number(p.harga_beli_hpp || 0),
+                        hargaJual: Number(p.harga_jual || 0),
+                        minQtyGrosir: p.min_qty_grosir !== undefined ? p.min_qty_grosir : (w.minQtyGrosir || 0),
+                        hargaGrosir: p.harga_grosir !== undefined ? p.harga_grosir : (w.hargaGrosir || 0),
                         stokGudang: s.gudang_produksi || 0,
                         stokEtalase: s.etalase_toko || 0,
                         status: p.status
@@ -405,17 +411,42 @@
                 var uSession = args[1] || window.currentUser;
                 var newId = 'PRD-' + ('000' + Math.floor(Math.random() * 900 + 100)).slice(-3);
 
-                await sb.from('produk').insert([{
+                var baseInsert = {
                     produk_id: newId,
                     nama_produk: pObj.namaProduk,
                     satuan: pObj.satuan || 'Pcs',
                     harga_beli_hpp: Number(pObj.hargaBeliHPP || 0),
                     harga_jual: Number(pObj.hargaJual || 0),
-                    min_qty_grosir: Number(pObj.minQtyGrosir || 0),
-                    harga_grosir: Number(pObj.hargaGrosir || 0),
                     target_produksi: 100,
                     status: 'Aktif'
-                }]);
+                };
+
+                // Cache wholesale info locally
+                if (pObj.minQtyGrosir || pObj.hargaGrosir) {
+                    try {
+                        var wMap = JSON.parse(localStorage.getItem('bos_kroco_grosir_map') || '{}');
+                        wMap[newId] = { minQtyGrosir: Number(pObj.minQtyGrosir || 0), hargaGrosir: Number(pObj.hargaGrosir || 0) };
+                        localStorage.setItem('bos_kroco_grosir_map', JSON.stringify(wMap));
+                    } catch (e) {}
+                }
+
+                var fullInsert = Object.assign({}, baseInsert, {
+                    min_qty_grosir: Number(pObj.minQtyGrosir || 0),
+                    harga_grosir: Number(pObj.hargaGrosir || 0)
+                });
+
+                var insRes = await sb.from('produk').insert([fullInsert]);
+                if (insRes.error) {
+                    var errCode = insRes.error.code;
+                    var errMsg = insRes.error.message || '';
+                    if (errCode === 'PGRST204' || errMsg.includes('min_qty_grosir') || errMsg.includes('harga_grosir')) {
+                        console.warn('[Supabase] Kolom grosir belum ada di Supabase, fallback menyimpan tanpa kolom grosir.');
+                        var retryRes = await sb.from('produk').insert([baseInsert]);
+                        if (retryRes.error) throw retryRes.error;
+                    } else {
+                        throw insRes.error;
+                    }
+                }
 
                 await sb.from('stok_lokasi').insert([{
                     produk_id: newId,
@@ -878,18 +909,43 @@
 
                 var { data: oldProd } = await sb.from('produk').select('*').eq('produk_id', pid).maybeSingle();
 
-                var updates = {
+                var baseUpdates = {
                     nama_produk: pProd.namaProduk,
                     satuan: pProd.satuan || 'Pcs',
-                    harga_beli_hpp: Number(pProd.hargaBeliHPP || 0),
-                    harga_jual: Number(pProd.hargaJual || 0),
-                    min_qty_grosir: Number(pProd.minQtyGrosir || 0),
-                    harga_grosir: Number(pProd.hargaGrosir || 0),
+                    harga_beli_hpp: Number(pProd.hargaBeliHPP !== undefined ? pProd.hargaBeliHPP : (oldProd ? oldProd.harga_beli_hpp : 0)),
+                    harga_jual: Number(pProd.hargaJual !== undefined ? pProd.hargaJual : (oldProd ? oldProd.harga_jual : 0)),
                     status: pProd.status || 'Aktif'
                 };
 
-                var { error } = await sb.from('produk').update(updates).eq('produk_id', pid);
-                if (error) throw error;
+                // Cache wholesale info locally
+                if (pProd.minQtyGrosir !== undefined || pProd.hargaGrosir !== undefined) {
+                    try {
+                        var wMap = JSON.parse(localStorage.getItem('bos_kroco_grosir_map') || '{}');
+                        wMap[pid] = {
+                            minQtyGrosir: Number(pProd.minQtyGrosir || 0),
+                            hargaGrosir: Number(pProd.hargaGrosir || 0)
+                        };
+                        localStorage.setItem('bos_kroco_grosir_map', JSON.stringify(wMap));
+                    } catch (e) {}
+                }
+
+                var fullUpdates = Object.assign({}, baseUpdates, {
+                    min_qty_grosir: Number(pProd.minQtyGrosir || 0),
+                    harga_grosir: Number(pProd.hargaGrosir || 0)
+                });
+
+                var upRes = await sb.from('produk').update(fullUpdates).eq('produk_id', pid);
+                if (upRes.error) {
+                    var errCode = upRes.error.code;
+                    var errMsg = upRes.error.message || '';
+                    if (errCode === 'PGRST204' || errMsg.includes('min_qty_grosir') || errMsg.includes('harga_grosir')) {
+                        console.warn('[Supabase] Kolom grosir belum ada di Supabase, fallback menyimpan tanpa kolom grosir.');
+                        var retryRes = await sb.from('produk').update(baseUpdates).eq('produk_id', pid);
+                        if (retryRes.error) throw retryRes.error;
+                    } else {
+                        throw upRes.error;
+                    }
+                }
 
                 if (pProd.namaProduk && (!oldProd || oldProd.nama_produk !== pProd.namaProduk)) {
                     try {
@@ -906,14 +962,14 @@
                         modul: 'MasterProduk',
                         aksi: 'EDIT_PRODUK',
                         nilai_lama: oldProd ? ('HPP: Rp ' + oldProd.harga_beli_hpp + ' | Jual: Rp ' + oldProd.harga_jual) : '-',
-                        nilai_baru: 'HPP: Rp ' + updates.harga_beli_hpp + ' | Jual: Rp ' + updates.harga_jual,
-                        keterangan: 'Pembaruan produk: ' + updates.nama_produk
+                        nilai_baru: 'HPP: Rp ' + baseUpdates.harga_beli_hpp + ' | Jual: Rp ' + baseUpdates.harga_jual,
+                        keterangan: 'Pembaruan produk: ' + baseUpdates.nama_produk
                     }]);
                 } catch (e) {
                     console.warn('[Audit Log Insert Warning]', e);
                 }
 
-                return { success: true, message: 'Produk ' + updates.nama_produk + ' berhasil diperbarui.' };
+                return { success: true, message: 'Produk ' + baseUpdates.nama_produk + ' berhasil diperbarui.' };
             }
 
             case 'apiGetProductionBatches': {

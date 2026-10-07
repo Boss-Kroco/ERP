@@ -26,62 +26,84 @@ var catalogProducts = [];
 function fetchMasterProducts() {
     runBackend('apiGetProductsPaginated', [{ page: 1, limit: 30 }], function (res) {
         if (res.success) {
-            catalogProducts = res.data;
+            catalogProducts = res.data || [];
+            window.catalogProducts = catalogProducts;
             renderMasterProdukTable();
             populateProductDropdowns();
+            if (typeof window.renderDaftarHPP === 'function') {
+                window.renderDaftarHPP();
+            }
         }
     });
 }
 
 function renderMasterProdukTable() {
-            var tbody = document.getElementById('tblMasterProduk');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-            catalogProducts.forEach(function (p) {
-                var tr = document.createElement('tr');
-                // escapeHtml() pada semua field data produk
-                tr.innerHTML = '<td><b>' + escapeHtml(p.produkId) + '</b></td>'
-                    + '<td>' + escapeHtml(p.namaProduk) + '</td>'
-                    + '<td>' + escapeHtml(p.satuan) + '</td>'
-                    + '<td>' + window.formatAppCurrency(p.hargaBeliHPP) + '</td>'
-                    + '<td><b>' + window.formatAppCurrency(p.hargaJual) + '</b></td>'
-                    + '<td><span style="color:var(--emerald); font-weight:800;">' + escapeHtml(String(p.stokEtalase)) + '</span></td>'
-                    + '<td>' + escapeHtml(String(p.stokGudang)) + '</td>'
-                    + '<td><span class="prog-status-pill ' + (p.status === 'Aktif' ? 'green' : 'coral') + '">' + escapeHtml(p.status) + '</span></td>'
-                    + '<td style="text-align: center; white-space: nowrap;">'
-                    + '<button class="btn-pill-action btn-pill-secondary" style="padding: 2px 8px;" onclick="openModalEditProduk(\'' + escapeHtml(p.produkId) + '\')" title="Edit Produk">'
-                    + '<svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Edit'
-                    + '</button>'
-                    + '</td>';
-                tbody.appendChild(tr);
-            });
-        }
+    var tbody = document.getElementById('tblMasterProduk');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    var list = (window.catalogProducts && window.catalogProducts.length) ? window.catalogProducts : (catalogProducts || []);
+    list.forEach(function (p) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td><b>' + escapeHtml(p.produkId) + '</b></td>'
+            + '<td>' + escapeHtml(p.namaProduk) + '</td>'
+            + '<td>' + escapeHtml(p.satuan) + '</td>'
+            + '<td>' + window.formatAppCurrency(p.hargaBeliHPP) + '</td>'
+            + '<td><b>' + window.formatAppCurrency(p.hargaJual) + '</b></td>'
+            + '<td><span style="color:var(--emerald); font-weight:800;">' + escapeHtml(String(p.stokEtalase || 0)) + '</span></td>'
+            + '<td>' + escapeHtml(String(p.stokGudang || 0)) + '</td>'
+            + '<td><span class="prog-status-pill ' + (p.status === 'Aktif' ? 'green' : 'coral') + '">' + escapeHtml(p.status) + '</span></td>'
+            + '<td style="text-align: center; white-space: nowrap;">'
+            + '<button class="btn-pill-action btn-pill-secondary" style="padding: 2px 8px;" onclick="openModalEditProduk(\'' + escapeHtml(p.produkId) + '\')" title="Edit Produk">'
+            + '<svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Edit'
+            + '</button>'
+            + '</td>';
+        tbody.appendChild(tr);
+    });
+}
 
 function populateProductDropdowns() {
-            var posSelect = document.getElementById('posSelectProduk');
-            var prodSelect = document.getElementById('prodBatchProdukId');
-            var tfSelect = document.getElementById('tfProdukId');
-            var opnameSelect = document.getElementById('opnameProdukId');
+    var posSelect = document.getElementById('posSelectProduk');
+    var prodSelect = document.getElementById('prodBatchProdukId');
+    var tfSelect = document.getElementById('tfProdukId');
+    var opnameSelect = document.getElementById('opnameProdukId');
+    var hppSelect = document.getElementById('hppSelProduk');
 
-            var optHtml = '<option value="">-- Pilih Produk --</option>';
-            catalogProducts.forEach(function (p) {
-                var safeNama = escapeHtml(p.namaProduk);
-                var safeId = escapeHtml(p.produkId);
-                var safeSatuan = escapeHtml(p.satuan || 'Pcs');
-                optHtml += '<option value="' + safeId + '" data-nama="' + safeNama + '" data-harga="' + Number(p.hargaJual || 0) + '" data-hpp="' + Number(p.hargaBeliHPP || 0) + '">' + safeNama + ' (Etalase: ' + escapeHtml(String(p.stokEtalase)) + ' ' + safeSatuan + ')</option>';
-            });
+    var currentProds = (window.catalogProducts && window.catalogProducts.length) ? window.catalogProducts : (catalogProducts || []);
+    catalogProducts = currentProds;
+    window.catalogProducts = currentProds;
 
-            if (posSelect) posSelect.innerHTML = optHtml;
-            if (prodSelect) prodSelect.innerHTML = optHtml;
-            if (tfSelect) tfSelect.innerHTML = optHtml;
-            if (opnameSelect) opnameSelect.innerHTML = optHtml;
-            if (typeof window.hitungLiveHppPreview === 'function') {
-                window.hitungLiveHppPreview();
-            }
-            if (typeof window.renderPosProductGrid === 'function') {
-                window.renderPosProductGrid();
-            }
-        }
+    var optHtml = '<option value="">-- Pilih Produk --</option>';
+    currentProds.forEach(function (p) {
+        var safeNama = escapeHtml(p.namaProduk);
+        var safeId = escapeHtml(p.produkId);
+        var safeSatuan = escapeHtml(p.satuan || 'Pcs');
+        optHtml += '<option value="' + safeId + '" data-nama="' + safeNama + '" data-harga="' + Number(p.hargaJual || 0) + '" data-hpp="' + Number(p.hargaBeliHPP || 0) + '">' + safeNama + ' (Etalase: ' + escapeHtml(String(p.stokEtalase || 0)) + ' ' + safeSatuan + ')</option>';
+    });
+
+    if (posSelect) posSelect.innerHTML = optHtml;
+    if (prodSelect) prodSelect.innerHTML = optHtml;
+    if (tfSelect) tfSelect.innerHTML = optHtml;
+    if (opnameSelect) opnameSelect.innerHTML = optHtml;
+
+    if (hppSelect) {
+        var prevVal = hppSelect.value;
+        var hppOptHtml = '<option value="">-- Pilih Produk --</option>';
+        currentProds.forEach(function (p) {
+            var safeNama = escapeHtml(p.namaProduk);
+            var safeId = escapeHtml(p.produkId);
+            hppOptHtml += '<option value="' + safeId + '">' + safeNama + ' (' + safeId + ')</option>';
+        });
+        hppSelect.innerHTML = hppOptHtml;
+        if (prevVal) hppSelect.value = prevVal;
+    }
+
+    if (typeof window.hitungLiveHppPreview === 'function') {
+        window.hitungLiveHppPreview();
+    }
+    if (typeof window.renderPosProductGrid === 'function') {
+        window.renderPosProductGrid();
+    }
+}
 
 function openModalTambahProduk() { document.getElementById('modalTambahProduk').classList.add('active'); }
 
@@ -126,8 +148,10 @@ function submitTambahProduk() {
                 document.getElementById('newProdMinQtyGrosir').value = '';
                 document.getElementById('newProdHargaGrosir').value = '';
 
+                window.catalogProducts = catalogProducts;
                 renderMasterProdukTable();
                 populateProductDropdowns();
+                if (typeof window.renderDaftarHPP === 'function') window.renderDaftarHPP();
             });
         }
 
@@ -202,8 +226,10 @@ function submitEditProduk() {
                     }
                 }
 
+                window.catalogProducts = catalogProducts;
                 renderMasterProdukTable();
                 populateProductDropdowns();
+                if (typeof window.renderDaftarHPP === 'function') window.renderDaftarHPP();
                 closeModalEditProduk();
                 showToast(res.message || 'Produk berhasil diperbarui.', 'success');
             }, function (err) {

@@ -5,11 +5,22 @@
  * ============================================================================
  */
 
-window.hppRincian = window.hppRincian || {};
+window.hppRincian = {};
+try {
+    var storedRincian = localStorage.getItem('bos_kroco_hpp_rincian');
+    if (storedRincian) window.hppRincian = JSON.parse(storedRincian);
+} catch (e) {}
 
-window.hppRiwayatData = [
-    { tanggal: '2026-09-01', produk: 'Kue Kacang Original', hppLama: 180, hppBaru: 192.46, penyebab: 'Kenaikan harga kacang' }
-];
+window.hppRiwayatData = [];
+try {
+    var storedRiwayat = localStorage.getItem('bos_kroco_hpp_riwayat');
+    if (storedRiwayat) window.hppRiwayatData = JSON.parse(storedRiwayat);
+} catch (e) {}
+if (!window.hppRiwayatData || !window.hppRiwayatData.length) {
+    window.hppRiwayatData = [
+        { tanggal: '2026-09-01', produk: 'Kue Kacang Original', hppLama: 180, hppBaru: 192.46, penyebab: 'Kenaikan harga kacang' }
+    ];
+}
 
 window.tempBahanBaku = [
     { nama: 'Kacang Tanah', qty: 1, harga: 25000 }
@@ -115,12 +126,17 @@ window.renderRiwayatHPP = function() {
 
 window.initTambahHpp = function() {
     var sel = document.getElementById('hppSelProduk');
-    if(sel && sel.options.length === 0) {
-        var optHtml = '<option value="">-- Pilih Produk --</option>';
-        (window.catalogProducts || []).forEach(function(p) {
-            optHtml += '<option value="' + p.produkId + '">' + p.namaProduk + ' (' + p.produkId + ')</option>';
-        });
-        sel.innerHTML = optHtml;
+    var currentProds = (window.catalogProducts && window.catalogProducts.length) ? window.catalogProducts : (window.catalogProducts || []);
+    if(sel) {
+        var curVal = sel.value;
+        if(sel.options.length <= 1 || sel.options.length !== (currentProds.length + 1)) {
+            var optHtml = '<option value="">-- Pilih Produk --</option>';
+            currentProds.forEach(function(p) {
+                optHtml += '<option value="' + p.produkId + '">' + p.namaProduk + ' (' + p.produkId + ')</option>';
+            });
+            sel.innerHTML = optHtml;
+            if(curVal) sel.value = curVal;
+        }
     }
     
     // Auto-fill Harga Jual and Restore saved recipe if selected
@@ -243,7 +259,12 @@ window.kalkulasiTotalHpp = function() {
 };
 
 window.simpanHppBaru = function() {
-    var selId = document.getElementById('hppSelProduk').value;
+    var sel = document.getElementById('hppSelProduk');
+    if (!sel || !sel.value) {
+        if(window.showToast) window.showToast('Pilih produk terlebih dahulu!', 'error');
+        return;
+    }
+    var selId = sel.value;
     var prd = (window.catalogProducts || []).find(function(p) { return p.produkId === selId; });
     
     if(!prd) {
@@ -251,7 +272,7 @@ window.simpanHppBaru = function() {
         return;
     }
     
-    var oldHpp = prd.hargaBeliHPP;
+    var oldHpp = prd.hargaBeliHPP || 0;
     var res = window.tempHppResult;
     
     if (!res || res.hppItem === undefined) {
@@ -268,12 +289,7 @@ window.simpanHppBaru = function() {
     var hargaGrosirInput = document.getElementById('hppHargaGrosir');
     var hargaGrosirValue = (hargaGrosirInput && hargaGrosirInput.value !== '') ? parseFloat(hargaGrosirInput.value) : (prd.hargaGrosir || 0);
 
-    // Update locally
-    prd.hargaBeliHPP = res.hppItem || 0;
-    prd.hargaJual = hargaJualValue || 0;
-    prd.minQtyGrosir = minGrosirValue;
-    prd.hargaGrosir = hargaGrosirValue;
-    
+    // Save recipe details in memory and localStorage
     window.hppRincian = window.hppRincian || {};
     window.hppRincian[selId] = {
         bahan: res.totalBahan / res.jmlProd,
@@ -283,7 +299,6 @@ window.simpanHppBaru = function() {
         kemasan: res.bKemasan / res.jmlProd,
         overhead: res.bOverhead / res.jmlProd,
         lainnya: res.bLain / res.jmlProd,
-        // Save form state to prevent data loss
         bahanList: JSON.parse(JSON.stringify(window.tempBahanBaku)),
         rawBiaya: {
             tk: res.bTk,
@@ -295,49 +310,81 @@ window.simpanHppBaru = function() {
             jmlProd: res.jmlProd
         }
     };
+    try {
+        localStorage.setItem('bos_kroco_hpp_rincian', JSON.stringify(window.hppRincian));
+    } catch(e) {}
     
     var payload = {
         produkId: prd.produkId,
         namaProduk: prd.namaProduk,
         satuan: prd.satuan,
-        hargaBeliHPP: prd.hargaBeliHPP,
-        hargaJual: prd.hargaJual,
-        minQtyGrosir: prd.minQtyGrosir,
-        hargaGrosir: prd.hargaGrosir,
+        hargaBeliHPP: res.hppItem || 0,
+        hargaJual: hargaJualValue || 0,
+        minQtyGrosir: minGrosirValue,
+        hargaGrosir: hargaGrosirValue,
         status: prd.status
     };
-    
+
+    if (window.showToast) window.showToast('Menyimpan HPP produk ke database...', 'info');
+
     if (window.runBackend) {
         window.runBackend('apiUpdateProduct', [payload, window.currentUser], function(apiRes) {
+            // Update local memory
+            prd.hargaBeliHPP = res.hppItem || 0;
+            prd.hargaJual = hargaJualValue || 0;
+            prd.minQtyGrosir = minGrosirValue;
+            prd.hargaGrosir = hargaGrosirValue;
+
+            if (window.catalogProducts) {
+                var cPrd = window.catalogProducts.find(function(p) { return p.produkId === selId; });
+                if (cPrd) {
+                    cPrd.hargaBeliHPP = prd.hargaBeliHPP;
+                    cPrd.hargaJual = prd.hargaJual;
+                    cPrd.minQtyGrosir = prd.minQtyGrosir;
+                    cPrd.hargaGrosir = prd.hargaGrosir;
+                }
+            }
+
+            var today = new Date().toISOString().split('T')[0];
+            window.hppRiwayatData = window.hppRiwayatData || [];
+            window.hppRiwayatData.unshift({
+                tanggal: today,
+                produk: prd.namaProduk,
+                hppLama: oldHpp,
+                hppBaru: res.hppItem,
+                penyebab: 'Kalkulasi ulang via form HPP'
+            });
+            try {
+                localStorage.setItem('bos_kroco_hpp_riwayat', JSON.stringify(window.hppRiwayatData));
+            } catch(e) {}
+
             if(window.populateProductDropdowns) window.populateProductDropdowns();
             if(window.renderMasterProdukTable) window.renderMasterProdukTable();
+            if(window.renderDaftarHPP) window.renderDaftarHPP();
+            if(window.showToast) window.showToast('HPP dan Harga Jual berhasil disimpan ke database!', 'success');
+            window.switchHppTab('daftar');
+        }, function(err) {
+            if(window.showToast) window.showToast('Gagal menyimpan HPP: ' + (err.message || 'Error koneksi database'), 'error');
         });
     }
-    
-    var today = new Date().toISOString().split('T')[0];
-    window.hppRiwayatData.unshift({
-        tanggal: today,
-        produk: prd.namaProduk,
-        hppLama: oldHpp,
-        hppBaru: res.hppItem,
-        penyebab: 'Kalkulasi ulang via form HPP'
-    });
-    
-    if(window.showToast) window.showToast('HPP dan Harga Jual berhasil diperbarui!', 'success');
-    window.switchHppTab('daftar');
 };
 
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
-        window.renderDaftarHPP();
+        if(window.renderDaftarHPP) window.renderDaftarHPP();
     }, 500);
 });
 
 window.simpanProdukBaruHpp = function() {
-    var nama = document.getElementById('newProdNama').value.trim();
-    var sku = document.getElementById('newProdSku').value.trim();
-    var satuan = document.getElementById('newProdSatuan').value.trim();
-    var harga = parseFloat(document.getElementById('newProdHarga').value) || 0;
+    var namaEl = document.getElementById('newProdNamaHpp') || document.getElementById('newProdNama');
+    var skuEl = document.getElementById('newProdSkuHpp') || document.getElementById('newProdSku');
+    var satuanEl = document.getElementById('newProdSatuanHpp') || document.getElementById('newProdSatuan');
+    var hargaEl = document.getElementById('newProdHargaHpp') || document.getElementById('newProdHarga');
+
+    var nama = namaEl ? namaEl.value.trim() : '';
+    var sku = skuEl ? skuEl.value.trim() : '';
+    var satuan = satuanEl ? satuanEl.value.trim() : 'Pcs';
+    var harga = hargaEl ? (parseFloat(hargaEl.value) || 0) : 0;
 
     if(!nama) {
         if(window.showToast) window.showToast('Nama produk harus diisi!', 'error');
@@ -361,9 +408,7 @@ window.simpanProdukBaruHpp = function() {
                 return;
             }
             
-            // Optimistic update
-            if (!window.catalogProducts) window.catalogProducts = [];
-            window.catalogProducts.unshift({
+            var newProdItem = {
                 produkId: res.produkId,
                 namaProduk: payload.namaProduk,
                 satuan: payload.satuan,
@@ -372,30 +417,34 @@ window.simpanProdukBaruHpp = function() {
                 stokEtalase: 0,
                 stokGudang: 0,
                 status: 'Aktif'
-            });
+            };
+
+            if (!window.catalogProducts) window.catalogProducts = [];
+            window.catalogProducts.unshift(newProdItem);
             
             if(window.renderMasterProdukTable) window.renderMasterProdukTable();
             if(window.populateProductDropdowns) window.populateProductDropdowns();
             
-            // Clear dropdown to force repopulation next time 'Tambah' tab is opened
+            // Set newly created product in dropdown and init
             var sel = document.getElementById('hppSelProduk');
             if(sel) {
-                sel.innerHTML = '';
                 if(typeof window.initTambahHpp === 'function') window.initTambahHpp();
-                // Select the newly created product
                 sel.value = res.produkId;
-                if(typeof window.initTambahHpp === 'function') window.initTambahHpp(); // Trigger auto-fill for the new product
+                if(typeof window.initTambahHpp === 'function') window.initTambahHpp();
             }
             
             window.renderDaftarHPP();
             
             // Reset Form
-            document.getElementById('newProdNama').value = '';
-            document.getElementById('newProdSku').value = '';
-            document.getElementById('newProdHarga').value = '';
+            if(namaEl) namaEl.value = '';
+            if(skuEl) skuEl.value = '';
+            if(hargaEl) hargaEl.value = '';
             
-            document.getElementById('modalTambahJenisHpp').style.display = 'none';
+            var modal = document.getElementById('modalTambahJenisHpp');
+            if(modal) modal.style.display = 'none';
             if(window.showToast) window.showToast('Produk Makanan Baru berhasil ditambahkan ke Master Produk!', 'success');
+        }, function(err) {
+            if(window.showToast) window.showToast('Gagal menyimpan produk: ' + (err.message || 'Error koneksi'), 'error');
         });
     }
 };
