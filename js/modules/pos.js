@@ -137,6 +137,9 @@ function renderCart() {
     if (elTotal) elTotal.textContent = window.formatAppCurrency(net);
     
     window.currentPosTotalNet = net;
+    if (typeof window.renderPosQuickCashChips === 'function') {
+        window.renderPosQuickCashChips(net);
+    }
     if (typeof window.updatePosKembalian === 'function') {
         window.updatePosKembalian();
     }
@@ -558,11 +561,65 @@ window.posQuickCash = function(val) {
     window.updatePosKembalian();
 };
 
+window.renderPosQuickCashChips = function(total) {
+    var group = document.getElementById('posQuickCashGroup');
+    if (!group) return;
+    
+    total = total || window.currentPosTotalNet || 0;
+    var chips = [];
+    
+    if (total <= 0) {
+        chips = [10000, 20000, 50000, 100000];
+    } else {
+        // Rekomendasi pembulatan terdekat
+        var r10k = Math.ceil(total / 10000) * 10000;
+        if (r10k > total && chips.indexOf(r10k) === -1) {
+            chips.push(r10k);
+        }
+        var r20k = Math.ceil(total / 20000) * 20000;
+        if (r20k > total && chips.indexOf(r20k) === -1) {
+            chips.push(r20k);
+        }
+        var r50k = Math.ceil(total / 50000) * 50000;
+        if (r50k > total && chips.indexOf(r50k) === -1) {
+            chips.push(r50k);
+        }
+        var r100k = Math.ceil(total / 100000) * 100000;
+        if (r100k > total && chips.indexOf(r100k) === -1) {
+            chips.push(r100k);
+        }
+        
+        // Standar pecahan uang kertas Indonesia
+        var standardNotes = [20000, 50000, 100000, 200000];
+        for (var i = 0; i < standardNotes.length; i++) {
+            var note = standardNotes[i];
+            if (note > total && chips.indexOf(note) === -1 && chips.length < 4) {
+                chips.push(note);
+            }
+        }
+        
+        chips.sort(function(a, b) { return a - b; });
+        chips = chips.slice(0, 4);
+    }
+    
+    var html = '<button type="button" onclick="window.posQuickCash(\'pas\')" class="pos-chip-btn" id="btnChipPas" style="flex: 1.2; min-width: 85px; padding: 7px 10px; font-size: 11.5px; font-weight: 800; border-radius: 8px; border: 1.5px solid #818cf8; background: linear-gradient(135deg, #eef2ff 0%, #ede9fe 100%); color: #4338ca; cursor: pointer; transition: all 0.15s ease; display: inline-flex; align-items: center; justify-content: center;">Uang Pas</button>';
+    
+    chips.forEach(function(val) {
+        var label = val.toLocaleString('id-ID');
+        html += '<button type="button" onclick="window.posQuickCash(' + val + ')" class="pos-chip-btn" data-val="' + val + '" style="flex: 1; min-width: 58px; padding: 7px 8px; font-size: 11.5px; font-weight: 700; border-radius: 8px; border: 1.5px solid #e2e8f0; background: #ffffff; color: #334155; cursor: pointer; transition: all 0.15s ease;">' + label + '</button>';
+    });
+    
+    group.innerHTML = html;
+};
+
 window.updatePosKembalian = function() {
     var elUangBayar = document.getElementById('posUangBayar');
     var elReset = document.getElementById('posBtnResetUang');
     var elFeedbackBox = document.getElementById('posKembalianFeedbackBox');
     var elFeedbackAmount = document.getElementById('posFeedbackAmount');
+    var elSubmitBtn = document.getElementById('posBtnSubmit');
+    var elMetode = document.getElementById('posPaymentMethod');
+    var isTunai = !elMetode || String(elMetode.value).toLowerCase() === 'tunai';
 
     var total = window.currentPosTotalNet || 0;
     var rawDigits = elUangBayar ? elUangBayar.value.replace(/\D/g, '') : '';
@@ -583,8 +640,38 @@ window.updatePosKembalian = function() {
                 chip.style.borderColor = '#818cf8';
                 chip.style.boxShadow = 'none';
             }
+        } else {
+            var chipVal = parseFloat(chip.getAttribute('data-val')) || 0;
+            if (bayarNum > 0 && bayarNum === chipVal) {
+                chip.style.borderColor = 'var(--violet-main)';
+                chip.style.background = '#f5f3ff';
+                chip.style.color = 'var(--violet-main)';
+            } else {
+                chip.style.borderColor = '#e2e8f0';
+                chip.style.background = '#ffffff';
+                chip.style.color = '#334155';
+            }
         }
     });
+
+    // Proteksi Tombol Submit jika uang tunai kurang
+    if (elSubmitBtn) {
+        if (isTunai && rawDigits && bayarNum < total) {
+            elSubmitBtn.disabled = true;
+            elSubmitBtn.style.opacity = '0.55';
+            elSubmitBtn.style.cursor = 'not-allowed';
+            elSubmitBtn.style.background = '#94a3b8';
+            elSubmitBtn.style.boxShadow = 'none';
+            elSubmitBtn.innerHTML = '<svg style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg> Uang Belum Cukup';
+        } else {
+            elSubmitBtn.disabled = false;
+            elSubmitBtn.style.opacity = '1';
+            elSubmitBtn.style.cursor = 'pointer';
+            elSubmitBtn.style.background = 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)';
+            elSubmitBtn.style.boxShadow = '0 8px 24px -4px rgba(79, 70, 229, 0.35)';
+            elSubmitBtn.innerHTML = '<svg style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2;" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Proses Pembayaran';
+        }
+    }
 
     if (!elFeedbackBox || !elFeedbackAmount) return;
 
@@ -624,6 +711,51 @@ window.updatePosKembalian = function() {
         elFeedbackAmount.style.color = '#dc2626';
     }
 };
+
+window.posHandleEnterSubmit = function() {
+    var elUangBayar = document.getElementById('posUangBayar');
+    var total = window.currentPosTotalNet || 0;
+    var rawDigits = elUangBayar ? elUangBayar.value.replace(/\D/g, '') : '';
+    var bayarNum = rawDigits ? (parseInt(rawDigits, 10) || 0) : 0;
+    var elMetode = document.getElementById('posPaymentMethod');
+    var isTunai = !elMetode || String(elMetode.value).toLowerCase() === 'tunai';
+
+    if (isTunai && rawDigits && bayarNum < total) {
+        if (typeof showToast === 'function') {
+            showToast('Uang yang dimasukkan belum cukup!', 'warning');
+        }
+        return;
+    }
+    submitTransaksiPOS();
+};
+
+// Global Hotkeys for POS
+if (!window._posHotkeysAttached) {
+    window._posHotkeysAttached = true;
+    document.addEventListener('keydown', function(e) {
+        var posView = document.getElementById('view-pos');
+        if (!posView || posView.style.display === 'none') return;
+        
+        // F2: Fokus langsung ke input uang diterima
+        if (e.key === 'F2') {
+            e.preventDefault();
+            var inputUang = document.getElementById('posUangBayar');
+            if (inputUang) {
+                inputUang.focus();
+                inputUang.select();
+            }
+            return;
+        }
+        
+        // Escape: Blur input uang
+        if (e.key === 'Escape') {
+            var inputUang2 = document.getElementById('posUangBayar');
+            if (inputUang2 && document.activeElement === inputUang2) {
+                inputUang2.blur();
+            }
+        }
+    });
+}
 
 window.togglePosPaymentInputs = function() {
     var elMetode = document.getElementById('posPaymentMethod');
