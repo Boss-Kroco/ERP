@@ -207,7 +207,7 @@ function submitTransaksiPOS() {
     var custName = (custSelect && custSelect.selectedIndex >= 0) ? custSelect.options[custSelect.selectedIndex].text : 'Pelanggan Umum Kasir';
 
     var elUangBayar = document.getElementById('posUangBayar');
-    var uangBayar = elUangBayar ? (parseFloat(elUangBayar.value) || 0) : 0;
+    var uangBayar = elUangBayar ? (parseFloat(String(elUangBayar.value).replace(/\D/g, '')) || 0) : 0;
     if (isTunai && uangBayar < totalNet && uangBayar > 0) {
         return showToast('Jumlah uang bayar kurang dari total!', 'error');
     }
@@ -527,62 +527,130 @@ window.submitTransaksiPOS = submitTransaksiPOS;
 window.formatDateNow = formatDateNow;
 window.cetakStrukTerakhir = cetakStrukTerakhir;
 
+window.handlePosUangInput = function(inputEl) {
+    if (!inputEl) return;
+    var raw = inputEl.value.replace(/\D/g, '');
+    if (!raw) {
+        inputEl.value = '';
+    } else {
+        var num = parseInt(raw, 10);
+        inputEl.value = num.toLocaleString('id-ID');
+    }
+    window.updatePosKembalian();
+};
+
+window.posClearUangBayar = function() {
+    var el = document.getElementById('posUangBayar');
+    if (el) el.value = '';
+    window.updatePosKembalian();
+};
+
+window.posQuickCash = function(val) {
+    var elUangBayar = document.getElementById('posUangBayar');
+    if (!elUangBayar) return;
+    if (val === 'pas') {
+        var net = window.currentPosTotalNet || 0;
+        elUangBayar.value = net > 0 ? net.toLocaleString('id-ID') : '';
+    } else {
+        var num = parseFloat(val) || 0;
+        elUangBayar.value = num > 0 ? num.toLocaleString('id-ID') : '';
+    }
+    window.updatePosKembalian();
+};
+
 window.updatePosKembalian = function() {
     var elUangBayar = document.getElementById('posUangBayar');
+    var elReset = document.getElementById('posBtnResetUang');
     var elFeedbackBox = document.getElementById('posKembalianFeedbackBox');
+    var elFeedbackIcon = document.getElementById('posFeedbackIconCircle');
     var elFeedbackTitle = document.getElementById('posFeedbackTitle');
     var elFeedbackSub = document.getElementById('posFeedbackSub');
     var elFeedbackAmount = document.getElementById('posFeedbackAmount');
 
     var total = window.currentPosTotalNet || 0;
-    var rawVal = elUangBayar ? elUangBayar.value.trim() : '';
+    var rawDigits = elUangBayar ? elUangBayar.value.replace(/\D/g, '') : '';
+    var bayarNum = rawDigits ? (parseInt(rawDigits, 10) || 0) : 0;
+
+    if (elReset) {
+        elReset.style.display = rawDigits ? 'inline-block' : 'none';
+    }
+
+    // Active state highlighting for quick cash chips
+    var allChips = document.querySelectorAll('#posQuickCashGroup .pos-chip-btn');
+    allChips.forEach(function(chip) {
+        if (chip.id === 'btnChipPas') {
+            if (bayarNum > 0 && bayarNum === total) {
+                chip.style.borderColor = 'var(--violet-main)';
+                chip.style.boxShadow = '0 0 0 2px rgba(108,71,255,0.25)';
+            } else {
+                chip.style.borderColor = '#818cf8';
+                chip.style.boxShadow = 'none';
+            }
+        }
+    });
 
     if (!elFeedbackBox) return;
 
-    if (!rawVal || isNaN(parseFloat(rawVal))) {
+    if (!rawDigits || bayarNum <= 0) {
         elFeedbackBox.style.display = 'none';
         return;
     }
-
-    var bayar = parseFloat(rawVal) || 0;
 
     if (total <= 0) {
         elFeedbackBox.style.display = 'none';
         return;
     }
 
-    if (bayar > total) {
-        var kembali = bayar - total;
+    if (bayarNum > total) {
+        var kembali = bayarNum - total;
         elFeedbackBox.style.display = 'flex';
-        elFeedbackBox.style.background = '#ecfdf5';
-        elFeedbackBox.style.border = '1.5px solid #10b981';
-        elFeedbackBox.style.color = '#065f46';
+        elFeedbackBox.style.background = 'linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%)';
+        elFeedbackBox.style.border = '1.5px solid #6ee7b7';
+        elFeedbackBox.style.boxShadow = '0 4px 14px -2px rgba(16, 185, 129, 0.14)';
+
+        if (elFeedbackIcon) {
+            elFeedbackIcon.style.background = '#d1fae5';
+            elFeedbackIcon.style.color = '#047857';
+            elFeedbackIcon.innerHTML = '<svg style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>';
+        }
 
         elFeedbackTitle.textContent = 'KEMBALIAN';
-        elFeedbackTitle.style.color = '#047857';
-        elFeedbackSub.textContent = 'Kembalikan uang ke pelanggan';
+        elFeedbackTitle.style.color = '#065f46';
+        elFeedbackSub.textContent = 'Wajib diserahkan ke pelanggan';
         elFeedbackSub.style.color = '#059669';
         elFeedbackAmount.textContent = window.formatAppCurrency(kembali);
         elFeedbackAmount.style.color = '#047857';
-    } else if (bayar === total) {
+    } else if (bayarNum === total) {
         elFeedbackBox.style.display = 'flex';
-        elFeedbackBox.style.background = '#f0fdf4';
-        elFeedbackBox.style.border = '1.5px solid #22c55e';
-        elFeedbackBox.style.color = '#15803d';
+        elFeedbackBox.style.background = 'linear-gradient(135deg, #f0fdf4 0%, #f7fee7 100%)';
+        elFeedbackBox.style.border = '1.5px solid #86efac';
+        elFeedbackBox.style.boxShadow = '0 4px 14px -2px rgba(34, 197, 94, 0.14)';
+
+        if (elFeedbackIcon) {
+            elFeedbackIcon.style.background = '#dcfce7';
+            elFeedbackIcon.style.color = '#15803d';
+            elFeedbackIcon.innerHTML = '<svg style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>';
+        }
 
         elFeedbackTitle.textContent = 'UANG PAS (LUNAS)';
         elFeedbackTitle.style.color = '#15803d';
-        elFeedbackSub.textContent = 'Nominal pembayaran pas, tanpa kembalian';
+        elFeedbackSub.textContent = 'Pembayaran tepat, tanpa kembalian';
         elFeedbackSub.style.color = '#16a34a';
         elFeedbackAmount.textContent = 'Rp 0';
         elFeedbackAmount.style.color = '#15803d';
     } else {
-        // bayar < total
-        var kurang = total - bayar;
+        // bayarNum < total
+        var kurang = total - bayarNum;
         elFeedbackBox.style.display = 'flex';
-        elFeedbackBox.style.background = '#fef2f2';
-        elFeedbackBox.style.border = '1.5px solid #f87171';
-        elFeedbackBox.style.color = '#991b1b';
+        elFeedbackBox.style.background = 'linear-gradient(135deg, #fff1f2 0%, #fef2f2 100%)';
+        elFeedbackBox.style.border = '1.5px solid #fca5a5';
+        elFeedbackBox.style.boxShadow = '0 4px 14px -2px rgba(239, 68, 68, 0.12)';
+
+        if (elFeedbackIcon) {
+            elFeedbackIcon.style.background = '#fee2e2';
+            elFeedbackIcon.style.color = '#b91c1c';
+            elFeedbackIcon.innerHTML = '<svg style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>';
+        }
 
         elFeedbackTitle.textContent = 'UANG KURANG';
         elFeedbackTitle.style.color = '#b91c1c';
@@ -591,17 +659,6 @@ window.updatePosKembalian = function() {
         elFeedbackAmount.textContent = '- ' + window.formatAppCurrency(kurang);
         elFeedbackAmount.style.color = '#b91c1c';
     }
-};
-
-window.posQuickCash = function(val) {
-    var elUangBayar = document.getElementById('posUangBayar');
-    if (!elUangBayar) return;
-    if (val === 'pas') {
-        elUangBayar.value = window.currentPosTotalNet || 0;
-    } else {
-        elUangBayar.value = val;
-    }
-    window.updatePosKembalian();
 };
 
 window.togglePosPaymentInputs = function() {

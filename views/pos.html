@@ -139,35 +139,63 @@
                         </div>
                     </div>
                     
-                    <div id="posPaymentInputs" style="margin-bottom: 20px; background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid var(--border-soft);">
-                        <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">Jumlah Uang Diterima (Rp)</label>
-                        <input type="number" id="posUangBayar" class="search-filter-input" style="width: 100%; padding: 10px 14px; font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 8px; background: #ffffff; border: 1.5px solid var(--border-strong);" placeholder="Masukkan nominal uang diterima..." oninput="window.updatePosKembalian()">
-                        
-                        <!-- Tombol Cepat Pecahan Uang -->
-                        <div style="display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap;">
-                            <button type="button" onclick="window.posQuickCash('pas')" style="padding: 5px 10px; font-size: 11px; font-weight: 700; border-radius: 6px; border: 1px solid var(--violet-main); background: #f5f3ff; color: var(--violet-main); cursor: pointer; transition: all 0.15s ease;">⚡ Uang Pas</button>
-                            <button type="button" onclick="window.posQuickCash(10000)" style="padding: 5px 10px; font-size: 11px; font-weight: 600; border-radius: 6px; border: 1px solid var(--border-strong); background: #ffffff; color: var(--text-main); cursor: pointer;">10.000</button>
-                            <button type="button" onclick="window.posQuickCash(20000)" style="padding: 5px 10px; font-size: 11px; font-weight: 600; border-radius: 6px; border: 1px solid var(--border-strong); background: #ffffff; color: var(--text-main); cursor: pointer;">20.000</button>
-                            <button type="button" onclick="window.posQuickCash(50000)" style="padding: 5px 10px; font-size: 11px; font-weight: 600; border-radius: 6px; border: 1px solid var(--border-strong); background: #ffffff; color: var(--text-main); cursor: pointer;">50.000</button>
-                            <button type="button" onclick="window.posQuickCash(100000)" style="padding: 5px 10px; font-size: 11px; font-weight: 600; border-radius: 6px; border: 1px solid var(--border-strong); background: #ffffff; color: var(--text-main); cursor: pointer;">100.000</button>
-                        </div>
-
-                        <!-- Feedback Kembalian / Status Uang -->
-                        <div id="posKembalianFeedbackBox" style="display: none; padding: 12px 14px; border-radius: 10px; margin-bottom: 10px; align-items: center; justify-content: space-between; transition: all 0.2s ease;">
-                            <div>
-                                <div id="posFeedbackTitle" style="font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;"></div>
-                                <div id="posFeedbackSub" style="font-size: 11px; margin-top: 2px;"></div>
+                    <!-- Payment Input Card (Tunai) -->
+                    <div id="posPaymentInputs" style="margin-bottom: 18px; background: #ffffff; padding: 16px; border-radius: 16px; border: 1.5px solid #e2e8f0; box-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.05);">
+                        <!-- Header Label -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <div style="display: flex; align-items: center; gap: 7px;">
+                                <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 6px; background: #ede9fe; color: var(--violet-main);">
+                                    <svg style="width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2;" viewBox="0 0 24 24"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+                                </span>
+                                <span style="font-size: 12px; font-weight: 800; color: var(--text-dark);">Uang Tunai Diterima</span>
                             </div>
-                            <div id="posFeedbackAmount" style="font-size: 20px; font-weight: 900; letter-spacing: -0.5px;"></div>
+                            <button type="button" onclick="window.posClearUangBayar()" id="posBtnResetUang" style="display: none; border: none; background: transparent; color: var(--text-muted); font-size: 11px; font-weight: 700; cursor: pointer; padding: 2px 6px; border-radius: 4px; transition: color 0.15s ease;" onmouseover="this.style.color='var(--coral-pink)'" onmouseout="this.style.color='var(--text-muted)'">Reset</button>
                         </div>
 
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-main); cursor: pointer;">
-                            <input type="checkbox" id="posSimpanTabungan" style="width: 16px; height: 16px; accent-color: var(--primary);">
-                            <span>Taruh sisa kembalian di <b>Tabungan Pelanggan</b></span>
+                        <!-- Currency Input Box with Rp Prefix -->
+                        <div style="position: relative; display: flex; align-items: center; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 6px 14px; margin-bottom: 12px; transition: all 0.2s ease; box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);" id="posInputWrapper">
+                            <span style="font-size: 13px; font-weight: 800; color: var(--violet-main); background: #ede9fe; padding: 4px 8px; border-radius: 6px; margin-right: 10px; user-select: none;">Rp</span>
+                            <input type="text" inputmode="numeric" id="posUangBayar" style="width: 100%; border: none; background: transparent; font-size: 22px; font-weight: 900; color: #0f172a; outline: none; letter-spacing: -0.5px; padding: 2px 0;" placeholder="0" oninput="window.handlePosUangInput(this)" onfocus="document.getElementById('posInputWrapper').style.borderColor='var(--violet-main)'; document.getElementById('posInputWrapper').style.boxShadow='0 0 0 3px rgba(108,71,255,0.15)';" onblur="document.getElementById('posInputWrapper').style.borderColor='#cbd5e1'; document.getElementById('posInputWrapper').style.boxShadow='inset 0 1px 2px rgba(0,0,0,0.03)';">
+                        </div>
+
+                        <!-- Quick Denomination Chips -->
+                        <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;" id="posQuickCashGroup">
+                            <button type="button" onclick="window.posQuickCash('pas')" class="pos-chip-btn" id="btnChipPas" style="flex: 1.2; min-width: 85px; padding: 7px 10px; font-size: 11.5px; font-weight: 800; border-radius: 8px; border: 1.5px solid #818cf8; background: linear-gradient(135deg, #eef2ff 0%, #ede9fe 100%); color: #4338ca; cursor: pointer; transition: all 0.15s ease; display: inline-flex; align-items: center; justify-content: center; gap: 4px;">
+                                <span>⚡</span> Uang Pas
+                            </button>
+                            <button type="button" onclick="window.posQuickCash(10000)" class="pos-chip-btn" style="flex: 1; min-width: 58px; padding: 7px 8px; font-size: 11.5px; font-weight: 700; border-radius: 8px; border: 1.5px solid #e2e8f0; background: #ffffff; color: #334155; cursor: pointer; transition: all 0.15s ease;">10.000</button>
+                            <button type="button" onclick="window.posQuickCash(20000)" class="pos-chip-btn" style="flex: 1; min-width: 58px; padding: 7px 8px; font-size: 11.5px; font-weight: 700; border-radius: 8px; border: 1.5px solid #e2e8f0; background: #ffffff; color: #334155; cursor: pointer; transition: all 0.15s ease;">20.000</button>
+                            <button type="button" onclick="window.posQuickCash(50000)" class="pos-chip-btn" style="flex: 1; min-width: 58px; padding: 7px 8px; font-size: 11.5px; font-weight: 700; border-radius: 8px; border: 1.5px solid #e2e8f0; background: #ffffff; color: #334155; cursor: pointer; transition: all 0.15s ease;">50.000</button>
+                            <button type="button" onclick="window.posQuickCash(100000)" class="pos-chip-btn" style="flex: 1; min-width: 58px; padding: 7px 8px; font-size: 11.5px; font-weight: 700; border-radius: 8px; border: 1.5px solid #e2e8f0; background: #ffffff; color: #334155; cursor: pointer; transition: all 0.15s ease;">100.000</button>
+                        </div>
+
+                        <!-- Feedback Banner Card (Kembalian / Uang Pas / Kurang) -->
+                        <div id="posKembalianFeedbackBox" style="display: none; padding: 12px 16px; border-radius: 12px; margin-bottom: 12px; align-items: center; justify-content: space-between; transition: all 0.2s ease;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div id="posFeedbackIconCircle" style="width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0;"></div>
+                                <div>
+                                    <div id="posFeedbackTitle" style="font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.6px; line-height: 1.2;"></div>
+                                    <div id="posFeedbackSub" style="font-size: 11px; margin-top: 2px;"></div>
+                                </div>
+                            </div>
+                            <div id="posFeedbackAmount" style="font-size: 22px; font-weight: 900; letter-spacing: -0.5px; line-height: 1;"></div>
+                        </div>
+
+                        <!-- Tabungan Pelanggan Switch Card -->
+                        <label id="posTabunganOptionCard" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='#f8fafc';">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <svg style="width: 16px; height: 16px; color: var(--violet-main); fill: none; stroke: currentColor; stroke-width: 2;" viewBox="0 0 24 24"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>
+                                <div>
+                                    <span style="font-size: 11.5px; font-weight: 700; color: var(--text-dark); display: block;">Simpan ke Tabungan</span>
+                                    <span style="font-size: 10.5px; color: var(--text-muted);">Alihkan kembalian ke saldo tabungan</span>
+                                </div>
+                            </div>
+                            <input type="checkbox" id="posSimpanTabungan" style="width: 17px; height: 17px; accent-color: var(--violet-main); cursor: pointer;">
                         </label>
                     </div>
 
-                    <button class="btn-pill-action btn-pill-primary" style="width: 100%; justify-content: center; padding: 14px; font-size: 15px; border-radius: 99px; box-shadow: 0 8px 25px rgba(79,70,229,0.3);" onclick="submitTransaksiPOS()">
+                    <button class="btn-pill-action btn-pill-primary" style="width: 100%; justify-content: center; padding: 14px; font-size: 15px; font-weight: 800; border-radius: 99px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); box-shadow: 0 8px 24px -4px rgba(79, 70, 229, 0.35); transition: all 0.2s ease; display: flex; align-items: center; gap: 8px;" onclick="submitTransaksiPOS()" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 10px 28px -4px rgba(79, 70, 229, 0.45)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 8px 24px -4px rgba(79, 70, 229, 0.35)';">
+                        <svg style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2;" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
                         Proses Pembayaran
                     </button>
                 </div>
