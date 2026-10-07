@@ -117,6 +117,11 @@ function renderCart() {
     if (elPpnLbl) elPpnLbl.textContent = window.formatAppCurrency(pajakNominal);
     if (elTotal) elTotal.textContent = window.formatAppCurrency(net);
     
+    window.currentPosTotalNet = net;
+    if (typeof window.updatePosKembalian === 'function') {
+        window.updatePosKembalian();
+    }
+    
     // Mode Wakil
     var chkWakil = document.getElementById('posCheckWakil');
     var boxWakil = document.getElementById('posWakilContainer');
@@ -283,6 +288,8 @@ function submitTransaksiPOS() {
     }
 
     window.currentCart = [];
+    var elUangBayar = document.getElementById('posUangBayar');
+    if (elUangBayar) elUangBayar.value = '';
     renderCart();
     showToast('Memproses transaksi POS...', 'success');
 
@@ -431,14 +438,155 @@ window.submitTransaksiPOS = submitTransaksiPOS;
 window.formatDateNow = formatDateNow;
 window.cetakStrukTerakhir = cetakStrukTerakhir;
 
+window.updatePosKembalian = function() {
+    var elUangBayar = document.getElementById('posUangBayar');
+    var elFeedbackBox = document.getElementById('posKembalianFeedbackBox');
+    var elFeedbackTitle = document.getElementById('posFeedbackTitle');
+    var elFeedbackSub = document.getElementById('posFeedbackSub');
+    var elFeedbackAmount = document.getElementById('posFeedbackAmount');
+    var elStatusMini = document.getElementById('posStatusUangMini');
+
+    var elSummaryRow = document.getElementById('posSummaryKembalianRow');
+    var elSummaryUang = document.getElementById('posSummaryUangBayar');
+    var elSummaryLabel = document.getElementById('posSummaryKembalianLabel');
+    var elSummaryVal = document.getElementById('posSummaryKembalianVal');
+
+    var total = window.currentPosTotalNet || 0;
+    var rawVal = elUangBayar ? elUangBayar.value.trim() : '';
+
+    if (!elFeedbackBox) return;
+
+    if (!rawVal || isNaN(parseFloat(rawVal))) {
+        elFeedbackBox.style.display = 'none';
+        if (elStatusMini) elStatusMini.style.display = 'none';
+        if (elSummaryRow) elSummaryRow.style.display = 'none';
+        return;
+    }
+
+    var bayar = parseFloat(rawVal) || 0;
+
+    if (total <= 0) {
+        elFeedbackBox.style.display = 'none';
+        if (elStatusMini) elStatusMini.style.display = 'none';
+        if (elSummaryRow) elSummaryRow.style.display = 'none';
+        return;
+    }
+
+    // Tampilkan di ringkasan nota bawah TOTAL
+    if (elSummaryRow) {
+        elSummaryRow.style.display = 'flex';
+        if (elSummaryUang) elSummaryUang.textContent = window.formatAppCurrency(bayar);
+    }
+
+    if (bayar > total) {
+        var kembali = bayar - total;
+        elFeedbackBox.style.display = 'flex';
+        elFeedbackBox.style.background = '#ecfdf5';
+        elFeedbackBox.style.border = '1.5px solid #10b981';
+        elFeedbackBox.style.color = '#065f46';
+
+        elFeedbackTitle.textContent = 'KEMBALIAN';
+        elFeedbackTitle.style.color = '#047857';
+        elFeedbackSub.textContent = 'Kembalikan uang ke pelanggan';
+        elFeedbackSub.style.color = '#059669';
+        elFeedbackAmount.textContent = window.formatAppCurrency(kembali);
+        elFeedbackAmount.style.color = '#047857';
+
+        if (elStatusMini) {
+            elStatusMini.style.display = 'inline-block';
+            elStatusMini.style.color = '#10b981';
+            elStatusMini.textContent = 'Kembali: ' + window.formatAppCurrency(kembali);
+        }
+
+        if (elSummaryLabel) {
+            elSummaryLabel.textContent = 'Kembalian:';
+            elSummaryLabel.style.color = '#16a34a';
+        }
+        if (elSummaryVal) {
+            elSummaryVal.textContent = window.formatAppCurrency(kembali);
+            elSummaryVal.style.color = '#16a34a';
+        }
+    } else if (bayar === total) {
+        elFeedbackBox.style.display = 'flex';
+        elFeedbackBox.style.background = '#f0fdf4';
+        elFeedbackBox.style.border = '1.5px solid #22c55e';
+        elFeedbackBox.style.color = '#15803d';
+
+        elFeedbackTitle.textContent = 'UANG PAS (LUNAS)';
+        elFeedbackTitle.style.color = '#15803d';
+        elFeedbackSub.textContent = 'Nominal pembayaran pas, tanpa kembalian';
+        elFeedbackSub.style.color = '#16a34a';
+        elFeedbackAmount.textContent = 'Rp 0';
+        elFeedbackAmount.style.color = '#15803d';
+
+        if (elStatusMini) {
+            elStatusMini.style.display = 'inline-block';
+            elStatusMini.style.color = '#16a34a';
+            elStatusMini.textContent = '✓ Uang Pas';
+        }
+
+        if (elSummaryLabel) {
+            elSummaryLabel.textContent = 'Status:';
+            elSummaryLabel.style.color = '#16a34a';
+        }
+        if (elSummaryVal) {
+            elSummaryVal.textContent = 'Uang Pas (Lunas)';
+            elSummaryVal.style.color = '#16a34a';
+        }
+    } else {
+        // bayar < total
+        var kurang = total - bayar;
+        elFeedbackBox.style.display = 'flex';
+        elFeedbackBox.style.background = '#fef2f2';
+        elFeedbackBox.style.border = '1.5px solid #f87171';
+        elFeedbackBox.style.color = '#991b1b';
+
+        elFeedbackTitle.textContent = 'UANG KURANG';
+        elFeedbackTitle.style.color = '#b91c1c';
+        elFeedbackSub.textContent = 'Nominal belum mencukupi tagihan';
+        elFeedbackSub.style.color = '#dc2626';
+        elFeedbackAmount.textContent = '- ' + window.formatAppCurrency(kurang);
+        elFeedbackAmount.style.color = '#b91c1c';
+
+        if (elStatusMini) {
+            elStatusMini.style.display = 'inline-block';
+            elStatusMini.style.color = '#ef4444';
+            elStatusMini.textContent = 'Kurang: ' + window.formatAppCurrency(kurang);
+        }
+
+        if (elSummaryLabel) {
+            elSummaryLabel.textContent = 'Kurang:';
+            elSummaryLabel.style.color = '#dc2626';
+        }
+        if (elSummaryVal) {
+            elSummaryVal.textContent = '- ' + window.formatAppCurrency(kurang);
+            elSummaryVal.style.color = '#dc2626';
+        }
+    }
+};
+
+window.posQuickCash = function(val) {
+    var elUangBayar = document.getElementById('posUangBayar');
+    if (!elUangBayar) return;
+    if (val === 'pas') {
+        elUangBayar.value = window.currentPosTotalNet || 0;
+    } else {
+        elUangBayar.value = val;
+    }
+    window.updatePosKembalian();
+};
+
 window.togglePosPaymentInputs = function() {
     var elMetode = document.getElementById('posPaymentMethod');
     var elInputs = document.getElementById('posPaymentInputs');
+    var elSummaryRow = document.getElementById('posSummaryKembalianRow');
     if (elMetode && elInputs) {
         if (elMetode.value === 'Tempo' || elMetode.value === 'Tabungan') {
             elInputs.style.display = 'none';
+            if (elSummaryRow) elSummaryRow.style.display = 'none';
         } else {
             elInputs.style.display = 'block';
+            window.updatePosKembalian();
         }
     }
 };
