@@ -8,16 +8,17 @@
 window.currentUser = null;
 
 window.ROLE_ACCESS_MAP = {
-    'Owner': ['dashboard', 'pos', 'sewa', 'pelanggan', 'produk', 'produksi', 'multilokasi', 'opname', 'keuangan', 'tenagakerja', 'agenda', 'audit', 'profil', 'pengaturan', 'bantuan'],
-    'Admin': ['dashboard', 'pos', 'sewa', 'pelanggan', 'produk', 'produksi', 'multilokasi', 'opname', 'keuangan', 'tenagakerja', 'agenda', 'audit', 'profil', 'pengaturan', 'bantuan'],
-    'Bendahara': ['dashboard', 'pos', 'sewa', 'pelanggan', 'keuangan', 'tenagakerja', 'agenda', 'profil', 'pengaturan', 'bantuan'],
+    'Owner': ['dashboard', 'pos', 'transaksi', 'sewa', 'pelanggan', 'produk', 'produksi', 'multilokasi', 'opname', 'keuangan', 'tenagakerja', 'agenda', 'audit', 'profil', 'pengaturan', 'bantuan'],
+    'Admin': ['dashboard', 'pos', 'transaksi', 'sewa', 'pelanggan', 'produk', 'produksi', 'multilokasi', 'opname', 'keuangan', 'tenagakerja', 'agenda', 'audit', 'profil', 'pengaturan', 'bantuan'],
+    'Bendahara': ['dashboard', 'pos', 'transaksi', 'sewa', 'pelanggan', 'keuangan', 'tenagakerja', 'agenda', 'profil', 'pengaturan', 'bantuan'],
     'Bagian Produksi': ['dashboard', 'produk', 'produksi', 'multilokasi', 'opname', 'agenda', 'profil', 'pengaturan', 'bantuan'],
-    'Bagian Penjualan': ['dashboard', 'pos', 'sewa', 'pelanggan', 'produk', 'agenda', 'profil', 'pengaturan', 'bantuan']
+    'Bagian Penjualan': ['dashboard', 'pos', 'transaksi', 'sewa', 'pelanggan', 'produk', 'agenda', 'profil', 'pengaturan', 'bantuan']
 };
 
 window.ROLE_NAV_PILL_MAP = {
     'dashboard': 'navPillDashboard',
     'pos': 'navPillPos',
+    'transaksi': 'navPillTransaksi',
     'sewa': 'navPillSewa',
     'pelanggan': 'navPillPelanggan',
     'produk': 'navPillProduk',
@@ -93,7 +94,7 @@ window.navigatePage = function (viewId) {
         }
     }
 
-    var views = ['dashboard', 'pos', 'sewa', 'pelanggan', 'produk', 'produksi', 'multilokasi', 'opname', 'keuangan', 'tenagakerja', 'agenda', 'audit', 'profil', 'pengaturan', 'bantuan'];
+    var views = ['dashboard', 'pos', 'transaksi', 'sewa', 'pelanggan', 'produk', 'produksi', 'multilokasi', 'opname', 'keuangan', 'tenagakerja', 'agenda', 'audit', 'profil', 'pengaturan', 'bantuan'];
     views.forEach(function (v) {
         var el = document.getElementById('view-' + v);
         if (el) el.style.display = (v === viewId) ? 'block' : 'none';
@@ -113,6 +114,7 @@ window.navigatePage = function (viewId) {
         var titleMap = {
             'dashboard': 'Dashboard',
             'pos': 'Kasir & POS',
+            'transaksi': 'Daftar Riwayat Transaksi',
             'sewa': 'Sewa Alat',
             'pelanggan': 'Pelanggan & Mitra Toko',
             'produk': 'Master Produk',
@@ -132,6 +134,7 @@ window.navigatePage = function (viewId) {
 
     // Refresh data spesifik modul
     if (viewId === 'dashboard' && typeof window.loadDashboardData === 'function') window.loadDashboardData();
+    if (viewId === 'transaksi' && typeof window.loadTransaksiPage === 'function') window.loadTransaksiPage();
     if (viewId === 'pos' && typeof window.populateProductDropdowns === 'function') window.populateProductDropdowns();
     if (viewId === 'produk' && typeof window.fetchMasterProducts === 'function') window.fetchMasterProducts();
     if (viewId === 'produksi') {

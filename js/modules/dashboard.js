@@ -268,8 +268,20 @@ function renderOrderTable(dataset) {
             var tbody = document.getElementById('tblOrderBody');
             if (!tbody) return;
             tbody.innerHTML = '';
-            var data = dataset || orderTransactions;
-            document.getElementById('orderCountBadge').textContent = data.length + ' Data';
+            var allData = dataset || window.orderTransactions || orderTransactions || [];
+            var isFiltered = Boolean(dataset);
+            var data = isFiltered ? dataset : allData.slice(0, 10);
+            
+            var badgeEl = document.getElementById('orderCountBadge');
+            if (badgeEl) {
+                if (isFiltered) {
+                    badgeEl.textContent = data.length + ' Data';
+                } else if (allData.length > 10) {
+                    badgeEl.textContent = '10 Terbaru (Total ' + allData.length + ')';
+                } else {
+                    badgeEl.textContent = allData.length + ' Data';
+                }
+            }
 
             data.forEach(function (item) {
                 var isChecked = selectedOrderIds.indexOf(item.id) !== -1 ? 'checked' : '';
@@ -925,6 +937,7 @@ function togglePeriodDashboard() {
 
 function loadDashboardData() {
     if (typeof window.renderTimRekanan === 'function') window.renderTimRekanan('aktivitas');
+    if (typeof window.refreshAllTransactions === 'function') window.refreshAllTransactions();
     var period = splineState.currentPeriod || 'Bulanan';
     runBackend('apiGetDashboardData', [period], function (res) {
         if (res && res.success) {
