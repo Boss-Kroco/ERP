@@ -215,10 +215,89 @@
                     <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Saldo Kas (Opsional)</label>
                     <input type="number" step="any" id="inpPelangganTabungan" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); outline: none; font-size: 13px;" placeholder="0">
                 </div>
+
+                <div style="display: flex; flex-direction: column; gap: 6px;" id="divPelangganPiutangField">
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Total Piutang (Rp)</label>
+                    <input type="number" step="any" id="inpPelangganPiutang" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); outline: none; font-size: 13px;" placeholder="0">
+                    <span style="font-size: 11px; color: var(--text-muted);">Isi 0 jika tagihan/piutang pelanggan ini sudah lunas.</span>
+                </div>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 12px; padding: 16px 20px; border-top: 1px solid var(--border-soft); background: #f8fafc;">
                 <button onclick="if(window.closePelangganModal) window.closePelangganModal()" class="btn-pill-action btn-pill-secondary">Batal</button>
                 <button onclick="if(window.savePelanggan) window.savePelanggan()" class="btn-pill-action btn-pill-primary">Simpan Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Pelunasan Piutang -->
+    <div id="modalBayarPiutang" style="display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; border-radius: 16px; width: 100%; max-width: 480px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); overflow: hidden; transform: translateY(20px); opacity: 0; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);" id="modalBayarPiutangContent">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border-soft); background: #f8fafc;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 34px; height: 34px; border-radius: 10px; background: #ecfdf5; display: flex; align-items: center; justify-content: center; color: #10b981;">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 15px; font-weight: 700; color: var(--text-dark);">Pelunasan Piutang</h3>
+                        <p style="margin: 0; font-size: 12px; color: var(--text-muted);" id="bayarPiutangCustomerName">Nama Toko</p>
+                    </div>
+                </div>
+                <button onclick="if(window.closeBayarPiutangModal) window.closeBayarPiutangModal()" style="background: transparent; border: none; cursor: pointer; color: var(--text-muted); padding: 4px; display: flex;">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+
+            <div style="padding: 20px; display: flex; flex-direction: column; gap: 14px;">
+                <input type="hidden" id="bayarPiutangPelangganId" value="">
+                <input type="hidden" id="bayarPiutangTotalSisa" value="0">
+
+                <!-- Summary Card -->
+                <div style="background: #fff1f2; border: 1px solid #ffe4e6; border-radius: 12px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 11.5px; color: #e11d48; font-weight: 600;">Sisa Piutang Saat Ini</div>
+                        <div style="font-size: 20px; font-weight: 800; color: #be123c;" id="bayarPiutangDisplayTotal">Rp 0</div>
+                    </div>
+                    <div id="bayarPiutangTabunganBadge" style="text-align: right; font-size: 11px; color: #047857; background: #ecfdf5; padding: 6px 10px; border-radius: 8px;">
+                        Saldo Kas: <br><b id="bayarPiutangDisplayTabungan">Rp 0</b>
+                    </div>
+                </div>
+
+                <!-- Opsi Cepat Pelunasan -->
+                <div style="display: flex; gap: 8px;">
+                    <button type="button" onclick="if(window.setBayarPiutangNominalFull) window.setBayarPiutangNominalFull()" class="btn-pill-action" style="flex: 1; padding: 7px 12px; font-size: 11.5px; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-weight: 700; border-radius: 8px; cursor: pointer;">
+                        ✓ Lunas Penuh (100%)
+                    </button>
+                    <button type="button" onclick="if(window.setBayarPiutangNominalHalf) window.setBayarPiutangNominalHalf()" class="btn-pill-action" style="flex: 1; padding: 7px 12px; font-size: 11.5px; background: #f8fafc; color: var(--text-dark); border: 1px solid var(--border-soft); font-weight: 600; border-radius: 8px; cursor: pointer;">
+                        Cicilan (50%)
+                    </button>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Nominal Pembayaran (Rp) *</label>
+                    <input type="number" id="bayarPiutangNominal" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); outline: none; font-size: 15px; font-weight: 700; color: var(--text-dark);" placeholder="0">
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Metode Pembayaran *</label>
+                    <select id="bayarPiutangMetode" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); outline: none; font-size: 13px; background: white;">
+                        <option value="Tunai">💵 Tunai (Kas Masuk Toko)</option>
+                        <option value="Transfer">🏦 Transfer Bank (Kas Masuk Toko)</option>
+                        <option value="Tabungan">💳 Potong Saldo Kas / Tabungan Pelanggan</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Keterangan / Catatan</label>
+                    <input type="text" id="bayarPiutangCatatan" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border-soft); outline: none; font-size: 12.5px;" placeholder="Pelunasan piutang toko...">
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px; padding: 16px 20px; border-top: 1px solid var(--border-soft); background: #f8fafc;">
+                <button onclick="if(window.closeBayarPiutangModal) window.closeBayarPiutangModal()" class="btn-pill-action btn-pill-secondary">Batal</button>
+                <button onclick="if(window.prosesBayarPiutang) window.prosesBayarPiutang()" class="btn-pill-action btn-pill-primary" style="background: #10b981; border-color: #10b981;">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24" style="margin-right: 4px;" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    Konfirmasi Pelunasan
+                </button>
             </div>
         </div>
     </div>

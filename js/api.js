@@ -371,6 +371,23 @@
                         nilai_baru: String(newSisa),
                         keterangan: 'Pelunasan tagihan: ' + refId
                     }]);
+
+                    // Sinkronisasi pengurangan total_piutang pada tabel pelanggan_toko jika ada
+                    if (item.tipe === 'Piutang' && item.kontak_nama) {
+                        try {
+                            var { data: cust } = await sb.from('pelanggan_toko').select('*').ilike('nama_toko', item.kontak_nama).maybeSingle();
+                            if (cust) {
+                                var sisaPiu = Math.max(0, Number(cust.total_piutang || 0) - bayar);
+                                await sb.from('pelanggan_toko').update({ total_piutang: sisaPiu }).eq('pelanggan_id', cust.pelanggan_id);
+                                if (window._pelangganDataList) {
+                                    var memP = window._pelangganDataList.find(function(x) { return x.pelanggan_id === cust.pelanggan_id; });
+                                    if (memP) memP.total_piutang = sisaPiu;
+                                }
+                            }
+                        } catch (eCust) {
+                            console.warn('Gagal sync pelanggan piutang:', eCust);
+                        }
+                    }
                 }
                 return { success: true, message: 'Tagihan ' + refId + ' berhasil dilunasi.' };
             }

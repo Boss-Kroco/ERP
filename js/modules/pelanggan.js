@@ -121,7 +121,10 @@ window.renderPelangganTable = function() {
         html += '  <td style="padding: 14px 16px;">' + statusBadge + '</td>';
         
         // Aksi
-        html += '  <td style="padding: 14px 16px; text-align: right;">';
+        html += '  <td style="padding: 14px 16px; text-align: right; white-space: nowrap;">';
+        if (isPiutang) {
+            html += '    <button onclick="window.openBayarPiutangModal(\'' + p.pelanggan_id + '\')" class="btn-pill-action" style="padding: 5px 12px; font-size: 11px; font-weight: 700; background: #10b981; color: white; border: none; border-radius: 20px; cursor: pointer; margin-right: 8px; box-shadow: 0 2px 5px rgba(16,185,129,0.25); display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;" title="Pelunasan Piutang"><svg style="width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 3;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Lunaskan</button>';
+        }
         html += '    <button onclick="window.editPelanggan(\'' + p.pelanggan_id + '\')" style="background: transparent; border: none; cursor: pointer; color: var(--violet-main); padding: 4px;" title="Edit Data"><svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>';
         html += '  </td>';
         
@@ -130,7 +133,7 @@ window.renderPelangganTable = function() {
     });
     
     if (count === 0) {
-        html = '<tr><td colspan="7" style="text-align: center; padding: 30px; color: var(--text-muted);">Tidak ada data pelanggan ditemukan.</td></tr>';
+        html = '<tr><td colspan="8" style="text-align: center; padding: 30px; color: var(--text-muted);">Tidak ada data pelanggan ditemukan.</td></tr>';
     }
     
     tbl.innerHTML = html;
@@ -168,12 +171,13 @@ window.openPelangganModal = function() {
     document.getElementById('inpPelangganAlamat').value = '';
     var elTab = document.getElementById('inpPelangganTabungan');
     if (elTab) elTab.value = '';
+    var elPiu = document.getElementById('inpPelangganPiutang');
+    if (elPiu) elPiu.value = '0';
     document.getElementById('modalPelangganTitle').textContent = 'Tambah Pelanggan Baru';
     
     var modal = document.getElementById('modalFormPelanggan');
     var content = document.getElementById('modalFormPelangganContent');
     modal.style.display = 'flex';
-    // Animasi masuk
     setTimeout(function() {
         content.style.opacity = '1';
         content.style.transform = 'translateY(0)';
@@ -201,6 +205,8 @@ window.editPelanggan = function(id) {
     document.getElementById('inpPelangganAlamat').value = p.alamat || '';
     var elTab = document.getElementById('inpPelangganTabungan');
     if (elTab) elTab.value = p.tabungan || 0;
+    var elPiu = document.getElementById('inpPelangganPiutang');
+    if (elPiu) elPiu.value = p.total_piutang || 0;
     document.getElementById('modalPelangganTitle').textContent = 'Edit Data Pelanggan';
     
     var modal = document.getElementById('modalFormPelanggan');
@@ -220,6 +226,8 @@ window.savePelanggan = function() {
     var alamat = (document.getElementById('inpPelangganAlamat').value || '').trim();
     var elTab = document.getElementById('inpPelangganTabungan');
     var tabungan = elTab ? (parseFloat(elTab.value) || 0) : 0;
+    var elPiu = document.getElementById('inpPelangganPiutang');
+    var piutang = elPiu ? Math.max(0, parseFloat(elPiu.value) || 0) : 0;
     
     if (!nama) {
         if(window.showToast) window.showToast('Nama pelanggan wajib diisi', 'error');
@@ -241,7 +249,7 @@ window.savePelanggan = function() {
             kontak: kontak || '-',
             alamat: alamat || '-',
             total_beli: 0,
-            total_piutang: 0,
+            total_piutang: piutang,
             status: 'Aktif'
         };
         sb.from('pelanggan_toko').insert([insertPayload]).then(function(res) {
@@ -259,7 +267,8 @@ window.savePelanggan = function() {
         var updatePayload = {
             nama_toko: nama,
             kontak: kontak || '-',
-            alamat: alamat || '-'
+            alamat: alamat || '-',
+            total_piutang: piutang
         };
         sb.from('pelanggan_toko').update(updatePayload).eq('pelanggan_id', id).then(function(res) {
             if (res.error) {
@@ -267,12 +276,193 @@ window.savePelanggan = function() {
                 if(window.showToast) window.showToast('Gagal memperbarui pelanggan: ' + res.error.message, 'error');
             } else {
                 window.updateCustomerTabungan(id, tabungan);
-                if(window.showToast) window.showToast('Data pelanggan diperbarui!', 'success');
+                
+                // Jika piutang diubah jadi 0, sync status hutang_piutang & transaksi
+                if (piutang === 0) {
+                    sb.from('hutang_piutang').update({ status: 'Lunas', sisa: 0 }).ilike('kontak_nama', nama).then(function() {});
+                    sb.from('penjualan').update({ status_bayar: 'Lunas' }).eq('pelanggan_id', id).then(function() {});
+                }
+                
+                if(window.showToast) window.showToast('Data pelanggan & piutang berhasil diperbarui!', 'success');
                 window.closePelangganModal();
                 window.loadPelangganData();
             }
         });
     }
+};
+
+/* --- PELUNASAN PIUTANG MODAL HANDLERS --- */
+window.openBayarPiutangModal = function(id) {
+    var p = window._pelangganDataList.find(function(x) { return x.pelanggan_id === id; });
+    if (!p) return;
+    
+    var totalPiu = Number(p.total_piutang || 0);
+    document.getElementById('bayarPiutangPelangganId').value = p.pelanggan_id;
+    document.getElementById('bayarPiutangTotalSisa').value = totalPiu;
+    document.getElementById('bayarPiutangCustomerName').textContent = (p.nama_toko || '-') + ' (' + p.pelanggan_id + ')';
+    document.getElementById('bayarPiutangDisplayTotal').textContent = window.formatAppCurrency(totalPiu);
+    document.getElementById('bayarPiutangDisplayTabungan').textContent = window.formatAppCurrency(p.tabungan || 0);
+    document.getElementById('bayarPiutangNominal').value = totalPiu;
+    document.getElementById('bayarPiutangMetode').value = 'Tunai';
+    document.getElementById('bayarPiutangCatatan').value = 'Pelunasan piutang toko ' + (p.nama_toko || '');
+    
+    var modal = document.getElementById('modalBayarPiutang');
+    var content = document.getElementById('modalBayarPiutangContent');
+    if (!modal || !content) return;
+    modal.style.display = 'flex';
+    setTimeout(function() {
+        content.style.opacity = '1';
+        content.style.transform = 'translateY(0)';
+    }, 10);
+};
+
+window.closeBayarPiutangModal = function() {
+    var modal = document.getElementById('modalBayarPiutang');
+    var content = document.getElementById('modalBayarPiutangContent');
+    if (!modal || !content) return;
+    content.style.opacity = '0';
+    content.style.transform = 'translateY(20px)';
+    setTimeout(function() {
+        modal.style.display = 'none';
+    }, 300);
+};
+
+window.setBayarPiutangNominalFull = function() {
+    var totalPiu = Number(document.getElementById('bayarPiutangTotalSisa').value || 0);
+    document.getElementById('bayarPiutangNominal').value = totalPiu;
+};
+
+window.setBayarPiutangNominalHalf = function() {
+    var totalPiu = Number(document.getElementById('bayarPiutangTotalSisa').value || 0);
+    document.getElementById('bayarPiutangNominal').value = Math.round(totalPiu / 2);
+};
+
+window.prosesBayarPiutang = function() {
+    var id = document.getElementById('bayarPiutangPelangganId').value;
+    var p = window._pelangganDataList.find(function(x) { return x.pelanggan_id === id; });
+    if (!p) return;
+    
+    var totalPiu = Number(p.total_piutang || 0);
+    var nominal = parseFloat(document.getElementById('bayarPiutangNominal').value) || 0;
+    var metode = document.getElementById('bayarPiutangMetode').value;
+    var catatan = (document.getElementById('bayarPiutangCatatan').value || '').trim();
+    
+    if (nominal <= 0) {
+        if (window.showToast) window.showToast('Masukkan nominal pembayaran yang valid (lebih dari 0)', 'error');
+        return;
+    }
+    
+    if (nominal > totalPiu) {
+        if (window.showToast) window.showToast('Nominal bayar melebihi sisa piutang (' + window.formatAppCurrency(totalPiu) + ')', 'error');
+        return;
+    }
+    
+    if (metode === 'Tabungan') {
+        var currentTab = Number(p.tabungan || 0);
+        if (currentTab < nominal) {
+            if (window.showToast) window.showToast('Saldo kas/tabungan pelanggan tidak mencukupi (' + window.formatAppCurrency(currentTab) + '). Pilih metode Tunai atau Transfer.', 'error');
+            return;
+        }
+    }
+    
+    var sb = window.supabaseClient;
+    var newPiutang = Math.max(0, totalPiu - nominal);
+    
+    if (window.showToast) window.showToast('Memproses pelunasan piutang...', 'info');
+    
+    var finalizeSuccess = function() {
+        p.total_piutang = newPiutang;
+        if (metode === 'Tabungan') {
+            window.updateCustomerTabungan(id, Number(p.tabungan || 0) - nominal);
+        }
+        
+        window.closeBayarPiutangModal();
+        window.renderPelangganTable();
+        window.updatePelangganMetrics();
+        if (typeof window.fetchDueAlerts === 'function') window.fetchDueAlerts();
+        if (typeof window.loadDashboardData === 'function') window.loadDashboardData();
+        
+        var msg = newPiutang === 0 
+            ? 'Piutang ' + p.nama_toko + ' lunas sepenuhnya! Status kini Aman Lunas.' 
+            : 'Pembayaran piutang ' + p.nama_toko + ' sebesar ' + window.formatAppCurrency(nominal) + ' berhasil! Sisa piutang: ' + window.formatAppCurrency(newPiutang);
+        if (window.showToast) window.showToast(msg, 'success');
+    };
+    
+    if (!sb || !window.SUPABASE_CONFIG || !window.SUPABASE_CONFIG.isConfigured()) {
+        finalizeSuccess();
+        return;
+    }
+    
+    // 1. Update pelanggan_toko
+    sb.from('pelanggan_toko').update({ total_piutang: newPiutang }).eq('pelanggan_id', id).then(function(res) {
+        if (res.error) {
+            console.error(res.error);
+            if (window.showToast) window.showToast('Gagal update piutang: ' + res.error.message, 'error');
+            return;
+        }
+        
+        // 2. Jika Tunai atau Transfer, catat keuangan_kas (Masuk)
+        if (metode === 'Tunai' || metode === 'Transfer') {
+            sb.from('keuangan_kas').insert([{
+                kas_id: 'KAS-' + Date.now(),
+                tanggal: new Date().toLocaleDateString('id-ID'),
+                tipe: 'Masuk',
+                kategori: 'Pelunasan Piutang Toko',
+                nominal: nominal,
+                keterangan: (catatan || ('Pelunasan piutang toko ' + p.nama_toko)) + ' (' + metode + ')',
+                ref_id: p.pelanggan_id,
+                saldo_berjalan: 0,
+                dicatat_oleh: (window.currentUser && window.currentUser.namaLengkap) || 'Kasir'
+            }]).then(function(kasRes) {
+                if (kasRes && kasRes.error) console.warn('Pencatatan kas error:', kasRes.error);
+            });
+        }
+        
+        // 3. Update hutang_piutang jika ada record tagihan
+        sb.from('hutang_piutang')
+          .select('*')
+          .eq('tipe', 'Piutang')
+          .ilike('kontak_nama', p.nama_toko)
+          .eq('status', 'Belum Lunas')
+          .then(function(hpRes) {
+              if (hpRes.data && hpRes.data.length > 0) {
+                  var remainingPayment = nominal;
+                  hpRes.data.forEach(function(hp) {
+                      if (remainingPayment <= 0) return;
+                      var sisa = Number(hp.sisa || 0);
+                      var bayarChunk = Math.min(sisa, remainingPayment);
+                      var newHpTerbayar = Number(hp.terbayar || 0) + bayarChunk;
+                      var newHpSisa = Math.max(0, sisa - bayarChunk);
+                      var newHpStatus = newHpSisa <= 0 ? 'Lunas' : 'Belum Lunas';
+                      remainingPayment -= bayarChunk;
+                      
+                      sb.from('hutang_piutang').update({
+                          terbayar: newHpTerbayar,
+                          sisa: newHpSisa,
+                          status: newHpStatus
+                      }).eq('ref_id', hp.ref_id).then(function() {});
+                  });
+              }
+          });
+          
+        // 4. Update penjualan status_bayar jika lunas penuh
+        if (newPiutang === 0) {
+            sb.from('penjualan').update({ status_bayar: 'Lunas' }).eq('pelanggan_id', id).then(function() {});
+            if (window.orderTransactions && Array.isArray(window.orderTransactions)) {
+                window.orderTransactions.forEach(function(trx) {
+                    if (trx.pelanggan_id === id || trx.nama_pelanggan === p.nama_toko) {
+                        trx.status_bayar = 'Lunas';
+                        trx.statusBayar = 'Lunas';
+                    }
+                });
+            }
+        }
+        
+        finalizeSuccess();
+    }).catch(function(err) {
+        console.error(err);
+        if (window.showToast) window.showToast('Terjadi kesalahan jaringan', 'error');
+    });
 };
 
 // Override navigatePage dari app.js untuk intercept saat membuka view pelanggan

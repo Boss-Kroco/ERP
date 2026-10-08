@@ -919,6 +919,7 @@ function eksekusiQuickPay(refId, sisaNominal) {
                     var dCount2 = document.getElementById('dueAlertCount'); if (dCount2) dCount2.textContent = dueAlertsData.length;
                     renderDueAlertsTable();
                     loadDashboardData();
+                    if (typeof window.loadPelangganData === 'function') window.loadPelangganData();
                 }
             });
         }
