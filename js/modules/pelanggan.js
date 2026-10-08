@@ -112,18 +112,18 @@ window.renderPelangganTable = function() {
             : '<span style="background: #f0fdf4; color: #16a34a; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 600;">Aman Lunas</span>';
             
         html += '<tr style="border-bottom: 1px solid var(--border-soft); transition: background 0.2s;">';
-        html += '  <td style="padding: 14px 16px; font-size: 12.5px; font-weight: 600; color: var(--text-dark);">' + (window.escapeHtml ? window.escapeHtml(p.pelanggan_id) : p.pelanggan_id) + '</td>';
-        html += '  <td style="padding: 14px 16px; font-size: 13px; font-weight: 700; color: var(--violet-main);">' + (window.escapeHtml ? window.escapeHtml(p.nama_toko) : p.nama_toko) + '</td>';
-        html += '  <td style="padding: 14px 16px; font-size: 12.5px; color: var(--text-muted);">' + (window.escapeHtml ? window.escapeHtml(p.kontak || '-') : p.kontak || '-') + '</td>';
-        html += '  <td style="padding: 14px 16px; font-size: 12.5px; color: var(--text-muted); max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="'+(window.escapeHtml ? window.escapeHtml(p.alamat||'') : p.alamat||'')+'">' + (window.escapeHtml ? window.escapeHtml(p.alamat || '-') : p.alamat || '-') + '</td>';
-        html += '  <td style="padding: 14px 16px; font-size: 13px; font-weight: 700; color: ' + (isPiutang ? '#e11d48' : 'var(--text-dark)') + ';">' + window.formatAppCurrency(p.total_piutang) + '</td>';
-        html += '  <td style="padding: 14px 16px; font-size: 13px; font-weight: 700; color: var(--emerald);">' + window.formatAppCurrency(p.tabungan || 0) + '</td>';
-        html += '  <td style="padding: 14px 16px;">' + statusBadge + '</td>';
+        html += '  <td style="padding: 10px 12px; font-size: 12px; font-weight: 600; color: var(--text-dark);">' + (window.escapeHtml ? window.escapeHtml(p.pelanggan_id) : p.pelanggan_id) + '</td>';
+        html += '  <td style="padding: 10px 12px; font-size: 12.5px; font-weight: 700; color: var(--violet-main);">' + (window.escapeHtml ? window.escapeHtml(p.nama_toko) : p.nama_toko) + '</td>';
+        html += '  <td style="padding: 10px 12px; font-size: 12px; color: var(--text-muted);">' + (window.escapeHtml ? window.escapeHtml(p.kontak || '-') : p.kontak || '-') + '</td>';
+        html += '  <td style="padding: 10px 12px; font-size: 12px; color: var(--text-muted); max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="'+(window.escapeHtml ? window.escapeHtml(p.alamat||'') : p.alamat||'')+'">' + (window.escapeHtml ? window.escapeHtml(p.alamat || '-') : p.alamat || '-') + '</td>';
+        html += '  <td style="padding: 10px 12px; font-size: 12.5px; font-weight: 700; color: ' + (isPiutang ? '#e11d48' : 'var(--text-dark)') + ';">' + window.formatAppCurrency(p.total_piutang) + '</td>';
+        html += '  <td style="padding: 10px 12px; font-size: 12.5px; font-weight: 700; color: var(--emerald);">' + window.formatAppCurrency(p.tabungan || 0) + '</td>';
+        html += '  <td style="padding: 10px 12px;">' + statusBadge + '</td>';
         
         // Aksi
-        html += '  <td style="padding: 14px 16px; text-align: right; white-space: nowrap;">';
+        html += '  <td style="padding: 10px 12px; text-align: right; white-space: nowrap;">';
         if (isPiutang) {
-            html += '    <button onclick="window.openBayarPiutangModal(\'' + p.pelanggan_id + '\')" class="btn-pill-action" style="padding: 5px 12px; font-size: 11px; font-weight: 700; background: #10b981; color: white; border: none; border-radius: 20px; cursor: pointer; margin-right: 8px; box-shadow: 0 2px 5px rgba(16,185,129,0.25); display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;" title="Pelunasan Piutang"><svg style="width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 3;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Lunaskan</button>';
+            html += '    <button onclick="window.openBayarPiutangModal(\'' + p.pelanggan_id + '\')" class="btn-pill-action" style="padding: 4px 10px; font-size: 11px; font-weight: 700; background: #10b981; color: white; border: none; border-radius: 20px; cursor: pointer; margin-right: 6px; box-shadow: 0 2px 5px rgba(16,185,129,0.25); display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;" title="Pelunasan Piutang"><svg style="width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 3;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Lunaskan</button>';
         }
         html += '    <button onclick="window.editPelanggan(\'' + p.pelanggan_id + '\')" style="background: transparent; border: none; cursor: pointer; color: var(--violet-main); padding: 4px;" title="Edit Data"><svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>';
         html += '  </td>';
