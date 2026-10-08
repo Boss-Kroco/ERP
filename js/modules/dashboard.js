@@ -880,17 +880,108 @@ function fetchDueAlerts() {
     });
 }
 
+var currentDueFilter = 'Semua';
+function filterDueAlerts(type) {
+    currentDueFilter = type || 'Semua';
+    ['Semua', 'Piutang', 'Hutang'].forEach(function(t) {
+        var btn = document.getElementById('btnFilterDue' + t);
+        if (!btn) return;
+        if (t === currentDueFilter) {
+            btn.style.background = '#eff6ff';
+            btn.style.color = '#2563eb';
+            btn.style.borderColor = '#bfdbfe';
+            btn.style.fontWeight = '700';
+        } else {
+            btn.style.background = '#f8fafc';
+            btn.style.color = 'var(--text-dark)';
+            btn.style.borderColor = 'var(--border-soft)';
+            btn.style.fontWeight = '600';
+        }
+    });
+    renderDueAlertsTable();
+}
+window.filterDueAlerts = filterDueAlerts;
+
 function renderDueAlertsTable() {
     var tbody = document.getElementById('tblDueAlertList');
     if (!tbody) return;
     tbody.innerHTML = '';
     dueAlertsData = Array.isArray(dueAlertsData) ? dueAlertsData : [];
-    if (dueAlertsData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:16px;">Semua tagihan lunas. Tidak ada tempo kritis H-3.</td></tr>';
+
+    // Hitung ringkasan
+    var totalCount = dueAlertsData.length;
+    var piutangCount = 0;
+    var hutangCount = 0;
+    var piutangTotal = 0;
+    var hutangTotal = 0;
+
+    dueAlertsData.forEach(function(d) {
+        if (d.tipe === 'Piutang') {
+            piutangCount++;
+            piutangTotal += Number(d.sisa || 0);
+        } else if (d.tipe === 'Hutang') {
+            hutangCount++;
+            hutangTotal += Number(d.sisa || 0);
+        }
+    });
+
+    // Update Counter di Header Lonceng Topbar
+    var dCount = document.getElementById('dueAlertCount');
+    if (dCount) dCount.textContent = totalCount;
+
+    // Update Counter di Header Modal
+    var badgeModal = document.getElementById('modalDueAlertBadgeCount');
+    if (badgeModal) {
+        if (totalCount > 0) {
+            badgeModal.textContent = totalCount + ' Tagihan Menunggu';
+            badgeModal.style.background = '#fee2e2';
+            badgeModal.style.color = '#ef4444';
+        } else {
+            badgeModal.textContent = 'Semua Lunas 🎉';
+            badgeModal.style.background = '#ecfdf5';
+            badgeModal.style.color = '#10b981';
+        }
+    }
+
+    // Update Badge Filter Tab
+    var cSemua = document.getElementById('countDueSemua');
+    if (cSemua) cSemua.textContent = totalCount;
+    var cPiu = document.getElementById('countDuePiutang');
+    if (cPiu) cPiu.textContent = piutangCount;
+    var cHut = document.getElementById('countDueHutang');
+    if (cHut) cHut.textContent = hutangCount;
+
+    // Update Nominal Header Modal
+    var sPiu = document.getElementById('sumDuePiutang');
+    if (sPiu) sPiu.textContent = window.formatAppCurrency ? window.formatAppCurrency(piutangTotal) : 'Rp ' + piutangTotal;
+    var sHut = document.getElementById('sumDueHutang');
+    if (sHut) sHut.textContent = window.formatAppCurrency ? window.formatAppCurrency(hutangTotal) : 'Rp ' + hutangTotal;
+
+    // Filter data yang akan ditampilkan
+    var displayedData = dueAlertsData.filter(function(item) {
+        if (currentDueFilter === 'Piutang') return item.tipe === 'Piutang';
+        if (currentDueFilter === 'Hutang') return item.tipe === 'Hutang';
+        return true;
+    });
+
+    if (displayedData.length === 0) {
+        if (totalCount === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 45px 20px;">' +
+                '<div style="width: 52px; height: 52px; border-radius: 50%; background: #ecfdf5; color: #10b981; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">' +
+                '  <svg style="width: 28px; height: 28px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
+                '</div>' +
+                '<div style="font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 4px;">Semua Tagihan Sudah Lunas! 🎉</div>' +
+                '<div style="font-size: 12.5px; color: var(--text-muted);">Tidak ada tagihan piutang maupun hutang yang perlu dilunasi saat ini.</div>' +
+                '</td></tr>';
+        } else {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 35px 20px; color: var(--text-muted); font-size: 13px;">' +
+                'Tidak ada data tagihan dalam kategori ' + currentDueFilter + '.' +
+                '</td></tr>';
+        }
         return;
     }
-    dueAlertsData.forEach(function (item) {
-        // Hitung apakah sudah lewat jatuh tempo
+
+    displayedData.forEach(function (item) {
         var parts = (item.jatuhTempo || '').split('/');
         var isOverdue = false;
         if (parts.length === 3) {
@@ -898,31 +989,86 @@ function renderDueAlertsTable() {
             isOverdue = dueDate < new Date();
         }
         var badgeHtml = isOverdue
-            ? '<span style="background:#fff1f2;color:var(--coral-pink);font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;margin-left:4px;">TERLAMBAT</span>'
-            : '';
+            ? '<span style="background: #fff1f2; color: #ef4444; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 20px; display: inline-block;">TERLAMBAT</span>'
+            : '<span style="background: #fefce8; color: #ca8a04; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 20px; display: inline-block;">H-3</span>';
+
+        var tipeBadge = item.tipe === 'Piutang'
+            ? '<span style="background: #eff6ff; color: #2563eb; font-weight: 700; font-size: 11px; padding: 3px 9px; border-radius: 12px; border: 1px solid #bfdbfe; display: inline-block;">Piutang</span>'
+            : '<span style="background: #fffbeb; color: #d97706; font-weight: 700; font-size: 11px; padding: 3px 9px; border-radius: 12px; border: 1px solid #fde68a; display: inline-block;">Hutang</span>';
+
         var tr = document.createElement('tr');
-        tr.innerHTML = '<td><b>' + escapeHtml(item.kontakNama) + '</b>' + badgeHtml + '<br><small style="color:var(--text-muted);">' + escapeHtml(item.refId) + '</small></td>'
-            + '<td>' + escapeHtml(item.tipe) + '</td>'
-            + '<td><b style="color:var(--coral-pink);">' + window.formatAppCurrency(item.sisa) + '</b></td>'
-            + '<td>' + escapeHtml(item.jatuhTempo) + '</td>'
-            + '<td style="text-align:center;"><button class="btn-pill-action btn-pill-primary" style="padding:4px 10px; font-size:11px;" onclick="eksekusiQuickPay(\'' + escapeHtml(item.refId) + '\', ' + Number(item.sisa) + ')">Bayar Lunas</button></td>';
+        tr.style.borderBottom = '1px solid var(--border-soft)';
+        tr.style.transition = 'background 0.2s';
+        tr.innerHTML = '<td style="padding: 12px 18px; word-break: break-word;">'
+            + '  <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">'
+            + '    <b style="font-size: 13px; color: var(--text-dark);">' + escapeHtml(item.kontakNama) + '</b>'
+            + '    ' + badgeHtml
+            + '  </div>'
+            + '  <div style="font-size: 11px; font-family: monospace; color: var(--text-muted); margin-top: 2px;">' + escapeHtml(item.refId) + '</div>'
+            + '</td>'
+            + '<td style="padding: 12px 14px;">' + tipeBadge + '</td>'
+            + '<td style="padding: 12px 14px;"><b style="color: #e11d48; font-size: 13.5px;">' + window.formatAppCurrency(item.sisa) + '</b></td>'
+            + '<td style="padding: 12px 14px; font-size: 12px; font-weight: 600; color: var(--text-dark);">' + escapeHtml(item.jatuhTempo) + '</td>'
+            + '<td style="padding: 12px 18px; text-align: center;">'
+            + '  <button id="btnPayDue_' + escapeHtml(item.refId) + '" class="btn-pill-action" style="padding: 6px 14px; font-size: 11.5px; font-weight: 700; background: #10b981; color: white; border: none; border-radius: 20px; box-shadow: 0 2px 5px rgba(16,185,129,0.3); cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;" onclick="eksekusiQuickPay(\'' + escapeHtml(item.refId) + '\', ' + Number(item.sisa) + ')">'
+            + '    <svg style="width: 12px; height: 12px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Bayar Lunas'
+            + '  </button>'
+            + '</td>';
         tbody.appendChild(tr);
     });
 }
 
 function eksekusiQuickPay(refId, sisaNominal) {
-            showToast('Memproses pelunasan ' + refId + '...', 'success');
-            runBackend('apiQuickPayHutangPiutang', [{ refId: refId, nominalBayar: sisaNominal }, window.currentUser], function (res) {
-                if (res.success) {
-                    showToast(res.message, 'success');
-                    dueAlertsData = dueAlertsData.filter(function (d) { return d.refId !== refId; });
-                    var dCount2 = document.getElementById('dueAlertCount'); if (dCount2) dCount2.textContent = dueAlertsData.length;
-                    renderDueAlertsTable();
-                    loadDashboardData();
-                    if (typeof window.loadPelangganData === 'function') window.loadPelangganData();
+    var btn = document.getElementById('btnPayDue_' + refId);
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = 'Memproses...';
+        btn.style.opacity = '0.7';
+    }
+    showToast('Memproses pelunasan ' + refId + '...', 'info');
+
+    runBackend('apiQuickPayHutangPiutang', [{ refId: refId, nominalBayar: sisaNominal }, window.currentUser], function (res) {
+        if (res && res.success) {
+            showToast(res.message || ('Tagihan ' + refId + ' berhasil dilunasi.'), 'success');
+            var paidItem = dueAlertsData.find(function(d) { return d.refId === refId; });
+            dueAlertsData = dueAlertsData.filter(function (d) { return d.refId !== refId; });
+
+            // Render ulang tabel & badge counter
+            renderDueAlertsTable();
+
+            // Sinkronisasi tabel pelanggan & piutang jika tipe piutang
+            if (paidItem && paidItem.tipe === 'Piutang' && window._pelangganDataList) {
+                var cust = window._pelangganDataList.find(function(p) {
+                    return p.nama_toko === paidItem.kontakNama || p.pelanggan_id === paidItem.kontakNama;
+                });
+                if (cust) {
+                    cust.total_piutang = Math.max(0, Number(cust.total_piutang || 0) - sisaNominal);
+                    if (typeof window.renderPelangganTable === 'function') window.renderPelangganTable();
+                    if (typeof window.updatePelangganMetrics === 'function') window.updatePelangganMetrics();
                 }
-            });
+            }
+            if (typeof window.loadPelangganData === 'function') window.loadPelangganData();
+
+            // Sinkronisasi dashboard & order transactions
+            loadDashboardData();
+            if (typeof window.refreshAllTransactions === 'function') window.refreshAllTransactions();
+        } else {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Bayar Lunas';
+                btn.style.opacity = '1';
+            }
+            showToast('Gagal memproses pelunasan: ' + (res ? res.message : 'Kesalahan server'), 'error');
         }
+    }, function(err) {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = 'Bayar Lunas';
+            btn.style.opacity = '1';
+        }
+        showToast('Terjadi kesalahan jaringan', 'error');
+    });
+}
 
 function togglePeriodDashboard() {
     var lbl = document.getElementById('lblPeriodCurrent');

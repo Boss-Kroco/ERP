@@ -60,39 +60,69 @@
 
 <!-- Modal Floating Due Alert (Tagihan Jatuh Tempo H-3) -->
 <div class="modal-overlay-custom" id="modalDueAlert">
-    <div class="modal-sheet-card" style="max-width: 540px;">
-        <div class="modal-sheet-header">
-            <div class="modal-sheet-title">
-                <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: var(--coral-pink);">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                </svg>
-                Tagihan Mendekati Jatuh Tempo (H-3)
+    <div class="modal-sheet-card" style="max-width: 840px; width: 95%; max-height: 90vh; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column;">
+        <div class="modal-sheet-header" style="padding: 18px 24px; border-bottom: 1px solid var(--border-soft); background: #f8fafc;">
+            <div class="modal-sheet-title" style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; height: 36px; border-radius: 10px; background: #fff1f2; display: flex; align-items: center; justify-content: center; color: var(--coral-pink);">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                </div>
+                <div>
+                    <div style="font-size: 16px; font-weight: 800; color: var(--text-dark); display: flex; align-items: center; gap: 8px;">
+                        <span>Tagihan Mendekati Jatuh Tempo (H-3)</span>
+                        <span id="modalDueAlertBadgeCount" style="background: #fee2e2; color: #ef4444; padding: 2px 9px; border-radius: 12px; font-size: 11.5px; font-weight: 700;">0 Tagihan</span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Daftar tagihan piutang dan kewajiban hutang yang mendekati atau melewati tempo</div>
+                </div>
             </div>
-            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeDueAlertModal()">
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 6px 10px; border-radius: 50%;" onclick="closeDueAlertModal()">
                 <svg class="svg-icon-xs" viewBox="0 0 24 24">
                     <path d="M18 6 6 18" />
                     <path d="m6 6 12 12" />
                 </svg>
             </button>
         </div>
-        <div class="modal-sheet-body">
-            <div class="table-responsive-wrapper">
-                <table class="custom-order-table">
-                    <thead>
-                        <tr>
-                            <th>Kontak</th>
-                            <th>Tipe</th>
-                            <th>Sisa Tagihan</th>
-                            <th>Jatuh Tempo</th>
-                            <th style="text-align:center;">Aksi Cepat</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tblDueAlertList"></tbody>
-                </table>
+
+        <!-- Filter & KPI mini header inside modal -->
+        <div style="padding: 12px 24px; background: white; border-bottom: 1px solid var(--border-soft); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; gap: 6px;">
+                <button type="button" id="btnFilterDueSemua" onclick="filterDueAlerts('Semua')" class="btn-pill-action" style="padding: 5px 12px; font-size: 11.5px; font-weight: 700; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 20px; cursor: pointer;">
+                    Semua (<span id="countDueSemua">0</span>)
+                </button>
+                <button type="button" id="btnFilterDuePiutang" onclick="filterDueAlerts('Piutang')" class="btn-pill-action" style="padding: 5px 12px; font-size: 11.5px; font-weight: 600; background: #f8fafc; color: var(--text-dark); border: 1px solid var(--border-soft); border-radius: 20px; cursor: pointer;">
+                    Piutang (<span id="countDuePiutang">0</span>)
+                </button>
+                <button type="button" id="btnFilterDueHutang" onclick="filterDueAlerts('Hutang')" class="btn-pill-action" style="padding: 5px 12px; font-size: 11.5px; font-weight: 600; background: #f8fafc; color: var(--text-dark); border: 1px solid var(--border-soft); border-radius: 20px; cursor: pointer;">
+                    Hutang (<span id="countDueHutang">0</span>)
+                </button>
+            </div>
+            <div style="display: flex; gap: 16px; font-size: 12px;">
+                <span style="color: var(--text-muted);">Total Piutang: <b style="color: #2563eb;" id="sumDuePiutang">Rp 0</b></span>
+                <span style="color: var(--text-muted); border-left: 1px solid var(--border-soft); padding-left: 16px;">Total Hutang: <b style="color: #d97706;" id="sumDueHutang">Rp 0</b></span>
             </div>
         </div>
-        <div class="modal-sheet-footer">
+
+        <div class="modal-sheet-body" style="padding: 0; overflow-y: auto; overflow-x: hidden; max-height: 420px;">
+            <table class="custom-order-table" style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+                <thead style="position: sticky; top: 0; background: #f8fafc; z-index: 2; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                    <tr>
+                        <th style="padding: 12px 18px; width: 34%; font-size: 11px;">Kontak & Ref ID</th>
+                        <th style="padding: 12px 14px; width: 14%; font-size: 11px;">Tipe</th>
+                        <th style="padding: 12px 14px; width: 20%; font-size: 11px;">Sisa Tagihan</th>
+                        <th style="padding: 12px 14px; width: 16%; font-size: 11px;">Jatuh Tempo</th>
+                        <th style="padding: 12px 18px; width: 16%; text-align: center; font-size: 11px;">Aksi Cepat</th>
+                    </tr>
+                </thead>
+                <tbody id="tblDueAlertList"></tbody>
+            </table>
+        </div>
+
+        <div class="modal-sheet-footer" style="padding: 14px 24px; border-top: 1px solid var(--border-soft); background: #f8fafc; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 11.5px; color: var(--text-muted);">
+                💡 Pelunasan tagihan otomatis tersinkron ke saldo kas, halaman pelanggan, dan dashboard.
+            </div>
             <button class="btn-pill-action btn-pill-secondary" onclick="closeDueAlertModal()">Tutup</button>
         </div>
     </div>
