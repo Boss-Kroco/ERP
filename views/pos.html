@@ -1,6 +1,6 @@
 <div id="view-pos" style="display: none; height: 100%;">
-    <div class="order-section-card" style="height: calc(100vh - 120px); display: flex; flex-direction: column; padding: 20px;">
-        <div class="order-header-row" style="margin-bottom: 20px;">
+    <div class="order-section-card" style="height: calc(100vh - 72px); display: flex; flex-direction: column; padding: 12px; margin-bottom: 0;">
+        <div class="order-header-row" style="margin-bottom: 10px;">
             <span class="order-main-title" style="display: flex; align-items: center; gap: 8px;">
                 <svg class="svg-icon" viewBox="0 0 24 24" style="color: var(--violet-main);">
                     <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
@@ -9,7 +9,7 @@
                 </svg>
                 Kasir &amp; Point of Sales (POS)
             </span>
-            <div style="display: flex; gap: 12px;">
+            <div style="display: flex; gap: 8px;">
                 <button class="btn-pill-action btn-pill-secondary" onclick="window.tambahBoronganPos()">
                     <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
                     Paket / Borongan
@@ -21,37 +21,37 @@
             </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: 2fr 1.2fr; gap: 24px; flex: 1; overflow: hidden;">
+        <div style="display: grid; grid-template-columns: 2fr 1.2fr; gap: 12px; flex: 1; overflow: hidden;">
             
             <!-- Left Side: Product Grid -->
-            <div style="display: flex; flex-direction: column; background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 16px; padding: 16px; overflow: hidden;">
+            <div style="display: flex; flex-direction: column; background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 12px; padding: 10px; overflow: hidden;">
                 <!-- Search & Categories -->
-                <div style="margin-bottom: 16px; display: flex; gap: 12px;">
+                <div style="margin-bottom: 10px; display: flex; gap: 8px;">
                     <div style="flex: 1; position: relative;">
-                        <input type="text" id="posSearchInput" class="search-filter-input" placeholder="Cari produk..." style="width: 100%; padding-left: 36px; border-radius: 99px;" oninput="window.renderPosProductGrid(this.value)">
-                        <svg viewBox="0 0 24 24" style="position: absolute; left: 12px; top: 11px; width: 16px; height: 16px; fill: none; stroke: var(--text-muted); stroke-width: 2;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        <input type="text" id="posSearchInput" class="search-filter-input" placeholder="Cari produk..." style="width: 100%; padding-left: 32px; border-radius: 99px; font-size: 11.5px; padding-top: 5px; padding-bottom: 5px;" oninput="window.renderPosProductGrid(this.value)">
+                        <svg viewBox="0 0 24 24" style="position: absolute; left: 10px; top: 9px; width: 14px; height: 14px; fill: none; stroke: var(--text-muted); stroke-width: 2;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px;" class="hide-scrollbar" id="posKategoriContainer">
-                    <button class="btn-pill-action btn-pill-primary" style="padding: 6px 16px; font-size: 13px; border-radius: 99px; white-space: nowrap;">Semua</button>
-                    <button class="btn-pill-action btn-pill-secondary" style="padding: 6px 16px; font-size: 13px; border-radius: 99px; white-space: nowrap; background: #ffffff;">Oleh-Oleh</button>
-                    <button class="btn-pill-action btn-pill-secondary" style="padding: 6px 16px; font-size: 13px; border-radius: 99px; white-space: nowrap; background: #ffffff;">Snack & Minuman</button>
+                <div style="display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 4px;" class="hide-scrollbar" id="posKategoriContainer">
+                    <button class="btn-pill-action btn-pill-primary" style="padding: 4px 12px; font-size: 11px; border-radius: 99px; white-space: nowrap;">Semua</button>
+                    <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 12px; font-size: 11px; border-radius: 99px; white-space: nowrap; background: #ffffff;">Oleh-Oleh</button>
+                    <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 12px; font-size: 11px; border-radius: 99px; white-space: nowrap; background: #ffffff;">Snack & Minuman</button>
                 </div>
 
                 <!-- Product Grid -->
-                <div id="posProductGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; overflow-y: auto; flex: 1; align-content: flex-start; padding-right: 8px;">
+                <div id="posProductGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 10px; overflow-y: auto; flex: 1; align-content: flex-start; padding-right: 6px;">
                     <!-- Rendered via JS -->
                 </div>
             </div>
 
             <!-- Right Side: Cart & Checkout -->
-            <div style="display: flex; flex-direction: column; overflow-y: auto; padding-right: 4px;">
+            <div style="display: flex; flex-direction: column; overflow-y: auto; padding-right: 2px;">
                 <!-- Cart Items -->
-                <div style="flex: 1; min-height: 350px; border: 1px solid var(--border-soft); border-radius: 16px; background: #ffffff; padding: 16px; overflow-y: auto; margin-bottom: 16px; box-shadow: 0 4px 15px -4px rgba(15,23,42,0.03);">
-                    <h4 style="margin: 0 0 16px 0; color: var(--violet-dark); font-size: 14px; font-weight: 800;">Keranjang Pembelian</h4>
+                <div style="flex: 1; min-height: 240px; border: 1px solid var(--border-soft); border-radius: 12px; background: #ffffff; padding: 10px; overflow-y: auto; margin-bottom: 10px; box-shadow: 0 4px 15px -4px rgba(15,23,42,0.03);">
+                    <h4 style="margin: 0 0 10px 0; color: var(--violet-dark); font-size: 12.5px; font-weight: 800;">Keranjang Pembelian</h4>
                     <div class="table-responsive-wrapper" style="box-shadow: none; border: none;">
-                        <table class="custom-order-table" style="font-size: 12.5px;">
+                        <table class="custom-order-table" style="font-size: 11.5px;">
                             <thead style="background: transparent; border-bottom: 1px solid var(--border-soft);">
                                 <tr>
                                     <th style="padding-left: 0;">Item</th>
@@ -66,19 +66,19 @@
                 </div>
 
                 <!-- Checkout Summary -->
-                <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 16px; padding: 20px; box-shadow: var(--shadow-subtle);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">Diskon</span>
+                <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 12px; padding: 12px; box-shadow: var(--shadow-subtle);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Diskon</span>
                         <div style="display: flex; gap: 4px;">
-                            <select id="posDiskonType" class="hpp-clean-input" style="width: 130px; min-width: 130px; padding: 6px 10px !important; font-size: 12px; font-weight: 600; cursor: pointer;" onchange="renderCart()">
+                            <select id="posDiskonType" class="hpp-clean-input" style="width: 110px; min-width: 110px; padding: 4px 8px !important; font-size: 11px; font-weight: 600; cursor: pointer;" onchange="renderCart()">
                                 <option value="rp">Nominal Tunai</option>
                                 <option value="persen">Persen (%)</option>
                             </select>
-                            <input type="number" step="any" class="hpp-clean-input" style="width: 100px; padding: 6px 12px !important; text-align: right;" id="posDiskon" value="0" oninput="renderCart()">
+                            <input type="number" step="any" class="hpp-clean-input" style="width: 80px; padding: 4px 8px !important; text-align: right; font-size: 11px !important;" id="posDiskon" value="0" oninput="renderCart()">
                         </div>
                     </div>
                     
-                    <div style="background: #f8fafc; border: 1px dashed var(--border-strong); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; font-size: 12px; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="background: #f8fafc; border: 1px dashed var(--border-strong); border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 11px; display: flex; flex-direction: column; gap: 6px;">
                         <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
                             <span>Subtotal</span>
                             <span id="posSubtotalLabel" style="font-weight: 700; color: var(--text-main);">Rp 0</span>
@@ -87,16 +87,16 @@
                             <span>Diskon</span>
                             <span id="posDiskonLabel" style="font-weight: 700; color: var(--coral-pink);">Rp 0</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 6px; border-top: 1px dashed var(--border-soft);">
-                            <label style="font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 6px; user-select: none; margin: 0;">
-                                <input type="checkbox" id="posCheckPpn" onchange="renderCart()" checked style="width: 14px; height: 14px; accent-color: var(--violet-main); cursor: pointer;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 4px; border-top: 1px dashed var(--border-soft);">
+                            <label style="font-size: 10.5px; cursor: pointer; display: flex; align-items: center; gap: 6px; user-select: none; margin: 0;">
+                                <input type="checkbox" id="posCheckPpn" onchange="renderCart()" checked style="width: 13px; height: 13px; accent-color: var(--violet-main); cursor: pointer;">
                                 <span>PPN (<span id="posPpnRateLabel">11%</span>)</span>
                             </label>
                             <span id="posPpnLabel" style="font-weight: 700; color: var(--violet-main);">Rp 0</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 8px; border-top: 1px solid var(--border-strong); font-size: 13px;">
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 6px; border-top: 1px solid var(--border-strong); font-size: 12px;">
                             <span style="font-weight: 800; color: var(--text-dark);">TOTAL</span>
-                            <span id="posTotalLabel" style="font-size: 22px; font-weight: 900; color: var(--violet-main); letter-spacing: -0.5px;">Rp 0</span>
+                            <span id="posTotalLabel" style="font-size: 18px; font-weight: 900; color: var(--violet-main); letter-spacing: -0.5px;">Rp 0</span>
                         </div>
                     </div>
                     

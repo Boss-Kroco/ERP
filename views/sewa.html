@@ -1,9 +1,9 @@
 <div id="view-sewa" style="display: none; height: 100%;">
-    <div style="display: grid; grid-template-columns: 2.2fr 1fr; gap: 20px; height: calc(100vh - 100px);">
+    <div style="display: grid; grid-template-columns: 2.2fr 1fr; gap: 12px; height: calc(100vh - 72px);">
         
         <!-- Bagian Kiri: Daftar Alat -->
-        <div class="pos-left-panel" style="display: flex; flex-direction: column; gap: 12px; height: 100%;">
-            <div style="display: flex; gap: 10px; align-items: center;">
+        <div class="pos-left-panel" style="display: flex; flex-direction: column; gap: 10px; height: 100%;">
+            <div style="display: flex; gap: 8px; align-items: center;">
                 <div class="search-filter-box" style="flex: 1;">
                     <span class="table-search-icon">
                         <svg class="svg-icon-sm" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
@@ -13,49 +13,49 @@
                 <button class="btn-pill-action btn-pill-secondary" style="height: 100%; white-space: nowrap;" onclick="if(window.bukaModalTambahAlat) window.bukaModalTambahAlat()">+ Tambah Alat</button>
             </div>
             
-            <div id="gridAlatSewa" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; overflow-y: auto; padding-right: 5px; flex: 1; align-content: flex-start;">
+            <div id="gridAlatSewa" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; overflow-y: auto; padding-right: 4px; flex: 1; align-content: flex-start;">
                 <!-- Alat akan dirender di sini via JS -->
             </div>
         </div>
 
         <!-- Bagian Kanan: Keranjang Sewa -->
-        <div class="pos-right-panel" style="background: var(--bg-card); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; border: 1px solid var(--border-soft);">
-            <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 15px; color: var(--violet-dark); font-weight: 700;">Keranjang Sewa</h3>
+        <div class="pos-right-panel" style="background: var(--bg-card); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; border: 1px solid var(--border-soft);">
+            <h3 style="margin-top: 0; margin-bottom: 8px; font-size: 13.5px; color: var(--violet-dark); font-weight: 700;">Keranjang Sewa</h3>
             
-            <div style="margin-bottom: 10px;">
-                <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Data Penyewa (Pelanggan)</label>
+            <div style="margin-bottom: 8px;">
+                <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 3px;">Data Penyewa (Pelanggan)</label>
                 <input type="text" id="inpPenyewaSewa" class="search-filter-input" style="width: 100%;" placeholder="Nama penyewa / proyek...">
             </div>
 
-            <div style="margin-bottom: 15px;">
-                <label style="font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px;">Durasi Sewa (Hari)</label>
+            <div style="margin-bottom: 10px;">
+                <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 3px;">Durasi Sewa (Hari)</label>
                 <input type="number" id="inpDurasiSewa" class="search-filter-input" style="width: 100%;" value="1" min="1" oninput="if(window.hitungTotalSewa) window.hitungTotalSewa()">
             </div>
 
-            <div style="flex: 1; overflow-y: auto; border-top: 1px dashed var(--border-soft); border-bottom: 1px dashed var(--border-soft); padding: 10px 0; margin-bottom: 15px;" id="listKeranjangSewa">
-                <div style="text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 20px;">Belum ada alat yang dipilih.</div>
+            <div style="flex: 1; overflow-y: auto; border-top: 1px dashed var(--border-soft); border-bottom: 1px dashed var(--border-soft); padding: 8px 0; margin-bottom: 10px;" id="listKeranjangSewa">
+                <div style="text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 16px;">Belum ada alat yang dipilih.</div>
             </div>
             
             <div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; color: var(--text-muted);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; color: var(--text-muted);">
                     <span>Subtotal (<span id="lblDurasiSewaInfo">1 Hari</span>)</span>
                     <span id="lblSubtotalSewa" style="font-weight: 600; color: var(--text-dark);">Rp 0</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 18px; font-weight: 800; color: var(--violet-main);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; font-weight: 800; color: var(--violet-main);">
                     <span>TOTAL BAYAR</span>
                     <span id="lblTotalSewa">Rp 0</span>
                 </div>
                 
-                <button class="btn-pill-action btn-pill-primary" style="width: 100%; padding: 12px; font-size: 15px; display: flex; justify-content: center; margin-bottom: 8px;" onclick="if(window.prosesSewa) window.prosesSewa()">
+                <button class="btn-pill-action btn-pill-primary" style="width: 100%; padding: 8px 12px; font-size: 12.5px; display: flex; justify-content: center; margin-bottom: 6px;" onclick="if(window.prosesSewa) window.prosesSewa()">
                     <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     Proses Transaksi
                 </button>
-                <div style="display: flex; gap: 8px;">
-                    <button class="btn-pill-action btn-pill-secondary" style="flex: 1; padding: 12px; font-size: 14px; display: flex; justify-content: center;" onclick="if(window.cetakStrukSewaCurrent) window.cetakStrukSewaCurrent()">
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn-pill-action btn-pill-secondary" style="flex: 1; padding: 7px 10px; font-size: 11.5px; display: flex; justify-content: center;" onclick="if(window.cetakStrukSewaCurrent) window.cetakStrukSewaCurrent()">
                         <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>
                         Cetak Struk
                     </button>
-                    <button class="btn-pill-action btn-pill-secondary" style="flex: 1; padding: 12px; font-size: 14px; display: flex; justify-content: center; background: #25D366; color: white;" onclick="if(window.kirimWaSewa) window.kirimWaSewa()">
+                    <button class="btn-pill-action btn-pill-secondary" style="flex: 1; padding: 7px 10px; font-size: 11.5px; display: flex; justify-content: center; background: #25D366; color: white;" onclick="if(window.kirimWaSewa) window.kirimWaSewa()">
                         <svg class="svg-icon-sm" style="stroke: white;" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
                         Kirim WA
                     </button>

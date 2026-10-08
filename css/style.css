@@ -382,8 +382,8 @@ input[type=number] {
         }
 
         .nav-icon-pill svg {
-            width: 20px !important;
-            height: 20px !important;
+            width: 17px !important;
+            height: 17px !important;
             stroke: currentColor;
             fill: none !important;
         }
@@ -391,6 +391,7 @@ input[type=number] {
         body {
             background-color: var(--bg-page);
             color: var(--text-main);
+            font-size: 13px;
             width: 100vw;
             height: 100vh;
             min-height: 100vh;
@@ -417,11 +418,11 @@ input[type=number] {
 }
 
 .curved-sidebar-violet {
-    width: 64px;
+    width: 56px;
     height: 100vh;
     max-height: 100vh;
     background: var(--violet-gradient);
-    padding: 16px 8px 14px 8px;
+    padding: 12px 6px 10px 6px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -435,7 +436,7 @@ input[type=number] {
 }
 
 .curved-sidebar-violet:hover {
-    width: 220px;
+    width: 205px;
     align-items: stretch;
 }
 
@@ -444,15 +445,15 @@ input[type=number] {
     align-items: center;
     justify-content: center;
     width: 100%;
-    margin-bottom: 16px;
-    padding: 0 6px;
+    margin-bottom: 12px;
+    padding: 0 4px;
     box-sizing: border-box;
 }
 
 .sidebar-brand-logo {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
     object-fit: contain;
     background: white;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -491,36 +492,36 @@ input[type=number] {
         }
 
         .brand-logo-badge {
-    width: 36px;
-    height: 36px;
-    background: rgba(255, 255, 255, 0.16);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1.5px solid rgba(255, 255, 255, 0.32);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ffffff;
-    font-weight: 800;
-    font-size: 15px;
-    letter-spacing: -0.5px;
-    box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.2);
-    flex-shrink: 0;
-    margin-bottom: 8px;
-}
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.16);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(255, 255, 255, 0.32);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 13px;
+            letter-spacing: -0.5px;
+            box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+            margin-bottom: 6px;
+        }
 
         .sidebar-icon-nav {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             width: 100%;
             flex: 1 1 0%;
             min-height: 0;
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 2px 2px 8px 2px;
+            padding: 2px 2px 6px 2px;
             scrollbar-width: none; /* Firefox */
             -ms-overflow-style: none; /* IE/Edge */
         }
@@ -530,9 +531,9 @@ input[type=number] {
         }
 
         .nav-icon-pill {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -544,10 +545,14 @@ input[type=number] {
             background: transparent;
         }
 
+        .nav-icon-i {
+            font-size: 17px !important;
+        }
+
         .nav-icon-pill:hover {
             color: #ffffff;
             background: rgba(255, 255, 255, 0.12);
-            transform: translateY(-2px);
+            transform: translateY(-1px);
         }
 
         .nav-icon-pill.active {
@@ -634,9 +639,9 @@ input[type=number] {
         }
 
         .sb-bottom-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
             background: rgba(255, 255, 255, 0.12);
             display: flex;
             align-items: center;
@@ -679,8 +684,8 @@ input[type=number] {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            padding: 8px 18px;
+            gap: 10px;
+            padding: 6px 14px;
             background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
@@ -692,7 +697,7 @@ input[type=number] {
         }
 
         #pageContainer {
-            padding: 14px 18px 22px;
+            padding: 10px 14px 16px;
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -705,7 +710,7 @@ input[type=number] {
         .header-left-meta {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex: 1 1 0%;
             min-width: 0;
         }
@@ -718,9 +723,9 @@ input[type=number] {
 
         .mobile-menu-btn {
             display: none;
-            width: 34px;
-            height: 34px;
-            border-radius: 9px;
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
             background: #f1f4f9;
             border: 1px solid var(--border-strong);
             align-items: center;
@@ -732,7 +737,7 @@ input[type=number] {
 
         .brand-sub-label {
             font-family: var(--font-heading);
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 600;
             color: var(--text-muted);
             letter-spacing: 0.08em;
@@ -741,11 +746,10 @@ input[type=number] {
 
         .brand-title-main {
             font-family: var(--font-heading);
-            font-size: 19px;
+            font-size: 15px;
             font-weight: 700;
-            letter-spacing: -0.03em;
+            letter-spacing: -0.02em;
             color: var(--text-main);
-            letter-spacing: -0.4px;
             line-height: 1.1;
         }
 
@@ -763,11 +767,11 @@ input[type=number] {
             transform: none;
             background: #ffffff;
             border: 1px solid var(--border-strong);
-            padding: 4px 12px;
+            padding: 3px 10px;
             border-radius: 9999px;
             display: inline-flex;
             align-items: center;
-            gap: 7px;
+            gap: 6px;
             box-shadow: 0 2px 6px -1px rgba(15, 23, 42, 0.05);
             white-space: nowrap;
             flex-shrink: 0;
@@ -776,13 +780,13 @@ input[type=number] {
         .clock-live-pulse-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             color: var(--violet-main);
         }
 
         .clock-pulse-dot {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             border-radius: 50%;
             background: var(--emerald);
             box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
@@ -801,7 +805,7 @@ input[type=number] {
         }
 
         .clock-live-time {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 800;
             color: var(--violet-main);
             font-variant-numeric: tabular-nums;
@@ -810,11 +814,11 @@ input[type=number] {
 
         .clock-divider {
             color: var(--border-strong);
-            font-size: 11px;
+            font-size: 10px;
         }
 
         .clock-live-date {
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 600;
             color: var(--text-muted);
         }
@@ -823,7 +827,7 @@ input[type=number] {
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 12px;
+            gap: 10px;
             flex: 1 1 0%;
             min-width: 0;
         }
@@ -837,13 +841,13 @@ input[type=number] {
         .header-search-input {
             background: #f1f4f9;
             border: 1.5px solid transparent;
-            padding: 6px 12px 6px 30px;
+            padding: 4px 10px 4px 26px;
             border-radius: 9999px;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 600;
             color: var(--text-main);
             outline: none;
-            width: 130px;
+            width: 115px;
             transition: var(--transition);
         }
 
@@ -853,7 +857,7 @@ input[type=number] {
         }
 
         .header-search-input:focus {
-            width: 175px;
+            width: 155px;
             background: #ffffff;
             border-color: var(--violet-main);
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
@@ -878,14 +882,14 @@ input[type=number] {
             background: #fff1f2;
             border: 1px solid #fecdd3;
             color: #e11d48;
-            padding: 5px 11px;
+            padding: 3px 8px;
             border-radius: 9999px;
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 600;
             letter-spacing: -0.01em;
             display: inline-flex;
             align-items: center;
-            gap: 7px;
+            gap: 5px;
             cursor: pointer;
             transition: var(--transition);
             user-select: none;
@@ -906,11 +910,11 @@ input[type=number] {
         .due-counter-circle {
             background: #e11d48;
             color: #ffffff;
-            font-size: 10.5px;
+            font-size: 10px;
             font-weight: 800;
-            min-width: 18px;
-            height: 18px;
-            padding: 0 4px;
+            min-width: 16px;
+            height: 16px;
+            padding: 0 3px;
             border-radius: 9999px;
             display: inline-flex;
             align-items: center;
@@ -920,9 +924,9 @@ input[type=number] {
         .header-user-pill {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             cursor: pointer;
-            padding: 3px 4px 3px 12px;
+            padding: 2px 3px 2px 10px;
             border-radius: 9999px;
             background: #ffffff;
             border: 1px solid var(--border-strong);
@@ -944,7 +948,7 @@ input[type=number] {
         }
 
         .header-user-role-badge {
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 700;
             color: var(--violet-main);
             letter-spacing: 0.02em;
@@ -959,14 +963,14 @@ input[type=number] {
         }
 
         .header-user-role {
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 700;
             color: var(--violet-main);
         }
 
         .header-user-avatar {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: var(--violet-surface);
             color: var(--violet-main);
@@ -981,19 +985,19 @@ input[type=number] {
             flex-shrink: 0;
         }
 
-        /* Hero Row 1 (Sleek Compact 196px Height) */
+        /* Hero Row 1 (Sleek Compact 185px Height) */
         .dashboard-hero-grid {
             display: grid;
             grid-template-columns: 1.32fr 0.84fr 0.84fr;
-            gap: 14px;
-            margin-bottom: 14px;
+            gap: 10px;
+            margin-bottom: 10px;
             align-items: start;
         }
 
         .overview-hero-card {
     background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
-    border-radius: var(--radius-lg);
-    padding: 15px 18px;
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
     color: #ffffff;
     display: flex;
     flex-direction: column;
@@ -1001,9 +1005,9 @@ input[type=number] {
     box-shadow: var(--shadow-float);
     position: relative;
     overflow: hidden;
-    height: 240px;
-    min-height: 240px;
-    max-height: 240px;
+    height: 185px;
+    min-height: 185px;
+    max-height: 185px;
     border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
@@ -1011,12 +1015,12 @@ input[type=number] {
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .overview-title {
             font-family: var(--font-heading);
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 700;
             letter-spacing: -0.02em;
         }
@@ -1024,33 +1028,33 @@ input[type=number] {
         .overview-top-badges {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .peak-tag-badge {
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(8px);
-            padding: 3px 10px;
+            padding: 2px 8px;
             border-radius: 20px;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 800;
             text-align: right;
         }
 
         .peak-tag-badge small {
             display: block;
-            font-size: 8px;
+            font-size: 7.5px;
             opacity: 0.8;
-            letter-spacing: 0.4px;
+            letter-spacing: 0.3px;
         }
 
         .period-dropdown-btn {
             background: rgba(255, 255, 255, 0.16);
             border: 1px solid rgba(255, 255, 255, 0.25);
             color: #ffffff;
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 20px;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
@@ -1060,9 +1064,9 @@ input[type=number] {
 
         .spline-chart-box {
             width: 100%;
-            height: 66px;
+            height: 48px;
             position: relative;
-            margin: 1px 0 4px;
+            margin: 0 0 2px;
             cursor: crosshair;
         }
 
@@ -1110,8 +1114,8 @@ input[type=number] {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             border-top: 1px solid rgba(255, 255, 255, 0.18);
-            padding-top: 6px;
-            gap: 6px;
+            padding-top: 4px;
+            gap: 4px;
         }
 
         .ov-stat-item {
@@ -1121,20 +1125,20 @@ input[type=number] {
 
         .ov-stat-item:not(:last-child) {
             border-right: 1px solid rgba(255, 255, 255, 0.15);
-            padding-right: 6px;
+            padding-right: 4px;
         }
 
         .ov-stat-label {
-            font-size: 7.5px;
+            font-size: 7px;
             font-weight: 700;
             opacity: 0.75;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
         }
 
         .ov-stat-value {
             font-family: var(--font-number);
-            font-size: 13.5px;
+            font-size: 11.5px;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
             letter-spacing: -0.01em;
@@ -1142,7 +1146,7 @@ input[type=number] {
         }
 
         .ov-stat-sub {
-            font-size: 8.5px;
+            font-size: 7.5px;
             opacity: 0.75;
             font-weight: 600;
         }
@@ -1150,30 +1154,30 @@ input[type=number] {
         .middle-stacked-column {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            height: 240px;
+            gap: 8px;
+            height: 185px;
         }
 
         .card-kas-deep {
     background: linear-gradient(135deg, #1e1b4b 0%, #291b6f 100%);
-    border-radius: var(--radius-lg);
-    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
     color: #ffffff;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 4px;
+    gap: 3px;
     box-shadow: 0 8px 24px -2px rgba(30, 27, 75, 0.35);
-    height: 70px;
-    min-height: 70px;
+    height: 52px;
+    min-height: 52px;
     cursor: pointer;
     transition: var(--transition);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
         .card-kas-deep:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 28px -2px rgba(41, 27, 111, 0.35);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px -2px rgba(41, 27, 111, 0.35);
         }
 
         .kas-header-row {
@@ -1202,17 +1206,17 @@ input[type=number] {
 
         .kas-card-val {
             font-family: var(--font-number);
-            font-size: 15.5px;
+            font-size: 13.5px;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
             letter-spacing: -0.02em;
-            margin-left: 30px;
+            margin-left: 20px;
         }
 
         .card-beban-coral {
     background: linear-gradient(135deg, #fb7185 0%, #e11d48 100%);
-    border-radius: var(--radius-lg);
-    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
     color: #ffffff;
     display: flex;
     flex-direction: column;
@@ -1220,8 +1224,8 @@ input[type=number] {
     box-shadow: var(--shadow-coral);
     position: relative;
     overflow: hidden;
-    height: 160px;
-    min-height: 160px;
+    height: 125px;
+    min-height: 125px;
     flex: none;
     cursor: pointer;
     transition: var(--transition);
@@ -1229,20 +1233,20 @@ input[type=number] {
 }
 
         .card-beban-coral:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 16px 36px -4px rgba(225, 29, 72, 0.35);
+            transform: translateY(-1px);
+            box-shadow: 0 12px 28px -4px rgba(225, 29, 72, 0.35);
         }
 
         .beban-top-row {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .beban-icon-box {
-            width: 22px;
-            height: 22px;
-            border-radius: 9px;
+            width: 20px;
+            height: 20px;
+            border-radius: 8px;
             background: rgba(255, 255, 255, 0.22);
             display: flex;
             align-items: center;
@@ -1252,18 +1256,18 @@ input[type=number] {
 
         .beban-title {
             font-family: var(--font-heading);
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 600;
             letter-spacing: -0.01em;
         }
 
         .beban-body-val {
-            margin-top: 6px;
+            margin-top: 2px;
         }
 
         .beban-amount-num {
             font-family: var(--font-number);
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
             letter-spacing: -0.02em;
@@ -1271,18 +1275,18 @@ input[type=number] {
         }
 
         .beban-subtitle {
-            font-size: 8.5px;
+            font-size: 8px;
             font-weight: 600;
             opacity: 0.9;
-            margin-top: 2px;
+            margin-top: 1px;
         }
 
         .beban-floating-circle-btn {
             position: absolute;
-            bottom: 10px;
-            right: 10px;
-            width: 26px;
-            height: 26px;
+            bottom: 8px;
+            right: 8px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             background: #ffffff;
             color: var(--coral-pink);
@@ -1301,16 +1305,16 @@ input[type=number] {
         .tim-rekanan-card {
             background: #ffffff;
             border: 1px solid var(--border-strong);
-            border-radius: var(--radius-lg);
-            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            gap: 6px;
+            gap: 4px;
             box-shadow: var(--shadow-card);
-            height: 240px;
-            min-height: 240px;
-            max-height: 240px;
+            height: 185px;
+            min-height: 185px;
+            max-height: 185px;
             overflow: hidden;
         }
 
@@ -1445,27 +1449,27 @@ input[type=number] {
         .bottom-progress-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr 1.05fr;
-            gap: 14px;
-            margin-bottom: 14px;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
         .progress-metric-card,
 .live-map-metric-card {
     background: #ffffff;
     border: 1px solid var(--border-strong);
-    border-radius: var(--radius-lg);
-    padding: 12px 15px;
+    border-radius: var(--radius-md);
+    padding: 9px 12px;
     box-shadow: var(--shadow-card);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 124px;
+    min-height: 98px;
     transition: var(--transition);
 }
 
         .progress-metric-card:hover,
         .live-map-metric-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-1px);
             box-shadow: var(--shadow-soft);
         }
 
@@ -1473,13 +1477,13 @@ input[type=number] {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .prog-icon-sq {
-            width: 24px;
-            height: 24px;
-            border-radius: 9px;
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
             background: #f3f4f9;
             display: flex;
             align-items: center;
@@ -1488,36 +1492,36 @@ input[type=number] {
 
         .prog-card-title {
             font-family: var(--font-heading);
-            font-size: 11.5px;
+            font-size: 10.5px;
             font-weight: 600;
             letter-spacing: -0.01em;
             color: var(--text-main);
         }
 
         .prog-card-sub {
-            font-size: 8.5px;
+            font-size: 8px;
             color: var(--text-muted);
             font-weight: 600;
             margin-top: 1px;
         }
 
         .prog-bar-container {
-            margin: 8px 0;
+            margin: 4px 0;
         }
 
         .prog-bar-meta {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 9.5px;
+            font-size: 8.5px;
             font-weight: 700;
             color: var(--text-muted);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .prog-track-bg {
             width: 100%;
-            height: 6px;
+            height: 5px;
             background: #f1f4f9;
             border-radius: 10px;
             overflow: hidden;
@@ -1538,7 +1542,7 @@ input[type=number] {
 
         .prog-main-num {
             font-family: var(--font-number);
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             font-variant-numeric: tabular-nums;
             letter-spacing: -0.01em;
@@ -1546,10 +1550,10 @@ input[type=number] {
         }
 
         .prog-status-pill {
-            font-size: 8.5px;
+            font-size: 8px;
             font-weight: 800;
-            padding: 2px 7px;
-            border-radius: 14px;
+            padding: 2px 6px;
+            border-radius: 12px;
         }
 
         .prog-status-pill.green {
@@ -1572,30 +1576,30 @@ input[type=number] {
         .order-section-card {
     background: #ffffff;
     border: 1px solid var(--border-strong);
-    border-radius: var(--radius-lg);
-    padding: 16px 18px;
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
     box-shadow: var(--shadow-card);
-    margin-bottom: 14px;
+    margin-bottom: 10px;
 }
 
         .order-header-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 8px;
         }
 
         .order-title-group {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .order-main-title {
             font-family: var(--font-heading);
-            font-size: 15px;
+            font-size: 13.5px;
             font-weight: 700;
             letter-spacing: -0.02em;
             color: var(--text-main);
@@ -1604,16 +1608,16 @@ input[type=number] {
         .order-count-tag {
             background: #f1f4f9;
             color: var(--text-muted);
-            padding: 3px 10px;
-            border-radius: 14px;
-            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
             font-weight: 700;
         }
 
         .order-action-tools {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .search-filter-box {
@@ -1625,18 +1629,18 @@ input[type=number] {
         .search-filter-input {
     background: #f8fafc;
     border: 1px solid var(--border-strong);
-    padding: 8px 12px 8px 32px;
-    border-radius: 10px;
-    font-size: 12px;
+    padding: 6px 10px 6px 28px;
+    border-radius: 8px;
+    font-size: 11.5px;
     font-weight: 600;
     color: var(--text-main);
     outline: none;
-    width: 170px;
+    width: 150px;
     transition: var(--transition);
 }
 
         .search-filter-input:focus {
-    width: 220px;
+    width: 190px;
     border-color: var(--violet-main);
     background: #ffffff;
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
@@ -1644,7 +1648,7 @@ input[type=number] {
 
         .table-search-icon {
             position: absolute;
-            left: 10px;
+            left: 8px;
             color: var(--text-muted);
             pointer-events: none;
             display: flex;
@@ -1652,14 +1656,14 @@ input[type=number] {
         }
 
         .btn-pill-action {
-            padding: 7px 15px;
-            border-radius: 10px;
-            font-size: 12px;
+            padding: 5px 11px;
+            border-radius: 8px;
+            font-size: 11px;
             font-weight: 700;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             transition: var(--transition);
             border: none;
             text-decoration: none;
@@ -1711,21 +1715,20 @@ input[type=number] {
 
         .custom-order-table th {
     font-family: var(--font-heading);
-    padding: 8px 12px;
-    font-size: 10px;
+    padding: 6px 10px;
+    font-size: 9.5px;
     font-weight: 600;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     color: var(--text-muted);
     border-bottom: 1px solid var(--border-strong);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
     white-space: nowrap;
     background: #fafbfc;
 }
 
         .custom-order-table td {
-    padding: 8px 12px;
-    font-size: 11.5px;
+    padding: 6px 10px;
+    font-size: 11px;
     font-variant-numeric: tabular-nums;
     color: var(--text-main);
     border-bottom: 1px solid var(--border-subtle);
@@ -1838,9 +1841,9 @@ input[type=number] {
 
         .modal-sheet-card {
     background: #ffffff;
-    border-radius: 20px;
+    border-radius: 14px;
     width: 100%;
-    max-width: 520px;
+    max-width: 480px;
     box-shadow: 0 25px 65px -10px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(226, 232, 240, 0.8);
     overflow: hidden;
     animation: modalSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1859,7 +1862,7 @@ input[type=number] {
         }
 
         .modal-sheet-header {
-            padding: 18px 22px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border-strong);
             display: flex;
             align-items: center;
@@ -1867,27 +1870,27 @@ input[type=number] {
         }
 
         .modal-sheet-title {
-            font-size: 15px;
+            font-size: 13.5px;
             font-weight: 800;
             color: var(--text-main);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .modal-sheet-body {
-            padding: 22px;
+            padding: 14px 16px;
             max-height: 75vh;
             overflow-y: auto;
         }
 
         .modal-sheet-footer {
-            padding: 14px 22px;
+            padding: 10px 16px;
             border-top: 1px solid var(--border-strong);
             background: #f8fafc;
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
+            gap: 8px;
         }
 
         /* Mobile Drawer */
