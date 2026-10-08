@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 
     <!-- Modular CSS Stylesheet -->
-    <link rel="stylesheet" href="css/style.css?v=4.7">
+    <link rel="stylesheet" href="css/style.css?v=4.3">
 
     <!-- Supabase JS Client SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -232,23 +232,6 @@
                         <span class="due-counter-circle" id="dueAlertCount">0</span>
                     </div>
 
-                    <!-- Pengatur Skala Layar (Compact UI) -->
-                    <div id="scaleSwitcherBox" style="position: relative;">
-                        <button onclick="toggleScaleMenu(event)" class="topbar-help-btn" title="Atur Ukuran Tampilan Layar" style="border: 1px solid var(--border-strong); background: #ffffff; border-radius: 20px; height: 34px; padding: 0 10px; display: flex; align-items: center; gap: 5px; cursor: pointer; color: var(--text-dark); font-size: 11.5px; font-weight: 700; transition: all 0.2s ease;">
-                            <svg class="svg-icon-xs" viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2.2;">
-                                <circle cx="11" cy="11" r="8"></circle>
-                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                            </svg>
-                            <span id="lblCurrentScale">80%</span>
-                        </button>
-                        <div id="menuScaleDropdown" style="display: none; position: absolute; right: 0; top: 40px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid var(--border-soft); z-index: 1000; min-width: 145px; padding: 6px; flex-direction: column; gap: 4px;">
-                            <button onclick="setAppScale(0.75)" style="background: none; border: none; text-align: left; padding: 7px 10px; border-radius: 8px; font-size: 11.5px; cursor: pointer; font-weight: 600; color: var(--text-dark);">75% (Ekstra Lega)</button>
-                            <button onclick="setAppScale(0.80)" style="background: #eff6ff; color: #2563eb; border: none; text-align: left; padding: 7px 10px; border-radius: 8px; font-size: 11.5px; cursor: pointer; font-weight: 700;">80% (Paling Pas ✓)</button>
-                            <button onclick="setAppScale(0.90)" style="background: none; border: none; text-align: left; padding: 7px 10px; border-radius: 8px; font-size: 11.5px; cursor: pointer; font-weight: 600; color: var(--text-dark);">90% (Sedang)</button>
-                            <button onclick="setAppScale(1.00)" style="background: none; border: none; text-align: left; padding: 7px 10px; border-radius: 8px; font-size: 11.5px; cursor: pointer; font-weight: 600; color: var(--text-dark);">100% (Standar Penuh)</button>
-                        </div>
-                    </div>
-
                     <button class="topbar-help-btn" onclick="navigatePage('bantuan')" title="Pusat Bantuan &amp; FAQ" style="border: 1px solid var(--border-strong); background: #ffffff; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: all 0.2s ease;">
                         <svg class="svg-icon-xs" viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
                             <circle cx="12" cy="12" r="10" />
@@ -310,7 +293,7 @@
     <script src="js/modules/profil.js?v=4.5"></script>
     <script src="js/modules/pengaturan.js?v=4.5"></script>
     <script src="js/modules/bantuan.js?v=4.5"></script>
-    <script src="js/app.js?v=4.6"></script>
+    <script src="js/app.js?v=4.5"></script>
     <!-- Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
