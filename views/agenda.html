@@ -125,6 +125,11 @@
                 <option value="Lainnya">Lainnya</option>
             </select>
 
+            <button type="button" class="btn-pill-action btn-pill-secondary" onclick="openAllDailyNotesModal()" title="Cari & lihat semua riwayat catatan operasional yang pernah ditulis">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24" style="color: #d97706; flex-shrink: 0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span>Daftar Catatan</span>
+            </button>
+
             <button type="button" class="btn-pill-action btn-pill-secondary" onclick="resetAgendaFilters()" title="Reset filter">
                 Reset Filter
             </button>
@@ -186,6 +191,12 @@
                         <span class="photo2-legend-bar cat-lainnya"></span>
                         <span>Operasional Toko</span>
                     </div>
+                    <div class="photo2-legend-item photo2-legend-note-box" title="Hari yang memiliki catatan operasional harian">
+                        <span class="photo2-legend-note-badge">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        </span>
+                        <span>Ada Catatan</span>
+                    </div>
                 </div>
             </div>
 
@@ -223,15 +234,18 @@
                 <!-- Kotak Catatan / Instruksi Cepat Operasional Hari Ini -->
                 <div class="photo2-quick-note-box">
                     <div class="photo2-quick-note-header">
-                        <svg class="svg-icon-xs text-violet" viewBox="0 0 24 24">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                            <polyline points="14 2 14 8 20 8" />
-                            <line x1="16" y1="13" x2="8" y2="13" />
-                            <line x1="16" y1="17" x2="8" y2="17" />
-                        </svg>
-                        <span>Catatan Operasional Hari Ini</span>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <svg class="svg-icon-xs text-violet" viewBox="0 0 24 24">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                            </svg>
+                            <span>Catatan Operasional Hari Ini</span>
+                        </div>
+                        <span id="agendaNoteSaveStatus" style="font-size: 10px; font-weight: 600; color: #a5b4fc; margin-left: auto;">Tersimpan</span>
                     </div>
-                    <textarea id="agendaDailyQuickNoteInput" class="photo2-quick-note-textarea" rows="2" placeholder="Tulis instruksi shift, catatan tim, atau pengingat operasional..." onchange="saveDailyOperationalNote()"></textarea>
+                    <textarea id="agendaDailyQuickNoteInput" class="photo2-quick-note-textarea" rows="2" placeholder="Tulis instruksi shift, catatan tim, atau data produksi harian..." oninput="onDailyQuickNoteInput()" onchange="saveDailyOperationalNote()"></textarea>
                 </div>
 
                 <!-- Subheader Daftar Kegiatan Harian -->

@@ -275,6 +275,33 @@ window.renderCalendar = function () {
         numSpan.textContent = day;
         cell.appendChild(numSpan);
 
+        // Cek Catatan Operasional Harian pada tanggal ini
+        var rawNote = localStorage.getItem('bos_kroco_note_' + isoDate) || '';
+        var dayNote = rawNote.trim();
+        if (dayNote) {
+            cell.classList.add('has-daily-note');
+            var noteBadge = document.createElement('span');
+            noteBadge.className = 'photo2-day-note-badge';
+            var cleanSnippet = dayNote.replace(/\r?\n/g, ' ');
+            if (cleanSnippet.length > 70) cleanSnippet = cleanSnippet.substring(0, 70) + '...';
+            noteBadge.title = '📝 Catatan Operasional (' + day + ' ' + monthNames[window.currentCalendarMonth] + '):\n' + dayNote;
+            noteBadge.innerHTML = '<svg viewBox="0 0 24 24" class="photo2-note-svg"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>';
+
+            (function (dIso) {
+                noteBadge.onclick = function (e) {
+                    e.stopPropagation();
+                    window.selectCalendarDate(dIso);
+                };
+            })(isoDate);
+
+            cell.appendChild(noteBadge);
+
+            // Jika ada kata kunci pencarian yang cocok dengan isi catatan harian
+            if (query && dayNote.toLowerCase().indexOf(query) !== -1) {
+                cell.classList.add('has-note-search-match');
+            }
+        }
+
         var dayAgendas = dateAgendaMap[isoDate] || [];
         dayAgendas.sort(function (a, b) {
             return (a.startTime || '00:00').localeCompare(b.startTime || '00:00');
@@ -310,6 +337,10 @@ window.renderCalendar = function () {
         // Klik sel: aktifkan tanggal ini dan perbarui panel aktivitas harian
         (function (dIso) {
             cell.onclick = function () {
+                var noteEl = document.getElementById('agendaDailyQuickNoteInput');
+                if (noteEl && window.activeSelectedDate && window.activeSelectedDate !== dIso) {
+                    localStorage.setItem('bos_kroco_note_' + window.activeSelectedDate, noteEl.value);
+                }
                 window.activeSelectedDate = dIso;
                 window.renderCalendar();
                 window.renderDailyActivitiesPanel(dIso);
@@ -349,6 +380,18 @@ window.renderDailyActivitiesPanel = function (isoDate) {
     if (noteEl) {
         var savedNote = localStorage.getItem('bos_kroco_note_' + isoDate) || '';
         noteEl.value = savedNote;
+        var noteBox = noteEl.closest('.photo2-quick-note-box');
+        if (noteBox) {
+            var qEl = document.getElementById('agendaSearchInput');
+            var currQuery = (qEl && qEl.value ? qEl.value : '').toLowerCase().trim();
+            if (currQuery && savedNote.toLowerCase().indexOf(currQuery) !== -1) {
+                noteBox.style.borderColor = 'rgba(245, 158, 11, 0.7)';
+                noteBox.style.boxShadow = '0 0 12px rgba(245, 158, 11, 0.3)';
+            } else {
+                noteBox.style.borderColor = '';
+                noteBox.style.boxShadow = '';
+            }
+        }
     }
 
     var agendas = window.getStoredAgendas();
@@ -430,14 +473,45 @@ window.renderDailyActivitiesPanel = function (isoDate) {
     });
 };
 
-window.saveDailyOperationalNote = function () {
+window.saveDailyOperationalNote = function (silent) {
     var noteEl = document.getElementById('agendaDailyQuickNoteInput');
     if (!noteEl) return;
     var iso = window.activeSelectedDate || window.getTodayIsoDate();
     localStorage.setItem('bos_kroco_note_' + iso, noteEl.value);
-    if (window.showToast) {
+
+    var statusEl = document.getElementById('agendaNoteSaveStatus');
+    if (statusEl) {
+        statusEl.textContent = '✓ Tersimpan';
+        statusEl.style.color = '#4ade80';
+        setTimeout(function () {
+            if (statusEl) {
+                statusEl.textContent = 'Tersimpan';
+                statusEl.style.color = '#a5b4fc';
+            }
+        }, 1600);
+    }
+
+    // Refresh kalender agar ikon langsung muncul atau terhapus
+    if (typeof window.renderCalendar === 'function') {
+        window.renderCalendar();
+    }
+
+    if (!silent && window.showToast) {
         window.showToast('Catatan operasional harian disimpan.', 'success');
     }
+};
+
+window._noteAutoSaveTimer = null;
+window.onDailyQuickNoteInput = function () {
+    var statusEl = document.getElementById('agendaNoteSaveStatus');
+    if (statusEl) {
+        statusEl.textContent = 'Menyimpan...';
+        statusEl.style.color = '#fdba74';
+    }
+    if (window._noteAutoSaveTimer) clearTimeout(window._noteAutoSaveTimer);
+    window._noteAutoSaveTimer = setTimeout(function () {
+        window.saveDailyOperationalNote(true);
+    }, 400);
 };
 
 window.openAgendaFormModalWithSelectedDate = function () {
@@ -446,6 +520,10 @@ window.openAgendaFormModalWithSelectedDate = function () {
 };
 
 window.prevCalendarMonth = function () {
+    var noteEl = document.getElementById('agendaDailyQuickNoteInput');
+    if (noteEl && window.activeSelectedDate) {
+        localStorage.setItem('bos_kroco_note_' + window.activeSelectedDate, noteEl.value);
+    }
     window.currentCalendarMonth--;
     if (window.currentCalendarMonth < 0) {
         window.currentCalendarMonth = 11;
@@ -455,6 +533,10 @@ window.prevCalendarMonth = function () {
 };
 
 window.nextCalendarMonth = function () {
+    var noteEl = document.getElementById('agendaDailyQuickNoteInput');
+    if (noteEl && window.activeSelectedDate) {
+        localStorage.setItem('bos_kroco_note_' + window.activeSelectedDate, noteEl.value);
+    }
     window.currentCalendarMonth++;
     if (window.currentCalendarMonth > 11) {
         window.currentCalendarMonth = 0;
@@ -464,6 +546,10 @@ window.nextCalendarMonth = function () {
 };
 
 window.goToTodayCalendar = function () {
+    var noteEl = document.getElementById('agendaDailyQuickNoteInput');
+    if (noteEl && window.activeSelectedDate) {
+        localStorage.setItem('bos_kroco_note_' + window.activeSelectedDate, noteEl.value);
+    }
     var now = new Date();
     window.currentCalendarYear = now.getFullYear();
     window.currentCalendarMonth = now.getMonth();
@@ -479,6 +565,10 @@ window.goToTodayCalendar = function () {
 };
 
 window.selectCalendarDate = function (isoDate) {
+    var noteEl = document.getElementById('agendaDailyQuickNoteInput');
+    if (noteEl && window.activeSelectedDate && window.activeSelectedDate !== isoDate) {
+        localStorage.setItem('bos_kroco_note_' + window.activeSelectedDate, noteEl.value);
+    }
     window.activeSelectedDate = isoDate;
     window.renderCalendar();
     window.renderDailyActivitiesPanel(isoDate);
@@ -618,6 +708,126 @@ window.openAgendaDetailModal = function (agendaId) {
 window.closeAgendaDetailModal = function () {
     var modal = document.getElementById('modalAgendaDetail');
     if (modal) modal.classList.remove('active');
+};
+
+// ============================================================================
+// MODAL DAFTAR SEMUA CATATAN OPERASIONAL HARIAN
+// ============================================================================
+
+window.getAllStoredDailyNotes = function () {
+    var notes = [];
+    try {
+        for (var i = 0; i < localStorage.length; i++) {
+            var key = localStorage.key(i);
+            if (key && key.indexOf('bos_kroco_note_') === 0) {
+                var dateStr = key.replace('bos_kroco_note_', '');
+                var val = (localStorage.getItem(key) || '').trim();
+                if (val && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                    notes.push({
+                        date: dateStr,
+                        content: val
+                    });
+                }
+            }
+        }
+    } catch (e) {
+        console.warn('Gagal membaca list catatan operasional:', e);
+    }
+    // Urutkan tanggal terbaru ke terlama
+    notes.sort(function (a, b) {
+        return b.date.localeCompare(a.date);
+    });
+    return notes;
+};
+
+window.openAllDailyNotesModal = function () {
+    var modal = document.getElementById('modalAllDailyNotes');
+    if (!modal) return;
+    var sInput = document.getElementById('allDailyNotesSearchInput');
+    if (sInput) sInput.value = '';
+    modal.classList.add('active');
+    window.renderAllDailyNotesList();
+
+    // Pastikan klik backdrop menutup modal
+    if (!modal._backdropBound) {
+        modal._backdropBound = true;
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) window.closeAllDailyNotesModal();
+        });
+    }
+};
+
+window.closeAllDailyNotesModal = function () {
+    var modal = document.getElementById('modalAllDailyNotes');
+    if (modal) modal.classList.remove('active');
+};
+
+window.renderAllDailyNotesList = function () {
+    var container = document.getElementById('allDailyNotesListContainer');
+    if (!container) return;
+    var sInput = document.getElementById('allDailyNotesSearchInput');
+    var q = (sInput && sInput.value ? sInput.value : '').toLowerCase().trim();
+
+    var allNotes = window.getAllStoredDailyNotes();
+    if (q) {
+        allNotes = allNotes.filter(function (n) {
+            return n.content.toLowerCase().indexOf(q) !== -1 || n.date.indexOf(q) !== -1;
+        });
+    }
+
+    container.innerHTML = '';
+
+    if (allNotes.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 28px 16px; color: #64748b; font-size: 12.5px;">'
+            + '<div style="font-size: 26px; margin-bottom: 6px;">📝</div>'
+            + '<div style="font-weight: 750; color: #1e293b; margin-bottom: 3px;">' + (q ? 'Tidak ada catatan yang cocok' : 'Belum Ada Catatan Operasional') + '</div>'
+            + '<div>' + (q ? 'Coba kata kunci lain atau periksa ejaan Anda.' : 'Pilih tanggal di kalender lalu ketik catatan di panel "Catatan Operasional Hari Ini".') + '</div>'
+            + '</div>';
+        return;
+    }
+
+    allNotes.forEach(function (n) {
+        var card = document.createElement('div');
+        card.className = 'note-card-item';
+        card.title = 'Klik untuk membuka tanggal ini di kalender';
+
+        var dateFormatted = window.formatDateFullIndo(n.date);
+        var previewHtml = escapeHtml(n.content);
+
+        card.innerHTML = '<div class="note-card-date-row">'
+            + '<div style="display: flex; align-items: center; gap: 6px;">'
+            + '<span style="font-size: 13px;">📝</span>'
+            + '<span style="color: var(--violet-main); font-weight: 800;">' + dateFormatted + '</span>'
+            + '</div>'
+            + '<button type="button" class="btn-pill-action btn-pill-primary" style="padding: 3px 9px; font-size: 11px;">Buka Tanggal ↗</button>'
+            + '</div>'
+            + '<div class="note-card-text">' + previewHtml + '</div>';
+
+        card.onclick = function () {
+            window.jumpToCalendarDateAndCloseNotesModal(n.date);
+        };
+
+        container.appendChild(card);
+    });
+};
+
+window.jumpToCalendarDateAndCloseNotesModal = function (isoDate) {
+    window.closeAllDailyNotesModal();
+    var parts = isoDate.split('-');
+    if (parts.length === 3) {
+        window.currentCalendarYear = parseInt(parts[0], 10);
+        window.currentCalendarMonth = parseInt(parts[1], 10) - 1;
+    }
+    window.selectCalendarDate(isoDate);
+
+    // Scroll otomatis ke panel harian
+    var dailyCard = document.querySelector('.photo2-daily-card');
+    if (dailyCard) {
+        dailyCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    if (window.showToast) {
+        window.showToast('Menampilkan tanggal ' + window.formatDateIndo(isoDate), 'info');
+    }
 };
 
 window.toggleAgendaStatusFromDetail = function () {
