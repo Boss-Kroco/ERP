@@ -32,6 +32,7 @@ function parseKasDate(dateStr) {
 }
 
 function initKeuanganPage() {
+    if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();
     fetchKeuanganKas();
 }
 
@@ -286,15 +287,17 @@ function resetKasForm() {
 
 function submitKasManual() {
     var tipe = document.getElementById('kasTipe').value;
-    var nominal = parseFloat(document.getElementById('kasNominal').value) || 0;
+    var nominalInput = parseFloat(document.getElementById('kasNominal').value) || 0;
+    if (nominalInput <= 0) return showToast('Nominal kas harus lebih dari 0.', 'error');
+
+    // Konversi nominal mata uang aktif ke base IDR untuk penyimpanan database
+    var nominal = Math.round(window.fromAppCurrency ? window.fromAppCurrency(nominalInput) : nominalInput);
     var payload = {
         tipe: tipe,
         kategori: document.getElementById('kasKategori').value,
         nominal: nominal,
         keterangan: document.getElementById('kasKeterangan').value
     };
-
-    if (nominal <= 0) return showToast('Nominal kas harus lebih dari 0.', 'error');
 
     showToast('Menyimpan transaksi kas...', 'success');
 

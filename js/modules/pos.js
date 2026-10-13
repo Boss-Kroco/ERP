@@ -83,13 +83,54 @@ function getAppPajakRate() {
     return 11;
 }
 
+window.updateCartItemDiscount = function (idx, val, type) {
+    if (!window.currentCart || !window.currentCart[idx]) return;
+    var item = window.currentCart[idx];
+    item.diskon = Math.max(0, parseFloat(val) || 0);
+    item.diskonType = type || item.diskonType || 'persen';
+    
+    var rawSub = item.qty * item.harga;
+    var dNominal = 0;
+    if (item.diskonType === 'persen') {
+        dNominal = Math.round(rawSub * (Math.min(100, item.diskon) / 100));
+    } else {
+        dNominal = Math.round(window.fromAppCurrency ? window.fromAppCurrency(item.diskon) : item.diskon);
+        dNominal = Math.min(rawSub, dNominal);
+    }
+    item.diskonNominal = dNominal;
+    item.subtotal = Math.max(0, rawSub - dNominal);
+    renderCart();
+};
+
 function renderCart() {
     var tbody = document.getElementById('tblCart');
     if (!tbody) return;
     tbody.innerHTML = '';
     var grandTotal = 0;
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { symbol: 'Rp', exchangeRate: 1 };
+
+    // Update prefix mata uang input bayar POS
+    var elPosPrefix = document.getElementById('posCurrencyPrefix');
+    if (elPosPrefix) elPosPrefix.textContent = cfg.symbol;
+
     (window.currentCart || []).forEach(function (item, idx) {
+        var rawSub = item.qty * item.harga;
+        var itemDiskon = parseFloat(item.diskon) || 0;
+        var itemDiskonType = item.diskonType || 'persen';
+        var itemDiskonNominal = 0;
+
+        if (itemDiskon > 0) {
+            if (itemDiskonType === 'persen') {
+                itemDiskonNominal = Math.round(rawSub * (Math.min(100, itemDiskon) / 100));
+            } else {
+                itemDiskonNominal = Math.round(window.fromAppCurrency ? window.fromAppCurrency(itemDiskon) : itemDiskon);
+                itemDiskonNominal = Math.min(rawSub, itemDiskonNominal);
+            }
+        }
+        item.diskonNominal = itemDiskonNominal;
+        item.subtotal = Math.max(0, rawSub - itemDiskonNominal);
         grandTotal += item.subtotal;
+
         var tr = document.createElement('tr');
         var qtyInputHtml = '<div style="display: flex; align-items: center; justify-content: center; gap: 4px;">' +
             '<button style="width: 24px; height: 24px; border: 1px solid var(--border-soft); background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: var(--text-dark);" onclick="window.updateCartQty(' + idx + ', ' + (item.qty - 1) + ')">-</button>' +
@@ -97,10 +138,30 @@ function renderCart() {
             '<button style="width: 24px; height: 24px; border: 1px solid var(--border-soft); background: #fff; border-radius: 4px; cursor: pointer; font-weight: bold; color: var(--text-dark);" onclick="window.updateCartQty(' + idx + ', ' + (item.qty + 1) + ')">+</button>' +
             '</div>';
 
-        tr.innerHTML = '<td style="padding: 10px 8px;"><b>' + escapeHtml(item.namaProduk) + '</b><br><span style="font-size:11px;color:var(--text-muted);">' + window.formatAppCurrency(item.harga) + '</span></td>'
-            + '<td style="padding: 10px 8px; text-align: center;">' + qtyInputHtml + '</td>'
-            + '<td style="padding: 10px 8px; text-align: right; font-weight: 700; color: var(--text-dark);">' + window.formatAppCurrency(item.subtotal) + '</td>'
-            + '<td style="padding: 10px 8px; text-align:center;"><button style="border:none;background:#fee2e2;color:var(--coral-pink);cursor:pointer;border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;" onclick="hapusCart(' + idx + ')"><svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></td>';
+        // Kontrol diskon per item
+        var discControlHtml = '<div style="display: inline-flex; align-items: center; gap: 3px; margin-top: 3px; background: #f8fafc; padding: 2px 5px; border: 1px solid #e2e8f0; border-radius: 6px;">'
+            + '<span style="font-size: 10px; font-weight: 700; color: var(--text-muted);">Disc:</span>'
+            + '<input type="number" step="any" min="0" placeholder="0" value="' + (item.diskon !== undefined ? item.diskon : '') + '" style="width: 38px; padding: 1px 3px; font-size: 10.5px; font-weight: 700; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff;" oninput="window.updateCartItemDiscount(' + idx + ', this.value, \'' + itemDiskonType + '\')" title="Diskon per item">'
+            + '<select onchange="window.updateCartItemDiscount(' + idx + ', ' + (item.diskon || 0) + ', this.value)" style="font-size: 10px; font-weight: 700; padding: 1px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; cursor: pointer;">'
+            + '<option value="persen" ' + (itemDiskonType === 'persen' ? 'selected' : '') + '>%</option>'
+            + '<option value="nominal" ' + (itemDiskonType === 'nominal' ? 'selected' : '') + '>' + cfg.symbol + '</option>'
+            + '</select>'
+            + '</div>';
+
+        var totalCellHtml = '<td style="padding: 8px 6px; text-align: right;">';
+        if (itemDiskonNominal > 0) {
+            totalCellHtml += '<div style="font-size: 10px; color: #94a3b8; text-decoration: line-through;">' + window.formatAppCurrency(rawSub) + '</div>';
+            totalCellHtml += '<div style="font-weight: 700; color: var(--text-dark);">' + window.formatAppCurrency(item.subtotal) + '</div>';
+            totalCellHtml += '<div style="font-size: 9.5px; color: var(--coral-pink); font-weight: 700;">-' + window.formatAppCurrency(itemDiskonNominal) + '</div>';
+        } else {
+            totalCellHtml += '<div style="font-weight: 700; color: var(--text-dark);">' + window.formatAppCurrency(item.subtotal) + '</div>';
+        }
+        totalCellHtml += '</td>';
+
+        tr.innerHTML = '<td style="padding: 8px 6px;"><b>' + escapeHtml(item.namaProduk) + '</b><br><span style="font-size:11px;color:var(--text-muted);">' + window.formatAppCurrency(item.harga) + '</span><br>' + discControlHtml + '</td>'
+            + '<td style="padding: 8px 4px; text-align: center;">' + qtyInputHtml + '</td>'
+            + totalCellHtml
+            + '<td style="padding: 8px 4px; text-align:center;"><button style="border:none;background:#fee2e2;color:var(--coral-pink);cursor:pointer;border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;" onclick="hapusCart(' + idx + ')"><svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></td>';
         tbody.appendChild(tr);
     });
 
@@ -113,8 +174,9 @@ function renderCart() {
     if (diskonType === 'persen') {
         diskonNominal = grandTotal * (diskonValue / 100);
     } else {
-        diskonNominal = diskonValue;
+        diskonNominal = window.fromAppCurrency ? window.fromAppCurrency(diskonValue) : diskonValue;
     }
+    diskonNominal = Math.min(grandTotal, diskonNominal);
 
     var taxableAmount = Math.max(0, grandTotal - diskonNominal);
 
@@ -137,6 +199,9 @@ function renderCart() {
     if (elTotal) elTotal.textContent = window.formatAppCurrency(net);
     
     window.currentPosTotalNet = net;
+    var netCurr = window.toAppCurrency ? window.toAppCurrency(net) : net;
+    window.currentPosTotalNetCurr = netCurr;
+
     if (typeof window.renderPosQuickCashChips === 'function') {
         window.renderPosQuickCashChips(net);
     }
@@ -192,7 +257,8 @@ function submitTransaksiPOS() {
     var elDiskon = document.getElementById('posDiskon');
     var diskonValue = elDiskon ? (parseFloat(elDiskon.value) || 0) : 0;
     var diskonType = elDiskonType ? elDiskonType.value : 'rp';
-    var diskon = (diskonType === 'persen') ? (grandTotal * (diskonValue / 100)) : diskonValue;
+    var diskon = (diskonType === 'persen') ? (grandTotal * (diskonValue / 100)) : (window.fromAppCurrency ? window.fromAppCurrency(diskonValue) : diskonValue);
+    diskon = Math.min(grandTotal, diskon);
     var taxableAmount = Math.max(0, grandTotal - diskon);
 
     var pajakRate = getAppPajakRate();
@@ -210,13 +276,22 @@ function submitTransaksiPOS() {
     var custName = (custSelect && custSelect.selectedIndex >= 0) ? custSelect.options[custSelect.selectedIndex].text : 'Pelanggan Umum Kasir';
 
     var elUangBayar = document.getElementById('posUangBayar');
-    var uangBayar = elUangBayar ? (parseFloat(String(elUangBayar.value).replace(/\D/g, '')) || 0) : 0;
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { currency: 'IDR' };
+    var uangBayarCurr = 0;
+    if (elUangBayar) {
+        if (cfg.currency === 'IDR') {
+            uangBayarCurr = parseFloat(String(elUangBayar.value).replace(/\D/g, '')) || 0;
+        } else {
+            uangBayarCurr = parseFloat(String(elUangBayar.value).replace(/\s/g, '').replace(/,/g, '.')) || 0;
+        }
+    }
+    var uangBayar = Math.round(window.fromAppCurrency ? window.fromAppCurrency(uangBayarCurr) : uangBayarCurr);
     if (isTunai && uangBayar < totalNet && uangBayar > 0) {
         return showToast('Jumlah uang bayar kurang dari total!', 'error');
     }
     
     // Automatically round up if not provided and it's cash
-    var bayarNominal = isTunai ? (uangBayar || (totalNet <= 50000 ? (Math.ceil(totalNet / 10000) * 10000 || totalNet) : totalNet)) : totalNet;
+    var bayarNominal = isTunai ? (uangBayar || totalNet) : totalNet;
     if (bayarNominal < totalNet) bayarNominal = totalNet;
     
     var kembalian = isTunai ? Math.max(0, bayarNominal - totalNet) : 0;
@@ -381,7 +456,8 @@ function submitTransaksiPOS() {
             // Kirim notifikasi otomatis ke Bot Telegram jika terkonfigurasi
             if (typeof window.sendTelegramNotification === 'function') {
                 var itemsText = cartSnapshot.map(function (ci) {
-                    return '• ' + ci.namaProduk + ' (' + ci.qty + 'x) : ' + (window.formatAppCurrency ? window.formatAppCurrency(ci.subtotal) : ('Rp ' + ci.subtotal));
+                    var discStr = (ci.diskonNominal && ci.diskonNominal > 0) ? (' [Disc: -' + (window.formatAppCurrency ? window.formatAppCurrency(ci.diskonNominal) : ci.diskonNominal) + ']') : '';
+                    return '• ' + ci.namaProduk + ' (' + ci.qty + 'x) : ' + (window.formatAppCurrency ? window.formatAppCurrency(ci.subtotal) : ('Rp ' + ci.subtotal)) + discStr;
                 }).join('\n');
 
                 var userNama = (window.currentUser && (window.currentUser.namaLengkap || window.currentUser.username)) || 'Kasir';
@@ -469,7 +545,21 @@ window.updateCartQty = function(idx, newQty) {
             }
         }
         
-        item.subtotal = item.qty * item.harga;
+        var rawSub = item.qty * item.harga;
+        var itemDiskon = parseFloat(item.diskon) || 0;
+        var itemDiskonType = item.diskonType || 'persen';
+        var itemDiskonNominal = 0;
+
+        if (itemDiskon > 0) {
+            if (itemDiskonType === 'persen') {
+                itemDiskonNominal = Math.round(rawSub * (Math.min(100, itemDiskon) / 100));
+            } else {
+                itemDiskonNominal = Math.round(window.fromAppCurrency ? window.fromAppCurrency(itemDiskon) : itemDiskon);
+                itemDiskonNominal = Math.min(rawSub, itemDiskonNominal);
+            }
+        }
+        item.diskonNominal = itemDiskonNominal;
+        item.subtotal = Math.max(0, rawSub - itemDiskonNominal);
         renderCart();
     }
 };
@@ -563,12 +653,15 @@ window.cetakStrukTerakhir = cetakStrukTerakhir;
 
 window.handlePosUangInput = function(inputEl) {
     if (!inputEl) return;
-    var raw = inputEl.value.replace(/\D/g, '');
-    if (!raw) {
-        inputEl.value = '';
-    } else {
-        var num = parseInt(raw, 10);
-        inputEl.value = num.toLocaleString('id-ID');
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { currency: 'IDR' };
+    if (cfg.currency === 'IDR') {
+        var raw = inputEl.value.replace(/\D/g, '');
+        if (!raw) {
+            inputEl.value = '';
+        } else {
+            var num = parseInt(raw, 10);
+            inputEl.value = num.toLocaleString('id-ID');
+        }
     }
     window.updatePosKembalian();
 };
@@ -582,61 +675,78 @@ window.posClearUangBayar = function() {
 window.posQuickCash = function(val) {
     var elUangBayar = document.getElementById('posUangBayar');
     if (!elUangBayar) return;
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { currency: 'IDR', fraction: 0 };
     if (val === 'pas') {
-        var net = window.currentPosTotalNet || 0;
-        elUangBayar.value = net > 0 ? net.toLocaleString('id-ID') : '';
+        var netCurr = window.currentPosTotalNetCurr || 0;
+        if (cfg.currency === 'IDR') {
+            elUangBayar.value = netCurr > 0 ? Math.round(netCurr).toLocaleString('id-ID') : '';
+        } else {
+            elUangBayar.value = netCurr > 0 ? parseFloat(Number(netCurr).toFixed(cfg.fraction)) : '';
+        }
     } else {
         var num = parseFloat(val) || 0;
-        elUangBayar.value = num > 0 ? num.toLocaleString('id-ID') : '';
+        if (cfg.currency === 'IDR') {
+            elUangBayar.value = num > 0 ? Math.round(num).toLocaleString('id-ID') : '';
+        } else {
+            elUangBayar.value = num > 0 ? parseFloat(Number(num).toFixed(cfg.fraction)) : '';
+        }
     }
     window.updatePosKembalian();
 };
 
-window.renderPosQuickCashChips = function(total) {
+window.renderPosQuickCashChips = function(totalIdr) {
     var group = document.getElementById('posQuickCashGroup');
     if (!group) return;
     
-    total = total || window.currentPosTotalNet || 0;
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { currency: 'IDR' };
+    totalIdr = totalIdr || window.currentPosTotalNet || 0;
+    var totalCurr = window.toAppCurrency ? window.toAppCurrency(totalIdr) : totalIdr;
     var chips = [];
-    
-    if (total <= 0) {
-        chips = [10000, 20000, 50000, 100000];
-    } else {
-        // Rekomendasi pembulatan terdekat
-        var r10k = Math.ceil(total / 10000) * 10000;
-        if (r10k > total && chips.indexOf(r10k) === -1) {
-            chips.push(r10k);
-        }
-        var r20k = Math.ceil(total / 20000) * 20000;
-        if (r20k > total && chips.indexOf(r20k) === -1) {
-            chips.push(r20k);
-        }
-        var r50k = Math.ceil(total / 50000) * 50000;
-        if (r50k > total && chips.indexOf(r50k) === -1) {
-            chips.push(r50k);
-        }
-        var r100k = Math.ceil(total / 100000) * 100000;
-        if (r100k > total && chips.indexOf(r100k) === -1) {
-            chips.push(r100k);
-        }
-        
-        // Standar pecahan uang kertas Indonesia
-        var standardNotes = [20000, 50000, 100000, 200000];
-        for (var i = 0; i < standardNotes.length; i++) {
-            var note = standardNotes[i];
-            if (note > total && chips.indexOf(note) === -1 && chips.length < 4) {
-                chips.push(note);
+
+    if (cfg.currency === 'IDR') {
+        if (totalIdr <= 0) {
+            chips = [10000, 20000, 50000, 100000];
+        } else {
+            var r10k = Math.ceil(totalIdr / 10000) * 10000;
+            if (r10k > totalIdr) chips.push(r10k);
+            var r20k = Math.ceil(totalIdr / 20000) * 20000;
+            if (r20k > totalIdr && chips.indexOf(r20k) === -1) chips.push(r20k);
+            var r50k = Math.ceil(totalIdr / 50000) * 50000;
+            if (r50k > totalIdr && chips.indexOf(r50k) === -1) chips.push(r50k);
+            var r100k = Math.ceil(totalIdr / 100000) * 100000;
+            if (r100k > totalIdr && chips.indexOf(r100k) === -1) chips.push(r100k);
+
+            var standardNotes = [20000, 50000, 100000, 200000];
+            for (var i = 0; i < standardNotes.length; i++) {
+                var note = standardNotes[i];
+                if (note > totalIdr && chips.indexOf(note) === -1 && chips.length < 4) chips.push(note);
             }
+            chips.sort(function(a, b) { return a - b; });
+            chips = chips.slice(0, 4);
         }
-        
-        chips.sort(function(a, b) { return a - b; });
-        chips = chips.slice(0, 4);
+    } else {
+        // Mata uang asing (YER, SAR, USD)
+        if (totalCurr <= 0) {
+            chips = cfg.currency === 'USD' ? [5, 10, 20, 50] : (cfg.currency === 'SAR' ? [10, 50, 100, 200] : [500, 1000, 2000, 5000]);
+        } else {
+            var step = totalCurr > 1000 ? 500 : (totalCurr > 100 ? 50 : (totalCurr > 10 ? 5 : 1));
+            var c1 = Math.ceil(totalCurr / step) * step;
+            if (c1 > totalCurr) chips.push(c1);
+            var c2 = Math.ceil((totalCurr + 1) / (step * 2)) * (step * 2);
+            if (c2 > totalCurr && chips.indexOf(c2) === -1) chips.push(c2);
+            var c3 = Math.ceil((totalCurr + 1) / (step * 5)) * (step * 5);
+            if (c3 > totalCurr && chips.indexOf(c3) === -1) chips.push(c3);
+            var c4 = Math.ceil((totalCurr + 1) / (step * 10)) * (step * 10);
+            if (c4 > totalCurr && chips.indexOf(c4) === -1) chips.push(c4);
+            chips.sort(function(a, b) { return a - b; });
+            chips = chips.slice(0, 4);
+        }
     }
-    
+
     var html = '<button type="button" onclick="window.posQuickCash(\'pas\')" class="pos-chip-btn" id="btnChipPas" style="flex: 1.2; min-width: 85px; padding: 7px 10px; font-size: 11.5px; font-weight: 800; border-radius: 8px; border: 1.5px solid #818cf8; background: linear-gradient(135deg, #eef2ff 0%, #ede9fe 100%); color: #4338ca; cursor: pointer; transition: all 0.15s ease; display: inline-flex; align-items: center; justify-content: center;">Uang Pas</button>';
     
     chips.forEach(function(val) {
-        var label = val.toLocaleString('id-ID');
+        var label = cfg.currency === 'IDR' ? val.toLocaleString('id-ID') : (window.formatAppCurrencyValue ? window.formatAppCurrencyValue(val) : val);
         html += '<button type="button" onclick="window.posQuickCash(' + val + ')" class="pos-chip-btn" data-val="' + val + '" style="flex: 1; min-width: 58px; padding: 7px 8px; font-size: 11.5px; font-weight: 700; border-radius: 8px; border: 1.5px solid #e2e8f0; background: #ffffff; color: #334155; cursor: pointer; transition: all 0.15s ease;">' + label + '</button>';
     });
     
@@ -652,19 +762,29 @@ window.updatePosKembalian = function() {
     var elMetode = document.getElementById('posPaymentMethod');
     var isTunai = !elMetode || String(elMetode.value).toLowerCase() === 'tunai';
 
-    var total = window.currentPosTotalNet || 0;
-    var rawDigits = elUangBayar ? elUangBayar.value.replace(/\D/g, '') : '';
-    var bayarNum = rawDigits ? (parseInt(rawDigits, 10) || 0) : 0;
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { currency: 'IDR' };
+    var totalIdr = window.currentPosTotalNet || 0;
+    var totalCurr = window.currentPosTotalNetCurr !== undefined ? window.currentPosTotalNetCurr : (window.toAppCurrency ? window.toAppCurrency(totalIdr) : totalIdr);
+    
+    var valStr = elUangBayar ? String(elUangBayar.value).trim() : '';
+    var bayarCurr = 0;
+    if (cfg.currency === 'IDR') {
+        var rawDigits = valStr.replace(/\D/g, '');
+        bayarCurr = rawDigits ? parseInt(rawDigits, 10) : 0;
+    } else {
+        var cleanVal = valStr.replace(/\s/g, '').replace(/,/g, '.');
+        bayarCurr = parseFloat(cleanVal) || 0;
+    }
 
     if (elReset) {
-        elReset.style.display = rawDigits ? 'inline-block' : 'none';
+        elReset.style.display = valStr ? 'inline-block' : 'none';
     }
 
     // Active state highlighting for quick cash chips
     var allChips = document.querySelectorAll('#posQuickCashGroup .pos-chip-btn');
     allChips.forEach(function(chip) {
         if (chip.id === 'btnChipPas') {
-            if (bayarNum > 0 && bayarNum === total) {
+            if (bayarCurr > 0 && Math.abs(bayarCurr - totalCurr) < 0.01) {
                 chip.style.borderColor = 'var(--violet-main)';
                 chip.style.boxShadow = '0 0 0 2px rgba(108,71,255,0.25)';
             } else {
@@ -673,7 +793,7 @@ window.updatePosKembalian = function() {
             }
         } else {
             var chipVal = parseFloat(chip.getAttribute('data-val')) || 0;
-            if (bayarNum > 0 && bayarNum === chipVal) {
+            if (bayarCurr > 0 && Math.abs(bayarCurr - chipVal) < 0.01) {
                 chip.style.borderColor = 'var(--violet-main)';
                 chip.style.background = '#f5f3ff';
                 chip.style.color = 'var(--violet-main)';
@@ -700,7 +820,7 @@ window.updatePosKembalian = function() {
             var custData = window._pelangganDataList || window.allPelanggan || [];
             var pel = custData.find(function(p) { return p.pelanggan_id === custId || p.id === custId; });
             var saldoTab = (pel && custId !== 'CUST-UMUM') ? (parseFloat(pel.tabungan) || 0) : 0;
-            var sisaTab = saldoTab - total;
+            var sisaTab = saldoTab - totalIdr;
 
             if (elTabCurrent) elTabCurrent.textContent = window.formatAppCurrency ? window.formatAppCurrency(saldoTab) : ('Rp ' + saldoTab.toLocaleString('id-ID'));
             if (elTabRemaining) {
@@ -722,7 +842,7 @@ window.updatePosKembalian = function() {
                 elSubmitBtn.style.background = '#94a3b8';
                 elSubmitBtn.style.boxShadow = 'none';
                 elSubmitBtn.innerHTML = '<svg style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Pilih Member untuk Tabungan';
-            } else if (saldoTab < total) {
+            } else if (saldoTab < totalIdr) {
                 if (elTabBadge) {
                     elTabBadge.textContent = 'Saldo Kurang';
                     elTabBadge.style.background = '#fef2f2';
@@ -750,7 +870,7 @@ window.updatePosKembalian = function() {
                 elSubmitBtn.style.boxShadow = '0 8px 24px -4px rgba(16, 185, 129, 0.35)';
                 elSubmitBtn.innerHTML = '<svg style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2;" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Potong Saldo Tabungan';
             }
-        } else if (isTunai && rawDigits && bayarNum < total) {
+        } else if (isTunai && valStr && bayarCurr < totalCurr) {
             elSubmitBtn.disabled = true;
             elSubmitBtn.style.opacity = '0.55';
             elSubmitBtn.style.cursor = 'not-allowed';
@@ -769,39 +889,32 @@ window.updatePosKembalian = function() {
 
     if (!elFeedbackBox || !elFeedbackAmount) return;
 
-    if (!rawDigits || bayarNum <= 0) {
+    if (!valStr || bayarCurr <= 0 || totalCurr <= 0) {
         elFeedbackBox.style.display = 'none';
         return;
     }
 
-    if (total <= 0) {
-        elFeedbackBox.style.display = 'none';
-        return;
-    }
+    var selisih = bayarCurr - totalCurr;
+    elFeedbackBox.style.display = 'flex';
 
-    if (bayarNum > total) {
-        var kembali = bayarNum - total;
-        elFeedbackBox.style.display = 'flex';
+    if (selisih > 0.001) {
         elFeedbackBox.style.background = '#ecfdf5';
         elFeedbackBox.style.border = '1.5px solid #a7f3d0';
         elFeedbackBox.style.boxShadow = '0 2px 8px rgba(16, 185, 129, 0.08)';
-        elFeedbackAmount.textContent = window.formatAppCurrency(kembali);
+        elFeedbackAmount.textContent = window.formatAppCurrencyValue ? window.formatAppCurrencyValue(selisih) : window.formatAppCurrency(selisih);
         elFeedbackAmount.style.color = '#059669';
-    } else if (bayarNum === total) {
-        elFeedbackBox.style.display = 'flex';
+    } else if (Math.abs(selisih) <= 0.001) {
         elFeedbackBox.style.background = '#f0fdf4';
         elFeedbackBox.style.border = '1.5px solid #bbf7d0';
         elFeedbackBox.style.boxShadow = '0 2px 8px rgba(34, 197, 94, 0.08)';
-        elFeedbackAmount.textContent = 'Rp 0';
+        elFeedbackAmount.textContent = window.formatAppCurrencyValue ? window.formatAppCurrencyValue(0) : 'Rp 0';
         elFeedbackAmount.style.color = '#16a34a';
     } else {
-        // bayarNum < total (Kurang -> merah dengan minus)
-        var kurang = total - bayarNum;
-        elFeedbackBox.style.display = 'flex';
+        var kurang = Math.abs(selisih);
         elFeedbackBox.style.background = '#fef2f2';
         elFeedbackBox.style.border = '1.5px solid #fecaca';
         elFeedbackBox.style.boxShadow = '0 2px 8px rgba(239, 68, 68, 0.08)';
-        elFeedbackAmount.textContent = '- ' + window.formatAppCurrency(kurang);
+        elFeedbackAmount.textContent = '- ' + (window.formatAppCurrencyValue ? window.formatAppCurrencyValue(kurang) : window.formatAppCurrency(kurang));
         elFeedbackAmount.style.color = '#dc2626';
     }
 };
@@ -813,8 +926,19 @@ window.handlePosCustomerChange = function() {
 window.posHandleEnterSubmit = function() {
     var elUangBayar = document.getElementById('posUangBayar');
     var total = window.currentPosTotalNet || 0;
-    var rawDigits = elUangBayar ? elUangBayar.value.replace(/\D/g, '') : '';
-    var bayarNum = rawDigits ? (parseInt(rawDigits, 10) || 0) : 0;
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { currency: 'IDR' };
+    var totalCurr = window.currentPosTotalNetCurr !== undefined ? window.currentPosTotalNetCurr : (window.toAppCurrency ? window.toAppCurrency(total) : total);
+    
+    var valStr = elUangBayar ? String(elUangBayar.value).trim() : '';
+    var bayarCurr = 0;
+    if (cfg.currency === 'IDR') {
+        var rawDigits = valStr.replace(/\D/g, '');
+        bayarCurr = rawDigits ? parseInt(rawDigits, 10) : 0;
+    } else {
+        var cleanVal = valStr.replace(/\s/g, '').replace(/,/g, '.');
+        bayarCurr = parseFloat(cleanVal) || 0;
+    }
+
     var elMetode = document.getElementById('posPaymentMethod');
     var elCustomer = document.getElementById('posCustomer');
     var metode = elMetode ? elMetode.value : 'Tunai';
@@ -837,7 +961,7 @@ window.posHandleEnterSubmit = function() {
         return;
     }
 
-    if (isTunai && rawDigits && bayarNum < total) {
+    if (isTunai && valStr && bayarCurr < totalCurr) {
         if (typeof showToast === 'function') {
             showToast('Uang yang dimasukkan belum cukup!', 'warning');
         }

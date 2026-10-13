@@ -150,6 +150,7 @@ window.navigatePage = function (viewId) {
     if (viewId === 'pengaturan' && typeof window.initPengaturanPage === 'function') window.initPengaturanPage();
     if (viewId === 'keuangan' && typeof window.initKeuanganPage === 'function') window.initKeuanganPage();
     if (viewId === 'bantuan' && typeof window.initBantuanPage === 'function') window.initBantuanPage();
+    if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();
 };
 
 window.doLogin = function () {

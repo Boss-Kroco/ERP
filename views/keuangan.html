@@ -86,9 +86,9 @@
                         id="kasKategori" placeholder="Contoh: Listrik / Bahan Baku / Sewa / Bensin" required>
                 </div>
                 <div>
-                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nominal (Rp)</label>
-                    <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
-                        id="kasNominal" required placeholder="0" min="1">
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);" id="lblKasNominal">Nominal (<span class="app-currency-symbol">Rp</span>)</label>
+                    <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                        id="kasNominal" required placeholder="0" min="0.01">
                 </div>
                 <div>
                     <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Keterangan Rinci</label>
@@ -179,8 +179,8 @@
                         <th style="min-width: 90px; text-align: center;">Tipe</th>
                         <th style="min-width: 130px;">Kategori</th>
                         <th style="min-width: 170px;">Keterangan</th>
-                        <th style="min-width: 110px; text-align: right;">Masuk (Rp)</th>
-                        <th style="min-width: 110px; text-align: right;">Keluar (Rp)</th>
+                        <th style="min-width: 110px; text-align: right;" id="thKasMasuk">Masuk (<span class="app-currency-symbol">Rp</span>)</th>
+                        <th style="min-width: 110px; text-align: right;" id="thKasKeluar">Keluar (<span class="app-currency-symbol">Rp</span>)</th>
                         <th style="min-width: 120px; text-align: right;">Saldo Berjalan</th>
                         <th style="min-width: 120px;">Dicatat Oleh</th>
                         <th style="min-width: 80px; text-align: center;">Aksi</th>

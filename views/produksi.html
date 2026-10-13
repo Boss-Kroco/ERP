@@ -253,7 +253,7 @@
                                 <tr>
                                     <th>Nama Bahan</th>
                                     <th style="width: 70px;">Qty</th>
-                                    <th style="width: 110px;">Harga Sat</th>
+                                    <th style="width: 120px;" id="thHppHargaSatuan">Harga Sat (<span class="app-currency-symbol">Rp</span>)</th>
                                     <th style="text-align: right;">Total</th>
                                     <th></th>
                                 </tr>
@@ -279,27 +279,27 @@
                         
                         <div style="display: flex; flex-direction: column;">
                             <div class="hpp-input-row">
-                                <label style="font-size: 12.5px;">Tenaga Kerja</label>
+                                <label style="font-size: 12.5px;">Tenaga Kerja (<span class="app-currency-symbol">Rp</span>)</label>
                                 <input type="number" step="any" id="hppBiayaTk" class="hpp-clean-input" style="width: 90px; padding: 6px 10px !important;" value="0" oninput="window.kalkulasiTotalHpp()">
                             </div>
                             <div class="hpp-input-row">
-                                <label style="font-size: 12.5px;">Gas/BBM</label>
+                                <label style="font-size: 12.5px;">Gas/BBM (<span class="app-currency-symbol">Rp</span>)</label>
                                 <input type="number" step="any" id="hppBiayaGas" class="hpp-clean-input" style="width: 90px; padding: 6px 10px !important;" value="0" oninput="window.kalkulasiTotalHpp()">
                             </div>
                             <div class="hpp-input-row">
-                                <label style="font-size: 12.5px;">Listrik</label>
+                                <label style="font-size: 12.5px;">Listrik (<span class="app-currency-symbol">Rp</span>)</label>
                                 <input type="number" step="any" id="hppBiayaListrik" class="hpp-clean-input" style="width: 90px; padding: 6px 10px !important;" value="0" oninput="window.kalkulasiTotalHpp()">
                             </div>
                             <div class="hpp-input-row">
-                                <label style="font-size: 12.5px;">Kemasan</label>
+                                <label style="font-size: 12.5px;">Kemasan (<span class="app-currency-symbol">Rp</span>)</label>
                                 <input type="number" step="any" id="hppBiayaKemasan" class="hpp-clean-input" style="width: 90px; padding: 6px 10px !important;" value="0" oninput="window.kalkulasiTotalHpp()">
                             </div>
                             <div class="hpp-input-row">
-                                <label style="font-size: 12.5px;">Overhead</label>
+                                <label style="font-size: 12.5px;">Overhead (<span class="app-currency-symbol">Rp</span>)</label>
                                 <input type="number" step="any" id="hppBiayaOverhead" class="hpp-clean-input" style="width: 90px; padding: 6px 10px !important;" value="0" oninput="window.kalkulasiTotalHpp()">
                             </div>
                             <div class="hpp-input-row">
-                                <label style="font-size: 12.5px;">Lainnya</label>
+                                <label style="font-size: 12.5px;">Lainnya (<span class="app-currency-symbol">Rp</span>)</label>
                                 <input type="number" step="any" id="hppBiayaLain" class="hpp-clean-input" style="width: 90px; padding: 6px 10px !important;" value="0" oninput="window.kalkulasiTotalHpp()">
                             </div>
                         </div>
@@ -317,7 +317,7 @@
                             <input type="number" step="any" id="hppJmlProduksi" class="hpp-clean-input" style="width: 80px; font-size: 14px; text-align: center; color: var(--violet-main); border-color: var(--violet-light);" value="1" oninput="window.kalkulasiTotalHpp()">
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <label style="font-size: 12.5px; font-weight: 700; color: var(--violet-dark);">Harga Jual</label>
+                            <label style="font-size: 12.5px; font-weight: 700; color: var(--violet-dark);">Harga Jual (<span class="app-currency-symbol">Rp</span>)</label>
                             <input type="number" step="any" id="hppHargaJual" class="hpp-clean-input" style="width: 120px; font-size: 14px; text-align: right; color: var(--emerald);" value="0" oninput="this.dataset.modified='true'">
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
@@ -325,7 +325,7 @@
                             <input type="number" step="any" id="hppMinGrosir" class="hpp-clean-input" style="width: 80px; font-size: 14px; text-align: right; color: var(--text-main);" placeholder="Mis. 6">
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-                            <label style="font-size: 12.5px; font-weight: 700; color: var(--violet-dark);">Harga Grosir</label>
+                            <label style="font-size: 12.5px; font-weight: 700; color: var(--violet-dark);">Harga Grosir (<span class="app-currency-symbol">Rp</span>)</label>
                             <input type="number" step="any" id="hppHargaGrosir" class="hpp-clean-input" style="width: 120px; font-size: 14px; text-align: right; color: var(--coral-pink);" placeholder="0">
                         </div>
                         <hr style="border: none; border-top: 1px dashed var(--border-soft); margin: 4px 0;">

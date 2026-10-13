@@ -24,10 +24,11 @@ window.showToast = function (msg, type) {
     }, 3200);
 };
 
-window.formatAppCurrency = function (num) {
-    var rawSettings = localStorage.getItem('bos_kroco_app_settings');
+window.getAppCurrencyConfig = function () {
+    var rawSettings = localStorage.getItem('bos_kroco_app_settings') || localStorage.getItem('boss_kroco_app_settings');
     var currency = 'IDR';
     var prefix = 'Rp ';
+    var symbol = 'Rp';
     var exchangeRate = 1;
     var locale = 'id-ID';
     var fraction = 0;
@@ -41,29 +42,90 @@ window.formatAppCurrency = function (num) {
 
     if (currency === 'USD') {
         prefix = '$';
+        symbol = '$';
         exchangeRate = 15500; // Asumsi kurs IDR to USD
         locale = 'en-US';
         fraction = 2;
     } else if (currency === 'YER') {
         prefix = '﷼ ';
-        exchangeRate = 75.87; // Real market exchange rate IDR to YER
+        symbol = '﷼';
+        // Kurs riil pasar Yaman Selatan (Aden): 100 SAR = 41.500 YER (1 SAR = 415 YER)
+        // Dengan acuan kurs SAR = 4.770 IDR, maka 1 YER = 4770 / 415 IDR (~11,494 IDR)
+        exchangeRate = 4770 / 415;
         locale = 'id-ID';
         fraction = 2;
     } else if (currency === 'SAR') {
         prefix = '﷼ ';
+        symbol = '﷼';
         exchangeRate = 4770; // Kurs real ~ 4770 IDR to SAR
         locale = 'id-ID';
         fraction = 2;
     }
-    
-    var convertedNum = Number(num || 0) / exchangeRate;
-    return prefix + convertedNum.toLocaleString(locale, {
-        minimumFractionDigits: fraction,
-        maximumFractionDigits: fraction
+
+    return {
+        currency: currency,
+        prefix: prefix,
+        symbol: symbol,
+        exchangeRate: exchangeRate,
+        locale: locale,
+        fraction: fraction
+    };
+};
+
+window.toAppCurrency = function (numIdr) {
+    var cfg = window.getAppCurrencyConfig();
+    return Number(numIdr || 0) / cfg.exchangeRate;
+};
+
+window.fromAppCurrency = function (numCurr) {
+    var cfg = window.getAppCurrencyConfig();
+    return Number(numCurr || 0) * cfg.exchangeRate;
+};
+
+window.formatAppCurrency = function (num) {
+    var cfg = window.getAppCurrencyConfig();
+    var convertedNum = Number(num || 0) / cfg.exchangeRate;
+    return cfg.prefix + convertedNum.toLocaleString(cfg.locale, {
+        minimumFractionDigits: cfg.fraction,
+        maximumFractionDigits: cfg.fraction
     });
 };
 
-window.formatAppCurrency = window.formatAppCurrency;
+window.formatAppCurrencyValue = function (val) {
+    var cfg = window.getAppCurrencyConfig();
+    var num = Number(val || 0);
+    return cfg.prefix + num.toLocaleString(cfg.locale, {
+        minimumFractionDigits: cfg.fraction,
+        maximumFractionDigits: cfg.fraction
+    });
+};
+
+window.updateAppCurrencyUI = function () {
+    var cfg = window.getAppCurrencyConfig();
+    // Update semua elemen dengan class app-currency-symbol
+    document.querySelectorAll('.app-currency-symbol').forEach(function (el) {
+        el.textContent = cfg.symbol;
+    });
+
+    // Update elemen khusus yang mungkin belum ber-class
+    var elPosPrefix = document.getElementById('posCurrencyPrefix');
+    if (elPosPrefix) elPosPrefix.textContent = cfg.symbol;
+
+    var lblKasNom = document.getElementById('lblKasNominal');
+    if (lblKasNom) lblKasNom.innerHTML = 'Nominal (' + cfg.symbol + ')';
+
+    var thMasuk = document.getElementById('thKasMasuk');
+    if (thMasuk) thMasuk.textContent = 'Masuk (' + cfg.symbol + ')';
+
+    var thKeluar = document.getElementById('thKasKeluar');
+    if (thKeluar) thKeluar.textContent = 'Keluar (' + cfg.symbol + ')';
+
+    var thHppSat = document.getElementById('thHppHargaSatuan');
+    if (thHppSat) thHppSat.textContent = 'Harga Sat (' + cfg.symbol + ')';
+
+    var optPosDiskon = document.getElementById('optPosDiskonRp');
+    if (optPosDiskon) optPosDiskon.textContent = 'Nominal (' + cfg.symbol + ')';
+};
 
 window.escapeHtml = function (text) {
     if (!text) return '';
@@ -209,6 +271,7 @@ window.loadAllViews = async function () {
         });
 
         window._viewsLoaded = true;
+        if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();
         console.log('[Bos Kroco] Seluruh 11 modul view berhasil dimuat.');
         return true;
     } catch (err) {

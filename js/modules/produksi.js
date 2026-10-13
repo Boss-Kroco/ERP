@@ -143,13 +143,21 @@ window.initTambahHpp = function() {
     if (sel && sel.value) {
         var prdId = sel.value;
         var prd = (window.catalogProducts || []).find(function(p) { return p.produkId === prdId; });
+        var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { exchangeRate: 1 };
+        
         if (prd) {
             var elHj = document.getElementById('hppHargaJual');
-            if (elHj && !elHj.dataset.modified) elHj.value = prd.hargaJual || 0;
+            if (elHj && !elHj.dataset.modified) {
+                var hjCurr = window.toAppCurrency ? window.toAppCurrency(prd.hargaJual || 0) : (prd.hargaJual || 0);
+                elHj.value = parseFloat(hjCurr.toFixed(2));
+            }
             var elHmg = document.getElementById('hppMinGrosir');
             if (elHmg) elHmg.value = prd.minQtyGrosir || '';
             var elHhg = document.getElementById('hppHargaGrosir');
-            if (elHhg) elHhg.value = prd.hargaGrosir || '';
+            if (elHhg) {
+                var hgCurr = prd.hargaGrosir ? (window.toAppCurrency ? window.toAppCurrency(prd.hargaGrosir) : prd.hargaGrosir) : '';
+                elHhg.value = hgCurr ? parseFloat(Number(hgCurr).toFixed(2)) : '';
+            }
         }
 
         window.hppRincian = window.hppRincian || {};
@@ -157,13 +165,28 @@ window.initTambahHpp = function() {
         
         if (savedState && savedState.bahanList) {
             window.tempBahanBaku = JSON.parse(JSON.stringify(savedState.bahanList));
+            // Konversi nilai tersimpan ke mata uang aktif saat ini jika berbeda
+            var savedRate = savedState.exchangeRate || 1;
+            var currentRate = cfg.exchangeRate || 1;
+            var rateMultiplier = savedRate / currentRate;
+            
+            if (Math.abs(rateMultiplier - 1) > 0.001) {
+                window.tempBahanBaku.forEach(function(b) {
+                    b.harga = parseFloat((Number(b.harga || 0) * rateMultiplier).toFixed(2));
+                });
+            }
+
             if (savedState.rawBiaya) {
-                if (document.getElementById('hppBiayaTk')) document.getElementById('hppBiayaTk').value = savedState.rawBiaya.tk || '';
-                if (document.getElementById('hppBiayaGas')) document.getElementById('hppBiayaGas').value = savedState.rawBiaya.gas || '';
-                if (document.getElementById('hppBiayaListrik')) document.getElementById('hppBiayaListrik').value = savedState.rawBiaya.listrik || '';
-                if (document.getElementById('hppBiayaKemasan')) document.getElementById('hppBiayaKemasan').value = savedState.rawBiaya.kemasan || '';
-                if (document.getElementById('hppBiayaOverhead')) document.getElementById('hppBiayaOverhead').value = savedState.rawBiaya.overhead || '';
-                if (document.getElementById('hppBiayaLain')) document.getElementById('hppBiayaLain').value = savedState.rawBiaya.lainnya || '';
+                var rb = savedState.rawBiaya;
+                ['tk', 'gas', 'listrik', 'kemasan', 'overhead', 'lainnya'].forEach(function(k) {
+                    var inputId = 'hppBiaya' + k.charAt(0).toUpperCase() + k.slice(1);
+                    var el = document.getElementById(inputId);
+                    if (el) {
+                        var rawVal = Number(rb[k] || 0);
+                        var convertedVal = Math.abs(rateMultiplier - 1) > 0.001 ? (rawVal * rateMultiplier) : rawVal;
+                        el.value = convertedVal ? parseFloat(convertedVal.toFixed(2)) : '';
+                    }
+                });
                 if (document.getElementById('hppJmlProduksi')) document.getElementById('hppJmlProduksi').value = savedState.rawBiaya.jmlProd || 1;
             }
         } else {
@@ -179,6 +202,7 @@ window.initTambahHpp = function() {
         window.tempBahanBaku = [];
     }
 
+    if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();
     window.renderHppBahanBaku();
     if(typeof window.kalkulasiTotalHpp === 'function') window.kalkulasiTotalHpp();
 };
@@ -197,7 +221,7 @@ window.renderHppBahanBaku = function() {
             <td><input type="text" class="hpp-clean-input" style="width: 100%; min-width: 120px;" value="${item.nama}" onchange="window.updateHppBahan(${idx}, 'nama', this.value)"></td>
             <td><input type="number" step="any" class="hpp-clean-input" style="text-align: center; width: 90px; padding: 4px;" value="${item.qty}" onchange="window.updateHppBahan(${idx}, 'qty', this.value)"></td>
             <td><input type="number" step="any" class="hpp-clean-input" style="text-align: right; width: 100px; padding: 4px;" value="${item.harga}" onchange="window.updateHppBahan(${idx}, 'harga', this.value)"></td>
-            <td style="font-weight: 700; text-align: right; color: var(--text-dark);">${window.formatAppCurrency(sub)}</td>
+            <td style="font-weight: 700; text-align: right; color: var(--text-dark);">${window.formatAppCurrencyValue ? window.formatAppCurrencyValue(sub) : window.formatAppCurrency(sub)}</td>
             <td style="text-align: center;">
                 <button style="border: none; background: #fff1f2; color: #e11d48; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center;" onclick="window.hapusHppBahan(${idx})">
                     <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -207,8 +231,11 @@ window.renderHppBahanBaku = function() {
         tbody.appendChild(tr);
     });
     
-    document.getElementById('lblHppTotalBahan').textContent = window.formatAppCurrency(totalBahan);
-    document.getElementById('lblHppTotalBahan').dataset.val = totalBahan;
+    var lblTotalBahan = document.getElementById('lblHppTotalBahan');
+    if (lblTotalBahan) {
+        lblTotalBahan.textContent = window.formatAppCurrencyValue ? window.formatAppCurrencyValue(totalBahan) : window.formatAppCurrency(totalBahan);
+        lblTotalBahan.dataset.val = totalBahan;
+    }
     window.kalkulasiTotalHpp();
 };
 
@@ -241,17 +268,17 @@ window.kalkulasiTotalHpp = function() {
     
     var totalProduksi = bTk + bGas + bListrik + bKemasan + bOverhead + bLain;
     var lblTotalProd = document.getElementById('lblHppTotalProduksi');
-    if (lblTotalProd) lblTotalProd.textContent = window.formatAppCurrency(totalProduksi);
+    if (lblTotalProd) lblTotalProd.textContent = window.formatAppCurrencyValue ? window.formatAppCurrencyValue(totalProduksi) : window.formatAppCurrency(totalProduksi);
     
     var grandTotal = totalBahan + totalProduksi;
     var lblGrandTotal = document.getElementById('lblHppGrandTotal');
-    if (lblGrandTotal) lblGrandTotal.textContent = window.formatAppCurrency(grandTotal);
+    if (lblGrandTotal) lblGrandTotal.textContent = window.formatAppCurrencyValue ? window.formatAppCurrencyValue(grandTotal) : window.formatAppCurrency(grandTotal);
     
     var jmlProd = parseFloat((document.getElementById('hppJmlProduksi') || {}).value) || 1;
     var hppItem = grandTotal / jmlProd;
     
     var lblPerItem = document.getElementById('lblHppPerItem');
-    if (lblPerItem) lblPerItem.textContent = window.formatAppCurrency(hppItem);
+    if (lblPerItem) lblPerItem.textContent = window.formatAppCurrencyValue ? window.formatAppCurrencyValue(hppItem) : window.formatAppCurrency(hppItem);
     
     window.tempHppResult = {
         totalBahan: totalBahan,
@@ -276,7 +303,7 @@ window.simpanHppBaru = function() {
         return;
     }
     
-    var oldHpp = prd.hargaBeliHPP || 0;
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { exchangeRate: 1 };
     var res = window.tempHppResult;
     
     if (!res || res.hppItem === undefined) {
@@ -285,17 +312,23 @@ window.simpanHppBaru = function() {
     }
     
     var hargaJualInput = document.getElementById('hppHargaJual');
-    var hargaJualValue = hargaJualInput ? (parseFloat(hargaJualInput.value) || prd.hargaJual) : prd.hargaJual;
+    var hargaJualCurr = hargaJualInput ? (parseFloat(hargaJualInput.value) || 0) : 0;
 
     var minGrosirInput = document.getElementById('hppMinGrosir');
     var minGrosirValue = (minGrosirInput && minGrosirInput.value !== '') ? parseFloat(minGrosirInput.value) : (prd.minQtyGrosir || 0);
     
     var hargaGrosirInput = document.getElementById('hppHargaGrosir');
-    var hargaGrosirValue = (hargaGrosirInput && hargaGrosirInput.value !== '') ? parseFloat(hargaGrosirInput.value) : (prd.hargaGrosir || 0);
+    var hargaGrosirCurr = (hargaGrosirInput && hargaGrosirInput.value !== '') ? parseFloat(hargaGrosirInput.value) : 0;
 
-    // Save recipe details in memory and localStorage
+    // Nilai dalam base IDR untuk disimpan ke master database
+    var hppItemBaseIdr = Math.round(window.fromAppCurrency ? window.fromAppCurrency(res.hppItem) : res.hppItem);
+    var hargaJualBaseIdr = Math.round(window.fromAppCurrency ? window.fromAppCurrency(hargaJualCurr) : hargaJualCurr);
+    var hargaGrosirBaseIdr = Math.round(window.fromAppCurrency ? window.fromAppCurrency(hargaGrosirCurr) : hargaGrosirCurr);
+
+    // Save recipe details in memory and localStorage (dengan exchangeRate untuk konversi antar kurs)
     window.hppRincian = window.hppRincian || {};
     window.hppRincian[selId] = {
+        exchangeRate: cfg.exchangeRate,
         bahan: res.totalBahan / res.jmlProd,
         tk: res.bTk / res.jmlProd,
         gas: res.bGas / res.jmlProd,
@@ -322,10 +355,10 @@ window.simpanHppBaru = function() {
         produkId: prd.produkId,
         namaProduk: prd.namaProduk,
         satuan: prd.satuan,
-        hargaBeliHPP: res.hppItem || 0,
-        hargaJual: hargaJualValue || 0,
+        hargaBeliHPP: hppItemBaseIdr || 0,
+        hargaJual: hargaJualBaseIdr || 0,
         minQtyGrosir: minGrosirValue,
-        hargaGrosir: hargaGrosirValue,
+        hargaGrosir: hargaGrosirBaseIdr,
         status: prd.status
     };
 
@@ -334,10 +367,10 @@ window.simpanHppBaru = function() {
     if (window.runBackend) {
         window.runBackend('apiUpdateProduct', [payload, window.currentUser], function(apiRes) {
             // Update local memory
-            prd.hargaBeliHPP = res.hppItem || 0;
-            prd.hargaJual = hargaJualValue || 0;
+            prd.hargaBeliHPP = hppItemBaseIdr || 0;
+            prd.hargaJual = hargaJualBaseIdr || 0;
             prd.minQtyGrosir = minGrosirValue;
-            prd.hargaGrosir = hargaGrosirValue;
+            prd.hargaGrosir = hargaGrosirBaseIdr;
 
             if (window.catalogProducts) {
                 var cPrd = window.catalogProducts.find(function(p) { return p.produkId === selId; });

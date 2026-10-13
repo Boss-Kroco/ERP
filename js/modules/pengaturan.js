@@ -345,6 +345,7 @@ window.savePengaturanFinance = function () {
     saveAppSettingsHelper({ targetOmzet: targetOmzet, pajak: pajak, limitKas: limitKas, currency: currency });
     window.closeSettingModal('modalSetFinance');
     window.initPengaturanPage();
+    if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();
     if (typeof window.loadDashboardData === 'function') window.loadDashboardData();
     if (typeof window.showToast === 'function') {
         window.showToast('Konfigurasi finansial, pajak & target omzet disimpan!', 'success');

@@ -1358,11 +1358,14 @@ window.openPreviewStruk = function (trxId, mode) {
 
         var formattedHarga = window.formatAppCurrency(pHarga);
         var formattedSub = window.formatAppCurrency(pSub);
+        var discText = (it.diskonNominal && Number(it.diskonNominal) > 0)
+            ? ' <span style="color: #dc2626; font-size: 10px; font-weight: 700;">(Disc: -' + window.formatAppCurrency(it.diskonNominal) + ')</span>'
+            : '';
 
         itemsRowsHtml += '<tr>'
             + '<td style="padding: 6px 0;">'
             + '<span class="receipt-item-name">' + pName + '</span>'
-            + '<span class="receipt-item-sub">' + pQty + ' x ' + formattedHarga + '</span>'
+            + '<span class="receipt-item-sub">' + pQty + ' x ' + formattedHarga + discText + '</span>'
             + '</td>'
             + '<td style="text-align: right; padding: 6px 0; font-weight: 800; color: #000000; vertical-align: bottom;">'
             + formattedSub
