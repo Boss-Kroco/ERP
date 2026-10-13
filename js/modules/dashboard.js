@@ -1364,20 +1364,20 @@ window.renderGrafikBulanan = function(year) {
     html += '<div style="position: absolute; left: 6px; right: 6px; top: 22px; border-top: 1px dashed #e2e8f0; pointer-events: none; z-index: 1;">'
         + '<span style="position: absolute; right: 0; top: -14px; font-size: 9.5px; font-weight: 700; color: #94a3b8; letter-spacing: 0.02em;">Puncak: ' + window.formatAppCurrency(maxVal) + '</span>'
         + '</div>';
-    html += '<div style="position: absolute; left: 6px; right: 6px; top: 88px; border-top: 1px dashed #f1f5f9; pointer-events: none; z-index: 1;">'
+    html += '<div style="position: absolute; left: 6px; right: 6px; top: 82px; border-top: 1px dashed #f1f5f9; pointer-events: none; z-index: 1;">'
         + '<span style="position: absolute; right: 0; top: -13px; font-size: 8.5px; font-weight: 600; color: #cbd5e1;">50%</span>'
         + '</div>';
-    html += '<div style="position: absolute; left: 6px; right: 6px; bottom: 42px; border-top: 1.5px solid #e2e8f0; pointer-events: none; z-index: 1;"></div>';
+    html += '<div style="position: absolute; left: 6px; right: 6px; bottom: 38px; border-top: 1.5px solid #e2e8f0; pointer-events: none; z-index: 1;"></div>';
 
     // 2. 12 Monthly Bar Columns Container
-    html += '<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; height: 195px; padding: 20px 4px 6px; width: 100%; box-sizing: border-box; position: relative; z-index: 2;">';
+    html += '<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; height: 185px; padding: 18px 4px 4px; width: 100%; box-sizing: border-box; position: relative; z-index: 2;">';
 
     mData.months.forEach(function(m, idx) {
         var isPeak = (m.totalOmzet === mData.peakVal && mData.peakVal > 0);
         var isCurrent = (idx === nowMonth && mData.year === curYear);
         var heightPct = maxVal > 0 ? (m.totalOmzet / maxVal) : 0;
-        var barHeightPx = Math.max(0, Math.round(heightPct * 126));
-        if (m.totalOmzet > 0) barHeightPx = Math.max(16, barHeightPx);
+        var barHeightPx = Math.max(0, Math.round(heightPct * 115));
+        if (m.totalOmzet > 0) barHeightPx = Math.max(14, barHeightPx);
 
         var barBg = isPeak 
             ? 'linear-gradient(180deg, #f43f5e 0%, #e11d48 100%)'
@@ -1388,45 +1388,45 @@ window.renderGrafikBulanan = function(year) {
                     : '#cbd5e1'));
 
         var barShadow = isPeak 
-            ? '0 6px 18px -2px rgba(244, 63, 94, 0.45)' 
+            ? '0 6px 18px -2px rgba(244, 63, 94, 0.4)' 
             : (isCurrent 
-                ? '0 6px 18px -2px rgba(99, 102, 241, 0.4)' 
-                : (m.totalOmzet > 0 ? '0 5px 14px -2px rgba(37, 99, 235, 0.3)' : 'none'));
+                ? '0 6px 18px -2px rgba(99, 102, 241, 0.35)' 
+                : (m.totalOmzet > 0 ? '0 5px 14px -2px rgba(37, 99, 235, 0.25)' : 'none'));
 
         var formattedVal = window.formatAppCurrency(m.totalOmzet);
 
-        // Floating chip badge directly above active bar
+        // Floating chip badge directly above active bar (fades out on hover to avoid overlap with tooltip)
         var topBadge = '';
         if (isPeak) {
-            topBadge = '<div style="position: absolute; top: -30px; background: #ffffff; border: 1px solid #fecdd3; box-shadow: 0 4px 12px rgba(244,63,94,0.18); border-radius: 20px; padding: 2px 7px; display: flex; align-items: center; gap: 3px; z-index: 8; white-space: nowrap;">'
-                + '<span style="font-size: 10px;">👑</span>'
-                + '<span style="font-size: 9.5px; font-weight: 800; color: #be123c;">' + formattedVal + '</span>'
+            topBadge = '<div class="chart-col-badge" style="position: absolute; top: -24px; background: #ffffff; border: 1px solid #fecdd3; box-shadow: 0 2px 8px rgba(244,63,94,0.12); border-radius: 20px; padding: 2px 8px; display: flex; align-items: center; gap: 4px; z-index: 6; white-space: nowrap; transition: opacity 0.15s ease;">'
+                + '<span style="width: 5px; height: 5px; border-radius: 50%; background: #e11d48; display: inline-block;"></span>'
+                + '<span style="font-size: 9px; font-weight: 800; color: #be123c;">' + formattedVal + '</span>'
                 + '</div>';
         } else if (m.totalOmzet > 0) {
-            topBadge = '<div style="position: absolute; top: -26px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 3px 8px rgba(15,23,42,0.06); border-radius: 20px; padding: 2px 6px; font-size: 9px; font-weight: 800; color: ' + (isCurrent ? '#4338ca' : '#1e293b') + '; white-space: nowrap; z-index: 6;">'
+            topBadge = '<div class="chart-col-badge" style="position: absolute; top: -22px; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(15,23,42,0.04); border-radius: 20px; padding: 2px 7px; font-size: 9px; font-weight: 800; color: ' + (isCurrent ? '#4338ca' : '#1e293b') + '; white-space: nowrap; z-index: 5; transition: opacity 0.15s ease;">'
                 + formattedVal
                 + '</div>';
         }
 
-        // Hover Floating Tooltip
+        // Hover Floating Tooltip (Executive styling, no cartoon emojis)
         var fastPctMonth = (m.fastMovingCount + m.slowMovingCount) > 0 
             ? Math.round((m.fastMovingCount / (m.fastMovingCount + m.slowMovingCount)) * 100) 
             : 100;
 
-        var tooltipHtml = '<div class="chart-col-tooltip" style="opacity: 0; pointer-events: none; position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%) translateY(4px); transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(8px); color: #ffffff; border-radius: 10px; padding: 8px 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.35); z-index: 50; white-space: nowrap; font-size: 11px; text-align: left; min-width: 140px;">'
-            + '<div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px;">' + m.monthLong + ' ' + mData.year + (isPeak ? ' 👑 (PEAK)' : (isCurrent ? ' 🟣 (BERJALAN)' : '')) + '</div>'
-            + '<div style="font-size: 13.5px; font-weight: 900; color: #ffffff; margin-bottom: 4px;">' + formattedVal + '</div>'
-            + '<div style="font-size: 10.5px; color: #cbd5e1; display: flex; align-items: center; gap: 4px;"><span>📊 ' + m.countTrx + ' Transaksi</span> · <span style="color:#34d399;">⚡ ' + fastPctMonth + '% Cepat</span></div>'
-            + '<div style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: rgba(15, 23, 42, 0.94);"></div>'
+        var tooltipHtml = '<div class="chart-col-tooltip" style="opacity: 0; pointer-events: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%) translateY(4px); transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); background: #0f172a; border: 1px solid rgba(255,255,255,0.1); color: #ffffff; border-radius: 10px; padding: 8px 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4); z-index: 100; white-space: nowrap; font-size: 11px; text-align: left; min-width: 140px;">'
+            + '<div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 2px;">' + m.monthLong + ' ' + mData.year + (isPeak ? ' <span style="color:#f43f5e; font-weight:800; margin-left:4px;">· PEAK</span>' : (isCurrent ? ' <span style="color:#818cf8; font-weight:800; margin-left:4px;">· AKTIF</span>' : '')) + '</div>'
+            + '<div style="font-size: 14px; font-weight: 800; color: #ffffff; margin-bottom: 4px; letter-spacing: -0.01em;">' + formattedVal + '</div>'
+            + '<div style="font-size: 10px; color: #cbd5e1; display: flex; align-items: center; gap: 6px;"><span>' + m.countTrx + ' Transaksi</span> <span style="color:#64748b;">•</span> <span style="color:#34d399; font-weight:600;">' + fastPctMonth + '% Rotasi Cepat</span></div>'
+            + '<div style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: #0f172a;"></div>'
             + '</div>';
 
-        html += '<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; position: relative; cursor: pointer;"'
-            + ' onmouseenter="var t=this.querySelector(\'.chart-col-tooltip\'); if(t){ t.style.opacity=\'1\'; t.style.transform=\'translateX(-50%) translateY(0)\'; } var trk=this.querySelector(\'.monthly-bar-track\'); if(trk){ trk.style.background=\'rgba(238, 242, 255, 0.9)\'; trk.style.transform=\'translateY(-2px)\'; }"'
-            + ' onmouseleave="var t=this.querySelector(\'.chart-col-tooltip\'); if(t){ t.style.opacity=\'0\'; t.style.transform=\'translateX(-50%) translateY(4px)\'; } var trk=this.querySelector(\'.monthly-bar-track\'); if(trk){ trk.style.background=\'' + (m.totalOmzet > 0 ? 'rgba(241, 245, 249, 0.75)' : 'rgba(248, 250, 252, 0.85)') + '\'; trk.style.transform=\'none\'; }"'
+        html += '<div style="flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; position: relative; cursor: pointer; z-index: 2;"'
+            + ' onmouseenter="var t=this.querySelector(\'.chart-col-tooltip\'); if(t){ t.style.opacity=\'1\'; t.style.transform=\'translateX(-50%) translateY(0)\'; } var b=this.querySelector(\'.chart-col-badge\'); if(b){ b.style.opacity=\'0\'; } this.style.zIndex=\'100\'; var trk=this.querySelector(\'.monthly-bar-track\'); if(trk){ trk.style.background=\'rgba(238, 242, 255, 0.9)\'; trk.style.transform=\'translateY(-2px)\'; }"'
+            + ' onmouseleave="var t=this.querySelector(\'.chart-col-tooltip\'); if(t){ t.style.opacity=\'0\'; t.style.transform=\'translateX(-50%) translateY(4px)\'; } var b=this.querySelector(\'.chart-col-badge\'); if(b){ b.style.opacity=\'1\'; } this.style.zIndex=\'2\'; var trk=this.querySelector(\'.monthly-bar-track\'); if(trk){ trk.style.background=\'' + (m.totalOmzet > 0 ? 'rgba(241, 245, 249, 0.75)' : 'rgba(248, 250, 252, 0.85)') + '\'; trk.style.transform=\'none\'; }"'
             + ' onclick="if(typeof window.showToast===\'function\') window.showToast(\'' + m.monthLong + ' ' + mData.year + ': ' + formattedVal + ' (' + m.countTrx + ' Transaksi)\', \'info\');">'
             + tooltipHtml
             + topBadge
-            + '<div class="monthly-bar-track" style="width: 100%; max-width: 38px; height: 140px; background: ' + (m.totalOmzet > 0 ? 'rgba(241, 245, 249, 0.75)' : 'rgba(248, 250, 252, 0.85)') + '; border-radius: 12px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid ' + (m.totalOmzet > 0 ? 'rgba(226, 232, 240, 0.6)' : 'rgba(241, 245, 249, 0.8)') + ';">'
+            + '<div class="monthly-bar-track" style="width: 100%; max-width: 38px; height: 125px; background: ' + (m.totalOmzet > 0 ? 'rgba(241, 245, 249, 0.75)' : 'rgba(248, 250, 252, 0.85)') + '; border-radius: 12px; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; position: relative; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid ' + (m.totalOmzet > 0 ? 'rgba(226, 232, 240, 0.6)' : 'rgba(241, 245, 249, 0.8)') + ';">'
             + (m.totalOmzet > 0 
                 ? '<div class="monthly-bar-fill" style="width: 100%; height: ' + barHeightPx + 'px; border-radius: 10px; background: ' + barBg + '; box-shadow: ' + barShadow + '; transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);"></div>'
                 : '<div style="width: 8px; height: 4px; border-radius: 2px; background: #cbd5e1; margin-bottom: 4px;"></div>')
@@ -1441,16 +1441,16 @@ window.renderGrafikBulanan = function(year) {
     html += '</div>'; // End 12 Column Lanes Container
     html += '</div>'; // End Chart Wrapper
 
-    // 3. Footer Legend & Tips
+    // 3. Footer Legend & Tips (Refined Executive Styling)
     html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 12px; border-top: 1px solid #f1f5f9; font-size: 11px; color: #64748b; flex-wrap: wrap; gap: 10px;">'
-        + '<div style="display: flex; align-items: center; flex-wrap: wrap; gap: 14px;">'
-        + '<span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 600;"><span style="width: 9px; height: 9px; border-radius: 50%; background: #f43f5e; box-shadow: 0 0 8px rgba(244,63,94,0.5);"></span> Bulan Puncak (Peak)</span>'
-        + '<span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 600;"><span style="width: 9px; height: 9px; border-radius: 50%; background: #6366f1; box-shadow: 0 0 8px rgba(99,102,241,0.5);"></span> Bulan Berjalan</span>'
-        + '<span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 600;"><span style="width: 9px; height: 9px; border-radius: 50%; background: #38bdf8;"></span> Penjualan Reguler</span>'
-        + '<span style="display: inline-flex; align-items: center; gap: 5px; font-weight: 600;"><span style="width: 9px; height: 9px; border-radius: 50%; background: #cbd5e1;"></span> Belum Ada Data</span>'
+        + '<div style="display: flex; align-items: center; flex-wrap: wrap; gap: 16px;">'
+        + '<span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #e11d48; display: inline-block;"></span> Bulan Tertinggi (Peak)</span>'
+        + '<span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #4f46e5; display: inline-block;"></span> Bulan Berjalan</span>'
+        + '<span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #0284c7; display: inline-block;"></span> Penjualan Reguler</span>'
+        + '<span style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #cbd5e1; display: inline-block;"></span> Belum Ada Data</span>'
         + '</div>'
         + '<div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 20px; padding: 4px 12px; font-size: 10.5px; font-weight: 700; color: #475569; display: flex; align-items: center; gap: 5px;">'
-        + '✦ Arahkan kursor atau klik bar untuk rincian cepat'
+        + '✦ Arahkan kursor ke bar untuk analisis detail'
         + '</div>'
         + '</div>';
 
