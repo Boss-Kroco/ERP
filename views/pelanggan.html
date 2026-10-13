@@ -170,8 +170,8 @@
                         <th>Nama Toko / Pelanggan</th>
                         <th>Kontak</th>
                         <th>Alamat</th>
-                        <th>Total Piutang</th>
-                        <th>Saldo Kas</th>
+                        <th>Total Piutang (<span class="app-currency-symbol">Rp</span>)</th>
+                        <th>Saldo Kas (<span class="app-currency-symbol">Rp</span>)</th>
                         <th>Status</th>
                         <th style="text-align: right;">Aksi</th>
                     </tr>
@@ -212,12 +212,12 @@
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 6px;">
-                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Saldo Kas (Opsional)</label>
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Saldo Kas (<span class="app-currency-symbol">Rp</span>) (Opsional)</label>
                     <input type="number" step="any" id="inpPelangganTabungan" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); outline: none; font-size: 13px;" placeholder="0">
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 6px;" id="divPelangganPiutangField">
-                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Total Piutang (Rp)</label>
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Total Piutang (<span class="app-currency-symbol">Rp</span>)</label>
                     <input type="number" step="any" id="inpPelangganPiutang" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); outline: none; font-size: 13px;" placeholder="0">
                     <span style="font-size: 11px; color: var(--text-muted);">Isi 0 jika tagihan/piutang pelanggan ini sudah lunas.</span>
                 </div>
@@ -273,8 +273,8 @@
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 6px;">
-                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Nominal Pembayaran (Rp) *</label>
-                    <input type="number" id="bayarPiutangNominal" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); outline: none; font-size: 15px; font-weight: 700; color: var(--text-dark);" placeholder="0">
+                    <label style="font-size: 12px; font-weight: 600; color: var(--text-muted);">Nominal Pembayaran (<span class="app-currency-symbol">Rp</span>) *</label>
+                    <input type="number" step="any" id="bayarPiutangNominal" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border-soft); outline: none; font-size: 15px; font-weight: 700; color: var(--text-dark);" placeholder="0">
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 6px;">

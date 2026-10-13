@@ -253,21 +253,25 @@ window.bukaModalTambahAlat = function() {
     document.getElementById('inpNamaAlatBaru').value = '';
     document.getElementById('inpHargaAlatBaru').value = '';
     document.getElementById('inpQtyAlatBaru').value = '1';
+    if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();
     document.getElementById('modalTambahAlatSewa').style.display = 'flex';
 };
 
 window.simpanAlatBaru = function() {
     var id = document.getElementById('inpIdAlatBaru').value;
     var nama = document.getElementById('inpNamaAlatBaru').value;
-    var harga = parseInt(document.getElementById('inpHargaAlatBaru').value) || 0;
+    var hargaInput = parseFloat(document.getElementById('inpHargaAlatBaru').value) || 0;
     var qty = parseInt(document.getElementById('inpQtyAlatBaru').value) || 1;
     
-    if(!nama || harga <= 0) {
+    if(!nama || hargaInput <= 0) {
         if(window.showToast) window.showToast('Nama dan harga alat harus diisi!', 'error');
         return;
     }
     
-    window.katalogAlat.push({ id: id, nama: nama, hargaSewa: harga, qty: qty });
+    // Konversi input mata uang aktif ke basis IDR
+    var hargaIdr = window.fromAppCurrency ? Math.round(window.fromAppCurrency(hargaInput)) : hargaInput;
+
+    window.katalogAlat.push({ id: id, nama: nama, hargaSewa: hargaIdr, qty: qty });
     document.getElementById('modalTambahAlatSewa').style.display = 'none';
     window.renderAlatSewa();
     if(window.showToast) window.showToast('Alat baru berhasil ditambahkan.', 'success');

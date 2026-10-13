@@ -143,7 +143,10 @@ window.navigatePage = function (viewId) {
         if (typeof window.initTambahHpp === 'function') window.initTambahHpp();
         if (typeof window.fetchProductionBatches === 'function') window.fetchProductionBatches();
     }
-    if (viewId === 'tenagakerja' && typeof window.fetchTenagaKerjaLogs === 'function') window.fetchTenagaKerjaLogs();
+    if (viewId === 'tenagakerja') {
+        if (typeof window.fetchTenagaKerjaLogs === 'function') window.fetchTenagaKerjaLogs();
+        if (typeof window.initTenagaKerjaPage === 'function') window.initTenagaKerjaPage();
+    }
     if (viewId === 'agenda' && typeof window.initAgendaPage === 'function') window.initAgendaPage();
     if (viewId === 'audit' && typeof window.fetchAuditLogs === 'function') window.fetchAuditLogs();
     if (viewId === 'profil' && typeof window.initProfilePage === 'function') window.initProfilePage();

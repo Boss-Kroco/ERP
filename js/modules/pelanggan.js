@@ -204,10 +204,11 @@ window.editPelanggan = function(id) {
     document.getElementById('inpPelangganKontak').value = p.kontak || '';
     document.getElementById('inpPelangganAlamat').value = p.alamat || '';
     var elTab = document.getElementById('inpPelangganTabungan');
-    if (elTab) elTab.value = p.tabungan || 0;
+    if (elTab) elTab.value = window.toAppCurrency ? (Math.round(window.toAppCurrency(p.tabungan || 0) * 100) / 100) : (p.tabungan || 0);
     var elPiu = document.getElementById('inpPelangganPiutang');
-    if (elPiu) elPiu.value = p.total_piutang || 0;
+    if (elPiu) elPiu.value = window.toAppCurrency ? (Math.round(window.toAppCurrency(p.total_piutang || 0) * 100) / 100) : (p.total_piutang || 0);
     document.getElementById('modalPelangganTitle').textContent = 'Edit Data Pelanggan';
+    if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();
     
     var modal = document.getElementById('modalFormPelanggan');
     var content = document.getElementById('modalFormPelangganContent');
@@ -225,9 +226,11 @@ window.savePelanggan = function() {
     var kontak = (document.getElementById('inpPelangganKontak').value || '').trim();
     var alamat = (document.getElementById('inpPelangganAlamat').value || '').trim();
     var elTab = document.getElementById('inpPelangganTabungan');
-    var tabungan = elTab ? (parseFloat(elTab.value) || 0) : 0;
+    var tabunganInput = elTab ? (parseFloat(elTab.value) || 0) : 0;
+    var tabungan = window.fromAppCurrency ? Math.round(window.fromAppCurrency(tabunganInput)) : tabunganInput;
     var elPiu = document.getElementById('inpPelangganPiutang');
-    var piutang = elPiu ? Math.max(0, parseFloat(elPiu.value) || 0) : 0;
+    var piutangInput = elPiu ? Math.max(0, parseFloat(elPiu.value) || 0) : 0;
+    var piutang = window.fromAppCurrency ? Math.round(window.fromAppCurrency(piutangInput)) : piutangInput;
     
     if (!nama) {
         if(window.showToast) window.showToast('Nama pelanggan wajib diisi', 'error');
@@ -297,14 +300,16 @@ window.openBayarPiutangModal = function(id) {
     if (!p) return;
     
     var totalPiu = Number(p.total_piutang || 0);
+    var totalPiuCurr = window.toAppCurrency ? (Math.round(window.toAppCurrency(totalPiu) * 100) / 100) : totalPiu;
     document.getElementById('bayarPiutangPelangganId').value = p.pelanggan_id;
     document.getElementById('bayarPiutangTotalSisa').value = totalPiu;
     document.getElementById('bayarPiutangCustomerName').textContent = (p.nama_toko || '-') + ' (' + p.pelanggan_id + ')';
     document.getElementById('bayarPiutangDisplayTotal').textContent = window.formatAppCurrency(totalPiu);
     document.getElementById('bayarPiutangDisplayTabungan').textContent = window.formatAppCurrency(p.tabungan || 0);
-    document.getElementById('bayarPiutangNominal').value = totalPiu;
+    document.getElementById('bayarPiutangNominal').value = totalPiuCurr;
     document.getElementById('bayarPiutangMetode').value = 'Tunai';
     document.getElementById('bayarPiutangCatatan').value = 'Pelunasan piutang toko ' + (p.nama_toko || '');
+    if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();
     
     var modal = document.getElementById('modalBayarPiutang');
     var content = document.getElementById('modalBayarPiutangContent');
@@ -329,12 +334,14 @@ window.closeBayarPiutangModal = function() {
 
 window.setBayarPiutangNominalFull = function() {
     var totalPiu = Number(document.getElementById('bayarPiutangTotalSisa').value || 0);
-    document.getElementById('bayarPiutangNominal').value = totalPiu;
+    var totalPiuCurr = window.toAppCurrency ? (Math.round(window.toAppCurrency(totalPiu) * 100) / 100) : totalPiu;
+    document.getElementById('bayarPiutangNominal').value = totalPiuCurr;
 };
 
 window.setBayarPiutangNominalHalf = function() {
     var totalPiu = Number(document.getElementById('bayarPiutangTotalSisa').value || 0);
-    document.getElementById('bayarPiutangNominal').value = Math.round(totalPiu / 2);
+    var halfCurr = window.toAppCurrency ? (Math.round((window.toAppCurrency(totalPiu) / 2) * 100) / 100) : Math.round(totalPiu / 2);
+    document.getElementById('bayarPiutangNominal').value = halfCurr;
 };
 
 window.prosesBayarPiutang = function() {
@@ -343,7 +350,8 @@ window.prosesBayarPiutang = function() {
     if (!p) return;
     
     var totalPiu = Number(p.total_piutang || 0);
-    var nominal = parseFloat(document.getElementById('bayarPiutangNominal').value) || 0;
+    var nominalInput = parseFloat(document.getElementById('bayarPiutangNominal').value) || 0;
+    var nominal = window.fromAppCurrency ? Math.round(window.fromAppCurrency(nominalInput)) : nominalInput;
     var metode = document.getElementById('bayarPiutangMetode').value;
     var catatan = (document.getElementById('bayarPiutangCatatan').value || '').trim();
     

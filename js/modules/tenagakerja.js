@@ -12,15 +12,29 @@ function hitungLiveUpahPreview() {
     var elPot = document.getElementById('tkPotongan');
 
     var jam = elJam ? (parseFloat(elJam.value) || 0) : 0;
-    var rate = elRate ? (parseFloat(elRate.value) || 0) : 0;
-    var bonus = elBonus ? (parseFloat(elBonus.value) || 0) : 0;
-    var pot = elPot ? (parseFloat(elPot.value) || 0) : 0;
-    var total = Math.max(0, (jam * rate) + bonus - pot);
+    var rateCurr = elRate ? (parseFloat(elRate.value) || 0) : 0;
+    var bonusCurr = elBonus ? (parseFloat(elBonus.value) || 0) : 0;
+    var potCurr = elPot ? (parseFloat(elPot.value) || 0) : 0;
+    var totalCurr = Math.max(0, (jam * rateCurr) + bonusCurr - potCurr);
 
     var elLbl = document.getElementById('lblLiveTotalUpah');
-    if (elLbl) elLbl.textContent = window.formatAppCurrency(total);
-    return total;
+    if (elLbl) elLbl.textContent = window.formatAppCurrencyValue ? window.formatAppCurrencyValue(totalCurr) : window.formatAppCurrency(totalCurr);
+    return totalCurr;
 }
+
+window.initTenagaKerjaPage = function() {
+    var elRate = document.getElementById('tkRate');
+    if (elRate && (!elRate.dataset.currInitialized || elRate.value === '12000')) {
+        var baseRateIdr = 12000;
+        var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { fraction: 0 };
+        var rateCurr = window.toAppCurrency ? window.toAppCurrency(baseRateIdr) : baseRateIdr;
+        elRate.value = cfg.fraction > 0 ? parseFloat(rateCurr.toFixed(cfg.fraction)) : Math.round(rateCurr);
+        elRate.dataset.currInitialized = 'true';
+    }
+    if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();
+    hitungLiveUpahPreview();
+    fetchTenagaKerjaLogs();
+};
 
 function submitPresensiUpah() {
     var elNama = document.getElementById('tkNama');
@@ -36,19 +50,24 @@ function submitPresensiUpah() {
     var elTipe = document.getElementById('tkTipe');
 
     var jam = elJam ? (parseFloat(elJam.value) || 8) : 8;
-    var rate = elRate ? (parseFloat(elRate.value) || 12000) : 12000;
-    var bonus = elBonus ? (parseFloat(elBonus.value) || 0) : 0;
-    var pot = elPot ? (parseFloat(elPot.value) || 0) : 0;
-    var totalBayar = Math.max(0, (jam * rate) + bonus - pot);
+    var rateInput = elRate ? (parseFloat(elRate.value) || 0) : 0;
+    var bonusInput = elBonus ? (parseFloat(elBonus.value) || 0) : 0;
+    var potInput = elPot ? (parseFloat(elPot.value) || 0) : 0;
+
+    // Konversi nilai input dari mata uang aktif ke basis database IDR
+    var rateIdr = window.fromAppCurrency ? Math.round(window.fromAppCurrency(rateInput)) : rateInput;
+    var bonusIdr = window.fromAppCurrency ? Math.round(window.fromAppCurrency(bonusInput)) : bonusInput;
+    var potIdr = window.fromAppCurrency ? Math.round(window.fromAppCurrency(potInput)) : potInput;
+    var totalBayarIdr = Math.max(0, (jam * rateIdr) + bonusIdr - potIdr);
 
     var payload = {
         namaPekerja: nama,
         tipePekerja: elTipe ? elTipe.value : 'Pekerja harian',
         totalJam: jam,
-        upahRate: rate,
-        bonus: bonus,
-        potongan: pot,
-        totalBayar: totalBayar
+        upahRate: rateIdr,
+        bonus: bonusIdr,
+        potongan: potIdr,
+        totalBayar: totalBayarIdr
     };
 
     showToast('Mencatat data upah kerja...', 'success');
@@ -135,12 +154,18 @@ function openModalEditTenagaKerja(pekerjaId) {
     if (elTipe) elTipe.value = item.tipePekerja || 'Pekerja harian';
     var elJam = document.getElementById('editTkTotalJam');
     if (elJam) elJam.value = item.totalJam || 8;
+    
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { fraction: 0 };
+    var rateCurr = window.toAppCurrency ? window.toAppCurrency(item.upahRate || 12000) : (item.upahRate || 12000);
+    var bonusCurr = window.toAppCurrency ? window.toAppCurrency(item.bonus || 0) : (item.bonus || 0);
+    var potCurr = window.toAppCurrency ? window.toAppCurrency(item.potongan || 0) : (item.potongan || 0);
+
     var elRate = document.getElementById('editTkRate');
-    if (elRate) elRate.value = item.upahRate || 12000;
+    if (elRate) elRate.value = cfg.fraction > 0 ? parseFloat(rateCurr.toFixed(cfg.fraction)) : Math.round(rateCurr);
     var elBonus = document.getElementById('editTkBonus');
-    if (elBonus) elBonus.value = item.bonus || 0;
+    if (elBonus) elBonus.value = cfg.fraction > 0 ? parseFloat(bonusCurr.toFixed(cfg.fraction)) : Math.round(bonusCurr);
     var elPot = document.getElementById('editTkPotongan');
-    if (elPot) elPot.value = item.potongan || 0;
+    if (elPot) elPot.value = cfg.fraction > 0 ? parseFloat(potCurr.toFixed(cfg.fraction)) : Math.round(potCurr);
 
     hitungEditUpahPreview();
 
@@ -155,14 +180,25 @@ function closeModalEditTenagaKerja() {
 
 function submitEditTenagaKerja() {
     var tkId = document.getElementById('editTkId').value;
+    var totalJam = parseFloat(document.getElementById('editTkTotalJam').value) || 0;
+    var rateInput = parseFloat(document.getElementById('editTkRate').value) || 0;
+    var bonusInput = parseFloat(document.getElementById('editTkBonus').value) || 0;
+    var potInput = parseFloat(document.getElementById('editTkPotongan').value) || 0;
+
+    var rateIdr = window.fromAppCurrency ? Math.round(window.fromAppCurrency(rateInput)) : rateInput;
+    var bonusIdr = window.fromAppCurrency ? Math.round(window.fromAppCurrency(bonusInput)) : bonusInput;
+    var potIdr = window.fromAppCurrency ? Math.round(window.fromAppCurrency(potInput)) : potInput;
+    var totalBayarIdr = Math.max(0, (totalJam * rateIdr) + bonusIdr - potIdr);
+
     var payload = {
         pekerjaId: tkId,
         namaPekerja: document.getElementById('editTkNama').value.trim(),
         tipePekerja: document.getElementById('editTkTipe').value,
-        totalJam: parseFloat(document.getElementById('editTkTotalJam').value) || 0,
-        upahRate: parseFloat(document.getElementById('editTkRate').value) || 0,
-        bonus: parseFloat(document.getElementById('editTkBonus').value) || 0,
-        potongan: parseFloat(document.getElementById('editTkPotongan').value) || 0
+        totalJam: totalJam,
+        upahRate: rateIdr,
+        bonus: bonusIdr,
+        potongan: potIdr,
+        totalBayar: totalBayarIdr
     };
 
     showToast('Menyimpan perubahan upah ' + payload.namaPekerja + '...', 'success');
