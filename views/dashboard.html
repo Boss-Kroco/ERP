@@ -302,25 +302,28 @@
                     </div>
 
                     <!-- 4. Grafik Tren Penjualan Bulanan (12 Bulan) Section -->
-                    <div class="order-section-card" style="margin-top: 14px; margin-bottom: 14px; padding: 18px 20px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(244, 63, 94, 0.15) 100%); display: flex; align-items: center; justify-content: center; color: var(--violet-main);">
-                                    <svg style="width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2;" viewBox="0 0 24 24">
+                    <div class="order-section-card" style="margin-top: 16px; margin-bottom: 16px; padding: 22px 24px; border-radius: 16px; box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05); background: #ffffff;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); display: flex; align-items: center; justify-content: center; color: #ffffff; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">
+                                    <svg style="width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2;" viewBox="0 0 24 24">
                                         <line x1="18" y1="20" x2="18" y2="10" />
                                         <line x1="12" y1="20" x2="12" y2="4" />
                                         <line x1="6" y1="20" x2="6" y2="14" />
                                     </svg>
                                 </div>
                                 <div>
-                                    <div class="order-main-title" style="font-size: 14px;">Grafik Tren Penjualan Bulanan</div>
-                                    <div style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Analisis omzet per bulan & performa produk Cepat vs Lambat</div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <div class="order-main-title" style="font-size: 15px; font-weight: 800; color: #0f172a; letter-spacing: -0.01em;">Grafik Tren Penjualan Bulanan</div>
+                                        <span style="font-size: 10px; font-weight: 700; color: #4338ca; background: #e0e7ff; padding: 2px 8px; border-radius: 20px;">12 Bulan</span>
+                                    </div>
+                                    <div style="font-size: 11.5px; color: #64748b; font-weight: 500; margin-top: 1px;">Analisis komprehensif omzet per bulan & performa rotasi produk</div>
                                 </div>
                             </div>
                             
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <label style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Tahun:</label>
-                                <select id="selectTahunGrafikBulanan" onchange="window.updateGrafikBulanan(this.value)" class="hpp-clean-input" style="padding: 4px 10px; font-weight: 700; font-size: 12px; cursor: pointer; border-radius: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 4px 8px 4px 12px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                <label style="font-size: 11px; font-weight: 700; color: #64748b;">Tahun Anggaran:</label>
+                                <select id="selectTahunGrafikBulanan" onchange="window.updateGrafikBulanan(this.value)" class="hpp-clean-input" style="padding: 5px 12px; font-weight: 700; font-size: 12px; cursor: pointer; border-radius: 8px; background: white; border: 1px solid #cbd5e1; color: #0f172a;">
                                     <option value="2026" selected>Tahun 2026</option>
                                     <option value="2025">Tahun 2025</option>
                                 </select>
@@ -328,31 +331,73 @@
                         </div>
 
                         <!-- 4 KPI Metrics Banner -->
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 18px;">
-                            <div style="background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 10px; padding: 10px 14px;">
-                                <div style="font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Total Omzet Tahunan</div>
-                                <div id="statBulananTotalYear" style="font-size: 15px; font-weight: 900; color: var(--violet-dark); margin-top: 2px;">Rp 0</div>
-                                <div style="font-size: 10px; color: var(--text-muted);"><span id="statBulananTotalTrx">0</span> transaksi tercatat</div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px;">
+                            <!-- Card 1 -->
+                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 16px; position: relative; overflow: hidden; box-shadow: 0 2px 8px -2px rgba(15,23,42,0.04);">
+                                <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #6366f1, #8b5cf6);"></div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Total Omzet Tahunan</span>
+                                    <div style="width: 26px; height: 26px; border-radius: 8px; background: #e0e7ff; color: #4f46e5; display: flex; align-items: center; justify-content: center;">
+                                        <svg style="width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2.5;" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                    </div>
+                                </div>
+                                <div id="statBulananTotalYear" style="font-size: 18px; font-weight: 900; color: #0f172a; margin-top: 6px; letter-spacing: -0.02em;">Rp 0</div>
+                                <div style="display: flex; align-items: center; gap: 5px; margin-top: 6px;">
+                                    <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #6366f1;"></span>
+                                    <span style="font-size: 10.5px; color: #64748b; font-weight: 600;"><span id="statBulananTotalTrx" style="font-weight: 800; color: #1e293b;">0</span> transaksi tercatat</span>
+                                </div>
                             </div>
-                            <div style="background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 10px; padding: 10px 14px;">
-                                <div style="font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Rata-Rata Bulanan</div>
-                                <div id="statBulananRataRata" style="font-size: 15px; font-weight: 900; color: var(--text-dark); margin-top: 2px;">Rp 0</div>
-                                <div style="font-size: 10px; color: #059669; font-weight: 700;">Rerata per bulan aktif</div>
+
+                            <!-- Card 2 -->
+                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 16px; position: relative; overflow: hidden; box-shadow: 0 2px 8px -2px rgba(15,23,42,0.04);">
+                                <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #3b82f6, #06b6d4);"></div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Rata-Rata Bulanan</span>
+                                    <div style="width: 26px; height: 26px; border-radius: 8px; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center;">
+                                        <svg style="width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2.5;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                                    </div>
+                                </div>
+                                <div id="statBulananRataRata" style="font-size: 18px; font-weight: 900; color: #0f172a; margin-top: 6px; letter-spacing: -0.02em;">Rp 0</div>
+                                <div style="display: flex; align-items: center; gap: 5px; margin-top: 6px;">
+                                    <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>
+                                    <span style="font-size: 10.5px; color: #059669; font-weight: 700;">Rerata per bulan aktif</span>
+                                </div>
                             </div>
-                            <div style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: 10px; padding: 10px 14px;">
-                                <div style="font-size: 10px; font-weight: 800; color: #e11d48; text-transform: uppercase;">👑 Bulan Puncak (Peak)</div>
-                                <div id="statBulananPeakMonth" style="font-size: 15px; font-weight: 900; color: #e11d48; margin-top: 2px;">-</div>
-                                <div id="statBulananPeakVal" style="font-size: 10px; color: #be123c; font-weight: 700;">Rp 0</div>
+
+                            <!-- Card 3 (Peak) -->
+                            <div style="background: linear-gradient(135deg, #fff5f5 0%, #fff1f2 100%); border: 1px solid #fecdd3; border-radius: 14px; padding: 14px 16px; position: relative; overflow: hidden; box-shadow: 0 2px 8px -2px rgba(244,63,94,0.08);">
+                                <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #f43f5e, #fb923c);"></div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 10px; font-weight: 800; color: #e11d48; text-transform: uppercase; letter-spacing: 0.05em;">Bulan Puncak (Peak)</span>
+                                    <div style="width: 26px; height: 26px; border-radius: 8px; background: #ffe4e6; color: #e11d48; display: flex; align-items: center; justify-content: center; font-size: 13px;">👑</div>
+                                </div>
+                                <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 6px; flex-wrap: wrap;">
+                                    <span id="statBulananPeakMonth" style="font-size: 18px; font-weight: 900; color: #be123c; letter-spacing: -0.02em;">-</span>
+                                    <span id="statBulananPeakVal" style="font-size: 11.5px; color: #e11d48; font-weight: 800; background: rgba(244,63,94,0.12); padding: 2px 7px; border-radius: 6px;">Rp 0</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 5px; margin-top: 6px;">
+                                    <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #e11d48;"></span>
+                                    <span style="font-size: 10.5px; color: #be123c; font-weight: 600;">Omzet tertinggi dalam setahun</span>
+                                </div>
                             </div>
-                            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 10px 14px;">
-                                <div style="font-size: 10px; font-weight: 800; color: #059669; text-transform: uppercase;">Performa Penjualan</div>
-                                <div id="statBulananRasioSpeed" style="font-size: 13.5px; font-weight: 900; color: #047857; margin-top: 2px;">⚡ 85% Cepat</div>
-                                <div style="font-size: 10px; color: #059669;">Reguler vs Diskon Promo</div>
+
+                            <!-- Card 4 (Speed) -->
+                            <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1px solid #bbf7d0; border-radius: 14px; padding: 14px 16px; position: relative; overflow: hidden; box-shadow: 0 2px 8px -2px rgba(16,185,129,0.08);">
+                                <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #10b981, #14b8a6);"></div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 10px; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em;">Rotasi Penjualan</span>
+                                    <div style="width: 26px; height: 26px; border-radius: 8px; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 12px;">⚡</div>
+                                </div>
+                                <div id="statBulananRasioSpeed" style="font-size: 15px; font-weight: 900; color: #047857; margin-top: 6px; letter-spacing: -0.01em;">100% Cepat</div>
+                                <div style="display: flex; align-items: center; gap: 5px; margin-top: 6px;">
+                                    <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #059669;"></span>
+                                    <span style="font-size: 10.5px; color: #059669; font-weight: 600;">Produk Reguler vs Diskon Promo</span>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Monthly Interactive Bar Chart Container -->
-                        <div id="monthlyBarChartContainer" style="position: relative; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); border: 1px solid var(--border-soft); border-radius: 12px; padding: 22px 14px 14px; min-height: 180px;">
+                        <div id="monthlyBarChartContainer" style="position: relative; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 26px 20px 18px; box-shadow: 0 2px 12px -2px rgba(15,23,42,0.03); overflow: hidden;">
                             <!-- Rendered dinamis oleh window.renderGrafikBulanan() -->
                         </div>
                     </div>

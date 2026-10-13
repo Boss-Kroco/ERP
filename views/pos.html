@@ -69,20 +69,20 @@
                 </div>
 
                 <!-- Checkout Summary -->
-                <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 12px; padding: 12px; box-shadow: var(--shadow-subtle);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div style="background: #ffffff; border: 1px solid var(--border-soft); border-radius: 14px; padding: 14px; box-shadow: 0 4px 14px -2px rgba(15,23,42,0.04);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 10px;">
                         <div>
-                            <span style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Diskon Nota Tambahan</span>
-                            <div style="font-size: 9.5px; color: #94a3b8;">Opsional seluruh nota</div>
+                            <span style="font-size: 11px; font-weight: 800; color: #1e293b;">Diskon Nota Tambahan</span>
+                            <div style="font-size: 9.5px; color: #64748b; font-weight: 500;">Opsional seluruh nota</div>
                         </div>
-                        <div style="display: flex; gap: 4px; align-items: center;">
-                            <select id="posDiskonType" class="hpp-clean-input" style="width: 105px; min-width: 105px; padding: 4px 6px !important; font-size: 11px; font-weight: 600; cursor: pointer;" onchange="window.handlePosDiskonTypeChange()">
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <select id="posDiskonType" class="hpp-clean-input" style="width: 110px; min-width: 110px; padding: 5px 8px !important; font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff;" onchange="window.handlePosDiskonTypeChange()">
                                 <option value="nominal" id="optPosDiskonRp">Nominal (<span class="app-currency-symbol">Rp</span>)</option>
                                 <option value="persen">Persen (%)</option>
                             </select>
                             <div style="position: relative; display: flex; align-items: center;">
-                                <span id="posDiskonPrefixBadge" style="position: absolute; left: 6px; font-size: 10px; font-weight: 700; color: var(--text-muted); pointer-events: none;">Rp</span>
-                                <input type="number" step="any" min="0" class="hpp-clean-input" style="width: 80px; padding: 4px 6px 4px 22px !important; text-align: right; font-size: 11px !important;" id="posDiskon" value="0" placeholder="0" oninput="renderCart()">
+                                <span id="posDiskonPrefixBadge" style="position: absolute; left: 8px; font-size: 10px; font-weight: 800; color: #64748b; pointer-events: none;">Rp</span>
+                                <input type="number" step="any" min="0" class="hpp-clean-input" style="width: 86px; padding: 5px 8px 5px 24px !important; text-align: right; font-size: 11.5px !important; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff;" id="posDiskon" value="0" placeholder="0" oninput="renderCart()">
                             </div>
                         </div>
                     </div>
