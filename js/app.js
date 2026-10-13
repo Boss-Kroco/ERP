@@ -125,6 +125,10 @@ window.updateAppCurrencyUI = function () {
 
     var optPosDiskon = document.getElementById('optPosDiskonRp');
     if (optPosDiskon) optPosDiskon.textContent = 'Nominal (' + cfg.symbol + ')';
+
+    var prefixBadge = document.getElementById('posDiskonPrefixBadge');
+    var elType = document.getElementById('posDiskonType');
+    if (prefixBadge) prefixBadge.textContent = (elType && elType.value === 'persen') ? '%' : cfg.symbol;
 };
 
 window.escapeHtml = function (text) {

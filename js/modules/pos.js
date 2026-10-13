@@ -102,6 +102,16 @@ window.updateCartItemDiscount = function (idx, val, type) {
     renderCart();
 };
 
+window.handlePosDiskonTypeChange = function() {
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { symbol: 'Rp' };
+    var elType = document.getElementById('posDiskonType');
+    var badge = document.getElementById('posDiskonPrefixBadge');
+    if (badge && elType) {
+        badge.textContent = elType.value === 'persen' ? '%' : cfg.symbol;
+    }
+    renderCart();
+};
+
 function renderCart() {
     var tbody = document.getElementById('tblCart');
     if (!tbody) return;
@@ -158,7 +168,11 @@ function renderCart() {
         }
         totalCellHtml += '</td>';
 
-        tr.innerHTML = '<td style="padding: 8px 6px;"><b>' + escapeHtml(item.namaProduk) + '</b><br><span style="font-size:11px;color:var(--text-muted);">' + window.formatAppCurrency(item.harga) + '</span><br>' + discControlHtml + '</td>'
+        var movingBadge = (itemDiskonNominal > 0)
+            ? '<span style="font-size: 8.5px; font-weight: 800; background: #fee2e2; color: #dc2626; padding: 1.5px 5px; border-radius: 4px; display: inline-block; margin-top: 2px;">🏷️ Slow (Promo)</span>'
+            : '<span style="font-size: 8.5px; font-weight: 800; background: #ecfdf5; color: #059669; padding: 1.5px 5px; border-radius: 4px; display: inline-block; margin-top: 2px;">⚡ Cepat (Reguler)</span>';
+
+        tr.innerHTML = '<td style="padding: 8px 6px;"><b>' + escapeHtml(item.namaProduk) + '</b><br>' + movingBadge + '<br><span style="font-size:11px;color:var(--text-muted);">' + window.formatAppCurrency(item.harga) + '</span><br>' + discControlHtml + '</td>'
             + '<td style="padding: 8px 4px; text-align: center;">' + qtyInputHtml + '</td>'
             + totalCellHtml
             + '<td style="padding: 8px 4px; text-align:center;"><button style="border:none;background:#fee2e2;color:var(--coral-pink);cursor:pointer;border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;" onclick="hapusCart(' + idx + ')"><svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></td>';
@@ -168,9 +182,15 @@ function renderCart() {
     var elDiskonType = document.getElementById('posDiskonType');
     var elDiskon = document.getElementById('posDiskon');
     var diskonValue = elDiskon ? (parseFloat(elDiskon.value) || 0) : 0;
-    var diskonType = elDiskonType ? elDiskonType.value : 'rp';
-    var diskonNominal = 0;
+    var diskonType = elDiskonType ? elDiskonType.value : 'nominal';
     
+    // Update label & badge mata uang diskon nota
+    var optDiskon = document.getElementById('optPosDiskonRp');
+    if (optDiskon) optDiskon.textContent = 'Nominal (' + cfg.symbol + ')';
+    var prefixBadge = document.getElementById('posDiskonPrefixBadge');
+    if (prefixBadge) prefixBadge.textContent = (diskonType === 'persen' ? '%' : cfg.symbol);
+
+    var diskonNominal = 0;
     if (diskonType === 'persen') {
         diskonNominal = grandTotal * (diskonValue / 100);
     } else {
@@ -371,7 +391,22 @@ function submitTransaksiPOS() {
         }
     }
 
-    var cartSnapshot = window.currentCart.slice();
+    var cartSnapshot = window.currentCart.map(function(ci) {
+        var isPromo = (ci.diskonNominal && ci.diskonNominal > 0);
+        return {
+            produkId: ci.produkId,
+            namaProduk: ci.namaProduk,
+            harga: ci.harga,
+            qty: ci.qty,
+            subtotal: ci.subtotal,
+            diskon: ci.diskon || 0,
+            diskonType: ci.diskonType || 'persen',
+            diskonNominal: ci.diskonNominal || 0,
+            isPromo: isPromo,
+            movingType: isPromo ? 'slow' : 'fast',
+            movingLabel: isPromo ? 'Slow Moving (Promo)' : 'Fast Moving (Reguler)'
+        };
+    });
 
     var chkWakil = document.getElementById('posCheckWakil');
     var isWakil = chkWakil ? chkWakil.checked : false;

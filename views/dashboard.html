@@ -301,6 +301,62 @@
 
                     </div>
 
+                    <!-- 4. Grafik Tren Penjualan Bulanan (12 Bulan) Section -->
+                    <div class="order-section-card" style="margin-top: 14px; margin-bottom: 14px; padding: 18px 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(244, 63, 94, 0.15) 100%); display: flex; align-items: center; justify-content: center; color: var(--violet-main);">
+                                    <svg style="width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2;" viewBox="0 0 24 24">
+                                        <line x1="18" y1="20" x2="18" y2="10" />
+                                        <line x1="12" y1="20" x2="12" y2="4" />
+                                        <line x1="6" y1="20" x2="6" y2="14" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="order-main-title" style="font-size: 14px;">Grafik Tren Penjualan Bulanan</div>
+                                    <div style="font-size: 11px; color: var(--text-muted); font-weight: 600;">Analisis omzet per bulan & performa produk Cepat vs Lambat</div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Tahun:</label>
+                                <select id="selectTahunGrafikBulanan" onchange="window.updateGrafikBulanan(this.value)" class="hpp-clean-input" style="padding: 4px 10px; font-weight: 700; font-size: 12px; cursor: pointer; border-radius: 8px;">
+                                    <option value="2026" selected>Tahun 2026</option>
+                                    <option value="2025">Tahun 2025</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 4 KPI Metrics Banner -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 18px;">
+                            <div style="background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 10px; padding: 10px 14px;">
+                                <div style="font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Total Omzet Tahunan</div>
+                                <div id="statBulananTotalYear" style="font-size: 15px; font-weight: 900; color: var(--violet-dark); margin-top: 2px;">Rp 0</div>
+                                <div style="font-size: 10px; color: var(--text-muted);"><span id="statBulananTotalTrx">0</span> transaksi tercatat</div>
+                            </div>
+                            <div style="background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 10px; padding: 10px 14px;">
+                                <div style="font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Rata-Rata Bulanan</div>
+                                <div id="statBulananRataRata" style="font-size: 15px; font-weight: 900; color: var(--text-dark); margin-top: 2px;">Rp 0</div>
+                                <div style="font-size: 10px; color: #059669; font-weight: 700;">Rerata per bulan aktif</div>
+                            </div>
+                            <div style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: 10px; padding: 10px 14px;">
+                                <div style="font-size: 10px; font-weight: 800; color: #e11d48; text-transform: uppercase;">👑 Bulan Puncak (Peak)</div>
+                                <div id="statBulananPeakMonth" style="font-size: 15px; font-weight: 900; color: #e11d48; margin-top: 2px;">-</div>
+                                <div id="statBulananPeakVal" style="font-size: 10px; color: #be123c; font-weight: 700;">Rp 0</div>
+                            </div>
+                            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 10px 14px;">
+                                <div style="font-size: 10px; font-weight: 800; color: #059669; text-transform: uppercase;">Performa Penjualan</div>
+                                <div id="statBulananRasioSpeed" style="font-size: 13.5px; font-weight: 900; color: #047857; margin-top: 2px;">⚡ 85% Cepat</div>
+                                <div style="font-size: 10px; color: #059669;">Reguler vs Diskon Promo</div>
+                            </div>
+                        </div>
+
+                        <!-- Monthly Interactive Bar Chart Container -->
+                        <div id="monthlyBarChartContainer" style="position: relative; background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); border: 1px solid var(--border-soft); border-radius: 12px; padding: 22px 14px 14px; min-height: 180px;">
+                            <!-- Rendered dinamis oleh window.renderGrafikBulanan() -->
+                        </div>
+                    </div>
+
                     <!-- Table Order Section (Tahap 4 Full Functional) -->
                     <div class="order-section-card">
                         <div class="order-header-row">
