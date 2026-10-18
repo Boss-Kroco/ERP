@@ -992,21 +992,40 @@
                     } catch (e) {}
                 }
 
-                var fullUpdates = Object.assign({}, baseUpdates, {
-                    min_qty_grosir: Number(pProd.minQtyGrosir || 0),
-                    harga_grosir: Number(pProd.hargaGrosir || 0)
-                });
+                if (!oldProd) {
+                    var insertPayload = Object.assign({
+                        produk_id: pid,
+                        target_produksi: 100
+                    }, baseUpdates);
+                    var insRes = await sb.from('produk').insert([insertPayload]);
+                    if (insRes.error) throw insRes.error;
+                    try {
+                        await sb.from('stok_lokasi').insert([{
+                            produk_id: pid,
+                            nama_produk: baseUpdates.nama_produk,
+                            gudang_produksi: 0,
+                            etalase_toko: 0,
+                            batas_minimum: 10,
+                            status: 'Aman'
+                        }]);
+                    } catch (e) {}
+                } else {
+                    var fullUpdates = Object.assign({}, baseUpdates, {
+                        min_qty_grosir: Number(pProd.minQtyGrosir || 0),
+                        harga_grosir: Number(pProd.hargaGrosir || 0)
+                    });
 
-                var upRes = await sb.from('produk').update(fullUpdates).eq('produk_id', pid);
-                if (upRes.error) {
-                    var errCode = upRes.error.code;
-                    var errMsg = upRes.error.message || '';
-                    if (errCode === 'PGRST204' || errMsg.includes('min_qty_grosir') || errMsg.includes('harga_grosir')) {
-                        console.warn('[Supabase] Kolom grosir belum ada di Supabase, fallback menyimpan tanpa kolom grosir.');
-                        var retryRes = await sb.from('produk').update(baseUpdates).eq('produk_id', pid);
-                        if (retryRes.error) throw retryRes.error;
-                    } else {
-                        throw upRes.error;
+                    var upRes = await sb.from('produk').update(fullUpdates).eq('produk_id', pid);
+                    if (upRes.error) {
+                        var errCode = upRes.error.code;
+                        var errMsg = upRes.error.message || '';
+                        if (errCode === 'PGRST204' || errMsg.includes('min_qty_grosir') || errMsg.includes('harga_grosir')) {
+                            console.warn('[Supabase] Kolom grosir belum ada di Supabase, fallback menyimpan tanpa kolom grosir.');
+                            var retryRes = await sb.from('produk').update(baseUpdates).eq('produk_id', pid);
+                            if (retryRes.error) throw retryRes.error;
+                        } else {
+                            throw upRes.error;
+                        }
                     }
                 }
 
@@ -1268,13 +1287,19 @@
         } else if (functionName === 'apiGetRecentTransactions') {
             successCb({ success: true, data: (window.orderTransactions || []).slice() });
         } else if (functionName === 'apiGetProductsPaginated') {
-            var catalogProducts = window.catalogProducts || [
+            var savedCat = null;
+            try {
+                var rawCat = localStorage.getItem('bos_kroco_catalog_products');
+                if (rawCat) savedCat = JSON.parse(rawCat);
+            } catch (e) {}
+            var catalogProducts = window.catalogProducts || savedCat || [
                 { produkId: 'PRD-001', namaProduk: 'Kripik Tempe Premium 250g', satuan: 'Pcs', hargaBeliHPP: '8500', hargaJual: '15000', minQtyGrosir: '10', hargaGrosir: '14000', stokEtalase: '45', stokGudang: '150', status: 'Aktif' },
                 { produkId: 'PRD-002', namaProduk: 'Kue Kacang Gurih 500g', satuan: 'Toples', hargaBeliHPP: '18000', hargaJual: '30000', minQtyGrosir: '5', hargaGrosir: '28000', stokEtalase: '15', stokGudang: '80', status: 'Aktif' },
                 { produkId: 'PRD-003', namaProduk: 'Sambal Bawang Botol 150g', satuan: 'Botol', hargaBeliHPP: '9000', hargaJual: '16000', stokEtalase: '8', stokGudang: '120', status: 'Aktif' },
                 { produkId: 'PRD-004', namaProduk: 'Keripik Singkong Pedas 200g', satuan: 'Pcs', hargaBeliHPP: '6000', hargaJual: '12000', minQtyGrosir: '20', hargaGrosir: '10000', stokEtalase: '50', stokGudang: '200', status: 'Aktif' },
                 { produkId: 'PRD-005', namaProduk: 'Abon Sapi Gurih 100g', satuan: 'Pouch', hargaBeliHPP: '22000', hargaJual: '35000', stokEtalase: '12', stokGudang: '60', status: 'Aktif' }
             ];
+            window.catalogProducts = catalogProducts;
             successCb({ success: true, data: catalogProducts, total: catalogProducts.length });
         } else if (functionName === 'apiQuickPayHutangPiutang') {
             var pData = args[0] || {};
@@ -1450,7 +1475,13 @@
                 targetPrd.minQtyGrosir = Number(pUpPrd.minQtyGrosir !== undefined ? pUpPrd.minQtyGrosir : targetPrd.minQtyGrosir);
                 targetPrd.hargaGrosir = Number(pUpPrd.hargaGrosir !== undefined ? pUpPrd.hargaGrosir : targetPrd.hargaGrosir);
                 targetPrd.status = pUpPrd.status || targetPrd.status;
+            } else {
+                listPrd.push(pUpPrd);
             }
+            window.catalogProducts = listPrd;
+            try {
+                localStorage.setItem('bos_kroco_catalog_products', JSON.stringify(listPrd));
+            } catch (e) {}
             window.addMockAuditLog('MasterProduk', 'EDIT_PRODUK', '-', (pUpPrd.namaProduk || ''), 'Edit produk: ' + (pUpPrd.produkId || ''), args[1]);
             successCb({ success: true, message: 'Produk ' + (pUpPrd.namaProduk || '') + ' berhasil diperbarui.' });
         } else if (functionName === 'apiGetProductionBatches') {

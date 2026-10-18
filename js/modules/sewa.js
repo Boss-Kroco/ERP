@@ -5,13 +5,26 @@
  * ============================================================================
  */
 
-window.katalogAlat = [
+var DEFAULT_KATALOG_ALAT = [
     { id: 'AL-001', nama: 'Eskavator Mini', hargaSewa: 1500000, qty: 2 },
     { id: 'AL-002', nama: 'Mesin Molen Beton', hargaSewa: 250000, qty: 5 },
     { id: 'AL-003', nama: 'Stamper Kuda', hargaSewa: 300000, qty: 4 },
     { id: 'AL-004', nama: 'Genset 5000 Watt', hargaSewa: 500000, qty: 3 },
     { id: 'AL-005', nama: 'Scaffolding (Set)', hargaSewa: 40000, qty: 100 }
 ];
+
+try {
+    var savedAlat = localStorage.getItem('mafaza_katalog_alat');
+    window.katalogAlat = savedAlat ? JSON.parse(savedAlat) : DEFAULT_KATALOG_ALAT;
+} catch (e) {
+    window.katalogAlat = DEFAULT_KATALOG_ALAT;
+}
+
+window.simpanKatalogAlatStorage = function() {
+    try {
+        localStorage.setItem('mafaza_katalog_alat', JSON.stringify(window.katalogAlat || []));
+    } catch (e) {}
+};
 
 window.keranjangSewa = [];
 
@@ -272,6 +285,7 @@ window.simpanAlatBaru = function() {
     var hargaIdr = window.fromAppCurrency ? Math.round(window.fromAppCurrency(hargaInput)) : hargaInput;
 
     window.katalogAlat.push({ id: id, nama: nama, hargaSewa: hargaIdr, qty: qty });
+    window.simpanKatalogAlatStorage();
     document.getElementById('modalTambahAlatSewa').style.display = 'none';
     window.renderAlatSewa();
     if(window.showToast) window.showToast('Alat baru berhasil ditambahkan.', 'success');
@@ -280,6 +294,7 @@ window.simpanAlatBaru = function() {
 window.hapusAlat = function(id) {
     if(confirm('Yakin ingin menghapus alat ini?')) {
         window.katalogAlat = window.katalogAlat.filter(function(a) { return a.id !== id; });
+        window.simpanKatalogAlatStorage();
         window.renderAlatSewa();
         if(window.showToast) window.showToast('Alat berhasil dihapus.', 'success');
     }

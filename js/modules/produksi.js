@@ -124,7 +124,7 @@ window.renderRiwayatHPP = function() {
     });
 };
 
-window.initTambahHpp = function() {
+window.initTambahHpp = function(isProductChange) {
     var sel = document.getElementById('hppSelProduk');
     var currentProds = (window.catalogProducts && window.catalogProducts.length) ? window.catalogProducts : (window.catalogProducts || []);
     if(sel) {
@@ -132,7 +132,7 @@ window.initTambahHpp = function() {
         if(sel.options.length <= 1 || sel.options.length !== (currentProds.length + 1)) {
             var optHtml = '<option value="">-- Pilih Produk --</option>';
             currentProds.forEach(function(p) {
-                optHtml += '<option value="' + p.produkId + '">' + p.namaProduk + ' (' + p.produkId + ')</option>';
+                optHtml += '<option value="' + p.produkId + '">' + (p.namaProduk || '') + ' (' + p.produkId + ')</option>';
             });
             sel.innerHTML = optHtml;
             if(curVal) sel.value = curVal;
@@ -145,8 +145,12 @@ window.initTambahHpp = function() {
         var prd = (window.catalogProducts || []).find(function(p) { return p.produkId === prdId; });
         var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { exchangeRate: 1 };
         
+        var elHj = document.getElementById('hppHargaJual');
+        if (isProductChange && elHj) {
+            delete elHj.dataset.modified;
+        }
+
         if (prd) {
-            var elHj = document.getElementById('hppHargaJual');
             if (elHj && !elHj.dataset.modified) {
                 var hjCurr = window.toAppCurrency ? window.toAppCurrency(prd.hargaJual || 0) : (prd.hargaJual || 0);
                 elHj.value = parseFloat(hjCurr.toFixed(2));
@@ -163,7 +167,7 @@ window.initTambahHpp = function() {
         window.hppRincian = window.hppRincian || {};
         var savedState = window.hppRincian[prdId];
         
-        if (savedState && savedState.bahanList) {
+        if (savedState && savedState.bahanList && savedState.bahanList.length) {
             window.tempBahanBaku = JSON.parse(JSON.stringify(savedState.bahanList));
             // Konversi nilai tersimpan ke mata uang aktif saat ini jika berbeda
             var savedRate = savedState.exchangeRate || 1;
@@ -184,22 +188,28 @@ window.initTambahHpp = function() {
                     if (el) {
                         var rawVal = Number(rb[k] || 0);
                         var convertedVal = Math.abs(rateMultiplier - 1) > 0.001 ? (rawVal * rateMultiplier) : rawVal;
-                        el.value = convertedVal ? parseFloat(convertedVal.toFixed(2)) : '';
+                        el.value = convertedVal ? parseFloat(convertedVal.toFixed(2)) : 0;
                     }
                 });
-                if (document.getElementById('hppJmlProduksi')) document.getElementById('hppJmlProduksi').value = savedState.rawBiaya.jmlProd || 1;
+                if (document.getElementById('hppJmlProduksi')) {
+                    document.getElementById('hppJmlProduksi').value = savedState.rawBiaya.jmlProd || 1;
+                }
             }
         } else {
-            // Reset to defaults
-            window.tempBahanBaku = [{ nama: 'Bahan Baku 1', qty: 1, harga: 0 }];
-            ['hppBiayaTk', 'hppBiayaGas', 'hppBiayaListrik', 'hppBiayaKemasan', 'hppBiayaOverhead', 'hppBiayaLain'].forEach(function(id) {
-                if (document.getElementById(id)) document.getElementById(id).value = '';
-            });
-            if (document.getElementById('hppJmlProduksi')) document.getElementById('hppJmlProduksi').value = 1;
+            // Jika belum ada resep tersimpan, cek apakah user sudah mengisi sesuatu di form sebelumnya
+            var hasExistingData = window.tempBahanBaku && window.tempBahanBaku.some(function(b) { return (b.nama || b.harga > 0); });
+            if (!hasExistingData) {
+                window.tempBahanBaku = [{ nama: 'Bahan Baku 1', qty: 1, harga: 0 }];
+                ['hppBiayaTk', 'hppBiayaGas', 'hppBiayaListrik', 'hppBiayaKemasan', 'hppBiayaOverhead', 'hppBiayaLain'].forEach(function(id) {
+                    if (document.getElementById(id)) document.getElementById(id).value = 0;
+                });
+                if (document.getElementById('hppJmlProduksi')) document.getElementById('hppJmlProduksi').value = 1;
+            }
         }
     } else {
-        // Clear if no selection
-        window.tempBahanBaku = [];
+        if (!window.tempBahanBaku || !window.tempBahanBaku.length) {
+            window.tempBahanBaku = [{ nama: 'Bahan Baku 1', qty: 1, harga: 0 }];
+        }
     }
 
     if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();
@@ -207,23 +217,96 @@ window.initTambahHpp = function() {
     if(typeof window.kalkulasiTotalHpp === 'function') window.kalkulasiTotalHpp();
 };
 
+window.syncHppBahanFromDOM = function() {
+    var tbody = document.getElementById('bodyHppBahanBaku');
+    if(!tbody) return window.tempBahanBaku || [];
+    var rows = tbody.querySelectorAll('tr');
+    if(!rows.length) return window.tempBahanBaku || [];
+
+    var list = [];
+    rows.forEach(function(r) {
+        var nEl = r.querySelector('.input-hpp-nama');
+        var qEl = r.querySelector('.input-hpp-qty');
+        var hEl = r.querySelector('.input-hpp-harga');
+        list.push({
+            nama: nEl ? nEl.value.trim() : '',
+            qty: qEl ? (parseFloat(qEl.value) || 0) : 1,
+            harga: hEl ? (parseFloat(hEl.value) || 0) : 0
+        });
+    });
+    window.tempBahanBaku = list;
+    return list;
+};
+
+window.onHppBahanInput = function(idx) {
+    var tbody = document.getElementById('bodyHppBahanBaku');
+    if (!tbody) return;
+    var rows = tbody.querySelectorAll('tr');
+    var targetRow = rows[idx];
+    if (!targetRow) return;
+
+    var namaEl = targetRow.querySelector('.input-hpp-nama');
+    var qtyEl = targetRow.querySelector('.input-hpp-qty');
+    var hargaEl = targetRow.querySelector('.input-hpp-harga');
+    var subEl = targetRow.querySelector('.cell-hpp-subtotal');
+
+    var nama = namaEl ? namaEl.value : '';
+    var qty = qtyEl ? (parseFloat(qtyEl.value) || 0) : 0;
+    var harga = hargaEl ? (parseFloat(hargaEl.value) || 0) : 0;
+    var sub = qty * harga;
+
+    if (!window.tempBahanBaku[idx]) window.tempBahanBaku[idx] = {};
+    window.tempBahanBaku[idx].nama = nama;
+    window.tempBahanBaku[idx].qty = qtyEl && qtyEl.value !== '' ? qtyEl.value : 0;
+    window.tempBahanBaku[idx].harga = hargaEl && hargaEl.value !== '' ? hargaEl.value : 0;
+
+    if (subEl) {
+        subEl.textContent = window.formatAppCurrencyValue ? window.formatAppCurrencyValue(sub) : window.formatAppCurrency(sub);
+    }
+
+    // Hitung total dari seluruh baris aktif di DOM
+    var totalBahan = 0;
+    rows.forEach(function(r) {
+        var q = parseFloat((r.querySelector('.input-hpp-qty') || {}).value) || 0;
+        var h = parseFloat((r.querySelector('.input-hpp-harga') || {}).value) || 0;
+        totalBahan += (q * h);
+    });
+
+    var lblTotalBahan = document.getElementById('lblHppTotalBahan');
+    if (lblTotalBahan) {
+        lblTotalBahan.textContent = window.formatAppCurrencyValue ? window.formatAppCurrencyValue(totalBahan) : window.formatAppCurrency(totalBahan);
+        lblTotalBahan.dataset.val = totalBahan;
+    }
+
+    window.kalkulasiTotalHpp();
+};
+
 window.renderHppBahanBaku = function() {
     var tbody = document.getElementById('bodyHppBahanBaku');
     if(!tbody) return;
     tbody.innerHTML = '';
     
+    if (!window.tempBahanBaku || !window.tempBahanBaku.length) {
+        window.tempBahanBaku = [{ nama: 'Bahan Baku 1', qty: 1, harga: 0 }];
+    }
+
     var totalBahan = 0;
     window.tempBahanBaku.forEach(function(item, idx) {
-        var sub = item.qty * item.harga;
+        var qVal = item.qty !== undefined && item.qty !== '' ? item.qty : 1;
+        var hVal = item.harga !== undefined && item.harga !== '' ? item.harga : 0;
+        var sub = (parseFloat(qVal) || 0) * (parseFloat(hVal) || 0);
         totalBahan += sub;
+        var safeNama = (item.nama || '').replace(/"/g, '&quot;');
+        
         var tr = document.createElement('tr');
+        tr.dataset.idx = idx;
         tr.innerHTML = `
-            <td><input type="text" class="hpp-clean-input" style="width: 100%; min-width: 120px;" value="${item.nama}" onchange="window.updateHppBahan(${idx}, 'nama', this.value)"></td>
-            <td><input type="number" step="any" class="hpp-clean-input" style="text-align: center; width: 90px; padding: 4px;" value="${item.qty}" onchange="window.updateHppBahan(${idx}, 'qty', this.value)"></td>
-            <td><input type="number" step="any" class="hpp-clean-input" style="text-align: right; width: 100px; padding: 4px;" value="${item.harga}" onchange="window.updateHppBahan(${idx}, 'harga', this.value)"></td>
-            <td style="font-weight: 700; text-align: right; color: var(--text-dark);">${window.formatAppCurrencyValue ? window.formatAppCurrencyValue(sub) : window.formatAppCurrency(sub)}</td>
+            <td><input type="text" class="hpp-clean-input input-hpp-nama" style="width: 100%; min-width: 120px;" placeholder="Nama bahan..." value="${safeNama}" oninput="window.onHppBahanInput(${idx})"></td>
+            <td><input type="number" step="any" min="0" class="hpp-clean-input input-hpp-qty" style="text-align: center; width: 90px; padding: 4px;" value="${qVal}" oninput="window.onHppBahanInput(${idx})"></td>
+            <td><input type="number" step="any" min="0" class="hpp-clean-input input-hpp-harga" style="text-align: right; width: 100px; padding: 4px;" value="${hVal}" oninput="window.onHppBahanInput(${idx})"></td>
+            <td class="cell-hpp-subtotal" style="font-weight: 700; text-align: right; color: var(--text-dark);">${window.formatAppCurrencyValue ? window.formatAppCurrencyValue(sub) : window.formatAppCurrency(sub)}</td>
             <td style="text-align: center;">
-                <button style="border: none; background: #fff1f2; color: #e11d48; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center;" onclick="window.hapusHppBahan(${idx})">
+                <button type="button" style="border: none; background: #fff1f2; color: #e11d48; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center;" onclick="window.hapusHppBahan(${idx})" title="Hapus bahan">
                     <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
                 </button>
             </td>
@@ -241,23 +324,46 @@ window.renderHppBahanBaku = function() {
 
 window.updateHppBahan = function(idx, field, value) {
     if(field === 'qty' || field === 'harga') value = parseFloat(value) || 0;
+    if (!window.tempBahanBaku[idx]) window.tempBahanBaku[idx] = {};
     window.tempBahanBaku[idx][field] = value;
     window.renderHppBahanBaku();
 };
 
 window.addHppBahanBaku = function() {
+    window.syncHppBahanFromDOM();
+    if (!window.tempBahanBaku) window.tempBahanBaku = [];
     window.tempBahanBaku.push({ nama: '', qty: 1, harga: 0 });
     window.renderHppBahanBaku();
+    setTimeout(function() {
+        var tbody = document.getElementById('bodyHppBahanBaku');
+        if (tbody) {
+            var inputs = tbody.querySelectorAll('.input-hpp-nama');
+            if (inputs.length) inputs[inputs.length - 1].focus();
+        }
+    }, 50);
 };
 
 window.hapusHppBahan = function(idx) {
-    window.tempBahanBaku.splice(idx, 1);
+    window.syncHppBahanFromDOM();
+    if (window.tempBahanBaku && window.tempBahanBaku.length > idx) {
+        window.tempBahanBaku.splice(idx, 1);
+    }
+    if (!window.tempBahanBaku.length) {
+        window.tempBahanBaku = [{ nama: '', qty: 1, harga: 0 }];
+    }
     window.renderHppBahanBaku();
 };
 
 window.kalkulasiTotalHpp = function() {
     var lblTotalBahan = document.getElementById('lblHppTotalBahan');
-    var totalBahan = lblTotalBahan ? parseFloat(lblTotalBahan.dataset.val || 0) : 0;
+    var totalBahan = 0;
+    if (lblTotalBahan && lblTotalBahan.dataset.val !== undefined && !isNaN(parseFloat(lblTotalBahan.dataset.val))) {
+        totalBahan = parseFloat(lblTotalBahan.dataset.val);
+    } else {
+        (window.tempBahanBaku || []).forEach(function(b) {
+            totalBahan += (parseFloat(b.qty) || 0) * (parseFloat(b.harga) || 0);
+        });
+    }
     
     var bTk = parseFloat((document.getElementById('hppBiayaTk') || {}).value) || 0;
     var bGas = parseFloat((document.getElementById('hppBiayaGas') || {}).value) || 0;
@@ -275,7 +381,10 @@ window.kalkulasiTotalHpp = function() {
     if (lblGrandTotal) lblGrandTotal.textContent = window.formatAppCurrencyValue ? window.formatAppCurrencyValue(grandTotal) : window.formatAppCurrency(grandTotal);
     
     var jmlProd = parseFloat((document.getElementById('hppJmlProduksi') || {}).value) || 1;
+    if (jmlProd <= 0 || isNaN(jmlProd)) jmlProd = 1;
+
     var hppItem = grandTotal / jmlProd;
+    if (isNaN(hppItem) || !isFinite(hppItem)) hppItem = 0;
     
     var lblPerItem = document.getElementById('lblHppPerItem');
     if (lblPerItem) lblPerItem.textContent = window.formatAppCurrencyValue ? window.formatAppCurrencyValue(hppItem) : window.formatAppCurrency(hppItem);
@@ -293,49 +402,59 @@ window.simpanHppBaru = function() {
     var sel = document.getElementById('hppSelProduk');
     if (!sel || !sel.value) {
         if(window.showToast) window.showToast('Pilih produk terlebih dahulu!', 'error');
+        if (sel) sel.focus();
         return;
     }
     var selId = sel.value;
     var prd = (window.catalogProducts || []).find(function(p) { return p.produkId === selId; });
     
     if(!prd) {
-        if(window.showToast) window.showToast('Pilih produk terlebih dahulu!', 'error');
+        if(window.showToast) window.showToast('Produk yang dipilih tidak ditemukan!', 'error');
         return;
     }
     
+    // Pastikan seluruh input di tabel disinkronkan dan dikalkulasi ulang
+    window.syncHppBahanFromDOM();
+    window.kalkulasiTotalHpp();
+
     var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { exchangeRate: 1 };
     var res = window.tempHppResult;
     
-    if (!res || res.hppItem === undefined) {
-        if(window.showToast) window.showToast('Silakan lengkapi tabel bahan baku terlebih dahulu!', 'error');
+    if (!res || res.hppItem === undefined || isNaN(res.hppItem)) {
+        if(window.showToast) window.showToast('Silakan lengkapi tabel bahan baku dan biaya terlebih dahulu!', 'error');
         return;
     }
     
     var hargaJualInput = document.getElementById('hppHargaJual');
     var hargaJualCurr = hargaJualInput ? (parseFloat(hargaJualInput.value) || 0) : 0;
+    if (hargaJualCurr <= 0 && prd.hargaJual) {
+        hargaJualCurr = window.toAppCurrency ? window.toAppCurrency(prd.hargaJual) : prd.hargaJual;
+    }
 
     var minGrosirInput = document.getElementById('hppMinGrosir');
     var minGrosirValue = (minGrosirInput && minGrosirInput.value !== '') ? parseFloat(minGrosirInput.value) : (prd.minQtyGrosir || 0);
     
     var hargaGrosirInput = document.getElementById('hppHargaGrosir');
-    var hargaGrosirCurr = (hargaGrosirInput && hargaGrosirInput.value !== '') ? parseFloat(hargaGrosirInput.value) : 0;
+    var hargaGrosirCurr = (hargaGrosirInput && hargaGrosirInput.value !== '') ? parseFloat(hargaGrosirInput.value) : (prd.hargaGrosir || 0);
 
     // Nilai dalam base IDR untuk disimpan ke master database
     var hppItemBaseIdr = Math.round(window.fromAppCurrency ? window.fromAppCurrency(res.hppItem) : res.hppItem);
     var hargaJualBaseIdr = Math.round(window.fromAppCurrency ? window.fromAppCurrency(hargaJualCurr) : hargaJualCurr);
     var hargaGrosirBaseIdr = Math.round(window.fromAppCurrency ? window.fromAppCurrency(hargaGrosirCurr) : hargaGrosirCurr);
 
+    var jmlProdSafe = res.jmlProd > 0 ? res.jmlProd : 1;
+
     // Save recipe details in memory and localStorage (dengan exchangeRate untuk konversi antar kurs)
     window.hppRincian = window.hppRincian || {};
     window.hppRincian[selId] = {
-        exchangeRate: cfg.exchangeRate,
-        bahan: res.totalBahan / res.jmlProd,
-        tk: res.bTk / res.jmlProd,
-        gas: res.bGas / res.jmlProd,
-        listrik: res.bListrik / res.jmlProd,
-        kemasan: res.bKemasan / res.jmlProd,
-        overhead: res.bOverhead / res.jmlProd,
-        lainnya: res.bLain / res.jmlProd,
+        exchangeRate: cfg.exchangeRate || 1,
+        bahan: res.totalBahan / jmlProdSafe,
+        tk: res.bTk / jmlProdSafe,
+        gas: res.bGas / jmlProdSafe,
+        listrik: res.bListrik / jmlProdSafe,
+        kemasan: res.bKemasan / jmlProdSafe,
+        overhead: res.bOverhead / jmlProdSafe,
+        lainnya: res.bLain / jmlProdSafe,
         bahanList: JSON.parse(JSON.stringify(window.tempBahanBaku)),
         rawBiaya: {
             tk: res.bTk,
@@ -344,7 +463,7 @@ window.simpanHppBaru = function() {
             kemasan: res.bKemasan,
             overhead: res.bOverhead,
             lainnya: res.bLain,
-            jmlProd: res.jmlProd
+            jmlProd: jmlProdSafe
         }
     };
     try {
@@ -354,19 +473,26 @@ window.simpanHppBaru = function() {
     var payload = {
         produkId: prd.produkId,
         namaProduk: prd.namaProduk,
-        satuan: prd.satuan,
+        satuan: prd.satuan || 'Pcs',
         hargaBeliHPP: hppItemBaseIdr || 0,
         hargaJual: hargaJualBaseIdr || 0,
         minQtyGrosir: minGrosirValue,
         hargaGrosir: hargaGrosirBaseIdr,
-        status: prd.status
+        status: prd.status || 'Aktif'
     };
 
     if (window.showToast) window.showToast('Menyimpan HPP produk ke database...', 'info');
 
     if (window.runBackend) {
         window.runBackend('apiUpdateProduct', [payload, window.currentUser], function(apiRes) {
+            if (!apiRes || apiRes.success === false) {
+                var errTxt = (apiRes && apiRes.message) ? apiRes.message : 'Gagal memperbarui produk di database';
+                if(window.showToast) window.showToast(errTxt, 'error');
+                return;
+            }
+
             // Update local memory
+            var oldHpp = prd.hargaBeliHPP || 0;
             prd.hargaBeliHPP = hppItemBaseIdr || 0;
             prd.hargaJual = hargaJualBaseIdr || 0;
             prd.minQtyGrosir = minGrosirValue;
@@ -381,6 +507,11 @@ window.simpanHppBaru = function() {
                     cPrd.hargaGrosir = prd.hargaGrosir;
                 }
             }
+
+            // Also keep mock catalogProducts synced in localStorage
+            try {
+                localStorage.setItem('bos_kroco_catalog_products', JSON.stringify(window.catalogProducts));
+            } catch(e) {}
 
             var today = new Date().toISOString().split('T')[0];
             window.hppRiwayatData = window.hppRiwayatData || [];
@@ -398,7 +529,7 @@ window.simpanHppBaru = function() {
             if(window.populateProductDropdowns) window.populateProductDropdowns();
             if(window.renderMasterProdukTable) window.renderMasterProdukTable();
             if(window.renderDaftarHPP) window.renderDaftarHPP();
-            if(window.showToast) window.showToast('HPP dan Harga Jual berhasil disimpan ke database!', 'success');
+            if(window.showToast) window.showToast('HPP dan Harga Jual ' + prd.namaProduk + ' berhasil disimpan!', 'success');
             window.switchHppTab('daftar');
         }, function(err) {
             if(window.showToast) window.showToast('Gagal menyimpan HPP: ' + (err.message || 'Error koneksi database'), 'error');

@@ -74,7 +74,11 @@ window.getAppCurrencyConfig = function () {
 
 window.toAppCurrency = function (numIdr) {
     var cfg = window.getAppCurrencyConfig();
-    return Number(numIdr || 0) / cfg.exchangeRate;
+    var val = Number(numIdr || 0) / cfg.exchangeRate;
+    if (Math.abs(val - Math.round(val)) < 0.015) {
+        val = Math.round(val);
+    }
+    return val;
 };
 
 window.fromAppCurrency = function (numCurr) {
@@ -85,6 +89,12 @@ window.fromAppCurrency = function (numCurr) {
 window.formatAppCurrency = function (num) {
     var cfg = window.getAppCurrencyConfig();
     var convertedNum = Number(num || 0) / cfg.exchangeRate;
+    if (cfg.fraction === 0) {
+        convertedNum = Math.round(convertedNum);
+    } else if (Math.abs(convertedNum - Math.round(convertedNum)) < 0.015) {
+        // Hilangkan artefak pecahan desimal tak sengaja dari roundtrip kurs (misal ,01 atau ,99)
+        convertedNum = Math.round(convertedNum);
+    }
     return cfg.prefix + convertedNum.toLocaleString(cfg.locale, {
         minimumFractionDigits: cfg.fraction,
         maximumFractionDigits: cfg.fraction
@@ -94,6 +104,11 @@ window.formatAppCurrency = function (num) {
 window.formatAppCurrencyValue = function (val) {
     var cfg = window.getAppCurrencyConfig();
     var num = Number(val || 0);
+    if (cfg.fraction === 0) {
+        num = Math.round(num);
+    } else if (Math.abs(num - Math.round(num)) < 0.015) {
+        num = Math.round(num);
+    }
     return cfg.prefix + num.toLocaleString(cfg.locale, {
         minimumFractionDigits: cfg.fraction,
         maximumFractionDigits: cfg.fraction

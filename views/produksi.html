@@ -233,7 +233,7 @@
             
             <div style="margin-bottom: 24px;">
                 <label style="font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; display: block;">Pilih Produk untuk Dikalkulasi</label>
-                <select id="hppSelProduk" class="search-filter-input" style="width: 100%; max-width: 400px; padding: 12px; font-size: 14px; border-radius: 12px; border-color: var(--violet-light); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.05);" onchange="window.initTambahHpp()"></select>
+                <select id="hppSelProduk" class="search-filter-input" style="width: 100%; max-width: 400px; padding: 12px; font-size: 14px; border-radius: 12px; border-color: var(--violet-light); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.05);" onchange="window.initTambahHpp(true)"></select>
             </div>
 
             <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 16px;">
@@ -339,7 +339,7 @@
                         </div>
                     </div>
                     
-                    <button class="btn-pill-action btn-pill-primary" style="padding: 12px; font-size: 14px; border-radius: 8px; width: 100%; justify-content: center;" onclick="window.simpanHppBaru()">
+                    <button type="button" class="btn-pill-action btn-pill-primary" style="padding: 12px; font-size: 14px; border-radius: 8px; width: 100%; justify-content: center;" onclick="window.simpanHppBaru()">
                         Simpan HPP
                     </button>
                 </div>
