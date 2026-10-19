@@ -710,21 +710,12 @@ window.posClearUangBayar = function() {
 window.posQuickCash = function(val) {
     var elUangBayar = document.getElementById('posUangBayar');
     if (!elUangBayar) return;
-    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { currency: 'IDR', fraction: 0 };
     if (val === 'pas') {
-        var netCurr = window.currentPosTotalNetCurr || 0;
-        if (cfg.currency === 'IDR') {
-            elUangBayar.value = netCurr > 0 ? Math.round(netCurr).toLocaleString('id-ID') : '';
-        } else {
-            elUangBayar.value = netCurr > 0 ? parseFloat(Number(netCurr).toFixed(cfg.fraction)) : '';
-        }
+        var netCurr = Math.round(window.currentPosTotalNet || 0);
+        elUangBayar.value = netCurr > 0 ? netCurr.toLocaleString('id-ID') : '';
     } else {
-        var num = parseFloat(val) || 0;
-        if (cfg.currency === 'IDR') {
-            elUangBayar.value = num > 0 ? Math.round(num).toLocaleString('id-ID') : '';
-        } else {
-            elUangBayar.value = num > 0 ? parseFloat(Number(num).toFixed(cfg.fraction)) : '';
-        }
+        var num = Math.round(parseFloat(val) || 0);
+        elUangBayar.value = num > 0 ? num.toLocaleString('id-ID') : '';
     }
     window.updatePosKembalian();
 };
@@ -733,55 +724,35 @@ window.renderPosQuickCashChips = function(totalIdr) {
     var group = document.getElementById('posQuickCashGroup');
     if (!group) return;
     
-    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { currency: 'IDR' };
-    totalIdr = totalIdr || window.currentPosTotalNet || 0;
-    var totalCurr = window.toAppCurrency ? window.toAppCurrency(totalIdr) : totalIdr;
+    totalIdr = Math.round(totalIdr || window.currentPosTotalNet || 0);
     var chips = [];
 
-    if (cfg.currency === 'IDR') {
-        if (totalIdr <= 0) {
-            chips = [10000, 20000, 50000, 100000];
-        } else {
-            var r10k = Math.ceil(totalIdr / 10000) * 10000;
-            if (r10k > totalIdr) chips.push(r10k);
-            var r20k = Math.ceil(totalIdr / 20000) * 20000;
-            if (r20k > totalIdr && chips.indexOf(r20k) === -1) chips.push(r20k);
-            var r50k = Math.ceil(totalIdr / 50000) * 50000;
-            if (r50k > totalIdr && chips.indexOf(r50k) === -1) chips.push(r50k);
-            var r100k = Math.ceil(totalIdr / 100000) * 100000;
-            if (r100k > totalIdr && chips.indexOf(r100k) === -1) chips.push(r100k);
-
-            var standardNotes = [20000, 50000, 100000, 200000];
-            for (var i = 0; i < standardNotes.length; i++) {
-                var note = standardNotes[i];
-                if (note > totalIdr && chips.indexOf(note) === -1 && chips.length < 4) chips.push(note);
-            }
-            chips.sort(function(a, b) { return a - b; });
-            chips = chips.slice(0, 4);
-        }
+    if (totalIdr <= 0) {
+        chips = [10000, 20000, 50000, 100000];
     } else {
-        // Mata uang asing (YER, SAR, USD)
-        if (totalCurr <= 0) {
-            chips = cfg.currency === 'USD' ? [5, 10, 20, 50] : (cfg.currency === 'SAR' ? [10, 50, 100, 200] : [500, 1000, 2000, 5000]);
-        } else {
-            var step = totalCurr > 1000 ? 500 : (totalCurr > 100 ? 50 : (totalCurr > 10 ? 5 : 1));
-            var c1 = Math.ceil(totalCurr / step) * step;
-            if (c1 > totalCurr) chips.push(c1);
-            var c2 = Math.ceil((totalCurr + 1) / (step * 2)) * (step * 2);
-            if (c2 > totalCurr && chips.indexOf(c2) === -1) chips.push(c2);
-            var c3 = Math.ceil((totalCurr + 1) / (step * 5)) * (step * 5);
-            if (c3 > totalCurr && chips.indexOf(c3) === -1) chips.push(c3);
-            var c4 = Math.ceil((totalCurr + 1) / (step * 10)) * (step * 10);
-            if (c4 > totalCurr && chips.indexOf(c4) === -1) chips.push(c4);
-            chips.sort(function(a, b) { return a - b; });
-            chips = chips.slice(0, 4);
+        var r10k = Math.ceil(totalIdr / 10000) * 10000;
+        if (r10k > totalIdr) chips.push(r10k);
+        var r20k = Math.ceil(totalIdr / 20000) * 20000;
+        if (r20k > totalIdr && chips.indexOf(r20k) === -1) chips.push(r20k);
+        var r50k = Math.ceil(totalIdr / 50000) * 50000;
+        if (r50k > totalIdr && chips.indexOf(r50k) === -1) chips.push(r50k);
+        var r100k = Math.ceil(totalIdr / 100000) * 100000;
+        if (r100k > totalIdr && chips.indexOf(r100k) === -1) chips.push(r100k);
+
+        var standardNotes = [20000, 50000, 100000, 200000];
+        for (var i = 0; i < standardNotes.length; i++) {
+            var note = standardNotes[i];
+            if (note > totalIdr && chips.indexOf(note) === -1 && chips.length < 4) chips.push(note);
         }
+        chips.sort(function(a, b) { return a - b; });
+        chips = chips.slice(0, 4);
+        if (chips.length === 0) chips = [100000];
     }
 
     var html = '<button type="button" onclick="window.posQuickCash(\'pas\')" class="pos-chip-btn" id="btnChipPas" style="flex: 1.2; min-width: 85px; padding: 7px 10px; font-size: 11.5px; font-weight: 800; border-radius: 8px; border: 1.5px solid #818cf8; background: linear-gradient(135deg, #eef2ff 0%, #ede9fe 100%); color: #4338ca; cursor: pointer; transition: all 0.15s ease; display: inline-flex; align-items: center; justify-content: center;">Uang Pas</button>';
     
     chips.forEach(function(val) {
-        var label = cfg.currency === 'IDR' ? val.toLocaleString('id-ID') : (window.formatAppCurrencyValue ? window.formatAppCurrencyValue(val) : val);
+        var label = Math.round(val).toLocaleString('id-ID');
         html += '<button type="button" onclick="window.posQuickCash(' + val + ')" class="pos-chip-btn" data-val="' + val + '" style="flex: 1; min-width: 58px; padding: 7px 8px; font-size: 11.5px; font-weight: 700; border-radius: 8px; border: 1.5px solid #e2e8f0; background: #ffffff; color: #334155; cursor: pointer; transition: all 0.15s ease;">' + label + '</button>';
     });
     

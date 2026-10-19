@@ -98,8 +98,9 @@ window.initPengaturanPage = function () {
             var cfg = JSON.parse(rawSettings);
             if (cfg.targetOmzet && document.getElementById('setFinTargetOmzet')) document.getElementById('setFinTargetOmzet').value = cfg.targetOmzet;
             if (cfg.pajak && document.getElementById('setFinPajak')) document.getElementById('setFinPajak').value = cfg.pajak;
-            if (cfg.limitKas && document.getElementById('setFinLimitKas')) document.getElementById('setFinLimitKas').value = cfg.limitKas;
-            if (cfg.currency && document.getElementById('setFinCurrency')) document.getElementById('setFinCurrency').value = cfg.currency;
+            if (cfg.currency && document.getElementById('setFinCurrency')) {
+                document.getElementById('setFinCurrency').value = (cfg.currency === 'YER') ? 'IDR' : cfg.currency;
+            }
             if (cfg.teleToken && document.getElementById('setTeleToken')) document.getElementById('setTeleToken').value = cfg.teleToken;
             if (cfg.teleChatId && document.getElementById('setTeleChatId')) document.getElementById('setTeleChatId').value = cfg.teleChatId;
             if (typeof cfg.teleEnabled === 'boolean' && document.getElementById('setTeleEnable')) document.getElementById('setTeleEnable').checked = cfg.teleEnabled;

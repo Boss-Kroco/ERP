@@ -36,30 +36,38 @@ window.getAppCurrencyConfig = function () {
     if (rawSettings) {
         try {
             var cfgObj = JSON.parse(rawSettings);
-            if (cfgObj && cfgObj.currency) currency = cfgObj.currency;
+            if (cfgObj && cfgObj.currency) {
+                if (cfgObj.currency === 'YER') {
+                    cfgObj.currency = 'IDR';
+                    try {
+                        localStorage.setItem('bos_kroco_app_settings', JSON.stringify(cfgObj));
+                    } catch (e) {}
+                }
+                currency = cfgObj.currency;
+            }
         } catch (e) {}
     }
 
     if (currency === 'USD') {
-        prefix = '$';
+        prefix = '$ ';
         symbol = '$';
-        exchangeRate = 15500; // Asumsi kurs IDR to USD
+        exchangeRate = 15500;
         locale = 'en-US';
-        fraction = 2;
-    } else if (currency === 'YER') {
-        prefix = '﷼ ';
-        symbol = '﷼';
-        // Kurs riil pasar Yaman Selatan (Aden): 100 SAR = 41.500 YER (1 SAR = 415 YER)
-        // Dengan acuan kurs SAR = 4.770 IDR, maka 1 YER = 4770 / 415 IDR (~11,494 IDR)
-        exchangeRate = 4770 / 415;
-        locale = 'id-ID';
         fraction = 2;
     } else if (currency === 'SAR') {
         prefix = '﷼ ';
         symbol = '﷼';
-        exchangeRate = 4770; // Kurs real ~ 4770 IDR to SAR
+        exchangeRate = 4770;
         locale = 'id-ID';
         fraction = 2;
+    } else {
+        // Standar Baku Kurs Rupiah (IDR)
+        currency = 'IDR';
+        prefix = 'Rp ';
+        symbol = 'Rp';
+        exchangeRate = 1;
+        locale = 'id-ID';
+        fraction = 0;
     }
 
     return {
@@ -74,8 +82,11 @@ window.getAppCurrencyConfig = function () {
 
 window.toAppCurrency = function (numIdr) {
     var cfg = window.getAppCurrencyConfig();
+    if (cfg.currency === 'IDR') {
+        return Math.round(Number(numIdr || 0));
+    }
     var val = Number(numIdr || 0) / cfg.exchangeRate;
-    if (Math.abs(val - Math.round(val)) < 0.015) {
+    if (Math.abs(val - Math.round(val)) < 0.05) {
         val = Math.round(val);
     }
     return val;
@@ -83,34 +94,41 @@ window.toAppCurrency = function (numIdr) {
 
 window.fromAppCurrency = function (numCurr) {
     var cfg = window.getAppCurrencyConfig();
-    return Number(numCurr || 0) * cfg.exchangeRate;
+    if (cfg.currency === 'IDR') {
+        return Math.round(Number(numCurr || 0));
+    }
+    return Math.round(Number(numCurr || 0) * cfg.exchangeRate);
 };
 
 window.formatAppCurrency = function (num) {
     var cfg = window.getAppCurrencyConfig();
+    if (cfg.currency === 'IDR') {
+        // Hilangkan segala artefak .01 / .81 dan format murni bulat Rupiah
+        var bulatIdr = Math.round(Number(num || 0));
+        return 'Rp ' + bulatIdr.toLocaleString('id-ID');
+    }
     var convertedNum = Number(num || 0) / cfg.exchangeRate;
-    if (cfg.fraction === 0) {
-        convertedNum = Math.round(convertedNum);
-    } else if (Math.abs(convertedNum - Math.round(convertedNum)) < 0.015) {
-        // Hilangkan artefak pecahan desimal tak sengaja dari roundtrip kurs (misal ,01 atau ,99)
+    if (cfg.fraction === 0 || Math.abs(convertedNum - Math.round(convertedNum)) < 0.05) {
         convertedNum = Math.round(convertedNum);
     }
     return cfg.prefix + convertedNum.toLocaleString(cfg.locale, {
-        minimumFractionDigits: cfg.fraction,
+        minimumFractionDigits: (convertedNum % 1 === 0 ? 0 : cfg.fraction),
         maximumFractionDigits: cfg.fraction
     });
 };
 
 window.formatAppCurrencyValue = function (val) {
     var cfg = window.getAppCurrencyConfig();
+    if (cfg.currency === 'IDR') {
+        var bulatIdr = Math.round(Number(val || 0));
+        return 'Rp ' + bulatIdr.toLocaleString('id-ID');
+    }
     var num = Number(val || 0);
-    if (cfg.fraction === 0) {
-        num = Math.round(num);
-    } else if (Math.abs(num - Math.round(num)) < 0.015) {
+    if (cfg.fraction === 0 || Math.abs(num - Math.round(num)) < 0.05) {
         num = Math.round(num);
     }
     return cfg.prefix + num.toLocaleString(cfg.locale, {
-        minimumFractionDigits: cfg.fraction,
+        minimumFractionDigits: (num % 1 === 0 ? 0 : cfg.fraction),
         maximumFractionDigits: cfg.fraction
     });
 };
@@ -487,3 +505,32 @@ window.addEventListener('load', function() {
         lbl.innerText = 'AR';
     }
 });
+
+// Helper Navigasi Geser Naik & Turun Layar (Panah Samping Kanan)
+window.appScrollStep = function (delta) {
+    // 1. Cek apakah ada modal aktif yang sedang terbuka
+    var activeModal = document.querySelector('.modal-overlay-custom.active .modal-sheet-body') ||
+                      document.querySelector('.modal-overlay-custom.active');
+    if (activeModal && activeModal.scrollHeight > activeModal.clientHeight) {
+        activeModal.scrollBy({ top: delta, behavior: 'smooth' });
+        return;
+    }
+
+    // 2. Cek apakah di halaman POS ada produk grid yang sedang di-scroll
+    var posGrid = document.getElementById('posProductGrid');
+    if (posGrid && posGrid.offsetParent !== null && posGrid.scrollHeight > posGrid.clientHeight) {
+        posGrid.scrollBy({ top: delta, behavior: 'smooth' });
+        return;
+    }
+
+    // 3. Cek container utama aplikasi
+    var mainContent = document.querySelector('.main-content') || document.querySelector('main') || document.getElementById('appMainContent');
+    if (mainContent && mainContent.scrollHeight > mainContent.clientHeight) {
+        mainContent.scrollBy({ top: delta, behavior: 'smooth' });
+        return;
+    }
+
+    // 4. Fallback ke window / documentElement
+    window.scrollBy({ top: delta, behavior: 'smooth' });
+};
+

@@ -110,50 +110,73 @@ function openModalTambahProduk() { document.getElementById('modalTambahProduk').
 function closeModalTambahProduk() { document.getElementById('modalTambahProduk').classList.remove('active'); }
 
 function submitTambahProduk() {
-            var payload = {
-                namaProduk: document.getElementById('newProdNama').value,
-                satuan: document.getElementById('newProdSatuan').value,
-                hargaBeliHPP: parseFloat(document.getElementById('newProdHpp').value) || 0,
-                hargaJual: parseFloat(document.getElementById('newProdHargaJual').value) || 0,
-                minQtyGrosir: parseFloat(document.getElementById('newProdMinQtyGrosir').value) || 0,
-                hargaGrosir: parseFloat(document.getElementById('newProdHargaGrosir').value) || 0
-            };
+    var nama = (document.getElementById('newProdNama').value || '').trim();
+    if (!nama) {
+        showToast('Nama produk wajib diisi.', 'error');
+        return;
+    }
+    var stokEtalaseVal = parseFloat((document.getElementById('newProdStokEtalase') || {}).value) || 0;
+    var stokGudangVal = parseFloat((document.getElementById('newProdStokGudang') || {}).value) || 0;
 
-            runBackend('apiSaveProduct', [payload, window.currentUser], function (res) {
-                if (!res.success) {
-                    // Jangan update UI jika backend gagal
-                    showToast(res.message || 'Gagal menyimpan produk.', 'error');
-                    return;
-                }
-                showToast(res.message, 'success');
-                closeModalTambahProduk();
-                // Optimistic update hanya setelah backend konfirmasi sukses
-                catalogProducts.push({
-                    produkId: res.produkId || ('PRD-00' + (catalogProducts.length + 1)),
-                    namaProduk: payload.namaProduk,
-                    satuan: payload.satuan,
-                    hargaBeliHPP: payload.hargaBeliHPP,
-                    hargaJual: payload.hargaJual,
-                    minQtyGrosir: payload.minQtyGrosir,
-                    hargaGrosir: payload.hargaGrosir,
-                    stokEtalase: 0,
-                    stokGudang: 0,
-                    status: 'Aktif'
-                });
-                
-                document.getElementById('newProdNama').value = '';
-                document.getElementById('newProdSatuan').value = '';
-                document.getElementById('newProdHpp').value = '';
-                document.getElementById('newProdHargaJual').value = '';
-                document.getElementById('newProdMinQtyGrosir').value = '';
-                document.getElementById('newProdHargaGrosir').value = '';
+    var payload = {
+        namaProduk: nama,
+        satuan: (document.getElementById('newProdSatuan').value || 'Pcs').trim(),
+        hargaBeliHPP: Math.round(parseFloat(document.getElementById('newProdHpp').value) || 0),
+        hargaJual: Math.round(parseFloat(document.getElementById('newProdHargaJual').value) || 0),
+        minQtyGrosir: parseFloat(document.getElementById('newProdMinQtyGrosir').value) || 0,
+        hargaGrosir: Math.round(parseFloat(document.getElementById('newProdHargaGrosir').value) || 0),
+        stokEtalase: stokEtalaseVal,
+        stokGudang: stokGudangVal
+    };
 
-                window.catalogProducts = catalogProducts;
-                renderMasterProdukTable();
-                populateProductDropdowns();
-                if (typeof window.renderDaftarHPP === 'function') window.renderDaftarHPP();
-            });
+    showToast('Menyimpan data produk baru...', 'info');
+
+    runBackend('apiSaveProduct', [payload, window.currentUser], function (res) {
+        if (!res || !res.success) {
+            showToast((res && res.message) || 'Gagal menyimpan produk.', 'error');
+            return;
         }
+        showToast(res.message || 'Produk berhasil didaftarkan.', 'success');
+        closeModalTambahProduk();
+        
+        var generatedId = res.produkId || ('PRD-' + Date.now().toString().slice(-4));
+        var newProd = {
+            produkId: generatedId,
+            namaProduk: payload.namaProduk,
+            satuan: payload.satuan,
+            hargaBeliHPP: payload.hargaBeliHPP,
+            hargaJual: payload.hargaJual,
+            minQtyGrosir: payload.minQtyGrosir,
+            hargaGrosir: payload.hargaGrosir,
+            stokEtalase: payload.stokEtalase,
+            stokGudang: payload.stokGudang,
+            status: 'Aktif'
+        };
+
+        catalogProducts.unshift(newProd);
+        window.catalogProducts = catalogProducts;
+        try {
+            localStorage.setItem('bos_kroco_catalog_products', JSON.stringify(catalogProducts));
+        } catch (e) {}
+
+        // Reset form inputs
+        document.getElementById('newProdNama').value = '';
+        document.getElementById('newProdSatuan').value = 'Pcs';
+        document.getElementById('newProdHpp').value = '';
+        document.getElementById('newProdHargaJual').value = '';
+        document.getElementById('newProdMinQtyGrosir').value = '';
+        document.getElementById('newProdHargaGrosir').value = '';
+        if (document.getElementById('newProdStokEtalase')) document.getElementById('newProdStokEtalase').value = '50';
+        if (document.getElementById('newProdStokGudang')) document.getElementById('newProdStokGudang').value = '100';
+
+        renderMasterProdukTable();
+        populateProductDropdowns();
+        if (typeof window.renderPosProductGrid === 'function') window.renderPosProductGrid();
+        if (typeof window.renderDaftarHPP === 'function') window.renderDaftarHPP();
+    }, function(err) {
+        showToast('Gagal menyimpan produk: ' + (err.message || 'Koneksi terganggu'), 'error');
+    });
+}
 
 function openModalEditProduk(produkId) {
             var item = (catalogProducts || []).find(function (p) { return p.produkId === produkId; });
@@ -192,50 +215,55 @@ function closeModalEditProduk() {
         }
 
 function submitEditProduk() {
-            var prodId = document.getElementById('editProdId').value;
-            var payload = {
-                produkId: prodId,
-                namaProduk: document.getElementById('editProdNama').value.trim(),
-                satuan: document.getElementById('editProdSatuan').value.trim(),
-                hargaBeliHPP: parseFloat(document.getElementById('editProdHpp').value) || 0,
-                hargaJual: parseFloat(document.getElementById('editProdHargaJual').value) || 0,
-                minQtyGrosir: parseFloat(document.getElementById('editProdMinQtyGrosir').value) || 0,
-                hargaGrosir: parseFloat(document.getElementById('editProdHargaGrosir').value) || 0,
-                status: document.getElementById('editProdStatus').value
-            };
+    var prodId = document.getElementById('editProdId').value;
+    var payload = {
+        produkId: prodId,
+        namaProduk: document.getElementById('editProdNama').value.trim(),
+        satuan: document.getElementById('editProdSatuan').value.trim(),
+        hargaBeliHPP: Math.round(parseFloat(document.getElementById('editProdHpp').value) || 0),
+        hargaJual: Math.round(parseFloat(document.getElementById('editProdHargaJual').value) || 0),
+        minQtyGrosir: parseFloat(document.getElementById('editProdMinQtyGrosir').value) || 0,
+        hargaGrosir: Math.round(parseFloat(document.getElementById('editProdHargaGrosir').value) || 0),
+        status: document.getElementById('editProdStatus').value
+    };
 
-            showToast('Menyimpan perubahan produk ' + prodId + '...', 'success');
+    showToast('Menyimpan perubahan produk ' + prodId + '...', 'info');
 
-            runBackend('apiUpdateProduct', [payload, window.currentUser], function (res) {
-                if (!res.success) {
-                    showToast(res.message || 'Gagal memperbarui produk.', 'error');
-                    return;
-                }
-
-                // Update lokal catalogProducts
-                for (var i = 0; i < catalogProducts.length; i++) {
-                    if (catalogProducts[i].produkId === prodId) {
-                        catalogProducts[i].namaProduk = payload.namaProduk;
-                        catalogProducts[i].satuan = payload.satuan;
-                        catalogProducts[i].hargaBeliHPP = payload.hargaBeliHPP;
-                        catalogProducts[i].hargaJual = payload.hargaJual;
-                        catalogProducts[i].minQtyGrosir = payload.minQtyGrosir;
-                        catalogProducts[i].hargaGrosir = payload.hargaGrosir;
-                        catalogProducts[i].status = payload.status;
-                        break;
-                    }
-                }
-
-                window.catalogProducts = catalogProducts;
-                renderMasterProdukTable();
-                populateProductDropdowns();
-                if (typeof window.renderDaftarHPP === 'function') window.renderDaftarHPP();
-                closeModalEditProduk();
-                showToast(res.message || 'Produk berhasil diperbarui.', 'success');
-            }, function (err) {
-                showToast('Gagal update produk: ' + (err.message || 'Koneksi terganggu'), 'error');
-            });
+    runBackend('apiUpdateProduct', [payload, window.currentUser], function (res) {
+        if (!res.success) {
+            showToast(res.message || 'Gagal memperbarui produk.', 'error');
+            return;
         }
+
+        // Update lokal catalogProducts
+        for (var i = 0; i < catalogProducts.length; i++) {
+            if (catalogProducts[i].produkId === prodId) {
+                catalogProducts[i].namaProduk = payload.namaProduk;
+                catalogProducts[i].satuan = payload.satuan;
+                catalogProducts[i].hargaBeliHPP = payload.hargaBeliHPP;
+                catalogProducts[i].hargaJual = payload.hargaJual;
+                catalogProducts[i].minQtyGrosir = payload.minQtyGrosir;
+                catalogProducts[i].hargaGrosir = payload.hargaGrosir;
+                catalogProducts[i].status = payload.status;
+                break;
+            }
+        }
+
+        window.catalogProducts = catalogProducts;
+        try {
+            localStorage.setItem('bos_kroco_catalog_products', JSON.stringify(catalogProducts));
+        } catch (e) {}
+
+        renderMasterProdukTable();
+        populateProductDropdowns();
+        if (typeof window.renderPosProductGrid === 'function') window.renderPosProductGrid();
+        if (typeof window.renderDaftarHPP === 'function') window.renderDaftarHPP();
+        closeModalEditProduk();
+        showToast(res.message || 'Produk berhasil diperbarui.', 'success');
+    }, function (err) {
+        showToast('Gagal update produk: ' + (err.message || 'Koneksi terganggu'), 'error');
+    });
+}
 
 // Export functions to window
 window.fetchMasterProducts = fetchMasterProducts;

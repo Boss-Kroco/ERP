@@ -317,7 +317,16 @@
             }, 'google_translate_element');
         }
     </script>
-    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <!-- Floating Quick-Scroll Navigation Helper (Panah Naik & Turun Samping Kanan) -->
+    <div class="floating-scroll-nav" id="floatingScrollNav" title="Navigasi Geser Naik / Turun Layar">
+        <button type="button" class="btn-scroll-arrow" onclick="window.appScrollStep(-380)" title="Geser Layar Naik (▲)" aria-label="Geser Naik">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg>
+        </button>
+        <button type="button" class="btn-scroll-arrow" onclick="window.appScrollStep(380)" title="Geser Layar Turun (▼)" aria-label="Geser Turun">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+    </div>
+
 </body>
 
 </html>

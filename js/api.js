@@ -411,10 +411,10 @@
                         produkId: p.produk_id,
                         namaProduk: p.nama_produk,
                         satuan: p.satuan,
-                        hargaBeliHPP: Number(p.harga_beli_hpp || 0),
-                        hargaJual: Number(p.harga_jual || 0),
+                        hargaBeliHPP: Math.round(Number(p.harga_beli_hpp || 0)),
+                        hargaJual: Math.round(Number(p.harga_jual || 0)),
                         minQtyGrosir: p.min_qty_grosir !== undefined ? p.min_qty_grosir : (w.minQtyGrosir || 0),
-                        hargaGrosir: p.harga_grosir !== undefined ? p.harga_grosir : (w.hargaGrosir || 0),
+                        hargaGrosir: Math.round(Number(p.harga_grosir !== undefined ? p.harga_grosir : (w.hargaGrosir || 0))),
                         stokGudang: s.gudang_produksi || 0,
                         stokEtalase: s.etalase_toko || 0,
                         status: p.status
@@ -426,14 +426,35 @@
             case 'apiSaveProduct': {
                 var pObj = args[0] || {};
                 var uSession = args[1] || window.currentUser;
-                var newId = 'PRD-' + ('000' + Math.floor(Math.random() * 900 + 100)).slice(-3);
+                
+                // Cari ID produk berikutnya yang unik
+                var newId = 'PRD-' + Date.now().toString().slice(-4);
+                try {
+                    var { data: existingProds } = await sb.from('produk').select('produk_id');
+                    var maxNum = 0;
+                    if (existingProds) {
+                        existingProds.forEach(function(item) {
+                            var match = String(item.produk_id || '').match(/PRD-(\d+)/);
+                            if (match) {
+                                var n = parseInt(match[1], 10);
+                                if (n > maxNum && n < 9000) maxNum = n;
+                            }
+                        });
+                    }
+                    if (maxNum > 0) {
+                        newId = 'PRD-' + String(maxNum + 1).padStart(3, '0');
+                    }
+                } catch(e) {}
+
+                var stokEtalase = Math.round(Number(pObj.stokEtalase !== undefined ? pObj.stokEtalase : 50));
+                var stokGudang = Math.round(Number(pObj.stokGudang !== undefined ? pObj.stokGudang : 100));
 
                 var baseInsert = {
                     produk_id: newId,
                     nama_produk: pObj.namaProduk,
                     satuan: pObj.satuan || 'Pcs',
-                    harga_beli_hpp: Number(pObj.hargaBeliHPP || 0),
-                    harga_jual: Number(pObj.hargaJual || 0),
+                    harga_beli_hpp: Math.round(Number(pObj.hargaBeliHPP || 0)),
+                    harga_jual: Math.round(Number(pObj.hargaJual || 0)),
                     target_produksi: 100,
                     status: 'Aktif'
                 };
@@ -442,49 +463,44 @@
                 if (pObj.minQtyGrosir || pObj.hargaGrosir) {
                     try {
                         var wMap = JSON.parse(localStorage.getItem('bos_kroco_grosir_map') || '{}');
-                        wMap[newId] = { minQtyGrosir: Number(pObj.minQtyGrosir || 0), hargaGrosir: Number(pObj.hargaGrosir || 0) };
+                        wMap[newId] = {
+                            minQtyGrosir: Number(pObj.minQtyGrosir || 0),
+                            hargaGrosir: Math.round(Number(pObj.hargaGrosir || 0))
+                        };
                         localStorage.setItem('bos_kroco_grosir_map', JSON.stringify(wMap));
                     } catch (e) {}
                 }
 
-                var fullInsert = Object.assign({}, baseInsert, {
-                    min_qty_grosir: Number(pObj.minQtyGrosir || 0),
-                    harga_grosir: Number(pObj.hargaGrosir || 0)
-                });
+                // Insert ke tabel produk Supabase
+                var insRes = await sb.from('produk').insert([baseInsert]);
+                if (insRes.error) throw insRes.error;
 
-                var insRes = await sb.from('produk').insert([fullInsert]);
-                if (insRes.error) {
-                    var errCode = insRes.error.code;
-                    var errMsg = insRes.error.message || '';
-                    if (errCode === 'PGRST204' || errMsg.includes('min_qty_grosir') || errMsg.includes('harga_grosir')) {
-                        console.warn('[Supabase] Kolom grosir belum ada di Supabase, fallback menyimpan tanpa kolom grosir.');
-                        var retryRes = await sb.from('produk').insert([baseInsert]);
-                        if (retryRes.error) throw retryRes.error;
-                    } else {
-                        throw insRes.error;
-                    }
+                try {
+                    await sb.from('stok_lokasi').insert([{
+                        produk_id: newId,
+                        nama_produk: pObj.namaProduk,
+                        gudang_produksi: stokGudang,
+                        etalase_toko: stokEtalase,
+                        batas_minimum: 10,
+                        status: 'Aman'
+                    }]);
+                } catch (eSl) {
+                    console.warn('Gagal insert stok lokasi awal:', eSl);
                 }
 
-                await sb.from('stok_lokasi').insert([{
-                    produk_id: newId,
-                    nama_produk: pObj.namaProduk,
-                    gudang_produksi: 0,
-                    etalase_toko: 0,
-                    batas_minimum: 10,
-                    status: 'Aman'
-                }]);
-
-                await sb.from('audit_trail').insert([{
-                    log_id: 'LOG-' + Date.now(),
-                    waktu: new Date().toISOString(),
-                    user_id: uSession ? uSession.userId : 'USR',
-                    nama_user: uSession ? (uSession.namaLengkap || uSession.username) : 'Pengguna',
-                    modul: 'MasterProduk',
-                    aksi: 'TAMBAH',
-                    nilai_lama: '-',
-                    nilai_baru: newId,
-                    keterangan: 'Pendaftaran master produk: ' + pObj.namaProduk
-                }]);
+                try {
+                    await sb.from('audit_trail').insert([{
+                        log_id: 'LOG-' + Date.now(),
+                        waktu: new Date().toISOString(),
+                        user_id: uSession ? uSession.userId : 'USR',
+                        nama_user: uSession ? (uSession.namaLengkap || uSession.username) : 'Pengguna',
+                        modul: 'MasterProduk',
+                        aksi: 'TAMBAH',
+                        nilai_lama: '-',
+                        nilai_baru: newId,
+                        keterangan: 'Pendaftaran master produk: ' + pObj.namaProduk
+                    }]);
+                } catch (eAud) {}
 
                 return { success: true, produkId: newId, message: 'Produk baru ' + pObj.namaProduk + ' berhasil didaftarkan.' };
             }
@@ -1429,12 +1445,65 @@
             window.addMockAuditLog('Kas', 'MANUAL_' + tip.toUpperCase(), '-', String(nom), 'Pencatatan kas manual: ' + (pKas.keterangan || pKas.kategori), args[1]);
             successCb({ success: true, message: 'Kas ' + tip + ' sebesar ' + (window.formatAppCurrency(nom)) + ' berhasil dibukukan.' });
         } else if (functionName === 'apiSaveTenagaKerja') {
-            window.addMockAuditLog('TenagaKerja', 'CATAT_UPAH', '-', (args[0] ? args[0].namaPekerja : ''), 'Presensi dan upah kerja', args[1]);
+            var pTk = args[0] || {};
+            if (!window.mockTenagaKerjaLogs) {
+                try {
+                    var sTk = localStorage.getItem('bos_kroco_mock_tk');
+                    window.mockTenagaKerjaLogs = sTk ? JSON.parse(sTk) : [];
+                } catch(e) { window.mockTenagaKerjaLogs = []; }
+            }
+            var nowTk = new Date();
+            var timeStrTk = ('0' + nowTk.getDate()).slice(-2) + '/' + ('0' + (nowTk.getMonth() + 1)).slice(-2) + '/' + nowTk.getFullYear();
+            var jamTk = Number(pTk.totalJam || 8);
+            var rateTk = Math.round(Number(pTk.upahRate || 12000));
+            var bonusTk = Math.round(Number(pTk.bonus || 0));
+            var potTk = Math.round(Number(pTk.potongan || 0));
+            var totTk = Math.round(Number(pTk.totalBayar !== undefined ? pTk.totalBayar : Math.max(0, (jamTk * rateTk) + bonusTk - potTk)));
+            var newTkItem = {
+                pekerjaId: 'TK-' + Date.now().toString().slice(-4),
+                namaPekerja: pTk.namaPekerja || 'Tenaga Kerja Baru',
+                tipePekerja: pTk.tipePekerja || 'Pekerja harian',
+                tanggal: timeStrTk,
+                totalJam: jamTk,
+                upahRate: rateTk,
+                bonus: bonusTk,
+                potongan: potTk,
+                totalBayar: totTk,
+                statusBayar: 'Lunas'
+            };
+            window.mockTenagaKerjaLogs.unshift(newTkItem);
+            try {
+                localStorage.setItem('bos_kroco_mock_tk', JSON.stringify(window.mockTenagaKerjaLogs));
+            } catch(e) {}
+            window.addMockAuditLog('TenagaKerja', 'CATAT_UPAH', '-', (pTk.namaPekerja || ''), 'Presensi dan upah kerja', args[1]);
             successCb({ success: true, message: 'Presensi dan upah kerja berhasil disimpan.' });
         } else if (functionName === 'apiSaveProduct') {
+            var pProd = args[0] || {};
             var newPId = 'PRD-' + ('000' + Math.floor(Math.random() * 900 + 100)).slice(-3);
-            window.addMockAuditLog('MasterProduk', 'TAMBAH', '-', (args[0] ? args[0].namaProduk : ''), 'Pendaftaran master produk baru', args[1]);
-            successCb({ success: true, produkId: newPId, message: 'Produk baru berhasil didaftarkan.' });
+            if (!window.catalogProducts) {
+                try {
+                    var sProd = localStorage.getItem('bos_kroco_catalog_products');
+                    window.catalogProducts = sProd ? JSON.parse(sProd) : [];
+                } catch(e) { window.catalogProducts = []; }
+            }
+            var newPObj = {
+                produkId: newPId,
+                namaProduk: pProd.namaProduk,
+                satuan: pProd.satuan || 'Pcs',
+                hargaBeliHPP: Math.round(Number(pProd.hargaBeliHPP || 0)),
+                hargaJual: Math.round(Number(pProd.hargaJual || 0)),
+                minQtyGrosir: Number(pProd.minQtyGrosir || 0),
+                hargaGrosir: Math.round(Number(pProd.hargaGrosir || 0)),
+                stokEtalase: Number(pProd.stokEtalase !== undefined ? pProd.stokEtalase : 50),
+                stokGudang: Number(pProd.stokGudang !== undefined ? pProd.stokGudang : 100),
+                status: 'Aktif'
+            };
+            window.catalogProducts.unshift(newPObj);
+            try {
+                localStorage.setItem('bos_kroco_catalog_products', JSON.stringify(window.catalogProducts));
+            } catch(e) {}
+            window.addMockAuditLog('MasterProduk', 'TAMBAH', '-', (pProd.namaProduk || ''), 'Pendaftaran master produk baru', args[1]);
+            successCb({ success: true, produkId: newPId, message: 'Produk baru ' + pProd.namaProduk + ' berhasil didaftarkan.' });
         } else if (functionName === 'apiUpdateTransaction') {
             var pTrx = args[0] || {};
             var targetTrx = (window.orderTransactions || []).find(function (t) { return t.id === pTrx.trxId || t.id === pTrx.id; });
@@ -1510,6 +1579,12 @@
             window.addMockAuditLog('Produksi', 'EDIT_BATCH', '-', (pBUp.batchId || ''), 'Edit data batch produksi', args[1]);
             successCb({ success: true, message: 'Batch produksi ' + (pBUp.batchId || '') + ' berhasil diperbarui.' });
         } else if (functionName === 'apiGetTenagaKerjaLogs') {
+            if (!window.mockTenagaKerjaLogs) {
+                try {
+                    var sTk = localStorage.getItem('bos_kroco_mock_tk');
+                    if (sTk) window.mockTenagaKerjaLogs = JSON.parse(sTk);
+                } catch(e) {}
+            }
             if (!window.mockTenagaKerjaLogs) {
                 window.mockTenagaKerjaLogs = [
                     { pekerjaId: 'TK-20260905-01', namaPekerja: 'Slamet Riyadi', tipePekerja: 'Pekerja harian', tanggal: '05/09/2026', totalJam: 8, upahRate: 12000, bonus: 10000, potongan: 0, totalBayar: 106000, statusBayar: 'Lunas' },

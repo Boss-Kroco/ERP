@@ -231,7 +231,17 @@
                         <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="newProdHargaGrosir" placeholder="Misal: 4700 (Opsional)">
                     </div>
                 </div>
-                <button type="submit" class="btn-pill-action btn-pill-primary" style="width: 100%; justify-content: center; margin-top: 10px;">Daftarkan Produk</button>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; background: #f8fafc; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-soft);">
+                    <div>
+                        <label style="font-size: 11px; font-weight: 800; color: var(--emerald);">Stok Siap Jual (Etalase)</label>
+                        <input type="number" min="0" class="search-filter-input" style="width: 100%; margin-top: 4px; font-weight: 800; color: var(--emerald); background: #ffffff;" id="newProdStokEtalase" value="50" placeholder="50">
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Stok Gudang Produksi</label>
+                        <input type="number" min="0" class="search-filter-input" style="width: 100%; margin-top: 4px; background: #ffffff;" id="newProdStokGudang" value="100" placeholder="100">
+                    </div>
+                </div>
+                <button type="submit" class="btn-pill-action btn-pill-primary" style="width: 100%; justify-content: center; margin-top: 6px;">Daftarkan Produk</button>
             </form>
         </div>
     </div>
