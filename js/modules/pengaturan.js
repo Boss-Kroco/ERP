@@ -99,7 +99,7 @@ window.initPengaturanPage = function () {
             if (cfg.targetOmzet && document.getElementById('setFinTargetOmzet')) document.getElementById('setFinTargetOmzet').value = cfg.targetOmzet;
             if (cfg.pajak && document.getElementById('setFinPajak')) document.getElementById('setFinPajak').value = cfg.pajak;
             if (cfg.currency && document.getElementById('setFinCurrency')) {
-                document.getElementById('setFinCurrency').value = (cfg.currency === 'YER') ? 'IDR' : cfg.currency;
+                document.getElementById('setFinCurrency').value = cfg.currency;
             }
             if (cfg.teleToken && document.getElementById('setTeleToken')) document.getElementById('setTeleToken').value = cfg.teleToken;
             if (cfg.teleChatId && document.getElementById('setTeleChatId')) document.getElementById('setTeleChatId').value = cfg.teleChatId;

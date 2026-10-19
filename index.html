@@ -86,6 +86,11 @@
                     <span class="sidebar-brand-text">Mafaza Group</span>
                 </div>
 
+                <!-- Tombol Navigasi Naik (Kursor / Panah Atas Menu) -->
+                <button type="button" class="sb-scroll-btn sb-scroll-up" onclick="window.scrollSidebarNav(-120)" title="Gulir Menu ke Atas" id="sbScrollUpBtn" aria-label="Gulir Menu ke Atas">
+                    <svg viewBox="0 0 24 24"><path d="m18 15-6-6-6 6"/></svg>
+                </button>
+
                 <nav class="sidebar-icon-nav" id="sidebarIconNav">
                     <div class="nav-icon-pill active" onclick="navigatePage('dashboard')" id="navPillDashboard" title="Dashboard">
                         <svg class="svg-icon" viewBox="0 0 24 24">
@@ -167,6 +172,11 @@
                         <span class="tooltip-text">Pusat Bantuan</span>
                     </div>
                 </nav>
+
+                <!-- Tombol Navigasi Turun (Kursor / Panah Bawah Menu) -->
+                <button type="button" class="sb-scroll-btn sb-scroll-down" onclick="window.scrollSidebarNav(120)" title="Gulir Menu ke Bawah" id="sbScrollDownBtn" aria-label="Gulir Menu ke Bawah">
+                    <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
             </div>
 
             <!-- Logout Button (sb-bottom-btn) -->

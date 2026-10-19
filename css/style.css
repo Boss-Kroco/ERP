@@ -603,12 +603,81 @@ input[type=number] {
             overflow-y: auto;
             overflow-x: hidden;
             padding: 2px 2px 6px 2px;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE/Edge */
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.45) rgba(0, 0, 0, 0.12);
         }
 
         .sidebar-icon-nav::-webkit-scrollbar {
-            display: none; /* Chrome/Safari/Webkit */
+            width: 5px;
+            display: block;
+        }
+
+        .sidebar-icon-nav::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 99px;
+            margin: 2px 0;
+        }
+
+        .sidebar-icon-nav::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.45);
+            border-radius: 99px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: background 0.2s ease;
+        }
+
+        .sidebar-icon-nav::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.85);
+        }
+
+        /* Tombol Navigasi Panah Naik & Turun Sidebar */
+        .sb-scroll-btn {
+            width: 32px;
+            height: 18px;
+            min-height: 18px;
+            border: none;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.16);
+            color: #ffffff;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 2px 0;
+            padding: 0;
+            flex-shrink: 0;
+            z-index: 2;
+        }
+
+        .sb-scroll-btn:hover {
+            background: rgba(255, 255, 255, 0.38);
+            transform: scale(1.08);
+        }
+
+        .sb-scroll-btn svg {
+            width: 13px;
+            height: 13px;
+            stroke: currentColor;
+            stroke-width: 2.6;
+            fill: none;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .curved-sidebar-violet:hover .sb-scroll-btn {
+            width: calc(100% - 16px);
+            height: 20px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .curved-sidebar-violet:hover .sb-scroll-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .curved-sidebar-violet:hover .sidebar-icon-nav::-webkit-scrollbar {
+            width: 6px;
         }
 
         .nav-icon-pill {
