@@ -86,10 +86,7 @@ window.toAppCurrency = function (numIdr) {
         return Math.round(Number(numIdr || 0));
     }
     var val = Number(numIdr || 0) / cfg.exchangeRate;
-    if (Math.abs(val - Math.round(val)) < 0.05) {
-        val = Math.round(val);
-    }
-    return val;
+    return parseFloat(val.toFixed(cfg.fraction));
 };
 
 window.fromAppCurrency = function (numCurr) {
@@ -103,16 +100,12 @@ window.fromAppCurrency = function (numCurr) {
 window.formatAppCurrency = function (num) {
     var cfg = window.getAppCurrencyConfig();
     if (cfg.currency === 'IDR') {
-        // Hilangkan segala artefak .01 / .81 dan format murni bulat Rupiah
         var bulatIdr = Math.round(Number(num || 0));
         return 'Rp ' + bulatIdr.toLocaleString('id-ID');
     }
     var convertedNum = Number(num || 0) / cfg.exchangeRate;
-    if (cfg.fraction === 0 || Math.abs(convertedNum - Math.round(convertedNum)) < 0.05) {
-        convertedNum = Math.round(convertedNum);
-    }
     return cfg.prefix + convertedNum.toLocaleString(cfg.locale, {
-        minimumFractionDigits: (convertedNum % 1 === 0 ? 0 : cfg.fraction),
+        minimumFractionDigits: cfg.fraction,
         maximumFractionDigits: cfg.fraction
     });
 };
@@ -124,11 +117,8 @@ window.formatAppCurrencyValue = function (val) {
         return 'Rp ' + bulatIdr.toLocaleString('id-ID');
     }
     var num = Number(val || 0);
-    if (cfg.fraction === 0 || Math.abs(num - Math.round(num)) < 0.05) {
-        num = Math.round(num);
-    }
     return cfg.prefix + num.toLocaleString(cfg.locale, {
-        minimumFractionDigits: (num % 1 === 0 ? 0 : cfg.fraction),
+        minimumFractionDigits: cfg.fraction,
         maximumFractionDigits: cfg.fraction
     });
 };

@@ -348,8 +348,12 @@ window.savePengaturanFinance = function () {
     window.initPengaturanPage();
     if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();
     if (typeof window.loadDashboardData === 'function') window.loadDashboardData();
+    if (typeof window.renderCart === 'function') window.renderCart();
+    if (typeof window.renderPosProductGrid === 'function') window.renderPosProductGrid();
+    if (typeof window.renderPosQuickCashChips === 'function') window.renderPosQuickCashChips();
+    if (typeof window.renderMasterProdukTable === 'function') window.renderMasterProdukTable();
     if (typeof window.showToast === 'function') {
-        window.showToast('Konfigurasi finansial, pajak & target omzet disimpan!', 'success');
+        window.showToast('Mata uang disimpan: ' + currency, 'success');
     }
 };
 

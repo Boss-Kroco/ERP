@@ -697,6 +697,18 @@ window.handlePosUangInput = function(inputEl) {
             var num = parseInt(raw, 10);
             inputEl.value = num.toLocaleString('id-ID');
         }
+    } else {
+        // Multi-currency: USD or SAR (Real)
+        // Allow typing numbers and dot decimals (e.g. 5 or 5.50)
+        var val = inputEl.value.replace(/[^0-9.]/g, '');
+        var dotParts = val.split('.');
+        if (dotParts.length > 2) {
+            val = dotParts[0] + '.' + dotParts.slice(1).join('');
+        }
+        if (dotParts[1] && dotParts[1].length > 2) {
+            val = dotParts[0] + '.' + dotParts[1].slice(0, 2);
+        }
+        inputEl.value = val;
     }
     window.updatePosKembalian();
 };
@@ -710,12 +722,23 @@ window.posClearUangBayar = function() {
 window.posQuickCash = function(val) {
     var elUangBayar = document.getElementById('posUangBayar');
     if (!elUangBayar) return;
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { currency: 'IDR', fraction: 0 };
+    var totalIdr = window.currentPosTotalNet || 0;
+    var totalCurr = window.toAppCurrency ? window.toAppCurrency(totalIdr) : totalIdr;
+
     if (val === 'pas') {
-        var netCurr = Math.round(window.currentPosTotalNet || 0);
-        elUangBayar.value = netCurr > 0 ? netCurr.toLocaleString('id-ID') : '';
+        if (cfg.currency === 'IDR') {
+            elUangBayar.value = totalCurr > 0 ? Math.round(totalCurr).toLocaleString('id-ID') : '';
+        } else {
+            elUangBayar.value = totalCurr > 0 ? Number(totalCurr).toFixed(cfg.fraction) : '';
+        }
     } else {
-        var num = Math.round(parseFloat(val) || 0);
-        elUangBayar.value = num > 0 ? num.toLocaleString('id-ID') : '';
+        var num = parseFloat(val) || 0;
+        if (cfg.currency === 'IDR') {
+            elUangBayar.value = num > 0 ? Math.round(num).toLocaleString('id-ID') : '';
+        } else {
+            elUangBayar.value = num > 0 ? (num % 1 === 0 ? String(num) : Number(num).toFixed(cfg.fraction)) : '';
+        }
     }
     window.updatePosKembalian();
 };
@@ -724,38 +747,101 @@ window.renderPosQuickCashChips = function(totalIdr) {
     var group = document.getElementById('posQuickCashGroup');
     if (!group) return;
     
-    totalIdr = Math.round(totalIdr || window.currentPosTotalNet || 0);
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { currency: 'IDR', symbol: 'Rp', fraction: 0 };
+    totalIdr = Number(totalIdr !== undefined ? totalIdr : (window.currentPosTotalNet || 0));
+    var totalCurr = window.toAppCurrency ? window.toAppCurrency(totalIdr) : totalIdr;
+    window.currentPosTotalNetCurr = totalCurr;
+    
     var chips = [];
 
-    if (totalIdr <= 0) {
-        chips = [10000, 20000, 50000, 100000];
-    } else {
-        var r10k = Math.ceil(totalIdr / 10000) * 10000;
-        if (r10k > totalIdr) chips.push(r10k);
-        var r20k = Math.ceil(totalIdr / 20000) * 20000;
-        if (r20k > totalIdr && chips.indexOf(r20k) === -1) chips.push(r20k);
-        var r50k = Math.ceil(totalIdr / 50000) * 50000;
-        if (r50k > totalIdr && chips.indexOf(r50k) === -1) chips.push(r50k);
-        var r100k = Math.ceil(totalIdr / 100000) * 100000;
-        if (r100k > totalIdr && chips.indexOf(r100k) === -1) chips.push(r100k);
+    if (cfg.currency === 'IDR') {
+        if (totalCurr <= 0) {
+            chips = [10000, 20000, 50000, 100000];
+        } else {
+            var r10k = Math.ceil(totalCurr / 10000) * 10000;
+            if (r10k > totalCurr) chips.push(r10k);
+            var r20k = Math.ceil(totalCurr / 20000) * 20000;
+            if (r20k > totalCurr && chips.indexOf(r20k) === -1) chips.push(r20k);
+            var r50k = Math.ceil(totalCurr / 50000) * 50000;
+            if (r50k > totalCurr && chips.indexOf(r50k) === -1) chips.push(r50k);
+            var r100k = Math.ceil(totalCurr / 100000) * 100000;
+            if (r100k > totalCurr && chips.indexOf(r100k) === -1) chips.push(r100k);
 
-        var standardNotes = [20000, 50000, 100000, 200000];
-        for (var i = 0; i < standardNotes.length; i++) {
-            var note = standardNotes[i];
-            if (note > totalIdr && chips.indexOf(note) === -1 && chips.length < 4) chips.push(note);
+            var standardNotes = [20000, 50000, 100000, 200000];
+            for (var i = 0; i < standardNotes.length; i++) {
+                var note = standardNotes[i];
+                if (note > totalCurr && chips.indexOf(note) === -1 && chips.length < 4) chips.push(note);
+            }
+            chips.sort(function(a, b) { return a - b; });
+            chips = chips.slice(0, 4);
+            if (chips.length === 0) chips = [Math.ceil(totalCurr / 50000) * 50000];
         }
-        chips.sort(function(a, b) { return a - b; });
-        chips = chips.slice(0, 4);
-        if (chips.length === 0) chips = [100000];
+    } else if (cfg.currency === 'USD') {
+        // Multi-currency: USD ($)
+        if (totalCurr <= 0) {
+            chips = [5, 10, 20, 50];
+        } else {
+            var ceilUsd = Math.ceil(totalCurr);
+            var usdNotes = [1, 5, 10, 20, 50, 100, 200];
+            for (var u = 0; u < usdNotes.length; u++) {
+                if (usdNotes[u] >= totalCurr && chips.indexOf(usdNotes[u]) === -1) {
+                    chips.push(usdNotes[u]);
+                }
+            }
+            if (chips.length < 3) {
+                var next5 = Math.ceil((totalCurr + 1) / 5) * 5;
+                if (next5 > totalCurr && chips.indexOf(next5) === -1) chips.push(next5);
+                var next10 = Math.ceil((totalCurr + 1) / 10) * 10;
+                if (next10 > totalCurr && chips.indexOf(next10) === -1) chips.push(next10);
+                var next20 = Math.ceil((totalCurr + 1) / 20) * 20;
+                if (next20 > totalCurr && chips.indexOf(next20) === -1) chips.push(next20);
+            }
+            chips.sort(function(a, b) { return a - b; });
+            chips = chips.slice(0, 4);
+            if (chips.length === 0) chips = [Math.ceil(totalCurr / 5) * 5];
+        }
+    } else if (cfg.currency === 'SAR' || cfg.currency === 'YER') {
+        // Multi-currency: Saudi Riyal / Real (﷼)
+        if (totalCurr <= 0) {
+            chips = [10, 20, 50, 100];
+        } else {
+            var ceilSar = Math.ceil(totalCurr);
+            var sarNotes = [5, 10, 20, 50, 100, 200, 500];
+            for (var s = 0; s < sarNotes.length; s++) {
+                if (sarNotes[s] >= totalCurr && chips.indexOf(sarNotes[s]) === -1) {
+                    chips.push(sarNotes[s]);
+                }
+            }
+            if (chips.length < 3) {
+                var nextSar10 = Math.ceil((totalCurr + 1) / 10) * 10;
+                if (nextSar10 > totalCurr && chips.indexOf(nextSar10) === -1) chips.push(nextSar10);
+                var nextSar20 = Math.ceil((totalCurr + 1) / 20) * 20;
+                if (nextSar20 > totalCurr && chips.indexOf(nextSar20) === -1) chips.push(nextSar20);
+                var nextSar50 = Math.ceil((totalCurr + 1) / 50) * 50;
+                if (nextSar50 > totalCurr && chips.indexOf(nextSar50) === -1) chips.push(nextSar50);
+            }
+            chips.sort(function(a, b) { return a - b; });
+            chips = chips.slice(0, 4);
+            if (chips.length === 0) chips = [Math.ceil(totalCurr / 10) * 10];
+        }
     }
 
     var html = '<button type="button" onclick="window.posQuickCash(\'pas\')" class="pos-chip-btn" id="btnChipPas" style="flex: 1.2; min-width: 85px; padding: 7px 10px; font-size: 11.5px; font-weight: 800; border-radius: 8px; border: 1.5px solid #818cf8; background: linear-gradient(135deg, #eef2ff 0%, #ede9fe 100%); color: #4338ca; cursor: pointer; transition: all 0.15s ease; display: inline-flex; align-items: center; justify-content: center;">Uang Pas</button>';
-    
+
     chips.forEach(function(val) {
-        var label = Math.round(val).toLocaleString('id-ID');
+        var label = '';
+        if (cfg.currency === 'IDR') {
+            label = Math.round(val).toLocaleString('id-ID');
+        } else if (cfg.currency === 'USD') {
+            label = '$ ' + (val % 1 === 0 ? val : val.toFixed(2));
+        } else if (cfg.currency === 'SAR' || cfg.currency === 'YER') {
+            label = val + ' ﷼';
+        } else {
+            label = (cfg.symbol || '') + ' ' + val;
+        }
         html += '<button type="button" onclick="window.posQuickCash(' + val + ')" class="pos-chip-btn" data-val="' + val + '" style="flex: 1; min-width: 58px; padding: 7px 8px; font-size: 11.5px; font-weight: 700; border-radius: 8px; border: 1.5px solid #e2e8f0; background: #ffffff; color: #334155; cursor: pointer; transition: all 0.15s ease;">' + label + '</button>';
     });
-    
+
     group.innerHTML = html;
 };
 
@@ -778,7 +864,7 @@ window.updatePosKembalian = function() {
         var rawDigits = valStr.replace(/\D/g, '');
         bayarCurr = rawDigits ? parseInt(rawDigits, 10) : 0;
     } else {
-        var cleanVal = valStr.replace(/\s/g, '').replace(/,/g, '.');
+        var cleanVal = valStr.replace(/[^0-9.]/g, '');
         bayarCurr = parseFloat(cleanVal) || 0;
     }
 
