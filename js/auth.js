@@ -48,6 +48,10 @@ window.applyRolePermissions = function (user) {
         if (pill) {
             pill.style.display = (allowedViews.indexOf(vKey) !== -1) ? 'flex' : 'none';
         }
+        var drawerBtn = document.getElementById('drawerNav' + vKey.charAt(0).toUpperCase() + vKey.slice(1));
+        if (drawerBtn) {
+            drawerBtn.style.display = (allowedViews.indexOf(vKey) !== -1) ? 'flex' : 'none';
+        }
     });
 
     var nameEl = document.getElementById('headerUserName');
@@ -136,6 +140,8 @@ window.navigatePage = function (viewId) {
     if (viewId === 'dashboard' && typeof window.loadDashboardData === 'function') window.loadDashboardData();
     if (viewId === 'transaksi' && typeof window.loadTransaksiPage === 'function') window.loadTransaksiPage();
     if (viewId === 'pos' && typeof window.populateProductDropdowns === 'function') window.populateProductDropdowns();
+    if (viewId === 'sewa' && typeof window.renderAlatSewa === 'function') window.renderAlatSewa();
+    if (viewId === 'pelanggan' && typeof window.loadPelangganData === 'function') window.loadPelangganData();
     if (viewId === 'produk' && typeof window.fetchMasterProducts === 'function') window.fetchMasterProducts();
     if (viewId === 'produksi') {
         if (typeof window.fetchMasterProducts === 'function') window.fetchMasterProducts();

@@ -3255,6 +3255,12 @@ input[type=number] {
             }
         }
 
+        @media (max-width: 1100px) {
+            .sewa-main-grid {
+                grid-template-columns: 1.6fr 1fr !important;
+            }
+        }
+
         @media (max-width: 900px) {
             .header-center-meta {
                 display: none;
@@ -3277,6 +3283,27 @@ input[type=number] {
             #pageContainer {
                 padding: 14px 12px 20px;
             }
+
+            /* Responsive Sewa Alat */
+            .sewa-view-wrapper {
+                height: auto !important;
+                min-height: 100% !important;
+                overflow-y: auto !important;
+            }
+            .sewa-main-grid {
+                grid-template-columns: 1fr !important;
+                height: auto !important;
+                gap: 16px !important;
+                padding-bottom: 24px;
+            }
+            .sewa-main-grid .pos-left-panel {
+                height: 440px !important;
+                min-height: 360px !important;
+            }
+            .sewa-main-grid .pos-right-panel {
+                height: auto !important;
+                min-height: 480px !important;
+            }
         }
 
         @media (max-width: 640px) {
@@ -3285,6 +3312,12 @@ input[type=number] {
             }
             .header-user-info {
                 display: none;
+            }
+            .sewa-main-grid .pos-left-panel {
+                height: 380px !important;
+            }
+            .sewa-main-grid #gridAlatSewa {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
             }
         }
 
