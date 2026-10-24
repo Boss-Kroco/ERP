@@ -20,7 +20,10 @@
 
         <!-- Bagian Kanan: Keranjang Sewa -->
         <div class="pos-right-panel" style="background: var(--bg-card); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; border: 1px solid var(--border-soft);">
-            <h3 style="margin-top: 0; margin-bottom: 8px; font-size: 13.5px; color: var(--violet-dark); font-weight: 700;">Keranjang Sewa</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="margin: 0; font-size: 13.5px; color: var(--violet-dark); font-weight: 700;">Keranjang Sewa</h3>
+                <span style="font-size: 10px; color: var(--text-muted); font-weight: 600; background: #f8fafc; padding: 2px 7px; border-radius: 6px; border: 1px solid var(--border-soft);">Diskon Item &amp; Nota</span>
+            </div>
             
             <div style="margin-bottom: 8px;">
                 <label style="font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 3px;">Data Penyewa (Pelanggan)</label>
@@ -32,18 +35,46 @@
                 <input type="number" id="inpDurasiSewa" class="search-filter-input" style="width: 100%;" value="1" min="1" oninput="if(window.hitungTotalSewa) window.hitungTotalSewa()">
             </div>
 
+            <!-- Diskon Nota Sewa (Sama seperti Fitur Kasir) -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 10px;">
+                <div>
+                    <span style="font-size: 11px; font-weight: 800; color: #1e293b;">Diskon Nota Sewa</span>
+                    <div style="font-size: 9.5px; color: #64748b; font-weight: 500;">Opsional seluruh nota</div>
+                </div>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                    <select id="sewaDiskonType" class="hpp-clean-input" style="width: 105px; min-width: 105px; padding: 5px 8px !important; font-size: 11px; font-weight: 700; cursor: pointer; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff;" onchange="window.handleSewaDiskonTypeChange()">
+                        <option value="nominal" id="optSewaDiskonRp">Nominal (<span class="app-currency-symbol">Rp</span>)</option>
+                        <option value="persen">Persen (%)</option>
+                    </select>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <span id="sewaDiskonPrefixBadge" style="position: absolute; left: 8px; font-size: 10px; font-weight: 800; color: #64748b; pointer-events: none;">Rp</span>
+                        <input type="number" step="any" min="0" class="hpp-clean-input" style="width: 86px; padding: 5px 8px 5px 24px !important; text-align: right; font-size: 11.5px !important; font-weight: 700; border-radius: 8px; border: 1px solid #cbd5e1; background: #ffffff;" id="sewaDiskon" value="0" placeholder="0" oninput="if(window.hitungTotalSewa) window.hitungTotalSewa()">
+                    </div>
+                </div>
+            </div>
+
             <div style="flex: 1; overflow-y: auto; border-top: 1px dashed var(--border-soft); border-bottom: 1px dashed var(--border-soft); padding: 8px 0; margin-bottom: 10px;" id="listKeranjangSewa">
                 <div style="text-align: center; color: var(--text-muted); font-size: 11px; margin-top: 16px;">Belum ada alat yang dipilih.</div>
             </div>
             
             <div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; color: var(--text-muted);">
-                    <span>Subtotal (<span id="lblDurasiSewaInfo">1 Hari</span>)</span>
-                    <span id="lblSubtotalSewa" style="font-weight: 600; color: var(--text-dark);">Rp 0</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 16px; font-weight: 800; color: var(--violet-main);">
-                    <span>TOTAL BAYAR</span>
-                    <span id="lblTotalSewa">Rp 0</span>
+                <div style="background: #f8fafc; border: 1px dashed var(--border-strong); border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 11px; display: flex; flex-direction: column; gap: 6px;">
+                    <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
+                        <span>Subtotal (<span id="lblDurasiSewaInfo">1 Hari</span>)</span>
+                        <span id="lblSubtotalSewa" style="font-weight: 700; color: var(--text-main);">Rp 0</span>
+                    </div>
+                    <div id="rowDiskonSewa" style="display: flex; justify-content: space-between; color: var(--text-muted);">
+                        <span>Diskon</span>
+                        <span id="lblDiskonSewa" style="font-weight: 700; color: var(--coral-pink);">Rp 0</span>
+                    </div>
+                    <!-- Supermarket-style Savings Box -->
+                    <div id="boxHematSewa" style="display: none; background: #ecfdf5; border: 1px dashed #10b981; border-radius: 6px; padding: 4px 8px; text-align: center; color: #047857; font-size: 10.5px; font-weight: 800;">
+                        🎉 Hemat Belanja: <span id="lblHematSewa">Rp 0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 6px; border-top: 1px solid var(--border-strong); font-size: 12px;">
+                        <span style="font-weight: 800; color: var(--text-dark);">TOTAL BAYAR</span>
+                        <span id="lblTotalSewa" style="font-size: 18px; font-weight: 900; color: var(--violet-main); letter-spacing: -0.5px;">Rp 0</span>
+                    </div>
                 </div>
                 
                 <button class="btn-pill-action btn-pill-primary" style="width: 100%; padding: 8px 12px; font-size: 12.5px; display: flex; justify-content: center; margin-bottom: 6px;" onclick="if(window.prosesSewa) window.prosesSewa()">

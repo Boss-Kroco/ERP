@@ -69,6 +69,24 @@ window.filterAlatSewa = function() {
     if(input) window.renderAlatSewa(input.value);
 };
 
+window.updateSewaItemDiscount = function (idx, val, type) {
+    if (!window.keranjangSewa || !window.keranjangSewa[idx]) return;
+    var item = window.keranjangSewa[idx];
+    item.diskon = Math.max(0, parseFloat(val) || 0);
+    item.diskonType = type || item.diskonType || 'persen';
+    window.renderKeranjangSewa();
+};
+
+window.handleSewaDiskonTypeChange = function() {
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { symbol: 'Rp' };
+    var elType = document.getElementById('sewaDiskonType');
+    var badge = document.getElementById('sewaDiskonPrefixBadge');
+    if (badge && elType) {
+        badge.textContent = elType.value === 'persen' ? '%' : cfg.symbol;
+    }
+    window.hitungTotalSewa();
+};
+
 window.tambahKeKeranjangSewa = function(alat) {
     var existing = window.keranjangSewa.find(function(item) { return item.id === alat.id; });
     if(existing) {
@@ -77,8 +95,12 @@ window.tambahKeKeranjangSewa = function(alat) {
         window.keranjangSewa.push({
             id: alat.id,
             nama: alat.nama,
-            hargaSewa: alat.hargaSewa,
-            qty: 1
+            hargaSewa: parseFloat(alat.hargaSewa) || 0,
+            qty: 1,
+            diskon: 0,
+            diskonType: 'persen',
+            diskonNominal: 0,
+            subtotal: parseFloat(alat.hargaSewa) || 0
         });
     }
     window.renderKeranjangSewa();
@@ -95,34 +117,83 @@ window.kurangiKeranjangSewa = function(alatId) {
     window.renderKeranjangSewa();
 };
 
+window.hapusItemSewa = function(idx) {
+    if (window.keranjangSewa && window.keranjangSewa[idx]) {
+        window.keranjangSewa.splice(idx, 1);
+        window.renderKeranjangSewa();
+    }
+};
+
 window.renderKeranjangSewa = function() {
     var list = document.getElementById('listKeranjangSewa');
     if(!list) return;
     
+    var durasiInput = document.getElementById('inpDurasiSewa');
+    var durasi = 1;
+    if(durasiInput) durasi = Math.max(1, parseInt(durasiInput.value) || 1);
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { symbol: 'Rp' };
+
     if(window.keranjangSewa.length === 0) {
         list.innerHTML = '<div style="text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 20px;">Belum ada alat yang dipilih.</div>';
     } else {
         list.innerHTML = '';
-        window.keranjangSewa.forEach(function(item) {
+        window.keranjangSewa.forEach(function(item, idx) {
             var row = document.createElement('div');
             row.style.display = 'flex';
             row.style.justifyContent = 'space-between';
-            row.style.alignItems = 'center';
+            row.style.alignItems = 'flex-start';
             row.style.padding = '8px 0';
             row.style.borderBottom = '1px solid var(--border-soft)';
+            row.style.gap = '8px';
             
-            var subtotal = item.hargaSewa * item.qty;
-            
+            var rawSub = (item.hargaSewa * item.qty) * durasi;
+            var itemDiskon = parseFloat(item.diskon) || 0;
+            var itemDiskonType = item.diskonType || 'persen';
+            var itemDiskonNominal = 0;
+
+            if (itemDiskon > 0) {
+                if (itemDiskonType === 'persen') {
+                    itemDiskonNominal = Math.round(rawSub * (Math.min(100, itemDiskon) / 100));
+                } else {
+                    itemDiskonNominal = Math.round(window.fromAppCurrency ? window.fromAppCurrency(itemDiskon) : itemDiskon);
+                    itemDiskonNominal = Math.min(rawSub, itemDiskonNominal);
+                }
+            }
+            item.diskonNominal = itemDiskonNominal;
+            item.subtotal = Math.max(0, rawSub - itemDiskonNominal);
+
+            var discControlHtml = '<div style="display: inline-flex; align-items: center; gap: 3px; margin-top: 4px; background: #f8fafc; padding: 2px 5px; border: 1px solid #e2e8f0; border-radius: 6px;">'
+                + '<span style="font-size: 10px; font-weight: 700; color: var(--text-muted);">Disc:</span>'
+                + '<input type="number" step="any" min="0" placeholder="0" value="' + (item.diskon !== undefined && item.diskon !== 0 ? item.diskon : '') + '" style="width: 48px; padding: 1px 3px; font-size: 10.5px; font-weight: 700; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff;" onchange="window.updateSewaItemDiscount(' + idx + ', this.value, \'' + itemDiskonType + '\')" onkeydown="if(event.key===\'Enter\'){this.blur();}" title="Diskon per alat sewa">'
+                + '<select onchange="window.updateSewaItemDiscount(' + idx + ', ' + (item.diskon || 0) + ', this.value)" style="font-size: 10px; font-weight: 700; padding: 1px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; cursor: pointer;">'
+                + '<option value="persen" ' + (itemDiskonType === 'persen' ? 'selected' : '') + '>%</option>'
+                + '<option value="nominal" ' + (itemDiskonType === 'nominal' ? 'selected' : '') + '>' + cfg.symbol + '</option>'
+                + '</select>'
+                + '</div>';
+
+            var totalCellHtml = '<div style="text-align: right; min-width: 75px;">';
+            if (itemDiskonNominal > 0) {
+                totalCellHtml += '<div style="font-size: 10px; color: #94a3b8; text-decoration: line-through;">' + window.formatAppCurrency(rawSub) + '</div>';
+                totalCellHtml += '<div style="font-weight: 800; font-size: 12px; color: var(--text-dark);">' + window.formatAppCurrency(item.subtotal) + '</div>';
+                totalCellHtml += '<div style="font-size: 9.5px; color: var(--coral-pink); font-weight: 700;">-' + window.formatAppCurrency(itemDiskonNominal) + '</div>';
+            } else {
+                totalCellHtml += '<div style="font-weight: 800; font-size: 12px; color: var(--text-dark);">' + window.formatAppCurrency(item.subtotal) + '</div>';
+            }
+            totalCellHtml += '</div>';
+
             row.innerHTML = `
                 <div style="flex: 1;">
                     <div style="font-weight: 700; font-size: 12px; color: var(--text-dark);">${item.nama}</div>
-                    <div style="font-size: 11px; color: var(--violet-main); font-weight: 600;">${window.formatAppCurrency(item.hargaSewa)}</div>
+                    <div style="font-size: 11px; color: var(--violet-main); font-weight: 600;">${window.formatAppCurrency(item.hargaSewa)} <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">/hari</span></div>
+                    ${discControlHtml}
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 5px;">
                     <button style="width: 24px; height: 24px; border-radius: 4px; border: 1px solid var(--border-soft); background: white; cursor: pointer; color: red;" onclick="window.kurangiKeranjangSewa('${item.id}')">-</button>
-                    <span style="font-size: 13px; font-weight: 700; min-width: 20px; text-align: center;">${item.qty}</span>
+                    <span style="font-size: 12.5px; font-weight: 700; min-width: 18px; text-align: center;">${item.qty}</span>
                     <button style="width: 24px; height: 24px; border-radius: 4px; border: none; background: var(--violet-main); color: white; cursor: pointer;" onclick="window.tambahKeKeranjangSewa({id: '${item.id}', nama: '${item.nama}', hargaSewa: ${item.hargaSewa}})">+</button>
                 </div>
+                ${totalCellHtml}
+                <button style="border:none;background:#fee2e2;color:var(--coral-pink);cursor:pointer;border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;margin-top:2px;" onclick="window.hapusItemSewa(${idx})" title="Hapus"><svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
             `;
             list.appendChild(row);
         });
@@ -133,23 +204,69 @@ window.renderKeranjangSewa = function() {
 window.hitungTotalSewa = function() {
     var durasiInput = document.getElementById('inpDurasiSewa');
     var durasi = 1;
-    if(durasiInput) durasi = parseInt(durasiInput.value) || 1;
+    if(durasiInput) durasi = Math.max(1, parseInt(durasiInput.value) || 1);
     
     var elInfo = document.getElementById('lblDurasiSewaInfo');
     if(elInfo) elInfo.textContent = durasi + ' Hari';
     
-    var subtotal = 0;
-    window.keranjangSewa.forEach(function(item) {
-        subtotal += item.hargaSewa * item.qty;
+    var rawSubtotalTotal = 0;
+    var itemDiskonTotal = 0;
+    (window.keranjangSewa || []).forEach(function(item) {
+        var rawLine = (item.hargaSewa * item.qty) * durasi;
+        rawSubtotalTotal += rawLine;
+        itemDiskonTotal += (parseFloat(item.diskonNominal) || 0);
     });
     
-    var totalBayar = subtotal * durasi;
+    var subtotalAfterItemDisc = Math.max(0, rawSubtotalTotal - itemDiskonTotal);
+
+    // Diskon nota sewa
+    var elDiskonType = document.getElementById('sewaDiskonType');
+    var elDiskon = document.getElementById('sewaDiskon');
+    var diskonValue = elDiskon ? (parseFloat(elDiskon.value) || 0) : 0;
+    var diskonType = elDiskonType ? elDiskonType.value : 'nominal';
+    
+    var notaDiskonNominal = 0;
+    if (diskonType === 'persen') {
+        notaDiskonNominal = Math.round(subtotalAfterItemDisc * (Math.min(100, diskonValue) / 100));
+    } else {
+        notaDiskonNominal = window.fromAppCurrency ? window.fromAppCurrency(diskonValue) : diskonValue;
+    }
+    notaDiskonNominal = Math.min(subtotalAfterItemDisc, notaDiskonNominal);
+
+    var totalHemat = itemDiskonTotal + notaDiskonNominal;
+    var totalBayar = Math.max(0, subtotalAfterItemDisc - notaDiskonNominal);
     
     var lblSub = document.getElementById('lblSubtotalSewa');
+    var rowDiskon = document.getElementById('rowDiskonSewa');
+    var lblDiskon = document.getElementById('lblDiskonSewa');
+    var boxHemat = document.getElementById('boxHematSewa');
+    var lblHemat = document.getElementById('lblHematSewa');
     var lblTotal = document.getElementById('lblTotalSewa');
     
-    if(lblSub) lblSub.textContent = window.formatAppCurrency(subtotal);
+    if(lblSub) lblSub.textContent = window.formatAppCurrency(rawSubtotalTotal);
+    if(lblDiskon) lblDiskon.textContent = (totalHemat > 0 ? '-' : '') + window.formatAppCurrency(totalHemat);
+    if(rowDiskon) rowDiskon.style.display = totalHemat > 0 ? 'flex' : 'none';
+    if(boxHemat && lblHemat) {
+        if(totalHemat > 0) {
+            boxHemat.style.display = 'block';
+            lblHemat.textContent = window.formatAppCurrency(totalHemat);
+        } else {
+            boxHemat.style.display = 'none';
+        }
+    }
     if(lblTotal) lblTotal.textContent = window.formatAppCurrency(totalBayar);
+
+    return {
+        durasi: durasi,
+        subtotalGross: rawSubtotalTotal,
+        totalItemDiskon: itemDiskonTotal,
+        diskonNotaNominal: notaDiskonNominal,
+        diskonNotaType: diskonType,
+        diskonNotaVal: diskonValue,
+        totalDiskon: totalHemat,
+        totalHemat: totalHemat,
+        totalNet: totalBayar
+    };
 };
 
 window.prosesSewa = function() {
@@ -159,34 +276,70 @@ window.prosesSewa = function() {
     }
     
     var penyewa = document.getElementById('inpPenyewaSewa').value || 'Pelanggan Umum';
-    var durasi = document.getElementById('inpDurasiSewa').value || 1;
+    var durasiInput = document.getElementById('inpDurasiSewa');
+    var durasi = 1;
+    if(durasiInput) durasi = Math.max(1, parseInt(durasiInput.value) || 1);
     
-    var subtotal = 0;
+    var rawSubtotalTotal = 0;
+    var itemDiskonTotal = 0;
     var cartItems = [];
     window.keranjangSewa.forEach(function(item) {
-        subtotal += item.hargaSewa * item.qty;
+        var rawLine = (item.hargaSewa * item.qty) * durasi;
+        var itDisc = parseFloat(item.diskonNominal) || 0;
+        var itSub = Math.max(0, rawLine - itDisc);
+        rawSubtotalTotal += rawLine;
+        itemDiskonTotal += itDisc;
         cartItems.push({
             id: item.id,
             namaProduk: '(SEWA ' + durasi + 'H) ' + item.nama,
             qty: item.qty,
+            harga: item.hargaSewa * durasi,
             hargaJual: item.hargaSewa * durasi,
-            subtotal: item.hargaSewa * item.qty * durasi
+            diskon: item.diskon || 0,
+            diskonType: item.diskonType || 'persen',
+            diskonNominal: itDisc,
+            subtotal: itSub
         });
     });
-    var totalBayar = subtotal * durasi;
+
+    var subtotalAfterItemDisc = Math.max(0, rawSubtotalTotal - itemDiskonTotal);
+
+    var elDiskonType = document.getElementById('sewaDiskonType');
+    var elDiskon = document.getElementById('sewaDiskon');
+    var diskonValue = elDiskon ? (parseFloat(elDiskon.value) || 0) : 0;
+    var diskonType = elDiskonType ? elDiskonType.value : 'nominal';
     
+    var notaDiskonNominal = 0;
+    if (diskonType === 'persen') {
+        notaDiskonNominal = Math.round(subtotalAfterItemDisc * (Math.min(100, diskonValue) / 100));
+    } else {
+        notaDiskonNominal = window.fromAppCurrency ? window.fromAppCurrency(diskonValue) : diskonValue;
+    }
+    notaDiskonNominal = Math.min(subtotalAfterItemDisc, notaDiskonNominal);
+
+    var totalHemat = itemDiskonTotal + notaDiskonNominal;
+    var totalBayar = Math.max(0, subtotalAfterItemDisc - notaDiskonNominal);
+    
+    var newTrxId = 'SEWA-' + Date.now();
+    var newOrderNum = 'S' + Math.floor(600000 + Math.random() * 90000);
+
     if (window.orderTransactions) {
         var now = new Date();
         var timeStr = ('0' + now.getDate()).slice(-2) + '/' + ('0' + (now.getMonth() + 1)).slice(-2) + '/' + now.getFullYear() + ' ' +
             ('0' + now.getHours()).slice(-2) + ':' + ('0' + now.getMinutes()).slice(-2);
         
         var newTrx = {
-            id: 'SEWA-' + now.getTime(),
-            orderNum: 'S' + Math.floor(600000 + Math.random() * 90000),
+            id: newTrxId,
+            orderNum: newOrderNum,
             customer: penyewa,
             phone: 'Penyewa',
             category: 'Sewa Alat',
             price: totalBayar,
+            totalGross: rawSubtotalTotal,
+            diskon: totalHemat,
+            diskonItem: itemDiskonTotal,
+            diskonNota: notaDiskonNominal,
+            totalHemat: totalHemat,
             date: timeStr,
             payment: 'Tunai',
             status: 'delivered',
@@ -206,7 +359,7 @@ window.prosesSewa = function() {
                 tipe: 'Masuk',
                 kategori: 'Pendapatan Sewa',
                 nominal: totalBayar,
-                keterangan: 'Sewa Alat: ' + penyewa,
+                keterangan: 'Sewa Alat: ' + penyewa + (totalHemat > 0 ? ' (Hemat: ' + window.formatAppCurrency(totalHemat) + ')' : ''),
                 refId: newTrx.id,
                 saldoBerjalan: lastSaldo + totalBayar,
                 dicatatOleh: 'Sistem'
@@ -215,9 +368,15 @@ window.prosesSewa = function() {
     }
     
     window.lastSewa = {
+        id: newTrxId,
+        orderNum: newOrderNum,
         penyewa: penyewa,
         durasi: durasi,
         items: JSON.parse(JSON.stringify(window.keranjangSewa)),
+        grossTotal: rawSubtotalTotal,
+        itemDiskonTotal: itemDiskonTotal,
+        notaDiskonNominal: notaDiskonNominal,
+        totalDiskon: totalHemat,
         total: totalBayar
     };
 
@@ -227,35 +386,88 @@ window.prosesSewa = function() {
     window.keranjangSewa = [];
     document.getElementById('inpPenyewaSewa').value = '';
     document.getElementById('inpDurasiSewa').value = 1;
+    if(document.getElementById('sewaDiskon')) document.getElementById('sewaDiskon').value = 0;
     
     window.renderKeranjangSewa();
     
     if(typeof window.addMockAuditLog === 'function') {
-        window.addMockAuditLog('Sewa Alat', 'Transaksi Sewa Baru: ' + penyewa);
+        window.addMockAuditLog('Sewa Alat', 'Transaksi Sewa Baru: ' + penyewa + (totalHemat > 0 ? ' [Diskon: ' + window.formatAppCurrency(totalHemat) + ']' : ''));
     }
 };
 
 window.cetakStrukSewaCurrent = function() {
-    if (!window.lastSewa) {
-        if(window.showToast) window.showToast('Belum ada transaksi sewa yang diproses.', 'warning');
-        return;
+    if (window.lastSewa) {
+        window.cetakStrukSewa(window.lastSewa.penyewa, window.lastSewa.durasi, window.lastSewa.items, window.lastSewa);
+    } else if (window.keranjangSewa && window.keranjangSewa.length > 0) {
+        var penyewa = (document.getElementById('inpPenyewaSewa') ? document.getElementById('inpPenyewaSewa').value : '').trim() || 'Pelanggan Umum';
+        var durasi = parseInt(document.getElementById('inpDurasiSewa') ? document.getElementById('inpDurasiSewa').value : 1) || 1;
+        var calc = window.hitungTotalSewa();
+        window.cetakStrukSewa(penyewa, durasi, window.keranjangSewa, calc);
+    } else {
+        if(window.showToast) window.showToast('Belum ada transaksi sewa yang diproses atau keranjang masih kosong.', 'warning');
     }
-    window.cetakStrukSewa(window.lastSewa.penyewa, window.lastSewa.durasi, window.lastSewa.items);
 };
 
 window.kirimWaSewa = function() {
-    if (!window.lastSewa) {
-        if(window.showToast) window.showToast('Belum ada transaksi sewa yang diproses.', 'warning');
-        return;
-    }
     var ls = window.lastSewa;
+    if (!ls) {
+        if (window.keranjangSewa && window.keranjangSewa.length > 0) {
+            var penyewa = document.getElementById('inpPenyewaSewa').value || 'Pelanggan Umum';
+            var durasi = Math.max(1, parseInt(document.getElementById('inpDurasiSewa').value) || 1);
+            var grossTotal = 0;
+            var itemDiskonTotal = 0;
+            window.keranjangSewa.forEach(function(i) {
+                grossTotal += (i.hargaSewa * i.qty * durasi);
+                itemDiskonTotal += (parseFloat(i.diskonNominal) || 0);
+            });
+            var elDisc = document.getElementById('sewaDiskon');
+            var elDiscType = document.getElementById('sewaDiskonType');
+            var discVal = elDisc ? (parseFloat(elDisc.value) || 0) : 0;
+            var discType = elDiscType ? elDiscType.value : 'nominal';
+            var subAfter = Math.max(0, grossTotal - itemDiskonTotal);
+            var notaDisc = discType === 'persen' ? Math.round(subAfter * (Math.min(100, discVal) / 100)) : Math.min(subAfter, discVal);
+            var totalH = itemDiskonTotal + notaDisc;
+            var tot = Math.max(0, subAfter - notaDisc);
+            ls = {
+                penyewa: penyewa,
+                durasi: durasi,
+                items: window.keranjangSewa,
+                grossTotal: grossTotal,
+                itemDiskonTotal: itemDiskonTotal,
+                notaDiskonNominal: notaDisc,
+                totalDiskon: totalH,
+                total: tot
+            };
+        } else {
+            if(window.showToast) window.showToast('Belum ada transaksi sewa yang diproses.', 'warning');
+            return;
+        }
+    }
+    
     var waText = "Halo " + ls.penyewa + ", berikut adalah nota sewa alat Anda di MAFAZA GROUP:\n\n";
     waText += "Durasi: " + ls.durasi + " Hari\n\n";
     ls.items.forEach(function(item) {
-        var lineTotal = item.hargaSewa * item.qty * ls.durasi;
-        waText += "- " + item.nama + " (" + item.qty + "x) : Rp " + (lineTotal).toLocaleString('id-ID') + "\n";
+        var rawLine = item.hargaSewa * item.qty * ls.durasi;
+        var itDisc = parseFloat(item.diskonNominal) || 0;
+        var itSub = Math.max(0, rawLine - itDisc);
+        waText += "• " + item.nama + " (" + item.qty + "x) : Rp " + (itSub).toLocaleString('id-ID');
+        if (itDisc > 0) {
+            waText += " (Hemat: -Rp " + itDisc.toLocaleString('id-ID') + ")";
+        }
+        waText += "\n";
     });
-    waText += "\nTotal: Rp " + ls.total.toLocaleString('id-ID') + "\n\nTerima Kasih!";
+    
+    var totalDiskon = parseFloat(ls.totalDiskon) || 0;
+    if (totalDiskon > 0) {
+        var gross = parseFloat(ls.grossTotal) || (ls.total + totalDiskon);
+        waText += "\nSubtotal Normal: Rp " + gross.toLocaleString('id-ID');
+        waText += "\nTotal Diskon: -Rp " + totalDiskon.toLocaleString('id-ID');
+        waText += "\nTOTAL BAYAR: Rp " + ls.total.toLocaleString('id-ID');
+        waText += "\n\n🎉 ANDA HEMAT: Rp " + totalDiskon.toLocaleString('id-ID') + " 🎉";
+    } else {
+        waText += "\nTotal: Rp " + ls.total.toLocaleString('id-ID');
+    }
+    waText += "\n\nTerima Kasih Atas Kepercayaan Anda!";
     
     var waUrl = "https://api.whatsapp.com/send?text=" + encodeURIComponent(waText);
     window.open(waUrl, '_blank');
@@ -300,25 +512,73 @@ window.hapusAlat = function(id) {
     }
 };
 
-window.cetakStrukSewa = function(penyewa, durasi, items) {
-    var itemsToPrint = items || window.keranjangSewa;
-    var subtotal = 0;
+window.cetakStrukSewa = function(penyewa, durasi, items, extraData) {
+    var itemsToPrint = items || window.keranjangSewa || [];
+    var durasiVal = parseInt(durasi) || 1;
+    var subtotalGross = 0;
+    var totalItemDiskon = 0;
     var itemsHtml = '';
+
     itemsToPrint.forEach(function(item) {
-        var lineTotal = item.hargaSewa * item.qty * durasi;
-        subtotal += lineTotal;
+        var baseLineTotal = (item.hargaSewa || 0) * (item.qty || 1) * durasiVal;
+        subtotalGross += baseLineTotal;
+
+        var itemDiskonNominal = 0;
+        if (typeof item.diskonNominal === 'number') {
+            itemDiskonNominal = item.diskonNominal;
+        } else {
+            var dVal = parseFloat(item.diskon) || 0;
+            if (item.diskonType === 'percent') {
+                itemDiskonNominal = (baseLineTotal * Math.min(dVal, 100)) / 100;
+            } else {
+                itemDiskonNominal = Math.min(dVal * (item.qty || 1) * durasiVal, baseLineTotal);
+            }
+        }
+        totalItemDiskon += itemDiskonNominal;
+        var netLineTotal = Math.max(0, baseLineTotal - itemDiskonNominal);
+
+        var priceInfo = '';
+        if (itemDiskonNominal > 0) {
+            priceInfo = `
+                <div style="font-size: 10px; text-decoration: line-through; color: #94a3b8;">${window.formatAppCurrency(baseLineTotal)}</div>
+                <div style="font-size: 11px; font-weight: 700; color: #0f172a;">${window.formatAppCurrency(netLineTotal)}</div>
+            `;
+        } else {
+            priceInfo = `<div style="font-size: 11px; font-weight: 600; color: #0f172a;">${window.formatAppCurrency(baseLineTotal)}</div>`;
+        }
+
+        var diskonTag = '';
+        if (itemDiskonNominal > 0) {
+            var tagVal = item.diskonType === 'percent' ? (item.diskon + '%') : window.formatAppCurrency(item.diskon);
+            diskonTag = `
+                <div style="font-size: 9.5px; color: #dc2626; font-weight: 600; margin-top: 1px;">
+                    🏷️ Hemat: -${window.formatAppCurrency(itemDiskonNominal)} ${item.diskonType === 'percent' ? '(' + item.diskon + '%)' : ''}
+                </div>
+            `;
+        }
+
         itemsHtml += `
             <tr>
-                <td style="padding: 10px 0; border-bottom: 1px dashed #e2e8f0; color: #0f172a; font-weight: 500;">
-                    ${item.nama}<br>
-                    <span style="font-size: 11px; color: #64748b; font-weight: 400;">${item.qty} x ${window.formatAppCurrency(item.hargaSewa)}</span>
+                <td style="padding: 6px 0; border-bottom: 1px dashed #e2e8f0; color: #0f172a; font-weight: 500; vertical-align: top;">
+                    <div style="font-weight: 600; font-size: 11px;">${item.nama}</div>
+                    <div style="font-size: 10px; color: #64748b; font-weight: 400;">${item.qty} x ${window.formatAppCurrency(item.hargaSewa)} (${durasiVal} Hari)</div>
+                    ${diskonTag}
                 </td>
-                <td style="padding: 10px 0; text-align: right; border-bottom: 1px dashed #e2e8f0; color: #0f172a; font-weight: 600;">
-                    ${window.formatAppCurrency(lineTotal)}
+                <td style="padding: 6px 0; text-align: right; border-bottom: 1px dashed #e2e8f0; vertical-align: top;">
+                    ${priceInfo}
                 </td>
             </tr>
         `;
     });
+
+    var diskonNotaNominal = 0;
+    if (extraData && typeof extraData.diskonNotaNominal === 'number') {
+        diskonNotaNominal = extraData.diskonNotaNominal;
+    } else if (extraData && typeof extraData.diskon === 'number') {
+        diskonNotaNominal = Math.max(0, extraData.diskon - totalItemDiskon);
+    }
+    var totalDiskon = (extraData && typeof extraData.totalDiskon === 'number') ? extraData.totalDiskon : (totalItemDiskon + diskonNotaNominal);
+    var totalNet = (extraData && typeof extraData.totalNet === 'number') ? extraData.totalNet : Math.max(0, subtotalGross - totalDiskon);
 
     var strukHtml = `
         <div style="width: 280px; padding: 16px; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1e293b; background: #ffffff; box-sizing: border-box; margin: 0 auto;">
@@ -355,10 +615,44 @@ window.cetakStrukSewa = function(penyewa, durasi, items) {
                 </tbody>
             </table>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-top: 1.5px dashed #e2e8f0; border-bottom: 1.5px dashed #e2e8f0; margin-bottom: 16px;">
-                <span style="font-size: 12px; font-weight: 700; color: #0f172a;">TOTAL</span>
-                <span style="font-size: 15px; font-weight: 800; color: #4f46e5;">${window.formatAppCurrency(subtotal)}</span>
+            <div style="border-top: 1.5px dashed #e2e8f0; padding-top: 8px; margin-bottom: 12px; font-size: 11px;">
+                ${totalDiskon > 0 ? `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px; color: #64748b;">
+                    <span>Subtotal Normal</span>
+                    <span>${window.formatAppCurrency(subtotalGross)}</span>
+                </div>
+                ` : ''}
+                ${totalItemDiskon > 0 ? `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px; color: #dc2626;">
+                    <span>Potongan Item</span>
+                    <span>-${window.formatAppCurrency(totalItemDiskon)}</span>
+                </div>
+                ` : ''}
+                ${diskonNotaNominal > 0 ? `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px; color: #dc2626;">
+                    <span>Diskon Nota Sewa</span>
+                    <span>-${window.formatAppCurrency(diskonNotaNominal)}</span>
+                </div>
+                ` : ''}
+                ${(totalItemDiskon > 0 && diskonNotaNominal > 0) ? `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px; color: #dc2626; font-weight: 600;">
+                    <span>Total Diskon</span>
+                    <span>-${window.formatAppCurrency(totalDiskon)}</span>
+                </div>
+                ` : ''}
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px dashed #e2e8f0; margin-top: 4px;">
+                    <span style="font-size: 12px; font-weight: 700; color: #0f172a;">TOTAL BAYAR</span>
+                    <span style="font-size: 15px; font-weight: 800; color: #4f46e5;">${window.formatAppCurrency(totalNet)}</span>
+                </div>
             </div>
+
+            ${totalDiskon > 0 ? `
+            <div style="background: #f0fdf4; border: 1.5px dashed #22c55e; border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; text-align: center;">
+                <div style="font-size: 11px; font-weight: 800; color: #166534; letter-spacing: 0.5px;">*** ANDA HEMAT ***</div>
+                <div style="font-size: 14px; font-weight: 800; color: #15803d; margin-top: 2px;">${window.formatAppCurrency(totalDiskon)}</div>
+                <div style="font-size: 9px; color: #166534; margin-top: 2px;">(Total potongan harga sewa yang Anda dapatkan)</div>
+            </div>
+            ` : ''}
 
             <div style="text-align: center; font-size: 10px; color: #64748b; line-height: 1.4;">
                 <p style="margin: 0; font-weight: 600;">Terima Kasih Atas Kepercayaan Anda</p>

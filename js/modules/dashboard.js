@@ -1629,33 +1629,53 @@ window.openPreviewStruk = function (trxId, mode) {
 
     var grandTotal = Number(trx.price || 0);
     var subtotalCalc = 0;
+    var totalItemDiskon = 0;
     var itemsRowsHtml = '';
 
     itemsList.forEach(function (it, idx) {
         var pName = (typeof window.escapeHtml === 'function') ? window.escapeHtml(it.namaProduk || it.nama || ('Item ' + (idx + 1))) : (it.namaProduk || 'Item');
         var pQty = Number(it.qty || 1);
         var pHarga = Number(it.harga || (pQty > 0 ? (it.subtotal / pQty) : it.subtotal));
-        var pSub = Number(it.subtotal || (pQty * pHarga));
-        subtotalCalc += pSub;
+        var itDisc = Number(it.diskonNominal || 0);
+        var rawLine = pQty * pHarga;
+        var pSub = Number(it.subtotal !== undefined ? it.subtotal : (rawLine - itDisc));
+        
+        var baseLine = (rawLine > pSub ? rawLine : (pSub + itDisc));
+        subtotalCalc += baseLine;
+        totalItemDiskon += itDisc;
 
         var formattedHarga = window.formatAppCurrency(pHarga);
         var formattedSub = window.formatAppCurrency(pSub);
-        var discText = (it.diskonNominal && Number(it.diskonNominal) > 0)
-            ? ' <span style="color: #dc2626; font-size: 10px; font-weight: 700;">(Disc: -' + window.formatAppCurrency(it.diskonNominal) + ')</span>'
-            : '';
+        var formattedRaw = window.formatAppCurrency(baseLine);
+        var formattedDisc = window.formatAppCurrency(itDisc);
 
-        itemsRowsHtml += '<tr>'
-            + '<td style="padding: 6px 0;">'
-            + '<span class="receipt-item-name">' + pName + '</span>'
-            + '<span class="receipt-item-sub">' + pQty + ' x ' + formattedHarga + discText + '</span>'
-            + '</td>'
-            + '<td style="text-align: right; padding: 6px 0; font-weight: 800; color: #000000; vertical-align: bottom;">'
-            + formattedSub
-            + '</td>'
-            + '</tr>';
+        if (itDisc > 0) {
+            itemsRowsHtml += '<tr>'
+                + '<td style="padding: 6px 0; border-bottom: 1px dashed #e2e8f0;">'
+                + '<span class="receipt-item-name" style="font-weight: 700; color: #000;">' + pName + '</span>'
+                + '<span class="receipt-item-sub" style="color: #64748b; font-size: 11px;">' + pQty + ' x ' + formattedHarga + '</span>'
+                + '<div style="font-size: 10px; color: #dc2626; font-weight: 700; margin-top: 1px;">🏷️ Potongan Diskon: -' + formattedDisc + '</div>'
+                + '</td>'
+                + '<td style="text-align: right; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; vertical-align: bottom;">'
+                + '<div style="font-size: 10px; color: #94a3b8; text-decoration: line-through;">' + formattedRaw + '</div>'
+                + '<div style="font-weight: 800; font-size: 12px; color: #000000;">' + formattedSub + '</div>'
+                + '</td>'
+                + '</tr>';
+        } else {
+            itemsRowsHtml += '<tr>'
+                + '<td style="padding: 6px 0; border-bottom: 1px dashed #e2e8f0;">'
+                + '<span class="receipt-item-name">' + pName + '</span>'
+                + '<span class="receipt-item-sub">' + pQty + ' x ' + formattedHarga + '</span>'
+                + '</td>'
+                + '<td style="text-align: right; padding: 6px 0; font-weight: 800; color: #000000; vertical-align: bottom; border-bottom: 1px dashed #e2e8f0;">'
+                + formattedSub
+                + '</td>'
+                + '</tr>';
+        }
     });
 
     var diskon = Number(trx.diskon || 0);
+    var totalHemat = totalItemDiskon + diskon;
     var pajak = Number(trx.pajakNominal || 0);
     var metode = trx.payment || 'Tunai';
     var isTunai = String(metode).toLowerCase() === 'tunai';
@@ -1737,13 +1757,25 @@ window.openPreviewStruk = function (trxId, mode) {
         + '<div class="receipt-dashed-line"></div>'
 
         + '<div class="receipt-calc-row">'
-        + '<span>Subtotal Belanja</span>'
-        + '<span style="font-weight: 700;">' + fmtSubtotal + '</span>'
+        + '<span>Subtotal Belanja (Normal)</span>'
+        + '<span style="font-weight: 700;">' + window.formatAppCurrency(subtotalCalc) + '</span>'
         + '</div>'
+        + (totalItemDiskon > 0 ? (
+            '<div class="receipt-calc-row" style="color: #dc2626;">'
+            + '<span>Potongan Diskon Produk</span>'
+            + '<span style="font-weight: 700;">-' + window.formatAppCurrency(totalItemDiskon) + '</span>'
+            + '</div>'
+        ) : '')
         + (diskon > 0 ? (
-            '<div class="receipt-calc-row">'
-            + '<span>Diskon Potongan</span>'
-            + '<span style="font-weight: 700; color: #000000;">-' + fmtDiskon + '</span>'
+            '<div class="receipt-calc-row" style="color: #dc2626;">'
+            + '<span>Potongan Diskon Nota</span>'
+            + '<span style="font-weight: 700;">-' + fmtDiskon + '</span>'
+            + '</div>'
+        ) : '')
+        + (totalHemat > 0 && totalItemDiskon > 0 && diskon > 0 ? (
+            '<div class="receipt-calc-row" style="color: #dc2626; font-weight: 700; border-top: 1px dashed #fecaca; border-bottom: 1px dashed #fecaca; padding: 2px 0;">'
+            + '<span>Total Potongan Diskon</span>'
+            + '<span>-' + window.formatAppCurrency(totalHemat) + '</span>'
             + '</div>'
         ) : '')
         + (pajak > 0 ? (
@@ -1757,6 +1789,13 @@ window.openPreviewStruk = function (trxId, mode) {
         + '<span class="receipt-grand-total-label">TOTAL AKHIR</span>'
         + '<span class="receipt-grand-total-num">' + fmtGrandTotal + '</span>'
         + '</div>'
+        + (totalHemat > 0 ? (
+            '<div style="margin: 10px 0; padding: 10px; background: #f0fdf4; border: 1.5px dashed #16a34a; border-radius: 8px; text-align: center; color: #15803d;">'
+            + '<div style="font-size: 11px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">*** ANDA HEMAT ***</div>'
+            + '<div style="font-size: 16px; font-weight: 900; margin: 3px 0; color: #16a34a;">' + window.formatAppCurrency(totalHemat) + '</div>'
+            + '<div style="font-size: 9.5px; color: #166534;">(Total potongan harga belanja Anda)</div>'
+            + '</div>'
+        ) : '')
 
         + '<div class="receipt-calc-row">'
         + '<span>Metode Pembayaran</span>'
@@ -1840,10 +1879,14 @@ window.shareStrukWhatsApp = function () {
     if (!trx) return;
 
     var itemsText = [];
+    var totalItemDisc = 0;
     if (trx.items && Array.isArray(trx.items) && trx.items.length > 0) {
         trx.items.forEach(function (it) {
             var sub = window.formatAppCurrency(it.subtotal);
-            itemsText.push('• ' + it.namaProduk + ' (' + it.qty + 'x) : ' + sub);
+            var itDisc = Number(it.diskonNominal || 0);
+            totalItemDisc += itDisc;
+            var discSuffix = itDisc > 0 ? (' (Disc: -' + window.formatAppCurrency(itDisc) + ')') : '';
+            itemsText.push('• ' + it.namaProduk + ' (' + it.qty + 'x) : ' + sub + discSuffix);
         });
     } else {
         var sub = window.formatAppCurrency(trx.price);
@@ -1851,6 +1894,12 @@ window.shareStrukWhatsApp = function () {
     }
 
     var totalFormatted = window.formatAppCurrency(trx.price || 0);
+    var notaDisc = Number(trx.diskon || 0);
+    var hematTotal = totalItemDisc + notaDisc;
+    var discBreakdown = '';
+    if (totalItemDisc > 0) discBreakdown += 'Diskon Item: -' + window.formatAppCurrency(totalItemDisc) + '\r\n';
+    if (notaDisc > 0) discBreakdown += 'Diskon Nota: -' + window.formatAppCurrency(notaDisc) + '\r\n';
+    var hematBanner = hematTotal > 0 ? ('━━━━━━━━━━━━━━━━━━━━\r\n🎉 *ANDA HEMAT: ' + window.formatAppCurrency(hematTotal) + '* 🎉\r\n') : '';
 
     var text = '\uD83E\uDDFE *STRUK RESMI - MAFAZA GROUP*\r\n'
         + '━━━━━━━━━━━━━━━━━━━━\r\n'
@@ -1861,8 +1910,10 @@ window.shareStrukWhatsApp = function () {
         + '━━━━━━━━━━━━━━━━━━━━\r\n'
         + '*Rincian Belanja:*\r\n'
         + itemsText.join('\r\n') + '\r\n'
+        + (discBreakdown ? ('━━━━━━━━━━━━━━━━━━━━\r\n' + discBreakdown) : '')
         + '━━━━━━━━━━━━━━━━━━━━\r\n'
         + '*TOTAL BAYAR: ' + totalFormatted + '*\r\n'
+        + hematBanner
         + 'Status    : LUNAS / SELESAI\r\n'
         + '━━━━━━━━━━━━━━━━━━━━\r\n'
         + 'Terima kasih telah berbelanja di Mafaza Group!\r\n'
@@ -1886,10 +1937,14 @@ window.copyStrukText = function () {
     if (!trx) return;
 
     var itemsText = [];
+    var totalItemDisc = 0;
     if (trx.items && Array.isArray(trx.items) && trx.items.length > 0) {
         trx.items.forEach(function (it) {
             var sub = window.formatAppCurrency(it.subtotal);
-            itemsText.push('• ' + it.namaProduk + ' (' + it.qty + 'x) : ' + sub);
+            var itDisc = Number(it.diskonNominal || 0);
+            totalItemDisc += itDisc;
+            var discSuffix = itDisc > 0 ? (' (Disc: -' + window.formatAppCurrency(itDisc) + ')') : '';
+            itemsText.push('• ' + it.namaProduk + ' (' + it.qty + 'x) : ' + sub + discSuffix);
         });
     } else {
         var sub = window.formatAppCurrency(trx.price);
@@ -1897,6 +1952,12 @@ window.copyStrukText = function () {
     }
 
     var totalFormatted = window.formatAppCurrency(trx.price || 0);
+    var notaDisc = Number(trx.diskon || 0);
+    var hematTotal = totalItemDisc + notaDisc;
+    var discBreakdown = '';
+    if (totalItemDisc > 0) discBreakdown += 'Diskon Item: -' + window.formatAppCurrency(totalItemDisc) + '\r\n';
+    if (notaDisc > 0) discBreakdown += 'Diskon Nota: -' + window.formatAppCurrency(notaDisc) + '\r\n';
+    var hematBanner = hematTotal > 0 ? ('------------------------------------\r\nANDA HEMAT: ' + window.formatAppCurrency(hematTotal) + '\r\n') : '';
 
     var text = '\uD83E\uDDFE STRUK RESMI - MAFAZA GROUP\r\n'
         + '------------------------------------\r\n'
@@ -1907,8 +1968,10 @@ window.copyStrukText = function () {
         + '------------------------------------\r\n'
         + 'Rincian Belanja:\r\n'
         + itemsText.join('\r\n') + '\r\n'
+        + (discBreakdown ? ('------------------------------------\r\n' + discBreakdown) : '')
         + '------------------------------------\r\n'
         + 'TOTAL BAYAR: ' + totalFormatted + '\r\n'
+        + hematBanner
         + 'Status    : LUNAS / SELESAI\r\n'
         + '------------------------------------\r\n'
         + 'Terima kasih telah berbelanja di Mafaza Group!\r\n'

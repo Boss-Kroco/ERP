@@ -206,14 +206,30 @@ function renderCart() {
     var pajakNominal = (isPpnActive && taxableAmount > 0) ? Math.round((taxableAmount * pajakRate) / 100) : 0;
     var net = taxableAmount + pajakNominal;
 
+    var totalItemDiskon = 0;
+    (window.currentCart || []).forEach(function (i) {
+        totalItemDiskon += (parseFloat(i.diskonNominal) || 0);
+    });
+    var totalHemat = totalItemDiskon + diskonNominal;
+
     var elSubtotal = document.getElementById('posSubtotalLabel');
     var elDiskonLbl = document.getElementById('posDiskonLabel');
+    var elHematBox = document.getElementById('posHematBox');
+    var elHematLbl = document.getElementById('posHematLabel');
     var elPpnRate = document.getElementById('posPpnRateLabel');
     var elPpnLbl = document.getElementById('posPpnLabel');
     var elTotal = document.getElementById('posTotalLabel');
 
     if (elSubtotal) elSubtotal.textContent = window.formatAppCurrency(grandTotal);
     if (elDiskonLbl) elDiskonLbl.textContent = (diskonNominal > 0 ? '-' : '') + window.formatAppCurrency(diskonNominal);
+    if (elHematBox && elHematLbl) {
+        if (totalHemat > 0) {
+            elHematBox.style.display = 'block';
+            elHematLbl.textContent = window.formatAppCurrency(totalHemat);
+        } else {
+            elHematBox.style.display = 'none';
+        }
+    }
     if (elPpnRate) elPpnRate.textContent = pajakRate + '%';
     if (elPpnLbl) elPpnLbl.textContent = window.formatAppCurrency(pajakNominal);
     if (elTotal) elTotal.textContent = window.formatAppCurrency(net);
@@ -447,6 +463,13 @@ function submitTransaksiPOS() {
         phone: 'Kasir Walk-in',
         category: window.currentCart[0].namaProduk + (window.currentCart.length > 1 ? ' +' + (window.currentCart.length - 1) : ''),
         price: totalNet,
+        totalGross: grandTotal,
+        diskon: diskon,
+        pajakNominal: pajakNominal,
+        isWakil: isWakil,
+        wakilPersen: wakilPersen,
+        wakilNominal: wakilNominal,
+        perusahaanNominal: perusahaanNominal,
         date: formatDateNow(),
         payment: metode,
         bayarNominal: bayarNominal,
