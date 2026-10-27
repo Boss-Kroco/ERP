@@ -1174,14 +1174,20 @@
         <div class="receipt-paper-wrapper" style="position: relative;">
             
             <!-- Top Controls (Close & Status) -->
-            <div class="receipt-top-actions no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div class="receipt-top-actions no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px;">
                 <span class="badge-receipt-live" style="background: rgba(108,71,255,0.15); color: var(--violet-main); font-size: 11.5px; font-weight: 800; padding: 5px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(108,71,255,0.12);">
                     <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--emerald); display: inline-block;"></span>
                     Struk Resmi Siap Cetak
                 </span>
-                <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 5px 10px; background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.12); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;" onclick="closePreviewStrukModal()">
-                    <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </button>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 5px 10px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 5px; background: #ffffff; border-radius: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);" onclick="if(window.openSettingHeaderStruk) window.openSettingHeaderStruk()" title="Ubah Nama, Alamat, No. Telp atau Sembunyikan">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        <span>Ubah / Hapus Alamat &amp; No. HP</span>
+                    </button>
+                    <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 5px 10px; background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.12); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;" onclick="closePreviewStrukModal()">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
             </div>
 
             <!-- Receipt Paper Body (Printed Area) -->
@@ -1214,6 +1220,63 @@
                     Cetak Struk (Printer Thermal)
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Pengaturan Identitas & Kontak Struk (Nota) -->
+<div class="modal-overlay-custom" id="modalSettingHeaderStruk" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 100000; align-items: center; justify-content: center;">
+    <div class="modal-sheet-card" style="max-width: 480px; width: 92%; background: #ffffff; border-radius: 20px; padding: 22px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+        <div class="modal-sheet-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-soft); padding-bottom: 12px;">
+            <div class="modal-sheet-title" style="font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 8px; color: var(--violet-dark);">
+                <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Atur Alamat &amp; Kontak Struk
+            </div>
+            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px; border-radius: 50%; width: 28px; height: 28px;" onclick="closeSettingHeaderStruk()">✕</button>
+        </div>
+        <div class="modal-sheet-body">
+            <form onsubmit="event.preventDefault(); submitSettingHeaderStruk();" style="display: flex; flex-direction: column; gap: 12px;">
+                <div>
+                    <label class="profile-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 4px;">Nama Usaha / Toko</label>
+                    <input type="text" id="setStrukBrandName" class="search-filter-input profile-input" style="width: 100%; padding: 8px 12px; font-size: 12.5px; border-radius: 8px; border: 1px solid var(--border-strong);" placeholder="Contoh: MAFAZA GROUP">
+                </div>
+                <div>
+                    <label class="profile-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 4px;">Sub-Judul / Tagline</label>
+                    <input type="text" id="setStrukBrandDesc" class="search-filter-input profile-input" style="width: 100%; padding: 8px 12px; font-size: 12.5px; border-radius: 8px; border: 1px solid var(--border-strong);" placeholder="Contoh: BUSINESS MANAGEMENT SYSTEM">
+                </div>
+                <div style="background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 10px; padding: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <label class="profile-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-dark); margin: 0;">Alamat Usaha</label>
+                        <button type="button" onclick="document.getElementById('setStrukAlamat').value=''" class="btn-pill-action btn-pill-secondary" style="font-size: 10px; padding: 2px 7px; border-radius: 6px;">Kosongkan</button>
+                    </div>
+                    <textarea id="setStrukAlamat" class="search-filter-input profile-input" rows="2" style="width: 100%; padding: 8px 10px; font-size: 12px; border-radius: 8px; border: 1px solid var(--border-strong); resize: vertical; height: auto;" placeholder="Tulis alamat usaha, atau kosongkan / centang di bawah untuk menghilangkannya..."></textarea>
+                    <label style="font-size: 11px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 6px; margin-top: 6px; cursor: pointer;">
+                        <input type="checkbox" id="chkHideAlamat" style="accent-color: var(--violet-main); width: 14px; height: 14px;">
+                        <span>Sembunyikan / Hilangkan Alamat dari Struk</span>
+                    </label>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 10px; padding: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <label class="profile-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-dark); margin: 0;">No. Telepon / WA &amp; Medsos</label>
+                        <button type="button" onclick="document.getElementById('setStrukKontak').value=''" class="btn-pill-action btn-pill-secondary" style="font-size: 10px; padding: 2px 7px; border-radius: 6px;">Kosongkan</button>
+                    </div>
+                    <input type="text" id="setStrukKontak" class="search-filter-input profile-input" style="width: 100%; padding: 8px 12px; font-size: 12px; border-radius: 8px; border: 1px solid var(--border-strong);" placeholder="Contoh: Telp / WA: 0822-6866-0396 | IG: @mafazagroup.id">
+                    <label style="font-size: 11px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 6px; margin-top: 6px; cursor: pointer;">
+                        <input type="checkbox" id="chkHideKontak" style="accent-color: var(--violet-main); width: 14px; height: 14px;">
+                        <span>Sembunyikan / Hilangkan No. Telp &amp; Kontak dari Struk</span>
+                    </label>
+                </div>
+                <div style="background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 8px; padding: 10px;">
+                    <label style="font-size: 11px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 6px; cursor: pointer; margin: 0;">
+                        <input type="checkbox" id="chkHideLogo" style="accent-color: var(--violet-main); width: 14px; height: 14px;">
+                        <span>Sembunyikan Logo Gambar</span>
+                    </label>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
+                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeSettingHeaderStruk()">Batal</button>
+                    <button type="submit" class="btn-pill-action btn-pill-primary">Simpan &amp; Terapkan</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

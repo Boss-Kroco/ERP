@@ -348,19 +348,39 @@ input[type=number] {
         /* Floating Scroll Nav Assistant (Di samping kanan layar) */
         .floating-scroll-nav {
             position: fixed;
-            right: 18px;
-            bottom: 80px;
-            z-index: 9999;
+            right: 14px;
+            bottom: 75px;
+            z-index: 999;
             display: flex;
             flex-direction: column;
             gap: 6px;
-            background: rgba(255, 255, 255, 0.94);
-            backdrop-filter: blur(12px);
-            padding: 6px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(8px);
+            padding: 5px;
             border-radius: 30px;
-            box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.16), 0 0 0 1px rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 14px -2px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(226, 232, 240, 0.8);
             user-select: none;
+            opacity: 0.35;
             transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .floating-scroll-nav:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.2), 0 0 0 1px rgba(226, 232, 240, 0.9);
+        }
+        .sticky-action-col {
+            position: sticky !important;
+            right: 0 !important;
+            background: #ffffff !important;
+            box-shadow: -4px 0 8px -2px rgba(15, 23, 42, 0.08) !important;
+            z-index: 5 !important;
+        }
+        thead th.sticky-action-col {
+            background: #f8fafc !important;
+            z-index: 15 !important;
+        }
+        tr:hover td.sticky-action-col {
+            background: #f8fafc !important;
         }
         .btn-scroll-arrow {
             width: 36px;

@@ -280,15 +280,15 @@ window.renderSemuaTransaksiTable = function() {
         }
 
         html += '<tr style="border-bottom: 1px solid var(--border-soft); transition: background 0.15s ease;" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'transparent\'">';
-        html += '  <td style="padding: 13px 16px; font-size: 12.5px;"><b>' + window.escapeHtml(item.orderNum || item.id) + '</b><br><small style="color:var(--text-muted); font-family:monospace; font-size:10.5px;">' + window.escapeHtml(item.id) + '</small></td>';
-        html += '  <td style="padding: 13px 16px; font-size: 12px; color: #475569; white-space: nowrap;">' + window.escapeHtml(item.date || '-') + '</td>';
-        html += '  <td style="padding: 13px 16px; font-size: 13px; font-weight: 700; color: var(--text-dark);">' + window.escapeHtml(item.customer || 'Pelanggan Umum') + '</td>';
-        html += '  <td style="padding: 13px 16px; font-size: 12.5px; color: #334155; max-width: 220px; word-break: break-word;">' + itemsRinci + '</td>';
-        html += '  <td style="padding: 13px 16px; font-size: 13.5px; font-weight: 800; text-align: right; color: var(--violet-main);">' + window.formatAppCurrency(item.price) + '</td>';
-        html += '  <td style="padding: 13px 16px; text-align: center;"><span class="trx-method-pill ' + metodeClass + '">' + metodeIcon + ' ' + window.escapeHtml(metode) + '</span></td>';
-        html += '  <td style="padding: 13px 16px; text-align: center;">' + statusBadgeHtml + '</td>';
-        html += '  <td style="padding: 13px 16px; font-size: 12px; color: var(--text-muted);">' + window.escapeHtml(item.kasir || 'Kasir') + '</td>';
-        html += '  <td style="padding: 13px 16px; text-align: center; white-space: nowrap;">';
+        html += '  <td style="padding: 10px 12px; font-size: 12px;"><b>' + window.escapeHtml(item.orderNum || item.id) + '</b><br><small style="color:var(--text-muted); font-family:monospace; font-size:10px;">' + window.escapeHtml(item.id) + '</small></td>';
+        html += '  <td style="padding: 10px 12px; font-size: 11.5px; color: #475569; white-space: nowrap;">' + window.escapeHtml(item.date || '-') + '</td>';
+        html += '  <td style="padding: 10px 12px; font-size: 12px; font-weight: 700; color: var(--text-dark);">' + window.escapeHtml(item.customer || 'Pelanggan Umum') + '</td>';
+        html += '  <td style="padding: 10px 12px; font-size: 11.5px; color: #334155; max-width: 200px; word-break: break-word;">' + itemsRinci + '</td>';
+        html += '  <td style="padding: 10px 12px; font-size: 12.5px; font-weight: 800; text-align: right; color: var(--violet-main); white-space: nowrap;">' + window.formatAppCurrency(item.price) + '</td>';
+        html += '  <td style="padding: 10px 12px; text-align: center; white-space: nowrap;"><span class="trx-method-pill ' + metodeClass + '">' + metodeIcon + ' ' + window.escapeHtml(metode) + '</span></td>';
+        html += '  <td style="padding: 10px 12px; text-align: center; white-space: nowrap;">' + statusBadgeHtml + '</td>';
+        html += '  <td style="padding: 10px 12px; font-size: 11.5px; color: var(--text-muted); white-space: nowrap;">' + window.escapeHtml(item.kasir || 'Kasir') + '</td>';
+        html += '  <td class="sticky-action-col" style="padding: 8px 10px; text-align: center; white-space: nowrap;">';
         html += '    <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px; margin-right: 4px;" onclick="window.openPreviewStruk(\'' + window.escapeHtml(item.id) + '\')" title="Cetak / Preview Struk Nota"><svg style="width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg> Struk</button>';
         html += '    <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="window.detailTransaksi(\'' + window.escapeHtml(item.id) + '\')" title="Rincian & Aksi Transaksi">&middot;&middot;&middot;</button>';
         html += '  </td>';

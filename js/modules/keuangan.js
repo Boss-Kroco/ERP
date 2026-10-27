@@ -177,7 +177,7 @@ function renderKeuanganTable(items) {
             + '<td style="text-align: right;">' + nominalKeluarHtml + '</td>'
             + '<td style="text-align: right; font-weight: 800; color: var(--violet-main);">' + window.formatAppCurrency(k.saldoBerjalan || 0) + '</td>'
             + '<td><small style="font-weight: 600; color: var(--text-main);">' + escapeHtml(k.dicatatOleh || '-') + '</small></td>'
-            + '<td style="text-align: center; white-space: nowrap;">'
+            + '<td class="sticky-action-col" style="text-align: center; white-space: nowrap;">'
             + '<button class="btn-pill-action btn-pill-secondary" style="padding: 2px 8px;" onclick="openModalEditKas(\'' + escapeHtml(k.kasId) + '\')" title="Edit Transaksi Kas">'
             + '<svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Edit'
             + '</button>'

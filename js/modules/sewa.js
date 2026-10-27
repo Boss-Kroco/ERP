@@ -334,6 +334,8 @@ window.prosesSewa = function() {
             customer: penyewa,
             phone: 'Penyewa',
             category: 'Sewa Alat',
+            isSewa: true,
+            durasi: durasi,
             price: totalBayar,
             totalGross: rawSubtotalTotal,
             diskon: totalHemat,
@@ -377,7 +379,8 @@ window.prosesSewa = function() {
         itemDiskonTotal: itemDiskonTotal,
         notaDiskonNominal: notaDiskonNominal,
         totalDiskon: totalHemat,
-        total: totalBayar
+        total: totalBayar,
+        trx: window.orderTransactions && window.orderTransactions[0] ? window.orderTransactions[0] : null
     };
 
     if(window.showToast) window.showToast('Transaksi Sewa berhasil diproses untuk ' + penyewa + ' selama ' + durasi + ' hari!', 'success');
@@ -393,84 +396,187 @@ window.prosesSewa = function() {
     if(typeof window.addMockAuditLog === 'function') {
         window.addMockAuditLog('Sewa Alat', 'Transaksi Sewa Baru: ' + penyewa + (totalHemat > 0 ? ' [Diskon: ' + window.formatAppCurrency(totalHemat) + ']' : ''));
     }
+
+    // Tampilkan struk otomatis (seperti modal receipt struk resmi)
+    if (typeof window.openPreviewStruk === 'function' && window.lastSewa && window.lastSewa.trx) {
+        window.openPreviewStruk(window.lastSewa.trx);
+    }
+};
+
+window.getOrBuildCurrentSewaTrx = function() {
+    if (window.lastSewa && window.lastSewa.trx) {
+        return window.lastSewa.trx;
+    }
+    if (window.lastSewa) {
+        var ls = window.lastSewa;
+        return {
+            id: ls.id || ('SEWA-' + Date.now()),
+            orderNum: ls.orderNum || ('S' + Math.floor(600000 + Math.random() * 90000)),
+            customer: ls.penyewa || 'Pelanggan Umum',
+            phone: 'Penyewa',
+            category: 'Sewa Alat',
+            isSewa: true,
+            durasi: ls.durasi || 1,
+            price: ls.total || 0,
+            totalGross: ls.grossTotal || (ls.total + (ls.totalDiskon || 0)),
+            diskon: ls.totalDiskon || 0,
+            diskonItem: ls.itemDiskonTotal || 0,
+            diskonNota: ls.notaDiskonNominal || 0,
+            totalHemat: ls.totalDiskon || 0,
+            date: new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}),
+            payment: 'Tunai',
+            status: 'delivered',
+            items: (ls.items || []).map(function(it) {
+                var dVal = parseFloat(it.diskon) || 0;
+                var rawLine = (it.hargaSewa || 0) * (it.qty || 1) * (ls.durasi || 1);
+                var itDisc = typeof it.diskonNominal === 'number' ? it.diskonNominal : (it.diskonType === 'percent' ? Math.round(rawLine * Math.min(100, dVal) / 100) : Math.min(rawLine, dVal * (it.qty || 1) * (ls.durasi || 1)));
+                return {
+                    name: (it.nama || it.name || 'Alat') + ' (' + (ls.durasi || 1) + ' Hari)',
+                    price: it.hargaSewa || 0,
+                    qty: it.qty || 1,
+                    subtotal: Math.max(0, rawLine - itDisc),
+                    diskonNominal: itDisc,
+                    diskonType: it.diskonType || 'nominal',
+                    diskonValue: dVal
+                };
+            })
+        };
+    }
+    if (window.keranjangSewa && window.keranjangSewa.length > 0) {
+        var penyewa = (document.getElementById('inpPenyewaSewa') ? document.getElementById('inpPenyewaSewa').value : '').trim() || 'Pelanggan Umum';
+        var durasi = Math.max(1, parseInt(document.getElementById('inpDurasiSewa') ? document.getElementById('inpDurasiSewa').value : 1) || 1);
+        var grossTotal = 0;
+        var itemDiskonTotal = 0;
+        var items = window.keranjangSewa.map(function(it) {
+            var dVal = parseFloat(it.diskon) || 0;
+            var rawLine = (it.hargaSewa || 0) * (it.qty || 1) * durasi;
+            var itDisc = typeof it.diskonNominal === 'number' ? it.diskonNominal : (it.diskonType === 'percent' ? Math.round(rawLine * Math.min(100, dVal) / 100) : Math.min(rawLine, dVal * (it.qty || 1) * durasi));
+            grossTotal += rawLine;
+            itemDiskonTotal += itDisc;
+            return {
+                name: (it.nama || it.name || 'Alat') + ' (' + durasi + ' Hari)',
+                price: it.hargaSewa || 0,
+                qty: it.qty || 1,
+                subtotal: Math.max(0, rawLine - itDisc),
+                diskonNominal: itDisc,
+                diskonType: it.diskonType || 'nominal',
+                diskonValue: dVal
+            };
+        });
+
+        var elDisc = document.getElementById('sewaDiskon');
+        var elDiscType = document.getElementById('sewaDiskonType');
+        var discVal = elDisc ? (parseFloat(elDisc.value) || 0) : 0;
+        var discType = elDiscType ? elDiscType.value : 'nominal';
+        var subAfter = Math.max(0, grossTotal - itemDiskonTotal);
+        var notaDisc = discType === 'persen' ? Math.round(subAfter * (Math.min(100, discVal) / 100)) : Math.min(subAfter, (window.fromAppCurrency ? window.fromAppCurrency(discVal) : discVal));
+        notaDisc = Math.min(subAfter, notaDisc);
+        var totalH = itemDiskonTotal + notaDisc;
+        var tot = Math.max(0, subAfter - notaDisc);
+
+        return {
+            id: 'SEWA-' + Date.now(),
+            orderNum: 'S' + Math.floor(600000 + Math.random() * 90000),
+            customer: penyewa,
+            phone: 'Penyewa',
+            category: 'Sewa Alat',
+            isSewa: true,
+            durasi: durasi,
+            price: tot,
+            totalGross: grossTotal,
+            diskon: totalH,
+            diskonItem: itemDiskonTotal,
+            diskonNota: notaDisc,
+            totalHemat: totalH,
+            date: new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}),
+            payment: 'Tunai',
+            status: 'delivered',
+            items: items
+        };
+    }
+    return null;
 };
 
 window.cetakStrukSewaCurrent = function() {
-    if (window.lastSewa) {
-        window.cetakStrukSewa(window.lastSewa.penyewa, window.lastSewa.durasi, window.lastSewa.items, window.lastSewa);
-    } else if (window.keranjangSewa && window.keranjangSewa.length > 0) {
-        var penyewa = (document.getElementById('inpPenyewaSewa') ? document.getElementById('inpPenyewaSewa').value : '').trim() || 'Pelanggan Umum';
-        var durasi = parseInt(document.getElementById('inpDurasiSewa') ? document.getElementById('inpDurasiSewa').value : 1) || 1;
-        var calc = window.hitungTotalSewa();
-        window.cetakStrukSewa(penyewa, durasi, window.keranjangSewa, calc);
-    } else {
+    var trx = window.getOrBuildCurrentSewaTrx();
+    if (!trx) {
         if(window.showToast) window.showToast('Belum ada transaksi sewa yang diproses atau keranjang masih kosong.', 'warning');
+        return;
+    }
+    if (typeof window.openPreviewStruk === 'function') {
+        window.openPreviewStruk(trx);
+    } else {
+        window.cetakStrukSewa(trx.customer, trx.durasi, window.lastSewa ? window.lastSewa.items : window.keranjangSewa, trx);
     }
 };
 
-window.kirimWaSewa = function() {
-    var ls = window.lastSewa;
-    if (!ls) {
-        if (window.keranjangSewa && window.keranjangSewa.length > 0) {
-            var penyewa = document.getElementById('inpPenyewaSewa').value || 'Pelanggan Umum';
-            var durasi = Math.max(1, parseInt(document.getElementById('inpDurasiSewa').value) || 1);
-            var grossTotal = 0;
-            var itemDiskonTotal = 0;
-            window.keranjangSewa.forEach(function(i) {
-                grossTotal += (i.hargaSewa * i.qty * durasi);
-                itemDiskonTotal += (parseFloat(i.diskonNominal) || 0);
-            });
-            var elDisc = document.getElementById('sewaDiskon');
-            var elDiscType = document.getElementById('sewaDiskonType');
-            var discVal = elDisc ? (parseFloat(elDisc.value) || 0) : 0;
-            var discType = elDiscType ? elDiscType.value : 'nominal';
-            var subAfter = Math.max(0, grossTotal - itemDiskonTotal);
-            var notaDisc = discType === 'persen' ? Math.round(subAfter * (Math.min(100, discVal) / 100)) : Math.min(subAfter, discVal);
-            var totalH = itemDiskonTotal + notaDisc;
-            var tot = Math.max(0, subAfter - notaDisc);
-            ls = {
-                penyewa: penyewa,
-                durasi: durasi,
-                items: window.keranjangSewa,
-                grossTotal: grossTotal,
-                itemDiskonTotal: itemDiskonTotal,
-                notaDiskonNominal: notaDisc,
-                totalDiskon: totalH,
-                total: tot
-            };
-        } else {
-            if(window.showToast) window.showToast('Belum ada transaksi sewa yang diproses.', 'warning');
-            return;
-        }
+window.salinTeksSewaCurrent = function() {
+    var trx = window.getOrBuildCurrentSewaTrx();
+    if (!trx) {
+        if(window.showToast) window.showToast('Belum ada transaksi sewa yang diproses atau keranjang masih kosong.', 'warning');
+        return;
     }
-    
-    var waText = "Halo " + ls.penyewa + ", berikut adalah nota sewa alat Anda di MAFAZA GROUP:\n\n";
-    waText += "Durasi: " + ls.durasi + " Hari\n\n";
-    ls.items.forEach(function(item) {
-        var rawLine = item.hargaSewa * item.qty * ls.durasi;
-        var itDisc = parseFloat(item.diskonNominal) || 0;
-        var itSub = Math.max(0, rawLine - itDisc);
-        waText += "• " + item.nama + " (" + item.qty + "x) : Rp " + (itSub).toLocaleString('id-ID');
-        if (itDisc > 0) {
-            waText += " (Hemat: -Rp " + itDisc.toLocaleString('id-ID') + ")";
-        }
-        waText += "\n";
-    });
-    
-    var totalDiskon = parseFloat(ls.totalDiskon) || 0;
-    if (totalDiskon > 0) {
-        var gross = parseFloat(ls.grossTotal) || (ls.total + totalDiskon);
-        waText += "\nSubtotal Normal: Rp " + gross.toLocaleString('id-ID');
-        waText += "\nTotal Diskon: -Rp " + totalDiskon.toLocaleString('id-ID');
-        waText += "\nTOTAL BAYAR: Rp " + ls.total.toLocaleString('id-ID');
-        waText += "\n\n🎉 ANDA HEMAT: Rp " + totalDiskon.toLocaleString('id-ID') + " 🎉";
+    window._currentReceiptTrx = trx;
+    if (typeof window.copyStrukText === 'function') {
+        window.copyStrukText();
     } else {
-        waText += "\nTotal: Rp " + ls.total.toLocaleString('id-ID');
+        if(window.showToast) window.showToast('Fitur salin teks struk belum siap.', 'error');
     }
-    waText += "\n\nTerima Kasih Atas Kepercayaan Anda!";
-    
-    var waUrl = "https://api.whatsapp.com/send?text=" + encodeURIComponent(waText);
-    window.open(waUrl, '_blank');
+};
+
+window.unduhPdfSewaCurrent = function() {
+    var trx = window.getOrBuildCurrentSewaTrx();
+    if (!trx) {
+        if(window.showToast) window.showToast('Belum ada transaksi sewa yang diproses atau keranjang masih kosong.', 'warning');
+        return;
+    }
+    window._currentReceiptTrx = trx;
+    if (typeof window.openPreviewStruk === 'function') {
+        window.openPreviewStruk(trx);
+    }
+    setTimeout(function() {
+        if (typeof window.triggerDownloadStrukPdf === 'function') {
+            window.triggerDownloadStrukPdf();
+        }
+    }, 150);
+};
+
+window.unduhGambarSewaCurrent = function() {
+    var trx = window.getOrBuildCurrentSewaTrx();
+    if (!trx) {
+        if(window.showToast) window.showToast('Belum ada transaksi sewa yang diproses atau keranjang masih kosong.', 'warning');
+        return;
+    }
+    window._currentReceiptTrx = trx;
+    if (typeof window.openPreviewStruk === 'function') {
+        window.openPreviewStruk(trx);
+    }
+    setTimeout(function() {
+        if (typeof window.triggerDownloadStrukImage === 'function') {
+            window.triggerDownloadStrukImage();
+        }
+    }, 150);
+};
+
+window.kirimWaSewa = function() {
+    var trx = window.getOrBuildCurrentSewaTrx();
+    if (!trx) {
+        if(window.showToast) window.showToast('Belum ada transaksi sewa yang diproses atau keranjang masih kosong.', 'warning');
+        return;
+    }
+    window._currentReceiptTrx = trx;
+    if (typeof window.shareStrukWhatsApp === 'function') {
+        window.shareStrukWhatsApp();
+    } else {
+        var waText = "🧾 *STRUK RESMI SEWA ALAT - MAFAZA GROUP*\n\n";
+        waText += "Penyewa: " + trx.customer + "\n";
+        waText += "Durasi: " + (trx.durasi || 1) + " Hari\n\n";
+        (trx.items || []).forEach(function(i) {
+            waText += "• " + i.name + " (" + i.qty + "x) : " + (window.formatAppCurrency ? window.formatAppCurrency(i.subtotal) : i.subtotal) + "\n";
+        });
+        waText += "\n*TOTAL: " + (window.formatAppCurrency ? window.formatAppCurrency(trx.price) : trx.price) + "*\n";
+        window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(waText), "_blank");
+    }
 };
 
 window.bukaModalTambahAlat = function() {
@@ -513,6 +619,68 @@ window.hapusAlat = function(id) {
 };
 
 window.cetakStrukSewa = function(penyewa, durasi, items, extraData) {
+    if (typeof window.openPreviewStruk === 'function') {
+        var durasiVal = parseInt(durasi) || 1;
+        var subtotalGross = 0;
+        var totalItemDiskon = 0;
+        var itemsToMap = items || window.keranjangSewa || [];
+        var mappedItems = itemsToMap.map(function(item) {
+            var baseLineTotal = (item.hargaSewa || 0) * (item.qty || 1) * durasiVal;
+            subtotalGross += baseLineTotal;
+            var itemDiskonNominal = 0;
+            if (typeof item.diskonNominal === 'number') {
+                itemDiskonNominal = item.diskonNominal;
+            } else {
+                var dVal = parseFloat(item.diskon) || 0;
+                if (item.diskonType === 'percent') {
+                    itemDiskonNominal = (baseLineTotal * Math.min(dVal, 100)) / 100;
+                } else {
+                    itemDiskonNominal = Math.min(dVal * (item.qty || 1) * durasiVal, baseLineTotal);
+                }
+            }
+            totalItemDiskon += itemDiskonNominal;
+            return {
+                name: (item.nama || item.name || 'Alat') + ' (' + durasiVal + ' Hari)',
+                price: item.hargaSewa || 0,
+                qty: item.qty || 1,
+                subtotal: Math.max(0, baseLineTotal - itemDiskonNominal),
+                diskonNominal: itemDiskonNominal,
+                diskonType: item.diskonType || 'nominal',
+                diskonValue: item.diskon || 0
+            };
+        });
+
+        var diskonNotaNominal = 0;
+        if (extraData && typeof extraData.diskonNotaNominal === 'number') {
+            diskonNotaNominal = extraData.diskonNotaNominal;
+        } else if (extraData && typeof extraData.diskon === 'number') {
+            diskonNotaNominal = Math.max(0, extraData.diskon - totalItemDiskon);
+        }
+        var totalDiskon = (extraData && typeof extraData.totalDiskon === 'number') ? extraData.totalDiskon : (totalItemDiskon + diskonNotaNominal);
+        var totalNet = (extraData && typeof extraData.totalNet === 'number') ? extraData.totalNet : (extraData && typeof extraData.total === 'number' ? extraData.total : Math.max(0, subtotalGross - totalDiskon));
+
+        var trxObj = {
+            id: (extraData && extraData.id) ? extraData.id : ('SEWA-' + Date.now()),
+            orderNum: (extraData && extraData.orderNum) ? extraData.orderNum : ('S' + Math.floor(600000 + Math.random() * 90000)),
+            customer: penyewa || 'Pelanggan Umum',
+            phone: 'Penyewa',
+            category: 'Sewa Alat',
+            isSewa: true,
+            durasi: durasiVal,
+            price: totalNet,
+            totalGross: subtotalGross,
+            diskon: totalDiskon,
+            diskonItem: totalItemDiskon,
+            diskonNota: diskonNotaNominal,
+            totalHemat: totalDiskon,
+            date: new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}),
+            payment: 'Tunai',
+            status: 'delivered',
+            items: mappedItems
+        };
+        window.openPreviewStruk(trxObj);
+        return;
+    }
     var itemsToPrint = items || window.keranjangSewa || [];
     var durasiVal = parseInt(durasi) || 1;
     var subtotalGross = 0;

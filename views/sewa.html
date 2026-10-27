@@ -61,34 +61,50 @@
                 <div style="background: #f8fafc; border: 1px dashed var(--border-strong); border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; font-size: 11px; display: flex; flex-direction: column; gap: 6px;">
                     <div style="display: flex; justify-content: space-between; color: var(--text-muted);">
                         <span>Subtotal (<span id="lblDurasiSewaInfo">1 Hari</span>)</span>
-                        <span id="lblSubtotalSewa" style="font-weight: 700; color: var(--text-main);">Rp 0</span>
+                        <span id="lblSubtotalSewa" style="font-weight: 700; color: var(--text-main);">-</span>
                     </div>
                     <div id="rowDiskonSewa" style="display: flex; justify-content: space-between; color: var(--text-muted);">
                         <span>Diskon</span>
-                        <span id="lblDiskonSewa" style="font-weight: 700; color: var(--coral-pink);">Rp 0</span>
+                        <span id="lblDiskonSewa" style="font-weight: 700; color: var(--coral-pink);">-</span>
                     </div>
                     <!-- Supermarket-style Savings Box -->
                     <div id="boxHematSewa" style="display: none; background: #ecfdf5; border: 1px dashed #10b981; border-radius: 6px; padding: 4px 8px; text-align: center; color: #047857; font-size: 10.5px; font-weight: 800;">
-                        🎉 Hemat Belanja: <span id="lblHematSewa">Rp 0</span>
+                        🎉 Hemat Belanja: <span id="lblHematSewa">-</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: baseline; padding-top: 6px; border-top: 1px solid var(--border-strong); font-size: 12px;">
                         <span style="font-weight: 800; color: var(--text-dark);">TOTAL BAYAR</span>
-                        <span id="lblTotalSewa" style="font-size: 18px; font-weight: 900; color: var(--violet-main); letter-spacing: -0.5px;">Rp 0</span>
+                        <span id="lblTotalSewa" style="font-size: 18px; font-weight: 900; color: var(--violet-main); letter-spacing: -0.5px;">-</span>
                     </div>
                 </div>
                 
-                <button class="btn-pill-action btn-pill-primary" style="width: 100%; padding: 8px 12px; font-size: 12.5px; display: flex; justify-content: center; margin-bottom: 6px;" onclick="if(window.prosesSewa) window.prosesSewa()">
+                <button class="btn-pill-action btn-pill-primary" style="width: 100%; padding: 10px 12px; font-size: 13px; font-weight: 800; display: flex; justify-content: center; align-items: center; gap: 6px; margin-bottom: 8px; border-radius: 10px; background: linear-gradient(135deg, var(--violet-main) 0%, #4f46e5 100%);" onclick="if(window.prosesSewa) window.prosesSewa()">
                     <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    Proses Transaksi
+                    <span>Proses Transaksi Sewa</span>
                 </button>
-                <div style="display: flex; gap: 6px;">
-                    <button class="btn-pill-action btn-pill-secondary" style="flex: 1; padding: 7px 10px; font-size: 11.5px; display: flex; justify-content: center;" onclick="if(window.cetakStrukSewaCurrent) window.cetakStrukSewaCurrent()">
-                        <svg class="svg-icon-sm" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>
-                        Cetak Struk
-                    </button>
-                    <button class="btn-pill-action btn-pill-secondary" style="flex: 1; padding: 7px 10px; font-size: 11.5px; display: flex; justify-content: center; background: #25D366; color: white;" onclick="if(window.kirimWaSewa) window.kirimWaSewa()">
-                        <svg class="svg-icon-sm" style="stroke: white;" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-                        Kirim WA
+                
+                <!-- Receipt Bottom Action Bar (Sesuai Desain Pilihan Unduh, Salin & Cetak) -->
+                <div class="receipt-bottom-actions no-print" style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <button type="button" class="btn-pill-action btn-pill-secondary" style="justify-content: center; background: #ffffff; padding: 10px; font-size: 11.5px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border-radius: 8px;" onclick="if(window.kirimWaSewa) window.kirimWaSewa()">
+                            WA
+                        </button>
+                        <button type="button" class="btn-pill-action btn-pill-secondary" style="justify-content: center; background: #ffffff; padding: 10px; font-size: 11.5px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border-radius: 8px;" onclick="if(window.salinTeksSewaCurrent) window.salinTeksSewaCurrent()">
+                            Salin Teks
+                        </button>
+                        <button type="button" class="btn-pill-action btn-pill-secondary" style="justify-content: center; background: #ffffff; padding: 10px; font-size: 11.5px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.06); color: var(--violet-main); border-radius: 8px;" onclick="if(window.unduhPdfSewaCurrent) window.unduhPdfSewaCurrent()">
+                            Unduh PDF
+                        </button>
+                        <button type="button" class="btn-pill-action btn-pill-secondary" style="justify-content: center; background: #ffffff; padding: 10px; font-size: 11.5px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.06); color: var(--emerald); border-radius: 8px;" onclick="if(window.unduhGambarSewaCurrent) window.unduhGambarSewaCurrent()">
+                            Unduh Gambar
+                        </button>
+                    </div>
+                    <button type="button" class="btn-pill-action btn-pill-primary" style="justify-content: center; padding: 13px; font-size: 13.5px; font-weight: 800; border-radius: 10px; box-shadow: 0 10px 25px -5px rgba(108,71,255,0.4);" onclick="if(window.cetakStrukSewaCurrent) window.cetakStrukSewaCurrent()">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                            <polyline points="6 9 6 2 18 2 18 9"/>
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                            <rect width="12" height="8" x="6" y="14"/>
+                        </svg>
+                        Cetak Struk (Printer Thermal)
                     </button>
                 </div>
             </div>
