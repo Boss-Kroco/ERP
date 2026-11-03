@@ -5879,8 +5879,8 @@ td.sticky-action-col button svg,
 
     #posProductGrid,
     #gridAlatSewa {
-        max-height: 440px !important;
-        overflow-y: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
     }
 
     .mobile-sticky-cart-bar {
