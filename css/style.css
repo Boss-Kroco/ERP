@@ -55,7 +55,7 @@
     --text-main: #0f172a;
     --text-secondary: #334155;
     --text-muted: #64748b;
-    --text-subtle: #94a3b8;
+    --text-subtle: #64748b;
     
     --border-subtle: #f1f5f9;
     --border-strong: #e2e8f0;
@@ -79,6 +79,12 @@
 }
 
 /* Hide number input spin buttons globally */
+
+/* Accessible keyboard focus indicator */
+:focus-visible {
+    outline: 2px solid var(--violet-main);
+    outline-offset: 2px;
+}
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
@@ -257,6 +263,15 @@ input[type=number] {
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14) !important;
         }
 
+        
+        .login-input:focus-visible,
+        .login-field-group input:focus-visible {
+            background: #ffffff !important;
+            border-color: var(--violet-main) !important;
+            outline: 2px solid var(--violet-main) !important;
+            outline-offset: 1px !important;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2) !important;
+        }
         .login-input-wrap:focus-within .login-input-icon {
             color: var(--violet-main);
         }
@@ -1033,6 +1048,15 @@ input[type=number] {
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
         }
 
+        
+        .header-search-input:focus-visible {
+            width: 155px;
+            background: #ffffff;
+            border-color: var(--violet-main);
+            outline: 2px solid var(--violet-main);
+            outline-offset: 1px;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
         .header-search-icon {
             position: absolute;
             left: 12px;
@@ -1816,6 +1840,14 @@ input[type=number] {
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
 }
 
+        
+        .search-filter-input:focus-visible {
+            border-color: var(--violet-main);
+            background: #ffffff;
+            outline: 2px solid var(--violet-main);
+            outline-offset: 1px;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
         .table-search-icon {
             position: absolute;
             left: 8px;
@@ -1924,6 +1956,11 @@ input[type=number] {
             text-align-last: center;
         }
 
+        
+        .table-status-select:focus-visible {
+            outline: 2px solid var(--violet-main);
+            outline-offset: 1px;
+        }
         .table-status-select.delivered {
             background: #d1fae5;
             color: #065f46;
@@ -2831,7 +2868,7 @@ input[type=number] {
         }
 
         .settings-chevron {
-            color: #94a3b8;
+            color: var(--text-subtle);
             display: flex;
             align-items: center;
             transition: transform 0.2s, color 0.2s;
@@ -3121,7 +3158,7 @@ input[type=number] {
         .about-modules-title {
             font-size: 10.5px;
             font-weight: 800;
-            color: #94a3b8;
+            color: var(--text-subtle);
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -3403,7 +3440,7 @@ input[type=number] {
         }
 
         .faq-chevron {
-            color: #94a3b8;
+            color: var(--text-subtle);
             transition: transform 0.25s ease, color 0.2s ease;
             flex-shrink: 0;
         }
@@ -3660,6 +3697,13 @@ input[type=number] {
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
         }
 
+        
+        .support-input:focus-visible {
+            border-color: #818cf8;
+            outline: 2px solid #818cf8;
+            outline-offset: 1px;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
+        }
         .support-input::placeholder {
             color: rgba(203, 213, 225, 0.45);
         }
@@ -3905,7 +3949,7 @@ input[type=number] {
             text-align: center;
             font-size: 10.5px;
             font-weight: 800;
-            color: #94a3b8;
+            color: var(--text-subtle);
             margin-bottom: 8px;
             letter-spacing: 0.5px;
         }
@@ -4313,6 +4357,12 @@ input[type=number] {
             line-height: 1.4;
         }
 
+        
+        .photo2-quick-note-textarea:focus-visible {
+            outline: 2px solid #818cf8;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
         .photo2-quick-note-textarea::placeholder {
             color: rgba(203, 213, 225, 0.5);
         }
@@ -4434,7 +4484,7 @@ input[type=number] {
 
         .photo2-activity-item.completed .photo2-item-title {
             text-decoration: line-through;
-            color: #94a3b8;
+            color: var(--text-subtle);
         }
 
         .photo2-item-left {
@@ -4600,7 +4650,7 @@ input[type=number] {
         /* Completed Event State in Calendar */
         .cal-event-pill.completed {
             background: #f1f5f9 !important;
-            color: #94a3b8 !important;
+            color: var(--text-subtle) !important;
             border-color: #e2e8f0 !important;
             border-left: 3px solid #cbd5e1 !important;
             opacity: 0.75;
@@ -4804,6 +4854,11 @@ input[type=number] {
             padding: 6px 10px;
         }
 
+        
+        .agenda-search-input-box:focus-within {
+            border-color: var(--violet-main);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
         .agenda-search-input-box input {
             border: none;
             background: transparent;
@@ -4825,6 +4880,13 @@ input[type=number] {
             cursor: pointer;
         }
 
+        
+        .agenda-cat-select:focus-visible {
+            border-color: var(--violet-main);
+            outline: 2px solid var(--violet-main);
+            outline-offset: 1px;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+        }
         /* Agenda Cards Container & Item */
         .agenda-cards-container {
             display: flex;
@@ -4877,7 +4939,7 @@ input[type=number] {
 
         .agenda-item-card.completed .agenda-title-text {
             text-decoration: line-through;
-            color: #94a3b8;
+            color: var(--text-subtle);
         }
 
         .agenda-card-body-row {
@@ -5003,7 +5065,7 @@ input[type=number] {
         .agenda-desc-box-icon {
             width: 12.5px;
             height: 12.5px;
-            color: #94a3b8;
+            color: var(--text-subtle);
             stroke: currentColor;
             flex-shrink: 0;
             margin-top: 2px;
@@ -5037,7 +5099,7 @@ input[type=number] {
         .agenda-timeline-item svg {
             width: 11px;
             height: 11px;
-            stroke: #94a3b8;
+            stroke: var(--text-subtle);
             flex-shrink: 0;
         }
 
@@ -5066,7 +5128,7 @@ input[type=number] {
             border: 1px solid var(--border-strong);
             background: #ffffff;
             cursor: pointer;
-            color: #94a3b8;
+            color: var(--text-subtle);
             transition: all 0.15s ease;
         }
 
@@ -5109,7 +5171,7 @@ input[type=number] {
         .agenda-empty-icon-box svg {
             width: 26px;
             height: 26px;
-            stroke: #94a3b8;
+            stroke: var(--text-subtle);
         }
 
         .agenda-empty-title {
@@ -5197,7 +5259,7 @@ input[type=number] {
 
         .agenda-focus-item.completed .agenda-focus-item-title {
             text-decoration: line-through;
-            color: #94a3b8;
+            color: var(--text-subtle);
         }
 
         .agenda-custom-checkbox.mini {

@@ -559,4 +559,64 @@ window.addEventListener('load', function () {
     setTimeout(window.checkSidebarScrollButtons, 300);
 });
 
+// ============================================================
+// MODAL ACCESSIBILITY: CLOSE ACTIVE MODALS ON ESCAPE KEY
+// ============================================================
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' || e.key === 'Esc') {
+        // 1. Modal Setting Header Struk (z-index highest)
+        var modalSettingHeader = document.getElementById('modalSettingHeaderStruk');
+        if (modalSettingHeader && (modalSettingHeader.style.display === 'flex' || modalSettingHeader.style.display === 'block')) {
+            if (typeof closeSettingHeaderStruk === 'function') {
+                closeSettingHeaderStruk();
+            } else {
+                modalSettingHeader.style.display = 'none';
+            }
+            e.preventDefault();
+            return;
+        }
+
+        // 2. Modal Preview Struk
+        var modalPreview = document.getElementById('modalPreviewStruk');
+        if (modalPreview && (modalPreview.style.display === 'flex' || modalPreview.style.display === 'block')) {
+            if (typeof closePreviewStrukModal === 'function') {
+                closePreviewStrukModal();
+            } else {
+                modalPreview.style.display = 'none';
+            }
+            e.preventDefault();
+            return;
+        }
+
+        // 3. Modals with class .active or inline display flex/block
+        var activeModals = Array.from(document.querySelectorAll('.modal-overlay-custom, .modal-overlay'));
+        for (var i = activeModals.length - 1; i >= 0; i--) {
+            var m = activeModals[i];
+            var isVisible = m.classList.contains('active') ||
+                            m.style.display === 'flex' ||
+                            m.style.display === 'block';
+            if (isVisible) {
+                var closeBtn = m.querySelector('button[onclick*="close"], button[onclick*="Close"]');
+                if (closeBtn) {
+                    closeBtn.click();
+                } else {
+                    m.classList.remove('active');
+                    m.style.display = 'none';
+                }
+                e.preventDefault();
+                return;
+            }
+        }
+
+        // 4. Mobile Drawer
+        var drawer = document.getElementById('mobileDrawer');
+        var drawerOverlay = document.getElementById('drawerOverlay');
+        if ((drawer && drawer.classList.contains('active')) || (drawerOverlay && drawerOverlay.classList.contains('active'))) {
+            if (typeof closeMobileDrawer === 'function') closeMobileDrawer();
+            e.preventDefault();
+            return;
+        }
+    }
+});
+
 

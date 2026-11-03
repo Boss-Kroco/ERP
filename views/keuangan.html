@@ -5,7 +5,10 @@
         <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 12px; padding: 10px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
             <div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
                 <span>SALDO KAS OPERASIONAL</span>
-                <span id="badgeKeuanganKasKritis" style="display: none; background: #fee2e2; color: #dc2626; font-size: 8.5px; font-weight: 800; padding: 2px 5px; border-radius: 4px; border: 1px solid #fca5a5;">⚠️ KRITIS</span>
+                <span id="badgeKeuanganKasKritis" style="display: none; background: #fee2e2; color: #dc2626; font-size: 8.5px; font-weight: 800; padding: 2px 5px; border-radius: 4px; border: 1px solid #fca5a5; align-items: center; gap: 3px;">
+                    <svg viewBox="0 0 24 24" style="width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    <span>KRITIS</span>
+                </span>
             </div>
             <div style="font-size: 18px; font-weight: 900; color: var(--violet-main); margin-top: 4px;" id="keuanganSaldoKas">Rp 0</div>
             <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Limit Kritis: <b id="keuanganLimitKas">Rp 2.000.000</b></div>
@@ -50,7 +53,10 @@
 
     <!-- Alert Box Kas Kritis -->
     <div id="alertKasKritisBox" style="display: none; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; color: #9f1239; font-size: 11px; line-height: 1.4;">
-        <b>⚠️ Peringatan:</b> Saldo kas operasional saat ini berada di bawah batas minimum yang ditetapkan di Pengaturan. Harap batasi pengeluaran kas atau lakukan penyetoran modal operasional.
+        <span style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700;">
+            <svg viewBox="0 0 24 24" style="width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Peringatan:
+        </span> Saldo kas operasional saat ini berada di bawah batas minimum yang ditetapkan di Pengaturan. Harap batasi pengeluaran kas atau lakukan penyetoran modal operasional.
     </div>
 
     <!-- 2. Form Pencatatan Kas Baru (Collapsible Card) -->
@@ -74,10 +80,10 @@
                 <div>
                     <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Tipe Transaksi</label>
                     <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="kasTipe">
-                        <option value="Keluar">🔴 Kas Keluar (Biaya / Beban / Pengeluaran)</option>
-                        <option value="Masuk">🟢 Kas Masuk (Pendapatan Lain / Setoran Modal)</option>
-                        <option value="Tabungan Masuk">🔵 Kas Keluar ➡ Masuk ke Tabungan (Nabung)</option>
-                        <option value="Tabungan Keluar">🟠 Tabungan Keluar ➡ Masuk ke Kas (Tarik)</option>
+                        <option value="Keluar">Kas Keluar (Biaya / Beban / Pengeluaran)</option>
+                        <option value="Masuk">Kas Masuk (Pendapatan Lain / Setoran Modal)</option>
+                        <option value="Tabungan Masuk">Kas Keluar &rarr; Masuk ke Tabungan (Nabung)</option>
+                        <option value="Tabungan Keluar">Tabungan Keluar &rarr; Masuk ke Kas (Tarik)</option>
                     </select>
                 </div>
                 <div>
@@ -138,8 +144,8 @@
 
                 <select class="search-filter-input" id="filterKasTipe" onchange="filterKeuanganKas()" style="min-width: 130px;">
                     <option value="all">Semua Tipe Kas</option>
-                    <option value="Masuk">🟢 Kas Masuk Saja</option>
-                    <option value="Keluar">🔴 Kas Keluar Saja</option>
+                    <option value="Masuk">Kas Masuk Saja</option>
+                    <option value="Keluar">Kas Keluar Saja</option>
                 </select>
 
                 <select class="search-filter-input" id="filterKasPeriode" onchange="filterKeuanganKas()" style="min-width: 130px;">
