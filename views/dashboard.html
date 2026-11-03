@@ -50,7 +50,7 @@
 
                         <!-- 2. Dual Stacked Cards (Exact Heights: 72px & 152px) -->
                         <div class="middle-stacked-column">
-                            <div class="card-kas-deep" onclick="navigatePage('keuangan')">
+                            <button type="button" class="card-kas-deep" onclick="navigatePage('keuangan')">
                                 <div class="kas-header-row">
                                     <div class="kas-coin-icon">
                                         <svg class="svg-icon-sm" viewBox="0 0 24 24">
@@ -66,9 +66,9 @@
                                     </span>
                                 </div>
                                 <div class="kas-card-val" id="statHeroKas">Rp 15.218.000</div>
-                            </div>
+                            </button>
 
-                            <div class="card-beban-coral" onclick="navigatePage('keuangan')">
+                            <button type="button" class="card-beban-coral" onclick="navigatePage('keuangan')">
                                 <div class="beban-top-row">
                                     <div class="beban-icon-box">
                                         <svg class="svg-icon-sm" viewBox="0 0 24 24">
@@ -88,7 +88,7 @@
                                         <path d="m12 5 7 7-7 7" />
                                     </svg>
                                 </div>
-                            </div>
+                            </button>
                         </div>
 
                         <!-- 3. Tim & Rekanan (236px Height) -->
@@ -103,14 +103,12 @@
                                     </svg>
                                     Tim & Rekanan
                                 </span>
-                                <span class="widget-action-link" onclick="refreshTimRekanan()">Refresh</span>
+                                <button type="button" class="widget-action-link" onclick="refreshTimRekanan()">Refresh</button>
                             </div>
 
                             <div class="segmented-pill-tabs">
-                                <div class="seg-pill-item active" id="tabAktivitas" onclick="switchTimTab('aktivitas')">
-                                    Aktivitas</div>
-                                <div class="seg-pill-item" id="tabMitra" onclick="switchTimTab('mitra')">Mitra Toko
-                                </div>
+                                <button type="button" class="seg-pill-item active" id="tabAktivitas" onclick="switchTimTab('aktivitas')">Aktivitas</button>
+                                <button type="button" class="seg-pill-item" id="tabMitra" onclick="switchTimTab('mitra')">Mitra Toko</button>
                             </div>
 
                             <ul class="activity-user-list" id="timRekananList">
@@ -162,7 +160,7 @@
                     <!-- Bottom Row: 4 Aligned Cards (Progress + Live Map) -->
                     <div class="bottom-progress-grid">
 
-                        <div class="progress-metric-card" onclick="navigatePage('produksi')" style="cursor: pointer;">
+                        <button type="button" class="progress-metric-card" onclick="navigatePage('produksi')">
                             <div>
                                 <div class="prog-top-row">
                                     <div class="prog-icon-sq" style="color: var(--violet-main);">
@@ -193,9 +191,9 @@
                                 <span class="prog-main-num" id="lblStokGudang">1.145 Unit</span>
                                 <span class="prog-status-pill green">Aman</span>
                             </div>
-                        </div>
+                        </button>
 
-                        <div class="progress-metric-card" onclick="navigatePage('pos')" style="cursor: pointer;">
+                        <button type="button" class="progress-metric-card" onclick="navigatePage('pos')">
                             <div>
                                 <div class="prog-top-row">
                                     <div class="prog-icon-sq" style="color: var(--emerald);">
@@ -226,9 +224,9 @@
                                 <span class="prog-main-num" id="lblStokEtalase">230 Unit</span>
                                 <span class="prog-status-pill violet">Siap Jual</span>
                             </div>
-                        </div>
+                        </button>
 
-                        <div class="progress-metric-card" onclick="openDueAlertModal()" style="cursor: pointer;">
+                        <button type="button" class="progress-metric-card" onclick="openDueAlertModal()">
                             <div>
                                 <div class="prog-top-row">
                                     <div class="prog-icon-sq" style="color: var(--coral-pink);">
@@ -258,7 +256,7 @@
                                 <span class="prog-main-num" id="lblTotalPiutang">0</span>
                                 <span class="prog-status-pill coral">Tempo H-3</span>
                             </div>
-                        </div>
+                        </button>
 
                         <div class="live-map-metric-card" style="padding-bottom: 6px; padding-top: 8px;">
                             <div class="panel-widget-header" style="margin-bottom: 6px;">
@@ -266,11 +264,11 @@
                                     <i class="ph-duotone ph-package" style="color: var(--violet-main); font-size: 1.1em; margin-right: 4px;"></i>
                                     Distribusi Stok Aktif
                                 </span>
-                                <span class="widget-action-link" onclick="navigatePage('multilokasi')">Transfer</span>
+                                <button type="button" class="widget-action-link" onclick="navigatePage('multilokasi')">Transfer</button>
                             </div>
 
                             <div style="display: flex; flex-direction: column; gap: 4px;">
-                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--bg-subtle); border: 1px solid var(--border-soft); border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--violet-main)'" onmouseout="this.style.borderColor='var(--border-soft)'" onclick="navigatePage('multilokasi')">
+                                <button type="button" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--bg-subtle); border: 1px solid var(--border-soft); border-radius: 8px; cursor: pointer; transition: all 0.2s; width: 100%; font-family: inherit; text-align: left;" onmouseover="this.style.borderColor='var(--violet-main)'" onmouseout="this.style.borderColor='var(--border-soft)'" onclick="navigatePage('multilokasi')">
                                     <div style="display: flex; align-items: center; gap: 8px;">
                                         <div style="width: 26px; height: 26px; border-radius: 6px; background: rgba(79, 70, 229, 0.1); color: var(--violet-main); display: flex; align-items: center; justify-content: center;">
                                             <i class="ph-duotone ph-stack" style="font-size: 1.1em;"></i>
@@ -283,9 +281,9 @@
                                     <div style="text-align: right;">
                                         <div style="font-size: 13px; font-weight: 800; color: var(--text-main);"><span id="lblStokGudang">1.145</span> <span style="font-size: 9px; color: var(--text-muted); font-weight: 700;">Unit</span></div>
                                     </div>
-                                </div>
+                                </button>
 
-                                <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--bg-subtle); border: 1px solid var(--border-soft); border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#f97316'" onmouseout="this.style.borderColor='var(--border-soft)'" onclick="navigatePage('multilokasi')">
+                                <button type="button" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: var(--bg-subtle); border: 1px solid var(--border-soft); border-radius: 8px; cursor: pointer; transition: all 0.2s; width: 100%; font-family: inherit; text-align: left;" onmouseover="this.style.borderColor='#f97316'" onmouseout="this.style.borderColor='var(--border-soft)'" onclick="navigatePage('multilokasi')">
                                     <div style="display: flex; align-items: center; gap: 8px;">
                                         <div style="width: 26px; height: 26px; border-radius: 6px; background: rgba(249, 115, 22, 0.1); color: #f97316; display: flex; align-items: center; justify-content: center;">
                                             <i class="ph-duotone ph-storefront" style="font-size: 1.1em;"></i>
@@ -298,7 +296,7 @@
                                     <div style="text-align: right;">
                                         <div style="font-size: 13px; font-weight: 800; color: var(--text-main);"><span id="lblStokEtalase">230</span> <span style="font-size: 9px; color: var(--text-muted); font-weight: 700;">Unit</span></div>
                                     </div>
-                                </div>
+                                </button>
                             </div>
                         </div>
 

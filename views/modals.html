@@ -263,7 +263,7 @@
     <input type="text" class="search-filter-input" style="width: 100%; margin-bottom: 14px;" id="drawerSearchInput" placeholder="Cari menu..." oninput="filterDrawerMenu()">
 
     <div style="display: flex; flex-direction: column; gap: 8px; overflow-y: auto;" id="drawerMenuList">
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('dashboard')">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('dashboard')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <rect width="7" height="7" x="3" y="3" rx="1.5" />
                 <rect width="7" height="7" x="14" y="3" rx="1.5" />
@@ -271,16 +271,16 @@
                 <rect width="7" height="7" x="3" y="14" rx="1.5" />
             </svg>
             Dashboard
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('pos')">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('pos')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
                 <path d="M3 6h18" />
                 <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
             Kasir &amp; POS
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('transaksi')">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('transaksi')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14 2 14 8 20 8" />
@@ -288,8 +288,8 @@
                 <line x1="16" y1="17" x2="8" y2="17" />
             </svg>
             Daftar Transaksi
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('pelanggan')" id="drawerNavPelanggan">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('pelanggan')" id="drawerNavPelanggan" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
@@ -297,29 +297,29 @@
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
             Pelanggan &amp; Mitra
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('sewa')" id="drawerNavSewa">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('sewa')" id="drawerNavSewa" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
             </svg>
             Sewa Alat
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('produk')">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('produk')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
                 <path d="M7 7h.01" />
             </svg>
             Master Produk
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('produksi')">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('produksi')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <polygon points="12 2 2 7 12 12 22 7 12 2" />
                 <polyline points="2 17 12 22 22 17" />
                 <polyline points="2 12 12 17 22 12" />
             </svg>
             Produksi &amp; HPP
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('multilokasi')">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('multilokasi')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M8 3 4 7l4 4" />
                 <path d="M4 7h16" />
@@ -327,24 +327,24 @@
                 <path d="M20 17H4" />
             </svg>
             Transfer Stok
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('opname')">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('opname')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <rect width="8" height="4" x="8" y="2" rx="1" />
                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
                 <path d="m9 14 2 2 4-4" />
             </svg>
             Stock Opname
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('keuangan')">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('keuangan')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <rect width="20" height="12" x="2" y="6" rx="2" />
                 <circle cx="12" cy="12" r="2" />
                 <path d="M6 12h.01M18 12h.01" />
             </svg>
             Kas &amp; Beban
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('tenagakerja')">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('tenagakerja')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
@@ -352,8 +352,8 @@
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
             </svg>
             Upah Kerja
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('agenda')">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('agenda')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <rect width="18" height="18" x="3" y="4" rx="2" />
                 <line x1="16" y1="2" x2="16" y2="6" />
@@ -367,22 +367,22 @@
                 <path d="M16 18h.01" />
             </svg>
             Agenda &amp; Kalender
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('audit')">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('audit')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
                 <path d="m9 12 2 2 4-4" />
             </svg>
             Log Audit
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('profil')">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('profil')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <circle cx="12" cy="8" r="5" />
                 <path d="M20 21a8 8 0 0 0-16 0" />
             </svg>
             Profil Akun
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('pengaturan')">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('pengaturan')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <line x1="4" x2="20" y1="6" y2="6" />
                 <line x1="4" x2="20" y1="12" y2="12" />
@@ -392,15 +392,15 @@
                 <circle cx="10" cy="18" r="2" />
             </svg>
             Pengaturan
-        </div>
-        <div class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('bantuan')">
+        </button>
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('bantuan')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                 <path d="M12 17h.01" />
             </svg>
             Pusat Bantuan
-        </div>
+        </button>
     </div>
 </div>
 

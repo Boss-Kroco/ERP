@@ -255,6 +255,13 @@ window.hitungTotalSewa = function() {
         }
     }
     if(lblTotal) lblTotal.textContent = window.formatAppCurrency(totalBayar);
+    var elSewaMobTotal = document.getElementById('sewaMobileCartTotal');
+    var elSewaMobCount = document.getElementById('sewaMobileCartCount');
+    if (elSewaMobTotal) elSewaMobTotal.textContent = window.formatAppCurrency(totalBayar);
+    if (elSewaMobCount) {
+        var totalSewaQty = (window.cartSewa || []).reduce(function (sum, it) { return sum + (it.qty || 1); }, 0);
+        elSewaMobCount.textContent = totalSewaQty + ' alat';
+    }
 
     return {
         durasi: durasi,

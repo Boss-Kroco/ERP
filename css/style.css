@@ -5763,3 +5763,174 @@ html[lang="ar"] body, html[lang="ar"] div, html[lang="ar"] span, html[lang="ar"]
     font-family: 'Tajawal', 'Plus Jakarta Sans', sans-serif !important;
 }
 
+
+/* ============================================================
+ * BATCH B1: ACCESSIBILITY & MOBILE REFINEMENTS
+ * ============================================================ */
+
+/* 1. Semantic Button Resets (Item 3) */
+button.nav-icon-pill,
+button.sb-bottom-btn,
+button.due-reminder-pill,
+button.widget-action-link,
+button.seg-pill-item,
+button.settings-avatar-circle,
+button.settings-camera-badge {
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+    background: transparent;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+button.card-kas-deep,
+button.card-beban-coral {
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button.progress-metric-card,
+button.settings-menu-card {
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button.widget-action-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--violet-main);
+    cursor: pointer;
+}
+
+button.seg-pill-item {
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 9.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* 2. Minimum 44px Touch Targets via Padding (Item 6) */
+#posKategoriContainer .btn-pill-action,
+.pos-category-pill {
+    min-height: 44px;
+    padding: 10px 18px !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    font-size: 11.5px;
+}
+
+.sticky-action-col button,
+td.sticky-action-col button,
+.custom-order-table td button,
+.data-table td button,
+.agenda-action-btn,
+.table-cell-action-btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 10px 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.sticky-action-col button svg,
+td.sticky-action-col button svg,
+.custom-order-table td button svg,
+.agenda-action-btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+/* 3. POS and Sewa Mobile Single Column Layout (Item 7: 390px & 475px) */
+@media (max-width: 640px) {
+    .pos-main-grid,
+    .sewa-main-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important;
+        overflow: visible !important;
+        padding-bottom: 76px !important;
+        gap: 16px !important;
+    }
+
+    .pos-left-panel,
+    .pos-right-panel {
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    #posProductGrid,
+    #gridAlatSewa {
+        max-height: 440px !important;
+        overflow-y: auto !important;
+    }
+
+    .mobile-sticky-cart-bar {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 56px;
+        background: #ffffff;
+        border-top: 1px solid var(--border-strong);
+        box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
+        padding: 0 16px;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 999;
+        box-sizing: border-box;
+    }
+
+    .cart-bar-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .cart-bar-count {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+
+    .cart-bar-total {
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--violet-main);
+    }
+
+    .cart-bar-btn {
+        min-height: 44px;
+        padding: 0 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        border-radius: 8px;
+    }
+}
+
+@media (min-width: 641px) {
+    .mobile-sticky-cart-bar {
+        display: none !important;
+    }
+}

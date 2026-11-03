@@ -233,6 +233,13 @@ function renderCart() {
     if (elPpnRate) elPpnRate.textContent = pajakRate + '%';
     if (elPpnLbl) elPpnLbl.textContent = window.formatAppCurrency(pajakNominal);
     if (elTotal) elTotal.textContent = window.formatAppCurrency(net);
+    var elMobTotal = document.getElementById('posMobileCartTotal');
+    var elMobCount = document.getElementById('posMobileCartCount');
+    if (elMobTotal) elMobTotal.textContent = window.formatAppCurrency(net);
+    if (elMobCount) {
+        var totalQty = (window.currentCart || []).reduce(function (sum, it) { return sum + (it.qty || 1); }, 0);
+        elMobCount.textContent = totalQty + ' item';
+    }
     
     window.currentPosTotalNet = net;
     var netCurr = window.toAppCurrency ? window.toAppCurrency(net) : net;

@@ -19,7 +19,7 @@
         </div>
 
         <!-- Bagian Kanan: Keranjang Sewa -->
-        <div class="pos-right-panel" style="background: var(--bg-card); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; border: 1px solid var(--border-soft);">
+        <div class="pos-right-panel" id="sewaCartSection" style="background: var(--bg-card); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; border: 1px solid var(--border-soft);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <h3 style="margin: 0; font-size: 13.5px; color: var(--violet-dark); font-weight: 700;">Keranjang Sewa</h3>
                 <span style="font-size: 10px; color: var(--text-muted); font-weight: 600; background: #f8fafc; padding: 2px 7px; border-radius: 6px; border: 1px solid var(--border-soft);">Diskon Item &amp; Nota</span>
@@ -150,5 +150,16 @@
             <div id="printStrukArea" style="display: none;"></div>
         </div>
         
+        <!-- Bar Ringkas Keranjang Sewa Menempel di Bawah (Layar HP 390px / 475px) -->
+        <div id="sewaMobileCartBar" class="mobile-sticky-cart-bar">
+            <div class="cart-bar-info">
+                <span class="cart-bar-count" id="sewaMobileCartCount">0 alat</span>
+                <span class="cart-bar-total" id="sewaMobileCartTotal">Rp 0</span>
+            </div>
+            <button type="button" class="btn-pill-action btn-pill-primary cart-bar-btn" onclick="document.getElementById('sewaCartSection').scrollIntoView({ behavior: 'smooth' })">
+                <span>Lihat Keranjang</span>
+                <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.2;"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+            </button>
+        </div>
     </div>
 </div>
