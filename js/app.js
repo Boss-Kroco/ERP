@@ -560,6 +560,148 @@ window.addEventListener('load', function () {
 });
 
 // ============================================================
+// MODAL ACCESSIBILITY: FOCUS TRACKING & RESTORATION
+// ============================================================
+(function initModalFocusRestoration() {
+    window._modalFocusStack = [];
+    window._lastNonModalTrigger = null;
+
+    // 1. Catat elemen pemicu interaksi non-modal (klik, sentuhan, atau enter/spasi)
+    function recordTrigger(target) {
+        if (!target) return;
+        var el = target.closest ? target.closest('button, a, input, select, textarea, [tabindex], [role="button"]') : target;
+        if (!el) el = target;
+        // Jangan catat jika interaksi terjadi di dalam modal yang sedang aktif
+        if (el.closest && el.closest('.modal-overlay-custom.active, .modal-sheet-card, #drawerPanel.active, [role="dialog"][style*="display: flex"], [role="dialog"][style*="display: block"]')) {
+            return;
+        }
+        window._lastNonModalTrigger = el;
+    }
+
+    document.addEventListener('pointerdown', function (e) {
+        recordTrigger(e.target);
+    }, true);
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+            recordTrigger(e.target);
+        }
+    }, true);
+
+    document.addEventListener('focusin', function (e) {
+        if (e.target && e.target.closest) {
+            var inModal = e.target.closest('.modal-overlay-custom, .modal-overlay, #drawerPanel, #drawerOverlay, [role="dialog"]');
+            if (!inModal) {
+                window._lastNonModalTrigger = e.target;
+            }
+        }
+    }, true);
+
+    // 2. Fungsi deteksi apakah suatu elemen adalah modal atau drawer
+    function isModalElement(el) {
+        if (!el || !el.id) return false;
+        if (el.id.startsWith('modal')) return true;
+        if (el.id === 'drawerPanel' || el.id === 'drawerOverlay' || el.id === 'mobileDrawer') return true;
+        if (el.classList && (el.classList.contains('modal-overlay-custom') || el.classList.contains('modal-overlay'))) return true;
+        return false;
+    }
+
+    // 3. Fungsi cek apakah modal sedang terlihat
+    function isModalVisible(el) {
+        if (!el) return false;
+        if (el.classList && (el.classList.contains('active') || el.classList.contains('open'))) return true;
+        if (el.style && (el.style.display === 'flex' || el.style.display === 'block')) return true;
+        return false;
+    }
+
+    // 4. Fungsi pemulihan fokus yang aman (safe fallback)
+    window.restoreModalFocusSafely = function (trigger, modalIdentifier) {
+        if (!trigger) {
+            console.warn('[a11y focus] Tidak ada elemen pemicu yang tersimpan untuk modal:', modalIdentifier);
+            return false;
+        }
+        if (!document.body.contains(trigger)) {
+            console.warn('[a11y focus] Elemen pemicu untuk modal ' + modalIdentifier + ' sudah tidak ada di DOM.');
+            return false;
+        }
+        var style = window.getComputedStyle ? window.getComputedStyle(trigger) : null;
+        if (style && (style.display === 'none' || style.visibility === 'hidden')) {
+            console.warn('[a11y focus] Elemen pemicu untuk modal ' + modalIdentifier + ' sedang tersembunyi.');
+            return false;
+        }
+        if (trigger.offsetParent === null && (!style || style.position !== 'fixed')) {
+            console.warn('[a11y focus] Elemen pemicu untuk modal ' + modalIdentifier + ' tidak terlihat.');
+            return false;
+        }
+        try {
+            if (typeof trigger.focus === 'function') {
+                trigger.focus();
+                return document.activeElement === trigger;
+            }
+        } catch (err) {
+            console.warn('[a11y focus] Gagal memfokuskan elemen pemicu modal ' + modalIdentifier + ':', err);
+        }
+        return false;
+    };
+
+    // 5. MutationObserver untuk memantau pembukaan dan penutupan modal otomatis
+    function onModalMutation(mutations) {
+        for (var i = 0; i < mutations.length; i++) {
+            var el = mutations[i].target;
+            if (!isModalElement(el)) continue;
+
+            var visible = isModalVisible(el);
+            var wasVisible = !!el._modalWasVisible;
+
+            if (!wasVisible && visible) {
+                // Modal baru saja terbuka: simpan pemicu fokus
+                el._modalWasVisible = true;
+                var trigger = document.activeElement;
+                if (!trigger || trigger === document.body || (el.contains && el.contains(trigger))) {
+                    trigger = window._lastNonModalTrigger || null;
+                }
+                window._modalFocusStack.push({ modal: el, trigger: trigger });
+            } else if (wasVisible && !visible) {
+                // Modal baru saja tertutup: kembalikan fokus ke pemicu
+                el._modalWasVisible = false;
+                var foundIdx = -1;
+                for (var s = window._modalFocusStack.length - 1; s >= 0; s--) {
+                    if (window._modalFocusStack[s].modal === el) {
+                        foundIdx = s;
+                        break;
+                    }
+                }
+                if (foundIdx !== -1) {
+                    var entry = window._modalFocusStack.splice(foundIdx, 1)[0];
+                    setTimeout(function () {
+                        window.restoreModalFocusSafely(entry.trigger, el.id || 'modal');
+                    }, 0);
+                }
+            }
+        }
+    }
+
+    if (typeof MutationObserver !== 'undefined') {
+        var observer = new MutationObserver(onModalMutation);
+        function startObserving() {
+            var root = document.body || document.documentElement;
+            if (root) {
+                observer.observe(root, {
+                    attributes: true,
+                    subtree: true,
+                    attributeFilter: ['class', 'style']
+                });
+            }
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', startObserving);
+        } else {
+            startObserving();
+        }
+    }
+})();
+
+// ============================================================
 // MODAL ACCESSIBILITY: CLOSE ACTIVE MODALS ON ESCAPE KEY
 // ============================================================
 document.addEventListener('keydown', function (e) {
