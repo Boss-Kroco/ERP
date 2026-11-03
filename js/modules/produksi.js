@@ -108,16 +108,18 @@ window.renderRiwayatHPP = function() {
 
     window.hppRiwayatData.forEach(function(item) {
         var tr = document.createElement('tr');
-        var selisih = item.hppBaru - item.hppLama;
-        var selisihWarna = selisih > 0 ? 'red' : (selisih < 0 ? 'green' : 'black');
-        var selisihTanda = selisih > 0 ? '+' : '';
+        var hppLama = Number(item.hppLama || 0);
+        var hppBaru = Number(item.hppBaru || 0);
+        var selisih = hppBaru - hppLama;
+        var selisihWarna = selisih > 0 ? '#ef4444' : (selisih < 0 ? '#10b981' : 'var(--text-main)');
+        var selisihTanda = selisih > 0 ? '+ ' : (selisih < 0 ? '- ' : '');
         
         tr.innerHTML = `
             <td>${item.tanggal}</td>
             <td>${item.produk}</td>
-            <td style="text-align: right;">${window.formatAppCurrency(item.hppLama)}</td>
-            <td style="text-align: right; font-weight: bold;">${window.formatAppCurrency(item.hppBaru)}</td>
-            <td style="text-align: right; color: ${selisihWarna}; font-weight: bold;">${selisihTanda} ${window.formatAppCurrency ? window.formatAppCurrency(Math.abs(selisih)) : ('Rp ' + Math.abs(selisih))}</td>
+            <td style="text-align: right;">${window.formatAppCurrency(hppLama)}</td>
+            <td style="text-align: right; font-weight: bold;">${window.formatAppCurrency(hppBaru)}</td>
+            <td style="text-align: right; color: ${selisihWarna}; font-weight: bold;">${selisihTanda}${window.formatAppCurrency ? window.formatAppCurrency(Math.abs(selisih)) : ('Rp ' + Math.abs(selisih))}</td>
             <td>${item.penyebab}</td>
         `;
         tbody.appendChild(tr);
@@ -139,6 +141,20 @@ window.initTambahHpp = function(isProductChange) {
         }
     }
     
+    var resetFormKeKosong = function() {
+        window.tempBahanBaku = [{ nama: '', qty: 1, harga: 0 }];
+        ['hppBiayaTk', 'hppBiayaGas', 'hppBiayaListrik', 'hppBiayaKemasan', 'hppBiayaOverhead', 'hppBiayaLain'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.value = 0;
+        });
+        var elJml = document.getElementById('hppJmlProduksi');
+        if (elJml) elJml.value = 1;
+        var elMinG = document.getElementById('hppMinGrosir');
+        if (elMinG) elMinG.value = '';
+        var elHgG = document.getElementById('hppHargaGrosir');
+        if (elHgG) elHgG.value = '';
+    };
+
     // Auto-fill Harga Jual and Restore saved recipe if selected
     if (sel && sel.value) {
         var prdId = sel.value;
@@ -168,6 +184,7 @@ window.initTambahHpp = function(isProductChange) {
         var savedState = window.hppRincian[prdId];
         
         if (savedState && savedState.bahanList && savedState.bahanList.length) {
+            // Produk sudah memiliki resep tersimpan: muat bahan baku dan biaya operasionalnya
             window.tempBahanBaku = JSON.parse(JSON.stringify(savedState.bahanList));
             // Konversi nilai tersimpan ke mata uang aktif saat ini jika berbeda
             var savedRate = savedState.exchangeRate || 1;
@@ -196,20 +213,14 @@ window.initTambahHpp = function(isProductChange) {
                 }
             }
         } else {
-            // Jika belum ada resep tersimpan, cek apakah user sudah mengisi sesuatu di form sebelumnya
-            var hasExistingData = window.tempBahanBaku && window.tempBahanBaku.some(function(b) { return (b.nama || b.harga > 0); });
-            if (!hasExistingData) {
-                window.tempBahanBaku = [{ nama: 'Bahan Baku 1', qty: 1, harga: 0 }];
-                ['hppBiayaTk', 'hppBiayaGas', 'hppBiayaListrik', 'hppBiayaKemasan', 'hppBiayaOverhead', 'hppBiayaLain'].forEach(function(id) {
-                    if (document.getElementById(id)) document.getElementById(id).value = 0;
-                });
-                if (document.getElementById('hppJmlProduksi')) document.getElementById('hppJmlProduksi').value = 1;
-            }
+            // Produk baru atau produk yang belum memiliki resep tersimpan: otomatis kosongkan tabel bahan baku & biaya
+            resetFormKeKosong();
         }
     } else {
-        if (!window.tempBahanBaku || !window.tempBahanBaku.length) {
-            window.tempBahanBaku = [{ nama: 'Bahan Baku 1', qty: 1, harga: 0 }];
-        }
+        // Belum ada produk yang dipilih: kosongkan form
+        resetFormKeKosong();
+        var elHjEmpty = document.getElementById('hppHargaJual');
+        if (elHjEmpty) elHjEmpty.value = 0;
     }
 
     if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();
@@ -333,14 +344,30 @@ window.addHppBahanBaku = function() {
     window.syncHppBahanFromDOM();
     if (!window.tempBahanBaku) window.tempBahanBaku = [];
     window.tempBahanBaku.push({ nama: '', qty: 1, harga: 0 });
+    
+    // Simpan posisi scroll vertikal saat ini agar halaman tidak melompat ke bawah
+    var currentScrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    
     window.renderHppBahanBaku();
+    
+    // Kembalikan posisi scroll tepat seperti semula
+    window.scrollTo(0, currentScrollY);
+    
     setTimeout(function() {
         var tbody = document.getElementById('bodyHppBahanBaku');
         if (tbody) {
             var inputs = tbody.querySelectorAll('.input-hpp-nama');
-            if (inputs.length) inputs[inputs.length - 1].focus();
+            if (inputs.length) {
+                try {
+                    // preventScroll: true mencegah browser melakukan auto-scroll saat input baru difokuskan
+                    inputs[inputs.length - 1].focus({ preventScroll: true });
+                } catch (e) {
+                    inputs[inputs.length - 1].focus();
+                }
+            }
         }
-    }, 50);
+        window.scrollTo(0, currentScrollY);
+    }, 30);
 };
 
 window.hapusHppBahan = function(idx) {
@@ -519,7 +546,7 @@ window.simpanHppBaru = function() {
                 tanggal: today,
                 produk: prd.namaProduk,
                 hppLama: oldHpp,
-                hppBaru: res.hppItem,
+                hppBaru: hppItemBaseIdr,
                 penyebab: 'Kalkulasi ulang via form HPP'
             });
             try {
@@ -598,7 +625,7 @@ window.simpanProdukBaruHpp = function() {
             if(sel) {
                 if(typeof window.initTambahHpp === 'function') window.initTambahHpp();
                 sel.value = res.produkId;
-                if(typeof window.initTambahHpp === 'function') window.initTambahHpp();
+                if(typeof window.initTambahHpp === 'function') window.initTambahHpp(true);
             }
             
             window.renderDaftarHPP();
