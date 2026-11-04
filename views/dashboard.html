@@ -299,11 +299,11 @@
 
                     </div>
 
-                    <!-- 4. Grafik Tren Penjualan Bulanan (12 Bulan) Section -->
+                    <!-- 4. Grafik Tren & Analisis Penjualan Section (Mingguan, Bulanan, Tahunan, & Per Item Barang) -->
                     <div class="order-section-card" style="margin-top: 16px; margin-bottom: 16px; padding: 22px 24px; border-radius: 16px; box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05); background: #ffffff;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 20px;">
                             <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 36px; height: 36px; border-radius: 10px; background: #0f172a; display: flex; align-items: center; justify-content: center; color: #f8fafc; box-shadow: 0 4px 10px rgba(15,23,42,0.15);">
+                                <div style="width: 38px; height: 38px; border-radius: 12px; background: #0f172a; display: flex; align-items: center; justify-content: center; color: #f8fafc; box-shadow: 0 4px 10px rgba(15,23,42,0.15);">
                                     <svg style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8;" viewBox="0 0 24 24">
                                         <path d="M3 3v18h18" />
                                         <path d="m19 9-5 5-4-4-3 3" />
@@ -311,29 +311,74 @@
                                 </div>
                                 <div>
                                     <div style="display: flex; align-items: center; gap: 8px;">
-                                        <div class="order-main-title" style="font-size: 15px; font-weight: 800; color: #0f172a; letter-spacing: -0.01em;">Grafik Tren Penjualan Bulanan</div>
-                                        <span style="font-size: 9.5px; font-weight: 800; color: #475569; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 2px 7px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em;">12 Bulan</span>
+                                        <div id="grafikAnalisisTitle" class="order-main-title" style="font-size: 15px; font-weight: 800; color: #0f172a; letter-spacing: -0.01em;">Grafik Tren Penjualan Bulanan</div>
+                                        <span id="grafikAnalisisBadge" style="font-size: 9.5px; font-weight: 800; color: #475569; background: #f1f5f9; border: 1px solid #e2e8f0; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.04em;">12 Bulan</span>
                                     </div>
-                                    <div style="font-size: 11.5px; color: #64748b; font-weight: 500; margin-top: 2px;">Analisis komprehensif omzet per bulan & performa rotasi produk</div>
+                                    <div id="grafikAnalisisSubtitle" style="font-size: 11.5px; color: #64748b; font-weight: 500; margin-top: 2px;">Analisis komprehensif omzet per bulan & performa rotasi produk</div>
                                 </div>
                             </div>
                             
-                            <div style="display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 4px 8px 4px 12px; border-radius: 10px; border: 1px solid #e2e8f0;">
-                                <label style="font-size: 11px; font-weight: 700; color: #64748b;">Tahun Anggaran:</label>
-                                <select id="selectTahunGrafikBulanan" onchange="window.updateGrafikBulanan(this.value)" class="hpp-clean-input" style="padding: 5px 12px; font-weight: 700; font-size: 12px; cursor: pointer; border-radius: 8px; background: white; border: 1px solid #cbd5e1; color: #0f172a;">
-                                    <option value="2026" selected>Tahun 2026</option>
-                                    <option value="2025">Tahun 2025</option>
-                                </select>
+                            <!-- Controls: Segmented Tabs & Filters -->
+                            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+                                <!-- Segmented Mode Switcher (12px radius) -->
+                                <div id="grafikModeTabs" style="display: inline-flex; align-items: center; background: #f1f5f9; padding: 3px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                    <button type="button" id="tabModeMingguan" onclick="window.switchGrafikModel('mingguan')" style="padding: 6px 13px; font-size: 11.5px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: all 0.2s ease; background: transparent; color: #64748b;">Mingguan</button>
+                                    <button type="button" id="tabModeBulanan" onclick="window.switchGrafikModel('bulanan')" style="padding: 6px 13px; font-size: 11.5px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: all 0.2s ease; background: #0f172a; color: #ffffff; box-shadow: 0 2px 6px rgba(15,23,42,0.15);">Bulanan</button>
+                                    <button type="button" id="tabModeTahunan" onclick="window.switchGrafikModel('tahunan')" style="padding: 6px 13px; font-size: 11.5px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: all 0.2s ease; background: transparent; color: #64748b;">Tahunan</button>
+                                    <button type="button" id="tabModeItem" onclick="window.switchGrafikModel('item')" style="padding: 6px 13px; font-size: 11.5px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: all 0.2s ease; background: transparent; color: #64748b;">Per Item Barang</button>
+                                </div>
+
+                                <!-- Filter Controls (Contextual) -->
+                                <div id="grafikFilterControls" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
+                                    <!-- Year select (Bulanan) -->
+                                    <div id="wrapperFilterTahun" style="display: flex; align-items: center; gap: 6px; background: #f8fafc; padding: 4px 8px 4px 10px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                        <label style="font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap;">Tahun:</label>
+                                        <select id="selectTahunGrafikBulanan" onchange="window.handleGrafikFilterChange()" class="hpp-clean-input" style="padding: 4px 8px; font-weight: 700; font-size: 11.5px; cursor: pointer; border-radius: 8px; background: white; border: 1px solid #cbd5e1; color: #0f172a;">
+                                            <option value="2026" selected>2026</option>
+                                            <option value="2025">2025</option>
+                                            <option value="2024">2024</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Week select (Mingguan - hidden initially) -->
+                                    <div id="wrapperFilterMinggu" style="display: none; align-items: center; gap: 6px; background: #f8fafc; padding: 4px 8px 4px 10px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                        <label style="font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap;">Rentang:</label>
+                                        <select id="selectMingguGrafik" onchange="window.handleGrafikFilterChange()" class="hpp-clean-input" style="padding: 4px 8px; font-weight: 700; font-size: 11.5px; cursor: pointer; border-radius: 8px; background: white; border: 1px solid #cbd5e1; color: #0f172a;">
+                                            <option value="0" selected>Minggu Ini</option>
+                                            <option value="1">1 Minggu Lalu</option>
+                                            <option value="2">2 Minggu Lalu</option>
+                                            <option value="3">3 Minggu Lalu</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Item filter dropdown (Mingguan, Bulanan, Tahunan) -->
+                                    <div id="wrapperFilterItem" style="display: flex; align-items: center; gap: 6px; background: #f8fafc; padding: 4px 8px 4px 10px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                        <label style="font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap;">Produk:</label>
+                                        <select id="selectFilterItemBarang" onchange="window.handleGrafikFilterChange()" class="hpp-clean-input" style="padding: 4px 8px; font-weight: 700; font-size: 11.5px; cursor: pointer; border-radius: 8px; background: white; border: 1px solid #cbd5e1; color: #0f172a; max-width: 155px;">
+                                            <option value="all" selected>Semua Produk</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Sort dropdown (Per Item Barang - hidden initially) -->
+                                    <div id="wrapperSortItem" style="display: none; align-items: center; gap: 6px; background: #f8fafc; padding: 4px 8px 4px 10px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                        <label style="font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap;">Urutkan:</label>
+                                        <select id="selectSortItemBarang" onchange="window.handleGrafikFilterChange()" class="hpp-clean-input" style="padding: 4px 8px; font-weight: 700; font-size: 11.5px; cursor: pointer; border-radius: 8px; background: white; border: 1px solid #cbd5e1; color: #0f172a;">
+                                            <option value="omzet" selected>Omzet Tertinggi</option>
+                                            <option value="qty">Qty Terbanyak</option>
+                                            <option value="nama">Nama A - Z</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <!-- 4 KPI Metrics Banner -->
+                        <!-- 4 KPI Metrics Banner (Dynamic across all 4 modes) -->
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 22px;">
                             <!-- Card 1 -->
                             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 16px; position: relative; overflow: hidden; box-shadow: 0 2px 8px -2px rgba(15,23,42,0.04);">
                                 <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #4f46e5;"></div>
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Total Omzet Tahunan</span>
+                                    <span id="kpiTitleCard1" style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Total Omzet Tahunan</span>
                                     <div style="width: 28px; height: 28px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; display: flex; align-items: center; justify-content: center;">
                                         <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                             <ellipse cx="12" cy="5" rx="9" ry="3"/>
@@ -343,9 +388,9 @@
                                     </div>
                                 </div>
                                 <div id="statBulananTotalYear" style="font-size: 18px; font-weight: 900; color: #0f172a; margin-top: 6px; letter-spacing: -0.02em;">Rp 0</div>
-                                <div style="display: flex; align-items: center; gap: 5px; margin-top: 6px;">
+                                <div id="kpiSubCard1" style="display: flex; align-items: center; gap: 5px; margin-top: 6px;">
                                     <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #4f46e5;"></span>
-                                    <span style="font-size: 10.5px; color: #64748b; font-weight: 600;"><span id="statBulananTotalTrx" style="font-weight: 800; color: #1e293b;">0</span> transaksi tercatat</span>
+                                    <span id="kpiSubTextCard1" style="font-size: 10.5px; color: #64748b; font-weight: 600;"><span id="statBulananTotalTrx" style="font-weight: 800; color: #1e293b;">0</span> transaksi tercatat</span>
                                 </div>
                             </div>
 
@@ -353,7 +398,7 @@
                             <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 16px; position: relative; overflow: hidden; box-shadow: 0 2px 8px -2px rgba(15,23,42,0.04);">
                                 <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #0284c7;"></div>
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Rata-Rata Bulanan</span>
+                                    <span id="kpiTitleCard2" style="font-size: 10px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em;">Rata-Rata Bulanan</span>
                                     <div style="width: 28px; height: 28px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; display: flex; align-items: center; justify-content: center;">
                                         <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                             <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
@@ -365,9 +410,9 @@
                                     </div>
                                 </div>
                                 <div id="statBulananRataRata" style="font-size: 18px; font-weight: 900; color: #0f172a; margin-top: 6px; letter-spacing: -0.02em;">Rp 0</div>
-                                <div style="display: flex; align-items: center; gap: 5px; margin-top: 6px;">
+                                <div id="kpiSubCard2" style="display: flex; align-items: center; gap: 5px; margin-top: 6px;">
                                     <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>
-                                    <span style="font-size: 10.5px; color: #059669; font-weight: 700;">Rerata per bulan aktif</span>
+                                    <span id="kpiSubTextCard2" style="font-size: 10.5px; color: #059669; font-weight: 700;">Rerata per bulan aktif</span>
                                 </div>
                             </div>
 
@@ -375,7 +420,7 @@
                             <div style="background: #ffffff; border: 1px solid #fecdd3; border-radius: 14px; padding: 14px 16px; position: relative; overflow: hidden; box-shadow: 0 2px 8px -2px rgba(244,63,94,0.06);">
                                 <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #e11d48;"></div>
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 10px; font-weight: 800; color: #e11d48; text-transform: uppercase; letter-spacing: 0.05em;">Bulan Puncak (Peak)</span>
+                                    <span id="kpiTitleCard3" style="font-size: 10px; font-weight: 800; color: #e11d48; text-transform: uppercase; letter-spacing: 0.05em;">Bulan Puncak (Peak)</span>
                                     <div style="width: 28px; height: 28px; border-radius: 8px; background: #fff1f2; border: 1px solid #fecdd3; color: #e11d48; display: flex; align-items: center; justify-content: center;">
                                         <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
@@ -386,17 +431,17 @@
                                     <span id="statBulananPeakMonth" style="font-size: 18px; font-weight: 900; color: #be123c; letter-spacing: -0.02em;">-</span>
                                     <span id="statBulananPeakVal" style="font-size: 11px; color: #be123c; font-weight: 800; background: #fff1f2; border: 1px solid #fecdd3; padding: 1px 7px; border-radius: 6px;">Rp 0</span>
                                 </div>
-                                <div style="display: flex; align-items: center; gap: 5px; margin-top: 6px;">
+                                <div id="kpiSubCard3" style="display: flex; align-items: center; gap: 5px; margin-top: 6px;">
                                     <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #e11d48;"></span>
-                                    <span style="font-size: 10.5px; color: #be123c; font-weight: 600;">Omzet tertinggi dalam setahun</span>
+                                    <span id="kpiSubTextCard3" style="font-size: 10.5px; color: #be123c; font-weight: 600;">Omzet tertinggi dalam setahun</span>
                                 </div>
                             </div>
 
-                            <!-- Card 4 (Speed) -->
+                            <!-- Card 4 (Speed / Ratio) -->
                             <div style="background: #ffffff; border: 1px solid #bbf7d0; border-radius: 14px; padding: 14px 16px; position: relative; overflow: hidden; box-shadow: 0 2px 8px -2px rgba(16,185,129,0.06);">
                                 <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: #059669;"></div>
                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                    <span style="font-size: 10px; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em;">Rotasi Penjualan</span>
+                                    <span id="kpiTitleCard4" style="font-size: 10px; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em;">Rotasi Penjualan</span>
                                     <div style="width: 28px; height: 28px; border-radius: 8px; background: #ecfdf5; border: 1px solid #a7f3d0; color: #059669; display: flex; align-items: center; justify-content: center;">
                                         <svg style="width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
@@ -404,16 +449,16 @@
                                     </div>
                                 </div>
                                 <div id="statBulananRasioSpeed" style="font-size: 16px; font-weight: 900; color: #047857; margin-top: 6px; letter-spacing: -0.01em;">100% Cepat</div>
-                                <div style="display: flex; align-items: center; gap: 5px; margin-top: 6px;">
+                                <div id="kpiSubCard4" style="display: flex; align-items: center; gap: 5px; margin-top: 6px;">
                                     <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #059669;"></span>
-                                    <span style="font-size: 10.5px; color: #059669; font-weight: 600;">Produk Reguler vs Diskon Promo</span>
+                                    <span id="kpiSubTextCard4" style="font-size: 10.5px; color: #059669; font-weight: 600;">Produk Reguler vs Diskon Promo</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Monthly Interactive Bar Chart Container -->
+                        <!-- Chart Container (Renders Mingguan, Bulanan, Tahunan, or Per Item) -->
                         <div id="monthlyBarChartContainer" style="position: relative; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 48px 20px 20px; box-shadow: 0 2px 12px -2px rgba(15,23,42,0.03); overflow: visible;">
-                            <!-- Rendered dinamis oleh window.renderGrafikBulanan() -->
+                            <!-- Rendered dinamis oleh window.renderGrafikAnalisis() -->
                         </div>
                     </div>
 
