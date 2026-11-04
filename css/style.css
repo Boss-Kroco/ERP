@@ -557,7 +557,7 @@ input[type=number] {
 }
 
 .curved-sidebar-violet:hover {
-    width: 205px;
+    width: 220px;
     align-items: stretch;
 }
 
@@ -670,52 +670,6 @@ input[type=number] {
             background: rgba(255, 255, 255, 0.85);
         }
 
-        /* Tombol Navigasi Panah Naik & Turun Sidebar */
-        .sb-scroll-btn {
-            width: 32px;
-            height: 18px;
-            min-height: 18px;
-            border: none;
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.16);
-            color: #ffffff;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            margin: 2px 0;
-            padding: 0;
-            flex-shrink: 0;
-            z-index: 2;
-        }
-
-        .sb-scroll-btn:hover {
-            background: rgba(255, 255, 255, 0.38);
-            transform: scale(1.08);
-        }
-
-        .sb-scroll-btn svg {
-            width: 13px;
-            height: 13px;
-            stroke: currentColor;
-            stroke-width: 2.6;
-            fill: none;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .curved-sidebar-violet:hover .sb-scroll-btn {
-            width: calc(100% - 16px);
-            height: 20px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.18);
-        }
-
-        .curved-sidebar-violet:hover .sb-scroll-btn:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
-
         .curved-sidebar-violet:hover .sidebar-icon-nav::-webkit-scrollbar {
             width: 6px;
         }
@@ -793,7 +747,7 @@ input[type=number] {
         .curved-sidebar-violet:hover .nav-icon-pill {
             width: 100%;
             justify-content: flex-start;
-            padding-left: 16px;
+            padding-left: 12px;
         }
 
         .curved-sidebar-violet:hover .nav-icon-pill .tooltip-text {
@@ -804,17 +758,18 @@ input[type=number] {
             background: transparent;
             box-shadow: none;
             color: inherit;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             padding: 0;
-            margin-left: 16px;
+            margin-left: 12px;
             pointer-events: auto;
+            white-space: nowrap;
         }
         
         .curved-sidebar-violet:hover .sb-bottom-btn {
             width: 100%;
             border-radius: var(--radius-md);
-            padding: 0 16px;
+            padding: 0 12px;
             justify-content: flex-start;
             margin-bottom: 0px;
             margin-top: 10px;
@@ -823,8 +778,8 @@ input[type=number] {
         }
         .curved-sidebar-violet:hover .sb-bottom-btn::after {
             content: "Keluar";
-            margin-left: 16px;
-            font-size: 14px;
+            margin-left: 12px;
+            font-size: 13px;
             font-weight: 600;
         }
 

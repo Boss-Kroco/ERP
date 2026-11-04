@@ -524,40 +524,7 @@ window.appScrollStep = function (delta) {
     window.scrollBy({ top: delta, behavior: 'smooth' });
 };
 
-// Helper Navigasi Geser Naik & Turun Menu Fitur Sidebar Kiri
-window.scrollSidebarNav = function (delta) {
-    var nav = document.getElementById('sidebarIconNav');
-    if (nav) {
-        nav.scrollBy({ top: delta, behavior: 'smooth' });
-        setTimeout(window.checkSidebarScrollButtons, 150);
-    }
-};
 
-window.checkSidebarScrollButtons = function () {
-    var nav = document.getElementById('sidebarIconNav');
-    var btnUp = document.getElementById('sbScrollUpBtn');
-    var btnDown = document.getElementById('sbScrollDownBtn');
-    if (!nav) return;
-
-    var canScroll = nav.scrollHeight > nav.clientHeight + 4;
-    if (btnUp) {
-        btnUp.style.display = canScroll ? 'flex' : 'none';
-        btnUp.style.opacity = nav.scrollTop > 6 ? '1' : '0.35';
-    }
-    if (btnDown) {
-        btnDown.style.display = canScroll ? 'flex' : 'none';
-        btnDown.style.opacity = (nav.scrollTop + nav.clientHeight < nav.scrollHeight - 6) ? '1' : '0.35';
-    }
-};
-
-window.addEventListener('load', function () {
-    var nav = document.getElementById('sidebarIconNav');
-    if (nav) {
-        nav.addEventListener('scroll', window.checkSidebarScrollButtons, { passive: true });
-    }
-    window.addEventListener('resize', window.checkSidebarScrollButtons);
-    setTimeout(window.checkSidebarScrollButtons, 300);
-});
 
 // ============================================================
 // MODAL ACCESSIBILITY: FOCUS TRACKING & RESTORATION
