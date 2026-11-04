@@ -1,53 +1,61 @@
 <div id="view-keuangan" style="display: none;">
 
-    <!-- 1. Top Metrics Summary Cards (Arus Kas & Saldo Operasional) -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 12px;">
-        <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 12px; padding: 10px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-            <div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
-                <span>SALDO KAS OPERASIONAL</span>
-                <span id="badgeKeuanganKasKritis" style="display: none; background: #fee2e2; color: #dc2626; font-size: 8.5px; font-weight: 800; padding: 2px 5px; border-radius: 4px; border: 1px solid #fca5a5; align-items: center; gap: 3px;">
-                    <svg viewBox="0 0 24 24" style="width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    <span>KRITIS</span>
-                </span>
+    <!-- 1. Top Metrics Summary Cards (Hierarki Baru: Saldo Kas Utama + 4 Kartu Pendukung) -->
+    <div class="keuangan-metrics-layout">
+        <!-- Kartu Utama: Saldo Kas Operasional (Paling besar dan paling pertama) -->
+        <div class="keuangan-hero-card">
+            <div>
+                <div class="keuangan-hero-title-row">
+                    <span class="keuangan-hero-label">SALDO KAS OPERASIONAL</span>
+                    <span id="badgeKeuanganKasKritis" style="display: none; background: #fee2e2; color: #dc2626; font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 9999px; border: 1px solid #fca5a5; align-items: center; gap: 4px;">
+                        <svg viewBox="0 0 24 24" style="width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        <span>KRITIS</span>
+                    </span>
+                </div>
+                <div class="keuangan-hero-val" id="keuanganSaldoKas">Rp 0</div>
             </div>
-            <div style="font-size: 18px; font-weight: 900; color: var(--violet-main); margin-top: 4px;" id="keuanganSaldoKas">Rp 0</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Limit Kritis: <b id="keuanganLimitKas">Rp 2.000.000</b></div>
+            <div class="keuangan-hero-footer">
+                <span class="keuangan-hero-sub">Limit Kritis: <b id="keuanganLimitKas" style="color: #e2e8f0;">Rp 2.000.000</b></span>
+            </div>
         </div>
 
-        <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 12px; padding: 10px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-            <div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
-                <span>TOTAL KAS MASUK</span>
-                <span class="prog-status-pill green">MASUK</span>
+        <!-- 4 Kartu Pendukung (Ukuran lebih kecil, solid netral) -->
+        <div class="keuangan-sub-grid">
+            <div class="keuangan-sub-card">
+                <div class="keuangan-sub-header">
+                    <span class="keuangan-sub-label">TOTAL KAS MASUK</span>
+                    <span class="prog-status-pill green">MASUK</span>
+                </div>
+                <div class="keuangan-sub-val text-green" id="keuanganTotalMasuk">Rp 0</div>
+                <div class="keuangan-sub-meta" id="keuanganSubMasuk">0 transaksi</div>
             </div>
-            <div style="font-size: 18px; font-weight: 900; color: #059669; margin-top: 4px;" id="keuanganTotalMasuk">Rp 0</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;" id="keuanganSubMasuk">0 transaksi</div>
-        </div>
 
-        <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 12px; padding: 10px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-            <div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
-                <span>TOTAL KAS KELUAR</span>
-                <span class="prog-status-pill coral">KELUAR</span>
+            <div class="keuangan-sub-card">
+                <div class="keuangan-sub-header">
+                    <span class="keuangan-sub-label">TOTAL KAS KELUAR</span>
+                    <span class="prog-status-pill coral">KELUAR</span>
+                </div>
+                <div class="keuangan-sub-val text-red" id="keuanganTotalKeluar">Rp 0</div>
+                <div class="keuangan-sub-meta" id="keuanganSubKeluar">0 transaksi</div>
             </div>
-            <div style="font-size: 18px; font-weight: 900; color: #dc2626; margin-top: 4px;" id="keuanganTotalKeluar">Rp 0</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;" id="keuanganSubKeluar">0 transaksi</div>
-        </div>
 
-        <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 12px; padding: 10px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-            <div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
-                <span>ARUS KAS BERSIH</span>
-                <span class="prog-status-pill violet">NET FLOW</span>
+            <div class="keuangan-sub-card">
+                <div class="keuangan-sub-header">
+                    <span class="keuangan-sub-label">ARUS KAS BERSIH</span>
+                    <span class="prog-status-pill violet">NET FLOW</span>
+                </div>
+                <div class="keuangan-sub-val" id="keuanganNetFlow">Rp 0</div>
+                <div class="keuangan-sub-meta">Selisih Masuk &minus; Keluar</div>
             </div>
-            <div style="font-size: 18px; font-weight: 900; color: var(--text-main); margin-top: 4px;" id="keuanganNetFlow">Rp 0</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Selisih Masuk &minus; Keluar</div>
-        </div>
 
-        <div style="background: #ffffff; border: 1px solid var(--border-strong); border-radius: 12px; padding: 10px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-            <div style="font-size: 10.5px; font-weight: 700; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
-                <span>SALDO TABUNGAN</span>
-                <span class="prog-status-pill blue">TABUNGAN</span>
+            <div class="keuangan-sub-card">
+                <div class="keuangan-sub-header">
+                    <span class="keuangan-sub-label">SALDO TABUNGAN</span>
+                    <span class="prog-status-pill blue">TABUNGAN</span>
+                </div>
+                <div class="keuangan-sub-val text-blue" id="keuanganSaldoTabungan">Rp 0</div>
+                <div class="keuangan-sub-meta">Dana tersimpan luar kas</div>
             </div>
-            <div style="font-size: 18px; font-weight: 900; color: #3b82f6; margin-top: 4px;" id="keuanganSaldoTabungan">Rp 0</div>
-            <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Dana tersimpan luar kas</div>
         </div>
     </div>
 

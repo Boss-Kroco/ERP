@@ -32,19 +32,24 @@
         }
         .trx-metric-card {
             padding: 12px 14px;
-            border-radius: 12px;
+            border-radius: 16px;
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            color: white;
-            box-shadow: 0 6px 16px -4px rgba(0,0,0,0.08);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            background: #ffffff;
+            border: 1px solid var(--border-strong);
+            color: var(--text-main);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
             cursor: pointer;
+            text-align: left;
+            font-family: inherit;
         }
         .trx-metric-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px -6px rgba(0,0,0,0.12);
+            border-color: #cbd5e1;
+            box-shadow: 0 6px 16px -4px rgba(15, 23, 42, 0.06);
         }
         .trx-metric-header {
             display: flex;
@@ -57,17 +62,32 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            color: rgba(255, 255, 255, 0.85);
+            color: var(--text-muted);
         }
+        .trx-metric-chip {
+            padding: 2px 7px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 800;
+        }
+        .trx-metric-chip.violet { background: #eef2ff; color: #4338ca; border: 1px solid #c7d2fe; }
+        .trx-metric-chip.green { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+        .trx-metric-chip.orange { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
+        .trx-metric-chip.blue { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
         .trx-metric-val {
             font-size: 20px;
             font-weight: 900;
             line-height: 1.2;
             letter-spacing: -0.5px;
+            color: var(--text-main);
         }
+        .trx-metric-val.text-violet { color: var(--violet-main); }
+        .trx-metric-val.text-green { color: #059669; }
+        .trx-metric-val.text-orange { color: #ea580c; }
+        .trx-metric-val.text-blue { color: #2563eb; }
         .trx-metric-sub {
             font-size: 10.5px;
-            color: rgba(255, 255, 255, 0.8);
+            color: var(--text-muted);
             margin-top: 4px;
             display: flex;
             align-items: center;
@@ -75,7 +95,7 @@
         }
         .trx-filter-panel {
             background: #ffffff;
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 8px 12px;
             border: 1px solid var(--border-soft);
             box-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.04);
@@ -178,52 +198,52 @@
         </div>
     </div>
 
-    <!-- Top KPI Metrics Cards -->
+    <!-- Top KPI Metrics Cards (Solid Netral & Radius 16px) -->
     <div class="trx-metrics-grid">
-        <div class="trx-metric-card" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);" onclick="window.setTransaksiQuickFilter('all')">
+        <button type="button" class="trx-metric-card" onclick="window.setTransaksiQuickFilter('all')">
             <div class="trx-metric-header">
                 <span class="trx-metric-title">Total Transaksi</span>
-                <span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 800;">SEMUA</span>
+                <span class="trx-metric-chip violet">SEMUA</span>
             </div>
-            <div class="trx-metric-val" id="trxMetricTotalCount">0</div>
+            <div class="trx-metric-val text-violet" id="trxMetricTotalCount">0</div>
             <div class="trx-metric-sub">
                 <span>Omzet:</span>
                 <b id="trxMetricTotalOmzet">Rp 0</b>
             </div>
-        </div>
+        </button>
 
-        <div class="trx-metric-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="window.setTransaksiQuickFilter('tunai')">
+        <button type="button" class="trx-metric-card" onclick="window.setTransaksiQuickFilter('tunai')">
             <div class="trx-metric-header">
                 <span class="trx-metric-title">Pembayaran Tunai</span>
-                <span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 800;">KAS</span>
+                <span class="trx-metric-chip green">KAS</span>
             </div>
-            <div class="trx-metric-val" id="trxMetricTunaiNominal">Rp 0</div>
+            <div class="trx-metric-val text-green" id="trxMetricTunaiNominal">Rp 0</div>
             <div class="trx-metric-sub">
                 <span id="trxMetricTunaiCount">0 transaksi</span>
             </div>
-        </div>
+        </button>
 
-        <div class="trx-metric-card" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);" onclick="window.setTransaksiQuickFilter('tempo')">
+        <button type="button" class="trx-metric-card" onclick="window.setTransaksiQuickFilter('tempo')">
             <div class="trx-metric-header">
                 <span class="trx-metric-title">Pembayaran Tempo</span>
-                <span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 800;">PIUTANG</span>
+                <span class="trx-metric-chip orange">PIUTANG</span>
             </div>
-            <div class="trx-metric-val" id="trxMetricTempoNominal">Rp 0</div>
+            <div class="trx-metric-val text-orange" id="trxMetricTempoNominal">Rp 0</div>
             <div class="trx-metric-sub">
                 <span id="trxMetricTempoCount">0 transaksi</span>
             </div>
-        </div>
+        </button>
 
-        <div class="trx-metric-card" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);" onclick="window.setTransaksiQuickFilter('tabungan')">
+        <button type="button" class="trx-metric-card" onclick="window.setTransaksiQuickFilter('tabungan')">
             <div class="trx-metric-header">
                 <span class="trx-metric-title">Saldo Tabungan</span>
-                <span style="background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 800;">MEMBER</span>
+                <span class="trx-metric-chip blue">MEMBER</span>
             </div>
-            <div class="trx-metric-val" id="trxMetricTabunganNominal">Rp 0</div>
+            <div class="trx-metric-val text-blue" id="trxMetricTabunganNominal">Rp 0</div>
             <div class="trx-metric-sub">
                 <span id="trxMetricTabunganCount">0 transaksi</span>
             </div>
-        </div>
+        </button>
     </div>
 
     <!-- Filter & Search Toolbar -->
