@@ -301,7 +301,8 @@
 
                     <!-- 4. Grafik Tren & Analisis Penjualan Section (Mingguan, Bulanan, Tahunan, & Per Item Barang) -->
                     <div class="order-section-card" style="margin-top: 16px; margin-bottom: 16px; padding: 22px 24px; border-radius: 16px; box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05); background: #ffffff;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 20px;">
+                        <!-- Header Row 1: Title & Tabs (Posisi Stabil, Tidak Berubah Antar Mode) -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 14px;">
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 <div style="width: 38px; height: 38px; border-radius: 12px; background: #0f172a; display: flex; align-items: center; justify-content: center; color: #f8fafc; box-shadow: 0 4px 10px rgba(15,23,42,0.15);">
                                     <svg style="width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8;" viewBox="0 0 24 24">
@@ -317,57 +318,66 @@
                                     <div id="grafikAnalisisSubtitle" style="font-size: 11.5px; color: #64748b; font-weight: 500; margin-top: 2px;">Analisis komprehensif omzet per bulan & performa rotasi produk</div>
                                 </div>
                             </div>
-                            
-                            <!-- Controls: Segmented Tabs & Filters -->
-                            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
-                                <!-- Segmented Mode Switcher (12px radius) -->
-                                <div id="grafikModeTabs" style="display: inline-flex; align-items: center; background: #f1f5f9; padding: 3px; border-radius: 12px; border: 1px solid #e2e8f0;">
-                                    <button type="button" id="tabModeMingguan" onclick="window.switchGrafikModel('mingguan')" style="padding: 6px 13px; font-size: 11.5px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: all 0.2s ease; background: transparent; color: #64748b;">Mingguan</button>
-                                    <button type="button" id="tabModeBulanan" onclick="window.switchGrafikModel('bulanan')" style="padding: 6px 13px; font-size: 11.5px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: all 0.2s ease; background: #0f172a; color: #ffffff; box-shadow: 0 2px 6px rgba(15,23,42,0.15);">Bulanan</button>
-                                    <button type="button" id="tabModeTahunan" onclick="window.switchGrafikModel('tahunan')" style="padding: 6px 13px; font-size: 11.5px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: all 0.2s ease; background: transparent; color: #64748b;">Tahunan</button>
-                                    <button type="button" id="tabModeItem" onclick="window.switchGrafikModel('item')" style="padding: 6px 13px; font-size: 11.5px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: all 0.2s ease; background: transparent; color: #64748b;">Per Item Barang</button>
+
+                            <!-- Segmented Mode Switcher (12px radius, Posisi Selalu Tetap di Baris 1) -->
+                            <div id="grafikModeTabs" style="display: inline-flex; align-items: center; background: #f1f5f9; padding: 3px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                <button type="button" id="tabModeMingguan" onclick="window.switchGrafikModel('mingguan')" style="padding: 6px 13px; font-size: 11.5px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: all 0.2s ease; background: transparent; color: #64748b;">Mingguan</button>
+                                <button type="button" id="tabModeBulanan" onclick="window.switchGrafikModel('bulanan')" style="padding: 6px 13px; font-size: 11.5px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: all 0.2s ease; background: #0f172a; color: #ffffff; box-shadow: 0 2px 6px rgba(15,23,42,0.15);">Bulanan</button>
+                                <button type="button" id="tabModeTahunan" onclick="window.switchGrafikModel('tahunan')" style="padding: 6px 13px; font-size: 11.5px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: all 0.2s ease; background: transparent; color: #64748b;">Tahunan</button>
+                                <button type="button" id="tabModeItem" onclick="window.switchGrafikModel('item')" style="padding: 6px 13px; font-size: 11.5px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; transition: all 0.2s ease; background: transparent; color: #64748b;">Per Item Barang</button>
+                            </div>
+                        </div>
+
+                        <!-- Header Row 2: Dedicated Filter Toolbar (Konsisten & Rapi di Bawah Baris 1) -->
+                        <div id="grafikFilterControlsRow" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding: 8px 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="font-size: 10.5px; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 5px;">
+                                    <svg style="width: 13px; height: 13px; color: #64748b;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                                    </svg>
+                                    Parameter & Filter Analisis
+                                </span>
+                            </div>
+
+                            <!-- Filter Controls (Contextual) -->
+                            <div id="grafikFilterControls" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-left: auto;">
+                                <!-- Year select (Bulanan) -->
+                                <div id="wrapperFilterTahun" style="display: flex; align-items: center; gap: 6px; background: #ffffff; padding: 4px 8px 4px 10px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                                    <label style="font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap;">Tahun:</label>
+                                    <select id="selectTahunGrafikBulanan" onchange="window.handleGrafikFilterChange()" class="hpp-clean-input" style="padding: 4px 8px; font-weight: 700; font-size: 11.5px; cursor: pointer; border-radius: 8px; background: white; border: 1px solid #cbd5e1; color: #0f172a;">
+                                        <option value="2026" selected>2026</option>
+                                        <option value="2025">2025</option>
+                                        <option value="2024">2024</option>
+                                    </select>
                                 </div>
 
-                                <!-- Filter Controls (Contextual) -->
-                                <div id="grafikFilterControls" style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px;">
-                                    <!-- Year select (Bulanan) -->
-                                    <div id="wrapperFilterTahun" style="display: flex; align-items: center; gap: 6px; background: #f8fafc; padding: 4px 8px 4px 10px; border-radius: 10px; border: 1px solid #e2e8f0;">
-                                        <label style="font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap;">Tahun:</label>
-                                        <select id="selectTahunGrafikBulanan" onchange="window.handleGrafikFilterChange()" class="hpp-clean-input" style="padding: 4px 8px; font-weight: 700; font-size: 11.5px; cursor: pointer; border-radius: 8px; background: white; border: 1px solid #cbd5e1; color: #0f172a;">
-                                            <option value="2026" selected>2026</option>
-                                            <option value="2025">2025</option>
-                                            <option value="2024">2024</option>
-                                        </select>
-                                    </div>
+                                <!-- Week select (Mingguan - hidden initially) -->
+                                <div id="wrapperFilterMinggu" style="display: none; align-items: center; gap: 6px; background: #ffffff; padding: 4px 8px 4px 10px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                                    <label style="font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap;">Rentang:</label>
+                                    <select id="selectMingguGrafik" onchange="window.handleGrafikFilterChange()" class="hpp-clean-input" style="padding: 4px 8px; font-weight: 700; font-size: 11.5px; cursor: pointer; border-radius: 8px; background: white; border: 1px solid #cbd5e1; color: #0f172a;">
+                                        <option value="0" selected>Minggu Ini</option>
+                                        <option value="1">1 Minggu Lalu</option>
+                                        <option value="2">2 Minggu Lalu</option>
+                                        <option value="3">3 Minggu Lalu</option>
+                                    </select>
+                                </div>
 
-                                    <!-- Week select (Mingguan - hidden initially) -->
-                                    <div id="wrapperFilterMinggu" style="display: none; align-items: center; gap: 6px; background: #f8fafc; padding: 4px 8px 4px 10px; border-radius: 10px; border: 1px solid #e2e8f0;">
-                                        <label style="font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap;">Rentang:</label>
-                                        <select id="selectMingguGrafik" onchange="window.handleGrafikFilterChange()" class="hpp-clean-input" style="padding: 4px 8px; font-weight: 700; font-size: 11.5px; cursor: pointer; border-radius: 8px; background: white; border: 1px solid #cbd5e1; color: #0f172a;">
-                                            <option value="0" selected>Minggu Ini</option>
-                                            <option value="1">1 Minggu Lalu</option>
-                                            <option value="2">2 Minggu Lalu</option>
-                                            <option value="3">3 Minggu Lalu</option>
-                                        </select>
-                                    </div>
+                                <!-- Item filter dropdown (Mingguan, Bulanan, Tahunan) -->
+                                <div id="wrapperFilterItem" style="display: flex; align-items: center; gap: 6px; background: #ffffff; padding: 4px 8px 4px 10px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                                    <label style="font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap;">Produk:</label>
+                                    <select id="selectFilterItemBarang" onchange="window.handleGrafikFilterChange()" class="hpp-clean-input" style="padding: 4px 8px; font-weight: 700; font-size: 11.5px; cursor: pointer; border-radius: 8px; background: white; border: 1px solid #cbd5e1; color: #0f172a; max-width: 155px;">
+                                        <option value="all" selected>Semua Produk</option>
+                                    </select>
+                                </div>
 
-                                    <!-- Item filter dropdown (Mingguan, Bulanan, Tahunan) -->
-                                    <div id="wrapperFilterItem" style="display: flex; align-items: center; gap: 6px; background: #f8fafc; padding: 4px 8px 4px 10px; border-radius: 10px; border: 1px solid #e2e8f0;">
-                                        <label style="font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap;">Produk:</label>
-                                        <select id="selectFilterItemBarang" onchange="window.handleGrafikFilterChange()" class="hpp-clean-input" style="padding: 4px 8px; font-weight: 700; font-size: 11.5px; cursor: pointer; border-radius: 8px; background: white; border: 1px solid #cbd5e1; color: #0f172a; max-width: 155px;">
-                                            <option value="all" selected>Semua Produk</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Sort dropdown (Per Item Barang - hidden initially) -->
-                                    <div id="wrapperSortItem" style="display: none; align-items: center; gap: 6px; background: #f8fafc; padding: 4px 8px 4px 10px; border-radius: 10px; border: 1px solid #e2e8f0;">
-                                        <label style="font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap;">Urutkan:</label>
-                                        <select id="selectSortItemBarang" onchange="window.handleGrafikFilterChange()" class="hpp-clean-input" style="padding: 4px 8px; font-weight: 700; font-size: 11.5px; cursor: pointer; border-radius: 8px; background: white; border: 1px solid #cbd5e1; color: #0f172a;">
-                                            <option value="omzet" selected>Omzet Tertinggi</option>
-                                            <option value="qty">Qty Terbanyak</option>
-                                            <option value="nama">Nama A - Z</option>
-                                        </select>
-                                    </div>
+                                <!-- Sort dropdown (Per Item Barang - hidden initially) -->
+                                <div id="wrapperSortItem" style="display: none; align-items: center; gap: 6px; background: #ffffff; padding: 4px 8px 4px 10px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                                    <label style="font-size: 11px; font-weight: 700; color: #64748b; white-space: nowrap;">Urutkan:</label>
+                                    <select id="selectSortItemBarang" onchange="window.handleGrafikFilterChange()" class="hpp-clean-input" style="padding: 4px 8px; font-weight: 700; font-size: 11.5px; cursor: pointer; border-radius: 8px; background: white; border: 1px solid #cbd5e1; color: #0f172a;">
+                                        <option value="omzet" selected>Omzet Tertinggi</option>
+                                        <option value="qty">Qty Terbanyak</option>
+                                        <option value="nama">Nama A - Z</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
