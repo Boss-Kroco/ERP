@@ -1379,45 +1379,77 @@ function apiBackupToDriveAndSheets(payload) {
     var now = new Date();
     var timestampStr = Utilities.formatDate(now, TIMEZONE_JKT, 'yyyy-MM-dd HH:mm:ss');
     var dateSlug = Utilities.formatDate(now, TIMEZONE_JKT, 'yyyyMMdd_HHmmss');
+    var currentYear = Utilities.formatDate(now, TIMEZONE_JKT, 'yyyy');
 
     // 1. Catat ke sheet Arsip_Backup_Log
     var logSheet = ss.getSheetByName('Arsip_Backup_Log');
     if (!logSheet) {
       logSheet = ss.insertSheet('Arsip_Backup_Log');
-      logSheet.appendRow(['Timestamp', 'User', 'Jumlah Transaksi', 'Jumlah Produk', 'Ukuran Snapshot', 'Status', 'File Drive URL']);
-      logSheet.getRange(1, 1, 1, 7).setFontWeight('bold').setBackground('#f1f5f9');
+      logSheet.appendRow(['Timestamp', 'User', 'Tahun Buku', 'Jumlah Transaksi', 'Jumlah Produk', 'Ukuran Snapshot', 'Status', 'File Drive URL']);
+      logSheet.getRange(1, 1, 1, 8).setFontWeight('bold').setBackground('#f1f5f9');
     }
 
-    // 2. Tulis / Perbarui snapshot data Transaksi ke sheet Arsip_Transaksi
+    // Helper untuk mendeteksi tahun dari tanggal transaksi (DD/MM/YYYY atau YYYY-MM-DD)
+    function parseOrderYear(dateStr, fallbackYr) {
+      if (!dateStr) return fallbackYr;
+      var str = String(dateStr).trim();
+      if (str.indexOf('/') !== -1) {
+        var parts = str.split('/');
+        if (parts.length === 3 && parts[2].length === 4) return parts[2];
+      } else if (str.indexOf('-') !== -1) {
+        var partsIso = str.split('-');
+        if (partsIso[0].length === 4) return partsIso[0];
+      }
+      return fallbackYr;
+    }
+
+    // 2. Kelompokkan transaksi berdasarkan tahun untuk rotasi otomatis tab sheet
     var orders = payload.orders || [];
+    var ordersByYear = {};
+
     if (orders.length > 0) {
-      var orderSheet = ss.getSheetByName('Arsip_Transaksi');
-      if (!orderSheet) {
-        orderSheet = ss.insertSheet('Arsip_Transaksi');
-        orderSheet.appendRow(['ID Transaksi', 'No Order', 'Tanggal', 'Pelanggan', 'No HP', 'Produk / Kategori', 'Total (Rp)', 'Metode', 'Status']);
-        orderSheet.getRange(1, 1, 1, 9).setFontWeight('bold').setBackground('#f1f5f9');
-      }
-      var rowsToAdd = [];
       for (var i = 0; i < orders.length; i++) {
-        var o = orders[i];
-        rowsToAdd.push([
-          o.id || '',
-          o.orderNum || '',
-          o.date || '',
-          o.customer || '',
-          o.phone || '',
-          o.category || '',
-          o.price || 0,
-          o.payment || '',
-          o.status || ''
-        ]);
+        var yr = parseOrderYear(orders[i].date, currentYear);
+        if (!ordersByYear[yr]) ordersByYear[yr] = [];
+        ordersByYear[yr].push(orders[i]);
       }
-      var lastRow = orderSheet.getLastRow();
-      if (lastRow > 1) {
-        orderSheet.getRange(2, 1, lastRow - 1, 9).clearContent();
-      }
-      if (rowsToAdd.length > 0) {
-        orderSheet.getRange(2, 1, rowsToAdd.length, 9).setValues(rowsToAdd);
+
+      // Tulis masing-masing kelompok tahun ke tab sheet tersendiri (Arsip_Transaksi_YYYY)
+      for (var yearKey in ordersByYear) {
+        if (!ordersByYear.hasOwnProperty(yearKey)) continue;
+
+        var sheetName = 'Arsip_Transaksi_' + yearKey;
+        var orderSheet = ss.getSheetByName(sheetName);
+        if (!orderSheet) {
+          orderSheet = ss.insertSheet(sheetName);
+          orderSheet.appendRow(['ID Transaksi', 'No Order', 'Tanggal', 'Pelanggan', 'No HP', 'Produk / Kategori', 'Total (Rp)', 'Metode', 'Status']);
+          orderSheet.getRange(1, 1, 1, 9).setFontWeight('bold').setBackground('#f1f5f9');
+        }
+
+        var yearOrders = ordersByYear[yearKey];
+        var rowsToAdd = [];
+        for (var j = 0; j < yearOrders.length; j++) {
+          var o = yearOrders[j];
+          rowsToAdd.push([
+            o.id || '',
+            o.orderNum || '',
+            o.date || '',
+            o.customer || '',
+            o.phone || '',
+            o.category || '',
+            o.price || 0,
+            o.payment || '',
+            o.status || ''
+          ]);
+        }
+
+        var lastRow = orderSheet.getLastRow();
+        if (lastRow > 1) {
+          orderSheet.getRange(2, 1, lastRow - 1, 9).clearContent();
+        }
+        if (rowsToAdd.length > 0) {
+          orderSheet.getRange(2, 1, rowsToAdd.length, 9).setValues(rowsToAdd);
+        }
       }
     }
 
@@ -1446,6 +1478,7 @@ function apiBackupToDriveAndSheets(payload) {
     logSheet.appendRow([
       timestampStr,
       userStr,
+      currentYear,
       orders.length,
       (payload.products ? payload.products.length : 0),
       JSON.stringify(payload).length + ' bytes',
@@ -1455,8 +1488,9 @@ function apiBackupToDriveAndSheets(payload) {
 
     return {
       success: true,
-      message: 'Cadangan data berhasil disimpan ke Google Spreadsheet dan Google Drive!',
+      message: 'Cadangan data berhasil disimpan ke Google Spreadsheet (Rotasi Tab ' + currentYear + ') dan Google Drive!',
       timestamp: timestampStr,
+      tahunBuku: currentYear,
       driveFileUrl: fileUrl,
       ordersCount: orders.length,
       productsCount: (payload.products ? payload.products.length : 0)
