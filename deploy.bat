@@ -1,6 +1,6 @@
 @echo off
 echo ==============================================
-echo   AUTO PUSH & DEPLOY - BOS KROCO ERP
+echo   AUTO PUSH & DEPLOY - MAFAZA GROUP ERP
 echo ==============================================
 echo.
 

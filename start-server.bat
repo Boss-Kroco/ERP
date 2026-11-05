@@ -1,9 +1,9 @@
 @echo off
-title Bos Kroco ERP - Local Server & Asisten Bot (localhost:8080)
+title Mafaza Group ERP - Local Server & Asisten Bot (localhost:8080)
 cd /d "%~dp0"
 
 echo ============================================================
-echo   BOS KROCO ERP - LOCAL SERVER & ASISTEN TELEGRAM RUNNER
+echo   MAFAZA GROUP ERP - LOCAL SERVER & ASISTEN TELEGRAM RUNNER
 echo ============================================================
 echo.
 

@@ -1,6 +1,6 @@
-# Panduan Integrasi Supabase - Bos Kroco ERP
+# Panduan Integrasi Supabase - Mafaza Group ERP
 
-Dokumen ini menjelaskan langkah mudah menghubungkan aplikasi **Bos Kroco ERP** ke database **Supabase**.
+Dokumen ini menjelaskan langkah mudah menghubungkan aplikasi **Mafaza Group ERP** ke database **Supabase**.
 
 ---
 
@@ -31,7 +31,7 @@ Dokumen ini menjelaskan langkah mudah menghubungkan aplikasi **Bos Kroco ERP** k
 2. Salin 2 nilai berikut:
    - **Project URL** (contoh: `https://xyzcompany.supabase.co`)
    - **Project API Keys** -> Salin kunci **`anon` / `public`** (dimulai dengan huruf `eyJ...`)
-3. Buka file [`js/config.js`](file:///c:/Boss%20Kroco/js/config.js) di proyek Bos Kroco Anda:
+3. Buka file [`js/config.js`](file:///c:/Boss%20Kroco/js/config.js) di proyek Mafaza Group Anda:
    ```javascript
    window.SUPABASE_CONFIG = {
        url: 'https://xyzcompany.supabase.co', // Ganti dengan Project URL Anda

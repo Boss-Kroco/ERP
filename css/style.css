@@ -2835,7 +2835,7 @@ input[type=number] {
         }
 
         /* ============================================================
-         * MODAL TENTANG BOS KROCO ERP (HIGH-END LUXURY FINTECH MODAL)
+         * MODAL TENTANG MAFAZA GROUP ERP (HIGH-END LUXURY FINTECH MODAL)
          * ============================================================ */
         .about-modal-card {
             width: 100%;
@@ -3516,7 +3516,7 @@ input[type=number] {
             color: var(--violet-main);
         }
 
-        /* Dark Support Ticket Card (Right Column) - Bos Kroco Elevated Dark Violet Theme */
+        /* Dark Support Ticket Card (Right Column) - Mafaza Group Elevated Dark Violet Theme */
         .support-card {
             background: linear-gradient(165deg, #1e1b4b 0%, #151238 55%, #0d0a27 100%);
             border: 1px solid rgba(165, 180, 252, 0.18);
@@ -4174,7 +4174,7 @@ input[type=number] {
             word-break: break-word;
         }
 
-        /* 2. PANEL AKTIVITAS HARIAN (KANAN) - ELEVATED DARK BOS KROCO THEME */
+        /* 2. PANEL AKTIVITAS HARIAN (KANAN) - ELEVATED DARK MAFAZA GROUP THEME */
         .photo2-daily-card {
             background: linear-gradient(165deg, #1e1b4b 0%, #151238 55%, #0d0a27 100%);
             border: 1px solid rgba(165, 180, 252, 0.18);
@@ -4384,7 +4384,7 @@ input[type=number] {
             background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
         }
 
-        /* Daftar Kegiatan Simpel/Pendek (Frosted Card Glass Bos Kroco Style) */
+        /* Daftar Kegiatan Simpel/Pendek (Frosted Card Glass Mafaza Group Style) */
         .photo2-daily-items-list {
             display: flex;
             flex-direction: column;

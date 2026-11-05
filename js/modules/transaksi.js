@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - MODUL DAFTAR SEMUA TRANSAKSI
+ * MAFAZA GROUP ERP - MODUL DAFTAR SEMUA TRANSAKSI
  * File: js/modules/transaksi.js
  * ============================================================================
  */

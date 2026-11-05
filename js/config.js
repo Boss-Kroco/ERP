@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - SUPABASE CONFIGURATION
+ * MAFAZA GROUP ERP - SUPABASE CONFIGURATION
  * File: js/config.js
  * ============================================================================
  * Masukkan Project URL dan Anon Public Key dari Dashboard Supabase Anda:

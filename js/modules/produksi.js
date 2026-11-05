@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - MODUL HPP PRODUK
+ * MAFAZA GROUP ERP - MODUL HPP PRODUK
  * File: js/modules/produksi.js (repurposed for HPP)
  * ============================================================================
  */

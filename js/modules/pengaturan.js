@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - SETTINGS & SYSTEM CONFIGURATION MODULE
+ * MAFAZA GROUP ERP - SETTINGS & SYSTEM CONFIGURATION MODULE
  * File: js/modules/pengaturan.js
  * ============================================================================
  */
@@ -587,8 +587,8 @@ window.testTelegramNotification = function () {
     else salamWaktu = 'Selamat Malam';
 
     var textMsg = '👋 *' + salamWaktu + ', Bapak Owner!*\n' +
-        'Semoga hari ini penuh berkah, kelancaran rezeki, dan bisnis Bos Kroco semakin maju pesat. 📈✨\n\n' +
-        'Saya adalah *Asisten Bisnis Bos Kroco ERP*, asisten cerdas otomatis yang terhubung langsung secara *real-time* ke sistem database operasional usaha Anda.\n\n' +
+        'Semoga hari ini penuh berkah, kelancaran rezeki, dan bisnis Mafaza Group semakin maju pesat. 📈✨\n\n' +
+        'Saya adalah *Asisten Bisnis Mafaza Group ERP*, asisten cerdas otomatis yang terhubung langsung secara *real-time* ke sistem database operasional usaha Anda.\n\n' +
         '💼 *Layanan Informasi Cepat yang Siap Saya Bantu:*\n' +
         '• 📊 *Ringkasan Hari Ini* : Laporan omzet penjualan, diskon & produk terlaris\n' +
         '• 💰 *Cek Saldo Kas* : Posisi saldo kas operasional & rekap 3 mutasi kas terkini\n' +
@@ -759,7 +759,7 @@ window.backupToGoogleDriveAndSheets = function (isSilent) {
     var backupPayload = {
         action: 'backupData',
         data: {
-            app: 'Bos Kroco ERP',
+            app: 'Mafaza Group ERP',
             version: '2.4.0',
             timestamp: new Date().toISOString(),
             currentUser: window.currentUser || null,
@@ -828,7 +828,7 @@ window.checkDailyAutoBackup = function () {
 
 window.exportFullJSONBackup = function () {
     var backupData = {
-        app: 'Bos Kroco ERP',
+        app: 'Mafaza Group ERP',
         version: '2.4.0',
         timestamp: new Date().toISOString(),
         currentUser: window.currentUser || null,
@@ -843,7 +843,7 @@ window.exportFullJSONBackup = function () {
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = 'Backup_BosKrocoERP_' + new Date().toISOString().slice(0, 10) + '.json';
+    a.download = 'Backup_MafazaGroupERP_' + new Date().toISOString().slice(0, 10) + '.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -895,7 +895,7 @@ window.exportFullCSVArchive = function () {
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = 'Arsip_Transaksi_BosKroco_' + new Date().toISOString().slice(0, 10) + '.csv';
+    a.download = 'Arsip_Transaksi_MafazaGroup_' + new Date().toISOString().slice(0, 10) + '.csv';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -1012,13 +1012,13 @@ function saveAppSettingsHelper(newObj) {
 window.copyAboutSystemInfo = function () {
     var info = [
         '====================================',
-        '   BOS KROCO ERP - SYSTEM DETAILS   ',
+        '   MAFAZA GROUP ERP - SYSTEM DETAILS   ',
         '====================================',
-        'Aplikasi   : Bos Kroco ERP (FinTech Edition)',
+        'Aplikasi   : Mafaza Group ERP (FinTech Edition)',
         'Versi      : 2.4.0 Production Build (Stable)',
         'Basis Data : Supabase PostgreSQL Cloud Realtime',
         'Fitur      : Kasir POS, Multi-Gudang, Produksi HPP, Buku Kas, Upah Pekerja, Bot Telegram',
-        'Lisensi    : © 2026 Bos Kroco Inc. Seluruh Hak Dilindungi.',
+        'Lisensi    : © 2026 Mafaza Group Inc. Seluruh Hak Dilindungi.',
         'Waktu Cek  : ' + new Date().toLocaleString('id-ID')
     ].join('\n');
 

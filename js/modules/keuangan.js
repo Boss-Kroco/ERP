@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - KEUANGAN & KAS MODULE
+ * MAFAZA GROUP ERP - KEUANGAN & KAS MODULE
  * File: js/modules/keuangan.js
  * ============================================================================
  */
@@ -319,7 +319,7 @@ function submitKasManual() {
         if (typeof window.sendTelegramNotification === 'function') {
             var userNama = (window.currentUser && (window.currentUser.namaLengkap || window.currentUser.username)) || 'Petugas Kas';
             var icon = tipe === 'Masuk' ? '🟢' : '🔴';
-            var teleMsg = icon + ' *TRANSAKSI KAS ' + tipe.toUpperCase() + ' - BOS KROCO ERP*\n'
+            var teleMsg = icon + ' *TRANSAKSI KAS ' + tipe.toUpperCase() + ' - MAFAZA GROUP ERP*\n'
                 + '━━━━━━━━━━━━━━━━━━━━\n'
                 + '📂 *Kategori:* ' + payload.kategori + '\n'
                 + '💰 *Nominal:* ' + (window.formatAppCurrency(nominal)) + '\n'
@@ -371,7 +371,7 @@ function exportKeuanganCSV() {
     var blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
     var now = new Date();
     var dateStamp = now.getFullYear() + ('0' + (now.getMonth() + 1)).slice(-2) + ('0' + now.getDate()).slice(-2);
-    var filename = 'Laporan_Mutasi_Kas_BosKroco_' + dateStamp + '.csv';
+    var filename = 'Laporan_Mutasi_Kas_MafazaGroup_' + dateStamp + '.csv';
 
     if (navigator.msSaveBlob) {
         navigator.msSaveBlob(blob, filename);

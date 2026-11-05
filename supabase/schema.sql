@@ -1,5 +1,5 @@
 -- ============================================================================
--- BOS KROCO ERP - SUPABASE (POSTGRESQL) SCHEMA DDL
+-- MAFAZA GROUP ERP - SUPABASE (POSTGRESQL) SCHEMA DDL
 -- Arsitektur: 13 Tabel Terintegrasi, Foreign Keys, Indexes & Constraints
 -- Timezone: Asia/Jakarta (WIB)
 -- ============================================================================

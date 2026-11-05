@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - TENAGA KERJA & UPAH MODULE
+ * MAFAZA GROUP ERP - TENAGA KERJA & UPAH MODULE
  * File: js/modules/tenagakerja.js
  * ============================================================================
  */

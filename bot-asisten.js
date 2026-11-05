@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - BOT ASISTEN TELEGRAM CERDAS (INTERAKTIF 2-ARAH)
+ * MAFAZA GROUP ERP - BOT ASISTEN TELEGRAM CERDAS (INTERAKTIF 2-ARAH)
  * ============================================================================
  * Asisten bisnis otomatis yang terhubung langsung ke database Supabase Cloud.
  * Fitur:
@@ -53,7 +53,7 @@ let config = {
     teleToken: '',
     teleChatId: '',
     teleEnabled: true,
-    botName: 'Asisten Virtual Bos Kroco ERP'
+    botName: 'Asisten Virtual Mafaza Group ERP'
 };
 
 let isPolling = false;
@@ -151,9 +151,9 @@ function getWelcomeMessage(firstName) {
     else salamWaktu = 'Selamat Malam';
 
     return `👋 *${salamWaktu}, ${sapaan}!*
-Semoga hari ini penuh berkah, kelancaran usaha, dan bisnis Bos Kroco semakin maju pesat. 📈✨
+Semoga hari ini penuh berkah, kelancaran usaha, dan bisnis Mafaza Group semakin maju pesat. 📈✨
 
-Saya adalah *Asisten Virtual Bos Kroco ERP*, asisten bisnis cerdas Anda yang terhubung langsung secara *real-time* ke sistem database operasional usaha Anda.
+Saya adalah *Asisten Virtual Mafaza Group ERP*, asisten bisnis cerdas Anda yang terhubung langsung secara *real-time* ke sistem database operasional usaha Anda.
 
 💼 *Layanan Informasi Cepat yang Siap Saya Bantu:*
 • 📊 *Ringkasan Hari Ini* : Laporan omzet penjualan, diskon & produk terlaris
@@ -395,7 +395,7 @@ async function handleAgendaHariIni() {
 }
 
 function handleBantuan() {
-    return `❓ *PANDUAN ASISTEN VIRTUAL BOS KROCO ERP*
+    return `❓ *PANDUAN ASISTEN VIRTUAL MAFAZA GROUP ERP*
 ──────────────────────────────
 Anda dapat menekan tombol menu di keyboard bawah atau mengetik pesan bebas seperti:
 
@@ -407,7 +407,7 @@ Anda dapat menekan tombol menu di keyboard bawah atau mengetik pesan bebas seper
 • *"Agenda"* / *"Jatuh tempo"* → Cek jadwal dan tagihan
 • *"Help"* / *"Menu"* → Menampilkan pesan bantuan ini
 
-💡 *Asisten ini bekerja secara real-time langsung ke database Bos Kroco ERP Anda.*`;
+💡 *Asisten ini bekerja secara real-time langsung ke database Mafaza Group ERP Anda.*`;
 }
 
 async function processIncomingMessage(msg) {
@@ -481,12 +481,12 @@ async function processIncomingMessage(msg) {
     }
 
     if (lower.includes('terima kasih') || lower.includes('makasih') || lower.includes('mantap') || lower.includes('keren')) {
-        await sendTelegramMessage(chatId, 'Sama-sama Bapak Owner! Senang bisa membantu kemajuan bisnis Bos Kroco ERP. 🚀 Silakan pilih menu di bawah jika butuh informasi lain.');
+        await sendTelegramMessage(chatId, 'Sama-sama Bapak Owner! Senang bisa membantu kemajuan bisnis Mafaza Group ERP. 🚀 Silakan pilih menu di bawah jika butuh informasi lain.');
         return;
     }
 
     if (lower.includes('siapa kamu') || lower.includes('siapa anda')) {
-        await sendTelegramMessage(chatId, 'Saya adalah *Asisten Virtual Cerdas Bos Kroco ERP*, siap mendampingi operasional toko, penjualan, kas, dan stok Anda 24 jam non-stop.');
+        await sendTelegramMessage(chatId, 'Saya adalah *Asisten Virtual Cerdas Mafaza Group ERP*, siap mendampingi operasional toko, penjualan, kas, dan stok Anda 24 jam non-stop.');
         return;
     }
 

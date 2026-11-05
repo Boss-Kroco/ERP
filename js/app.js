@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - MAIN APPLICATION ORCHESTRATOR
+ * MAFAZA GROUP ERP - MAIN APPLICATION ORCHESTRATOR
  * File: js/app.js
  * ============================================================================
  */
@@ -299,10 +299,10 @@ window.loadAllViews = async function () {
 
         window._viewsLoaded = true;
         if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();
-        console.log('[Bos Kroco] Seluruh 11 modul view berhasil dimuat.');
+        console.log('[Mafaza Group] Seluruh 11 modul view berhasil dimuat.');
         return true;
     } catch (err) {
-        console.error('[Bos Kroco] Gagal memuat view templates:', err);
+        console.error('[Mafaza Group] Gagal memuat view templates:', err);
         return false;
     }
 };

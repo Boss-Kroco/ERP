@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - USER PROFILE MODULE
+ * MAFAZA GROUP ERP - USER PROFILE MODULE
  * File: js/modules/profil.js
  * ============================================================================
  */

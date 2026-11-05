@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - STOCK OPNAME & AUDIT FISIK MODULE
+ * MAFAZA GROUP ERP - STOCK OPNAME & AUDIT FISIK MODULE
  * File: js/modules/opname.js
  * ============================================================================
  */

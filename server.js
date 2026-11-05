@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - HIGH PERFORMANCE LOCAL SERVER & BOT ASISTEN RUNNER
+ * MAFAZA GROUP ERP - HIGH PERFORMANCE LOCAL SERVER & BOT ASISTEN RUNNER
  * ============================================================================
  * Menjalankan server web lokal (localhost:8080) sekaligus Bot Asisten Telegram.
  * Zero external dependencies - Murni Node.js Standard Library.
@@ -99,7 +99,7 @@ const server = http.createServer((req, res) => {
             running: true,
             hasToken: Boolean(cfg.teleToken),
             enabled: cfg.teleEnabled,
-            botName: cfg.botName || 'Asisten Virtual Bos Kroco ERP'
+            botName: cfg.botName || 'Asisten Virtual Mafaza Group ERP'
         });
     }
 
@@ -150,7 +150,7 @@ server.on('error', (err) => {
 
 server.listen(PORT, HOST, () => {
     console.log('============================================================');
-    console.log('  BOS KROCO ERP - LOCAL SERVER & ASISTEN TELEGRAM RUNNER');
+    console.log('  MAFAZA GROUP ERP - LOCAL SERVER & ASISTEN TELEGRAM RUNNER');
     console.log('============================================================');
     console.log(`  Web App       : http://${HOST}:${PORT}`);
     console.log(`  Localhost     : http://localhost:${PORT}`);

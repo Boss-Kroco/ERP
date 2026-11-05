@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - AUTH & ROLE-BASED ACCESS CONTROL (RBAC)
+ * MAFAZA GROUP ERP - AUTH & ROLE-BASED ACCESS CONTROL (RBAC)
  * File: js/auth.js
  * ============================================================================
  */

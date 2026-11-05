@@ -1,5 +1,5 @@
 -- ============================================================================
--- BOS KROCO ERP - SUPABASE ROW LEVEL SECURITY (RLS) POLICIES
+-- MAFAZA GROUP ERP - SUPABASE ROW LEVEL SECURITY (RLS) POLICIES
 -- Keamanan: Akses anon read-write untuk aplikasi web (atau JWT auth)
 -- ============================================================================
 

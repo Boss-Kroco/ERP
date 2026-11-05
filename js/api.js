@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - UNIFIED API & DATA SERVICE LAYER
+ * MAFAZA GROUP ERP - UNIFIED API & DATA SERVICE LAYER
  * File: js/api.js
  * Arsitektur: Dual-Mode (Supabase PostgreSQL REST + Resilient Local Simulation)
  * ============================================================================

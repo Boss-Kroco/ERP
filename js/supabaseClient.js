@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - SUPABASE CLIENT INITIALIZER
+ * MAFAZA GROUP ERP - SUPABASE CLIENT INITIALIZER
  * File: js/supabaseClient.js
  * ============================================================================
  */

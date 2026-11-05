@@ -15,7 +15,7 @@ module.exports = (req, res) => {
                 teleToken: process.env.TELE_TOKEN || '8872442838:AAHldgtZwM9MalYQU4UXtlX8orUTKf6GjbE',
                 teleChatId: process.env.TELE_CHAT_ID || '2102171167',
                 teleEnabled: true,
-                botName: 'Asisten Virtual Bos Kroco ERP'
+                botName: 'Asisten Virtual Mafaza Group ERP'
             }
         });
     }

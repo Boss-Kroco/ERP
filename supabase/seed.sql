@@ -1,5 +1,5 @@
 -- ============================================================================
--- BOS KROCO ERP - SEED DATA RESMI DARI SETUP.GS
+-- MAFAZA GROUP ERP - SEED DATA RESMI DARI SETUP.GS
 -- Total 10 Record Realistis & Terintegrasi per Tabel
 -- ============================================================================
 

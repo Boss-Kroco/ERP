@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - POINT OF SALE (POS) MODULE
+ * MAFAZA GROUP ERP - POINT OF SALE (POS) MODULE
  * File: js/modules/pos.js
  * ============================================================================
  */
@@ -526,7 +526,7 @@ function submitTransaksiPOS() {
                 }).join('\n');
 
                 var userNama = (window.currentUser && (window.currentUser.namaLengkap || window.currentUser.username)) || 'Kasir';
-                var teleMsg = '🔔 *PENJUALAN POS BARU - BOS KROCO ERP*\n'
+                var teleMsg = '🔔 *PENJUALAN POS BARU - MAFAZA GROUP ERP*\n'
                     + '━━━━━━━━━━━━━━━━━━━━\n'
                     + '🧾 *No. Nota:* `' + (res.trxId || newTrx.id) + '` (' + newTrx.orderNum + ')\n'
                     + '👤 *Pelanggan:* ' + custName + '\n'

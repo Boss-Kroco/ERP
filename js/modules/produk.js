@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - MASTER PRODUK MODULE
+ * MAFAZA GROUP ERP - MASTER PRODUK MODULE
  * File: js/modules/produk.js
  * ============================================================================
  */

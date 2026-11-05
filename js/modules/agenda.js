@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - AGENDA & KALENDER OPERASIONAL
+ * MAFAZA GROUP ERP - AGENDA & KALENDER OPERASIONAL
  * File: js/modules/agenda.js
  * ============================================================================
  */
@@ -24,7 +24,7 @@ var escapeHtml = function (text) {
         .replace(/'/g, '&#039;');
 };
 
-// Initial Seed Data untuk Operasional Bos Kroco
+// Initial Seed Data untuk Operasional Mafaza Group
 var DEFAULT_AGENDAS = [
     {
         id: 'AGD-20260909-001',
@@ -1493,7 +1493,7 @@ window.generateNextRecurringAgenda = function (currentAgenda, agendasList) {
                 status: 'pending',
                 createdAt: new Date().toISOString()
             });
-            console.log('[Bos Kroco Agenda] Jadwal berulang berikutnya dibuat untuk tanggal:', nextIso);
+            console.log('[Mafaza Group Agenda] Jadwal berulang berikutnya dibuat untuk tanggal:', nextIso);
         }
     } catch (err) {
         console.error('Gagal generate jadwal berulang:', err);

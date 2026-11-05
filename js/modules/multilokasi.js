@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - MULTILOKASI & TRANSFER STOK MODULE
+ * MAFAZA GROUP ERP - MULTILOKASI & TRANSFER STOK MODULE
  * File: js/modules/multilokasi.js
  * ============================================================================
  */

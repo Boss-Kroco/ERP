@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO - ENTERPRISE BACKEND LOGIC ENGINE
+ * MAFAZA GROUP - ENTERPRISE BACKEND LOGIC ENGINE
  * File: code.gs
  * Arsitektur: Anti-Lag, Safe Data Passing, RBAC & Batch Processing
  * Timezone: Asia/Jakarta (WIB)
@@ -30,7 +30,7 @@ function hashPassword(password) {
 function doGet(e) {
   var template = HtmlService.createTemplateFromFile('index');
   return template.evaluate()
-    .setTitle('Bos Kroco ERP - POS & Multi-Location Manufacturing')
+    .setTitle('Mafaza Group ERP - POS & Multi-Location Manufacturing')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
@@ -1170,12 +1170,12 @@ function apiGenerateDocumentPdf(payload) {
       + '.total-box { margin-top: 24px; font-size: 16px; font-weight: bold; text-align: right; color: #4a35c5; }'
       + '</style></head><body>'
       + '<div class="header-box">'
-      + '<h2>BOS KROCO ERP ENTERPRISE</h2>'
+      + '<h2>MAFAZA GROUP ERP ENTERPRISE</h2>'
       + '<p style="margin:2px 0; font-size:12px; color:#64748b;">Sistem POS Kasir & Manufaktur Multi-Lokasi Terintegrasi | Telp: 0812-3456-7890</p>'
       + '<p style="margin:6px 0 0; font-size:12px;"><b>No Dokumen:</b> ' + docId + ' | <b>Tipe:</b> ' + docType + '</p>'
       + (customerInfo ? '<p style="margin:4px 0 0; font-size:12px; color:#334155;">' + customerInfo + '</p>' : '')
       + '</div>'
-      + '<p style="font-size:12px; color:#475569;">Dokumen ini adalah bukti transaksi resmi yang digenerate oleh Bos Kroco Engine.</p>'
+      + '<p style="font-size:12px; color:#475569;">Dokumen ini adalah bukti transaksi resmi yang digenerate oleh Mafaza Group Engine.</p>'
       + '<table>'
       + '<thead><tr><th>No</th><th>Deskripsi Transaksi / Produk</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Harga</th><th style="text-align:right;">Subtotal</th></tr></thead>'
       + '<tbody>'
@@ -1183,7 +1183,7 @@ function apiGenerateDocumentPdf(payload) {
       + '</tbody>'
       + '</table>'
       + summaryHtml
-      + '<div style="margin-top:30px; font-size:11px; text-align:center; color:#94a3b8; border-top:1px solid #e2e8f0; padding-top:12px;">Terima kasih atas kerja sama Anda. Bos Kroco ERP Enterprise.</div>'
+      + '<div style="margin-top:30px; font-size:11px; text-align:center; color:#94a3b8; border-top:1px solid #e2e8f0; padding-top:12px;">Terima kasih atas kerja sama Anda. Mafaza Group ERP Enterprise.</div>'
       + '</body></html>';
 
     var blob = Utilities.newBlob(htmlContent, 'text/html', title + '.html').getAs('application/pdf');
@@ -1423,9 +1423,9 @@ function apiBackupToDriveAndSheets(payload) {
 
     // 3. Simpan File JSON Snapshot Mandiri ke Google Drive
     var fileUrl = '-';
-    var fileName = 'Backup_BossKroco_' + dateSlug + '.json';
+    var fileName = 'Backup_MafazaGroup_' + dateSlug + '.json';
     try {
-      var folderName = 'Boss Kroco Backups';
+      var folderName = 'Mafaza Group Backups';
       var folders = DriveApp.getFoldersByName(folderName);
       var targetFolder;
       if (folders.hasNext()) {

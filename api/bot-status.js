@@ -5,6 +5,6 @@ module.exports = (req, res) => {
         success: true,
         running: true,
         platform: 'vercel',
-        botName: 'Asisten Virtual Bos Kroco ERP'
+        botName: 'Asisten Virtual Mafaza Group ERP'
     });
 };

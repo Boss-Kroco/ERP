@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - DASHBOARD MODULE
+ * MAFAZA GROUP ERP - DASHBOARD MODULE
  * File: js/modules/dashboard.js
  * ============================================================================
  */

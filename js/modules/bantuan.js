@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * BOS KROCO ERP - PUSAT BANTUAN & DUKUNGAN (HELP CENTER & SUPPORT TICKETS)
+ * MAFAZA GROUP ERP - PUSAT BANTUAN & DUKUNGAN (HELP CENTER & SUPPORT TICKETS)
  * File: js/modules/bantuan.js
  * ============================================================================
  */
@@ -41,7 +41,7 @@ window.toggleFaqAccordion = function (idx) {
 };
 
 /**
- * Data Panduan Penggunaan Fitur Bos Kroco ERP
+ * Data Panduan Penggunaan Fitur Mafaza Group ERP
  */
 var GUIDE_CONTENTS = {
     'produksi': {
@@ -57,7 +57,7 @@ var GUIDE_CONTENTS = {
             },
             {
                 title: '2. Tentukan Produk Jadi & Target Unit',
-                text: 'Pilih produk jadi (misal: Bos Kroco Original / Pedas) dan masukkan jumlah unit bungkus yang berhasil diproduksi.'
+                text: 'Pilih produk jadi (misal: Mafaza Tempe Crispy Original / Pedas) dan masukkan jumlah unit bungkus yang berhasil diproduksi.'
             },
             {
                 title: '3. Masukkan Biaya Bahan Baku & Overhead',
@@ -275,7 +275,7 @@ window.submitSupportTicket = function () {
 
     // Kirim notifikasi otomatis ke Bot Telegram jika terhubung
     if (typeof window.sendTelegramNotification === 'function') {
-        var teleMsg = '🎫 *TIKET BANTUAN BARU - BOS KROCO ERP*\n'
+        var teleMsg = '🎫 *TIKET BANTUAN BARU - MAFAZA GROUP ERP*\n'
             + '━━━━━━━━━━━━━━━━━━━━\n'
             + '🆔 *ID Tiket:* `' + ticketId + '`\n'
             + '👤 *Pengirim:* ' + nama + '\n'
@@ -559,7 +559,7 @@ window.submitTicketReply = function (ticketId) {
 
         // Kirim notifikasi Telegram jika bot Telegram aktif
         if (typeof window.sendTelegramNotification === 'function' && targetTicket) {
-            var teleMsg = '💬 *TANGGAPAN TIKET BANTUAN - BOS KROCO ERP*\n'
+            var teleMsg = '💬 *TANGGAPAN TIKET BANTUAN - MAFAZA GROUP ERP*\n'
                 + '━━━━━━━━━━━━━━━━━━━━\n'
                 + '🆔 *ID Tiket:* `' + ticketId + '`\n'
                 + '👤 *Penanya:* ' + (targetTicket.nama || '-') + '\n'
