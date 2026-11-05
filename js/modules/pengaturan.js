@@ -129,6 +129,31 @@ window.openSettingModal = function (modalId) {
     var modal = document.getElementById(modalId);
     if (modal) modal.classList.add('active');
 
+    if (modalId === 'modalSetData') {
+        var lblLast = document.getElementById('lblLastBackupTime');
+        var lastBackup = localStorage.getItem('bos_kroco_last_backup');
+        if (lblLast) {
+            lblLast.textContent = lastBackup || 'Belum Ada Cadangan Terdata';
+        }
+        var inpWebhook = document.getElementById('inpGDriveWebhook');
+        var savedWebhook = localStorage.getItem('bos_kroco_gdrive_webhook') || '';
+        if (inpWebhook) inpWebhook.value = savedWebhook;
+
+        var chkAuto = document.getElementById('chkAutoBackupDaily');
+        if (chkAuto) chkAuto.checked = localStorage.getItem('bos_kroco_auto_backup') === 'true';
+
+        var lblStatus = document.getElementById('lblGDriveStatus');
+        if (lblStatus) {
+            if (savedWebhook) {
+                lblStatus.innerHTML = '<span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block;"></span> Tersambung';
+                lblStatus.style.color = '#10b981';
+            } else {
+                lblStatus.innerHTML = '<span style="width: 6px; height: 6px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span> Siap Dikonfigurasi';
+                lblStatus.style.color = '#f59e0b';
+            }
+        }
+    }
+
     if (modalId === 'modalSetTelegram') {
         var inpToken = document.getElementById('setTeleToken');
         var inpChat = document.getElementById('setTeleChatId');
@@ -670,12 +695,143 @@ window.sendTelegramNotification = function (textMsg, callback) {
     }
 };
 
+/**
+ * ============================================================================
+ * MODUL CADANGAN, ARSIP GOOGLE DRIVE & PEMULIHAN DATA (DISASTER RECOVERY)
+ * ============================================================================
+ */
+
+window.toggleGDriveConfigBox = function () {
+    var box = document.getElementById('boxGDriveConfig');
+    if (box) {
+        box.style.display = (box.style.display === 'none' || !box.style.display) ? 'block' : 'none';
+    }
+};
+
+window.saveGDriveWebhook = function () {
+    var inp = document.getElementById('inpGDriveWebhook');
+    var url = (inp && inp.value) ? inp.value.trim() : '';
+    if (!url) {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Harap masukkan URL Web App Google Apps Script.', 'error');
+        }
+        return;
+    }
+    localStorage.setItem('bos_kroco_gdrive_webhook', url);
+    var lblStatus = document.getElementById('lblGDriveStatus');
+    if (lblStatus) {
+        lblStatus.innerHTML = '<span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block;"></span> Tersambung';
+        lblStatus.style.color = '#10b981';
+    }
+    if (typeof window.showToast === 'function') {
+        window.showToast('URL Google Apps Script berhasil disimpan!', 'success');
+    }
+};
+
+window.toggleAutoBackup = function (el) {
+    var isChecked = el ? el.checked : false;
+    localStorage.setItem('bos_kroco_auto_backup', isChecked ? 'true' : 'false');
+    if (typeof window.showToast === 'function') {
+        window.showToast(isChecked ? 'Cadangan harian otomatis diaktifkan.' : 'Cadangan harian otomatis dimatikan.', 'info');
+    }
+};
+
+window.backupToGoogleDriveAndSheets = function (isSilent) {
+    var btn = document.getElementById('btnSyncGDrive');
+    var btnText = document.getElementById('btnSyncGDriveText');
+    var webhookUrl = localStorage.getItem('bos_kroco_gdrive_webhook');
+
+    if (!webhookUrl) {
+        if (!isSilent) {
+            window.toggleGDriveConfigBox();
+            if (typeof window.showToast === 'function') {
+                window.showToast('Harap atur URL Web App Google Apps Script di menu Konfigurasi Webhook terlebih dahulu.', 'error');
+            }
+        }
+        return;
+    }
+
+    if (btn && !isSilent) {
+        btn.disabled = true;
+        if (btnText) btnText.textContent = 'Mencadangkan ke Google Drive & Sheets...';
+    }
+
+    var backupPayload = {
+        action: 'backupData',
+        data: {
+            app: 'Bos Kroco ERP',
+            version: '2.4.0',
+            timestamp: new Date().toISOString(),
+            currentUser: window.currentUser || null,
+            orders: window.orderTransactions || [],
+            products: window.catalogProducts || [],
+            rekanan: window.mitraTokoList || [],
+            appSettings: localStorage.getItem('bos_kroco_app_settings') || null
+        }
+    };
+
+    fetch(webhookUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(backupPayload)
+    })
+    .then(function () {
+        var now = new Date();
+        var nowFormatted = now.toLocaleDateString('id-ID', {
+            day: '2-digit', month: 'short', year: 'numeric'
+        }) + ', ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+
+        localStorage.setItem('bos_kroco_last_backup', nowFormatted);
+        var lblLast = document.getElementById('lblLastBackupTime');
+        if (lblLast) lblLast.textContent = nowFormatted;
+
+        if (!isSilent && typeof window.showToast === 'function') {
+            window.showToast('Cadangan data berhasil dikirim ke Google Spreadsheet & Google Drive!', 'success');
+        }
+    })
+    .catch(function (err) {
+        console.error('[Backup Error]:', err);
+        if (!isSilent && typeof window.showToast === 'function') {
+            window.showToast('Gagal mengirim cadangan ke Google Drive: ' + err.message, 'error');
+        }
+    })
+    .finally(function () {
+        if (btn && !isSilent) {
+            btn.disabled = false;
+            if (btnText) btnText.textContent = 'Cadangkan ke Google Drive & Sheets Sekarang';
+        }
+    });
+};
+
+window.checkDailyAutoBackup = function () {
+    try {
+        var isAuto = localStorage.getItem('bos_kroco_auto_backup') === 'true';
+        var webhookUrl = localStorage.getItem('bos_kroco_gdrive_webhook');
+        if (!isAuto || !webhookUrl) return;
+
+        var todayStr = new Date().toISOString().slice(0, 10);
+        var lastAutoDate = localStorage.getItem('bos_kroco_last_auto_date');
+        if (lastAutoDate !== todayStr) {
+            localStorage.setItem('bos_kroco_last_auto_date', todayStr);
+            setTimeout(function () {
+                window.backupToGoogleDriveAndSheets(true);
+                console.log('[AutoBackup] Cadangan harian otomatis berhasil dikirim ke Google Drive (' + todayStr + ')');
+            }, 5000);
+        }
+    } catch (e) {
+        console.warn('[AutoBackup] Gagal mengecek cadangan harian:', e);
+    }
+};
+
 window.exportFullJSONBackup = function () {
     var backupData = {
         app: 'Bos Kroco ERP',
         version: '2.4.0',
         timestamp: new Date().toISOString(),
-        currentUser: window.currentUser,
+        currentUser: window.currentUser || null,
         orders: window.orderTransactions || [],
         products: window.catalogProducts || [],
         rekanan: window.mitraTokoList || [],
@@ -693,10 +849,135 @@ window.exportFullJSONBackup = function () {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
+    var now = new Date();
+    var nowFormatted = now.toLocaleDateString('id-ID', {
+        day: '2-digit', month: 'short', year: 'numeric'
+    }) + ', ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+    localStorage.setItem('bos_kroco_last_backup', nowFormatted);
+    var lblLast = document.getElementById('lblLastBackupTime');
+    if (lblLast) lblLast.textContent = nowFormatted;
+
     if (typeof window.showToast === 'function') {
         window.showToast('Cadangan basis data JSON berhasil diunduh!', 'success');
     }
-    window.closeSettingModal('modalSetData');
+};
+
+window.exportFullCSVArchive = function () {
+    var orders = window.orderTransactions || [];
+    if (!orders || orders.length === 0) {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Belum ada data transaksi untuk diekspor ke CSV.', 'error');
+        }
+        return;
+    }
+
+    var headers = ['No', 'No Order', 'Tanggal', 'Pelanggan', 'No HP', 'Kategori/Item', 'Total (Rp)', 'Metode', 'Status'];
+    var csvRows = [headers.join(',')];
+
+    for (var i = 0; i < orders.length; i++) {
+        var o = orders[i];
+        var row = [
+            i + 1,
+            '"' + String(o.orderNum || '').replace(/"/g, '""') + '"',
+            '"' + String(o.date || '').replace(/"/g, '""') + '"',
+            '"' + String(o.customer || '').replace(/"/g, '""') + '"',
+            '"' + String(o.phone || '').replace(/"/g, '""') + '"',
+            '"' + String(o.category || '').replace(/"/g, '""') + '"',
+            o.price || 0,
+            '"' + String(o.payment || '').replace(/"/g, '""') + '"',
+            '"' + String(o.status || '').replace(/"/g, '""') + '"'
+        ];
+        csvRows.push(row.join(','));
+    }
+
+    var csvString = '\uFEFF' + csvRows.join('\r\n');
+    var blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'Arsip_Transaksi_BosKroco_' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    if (typeof window.showToast === 'function') {
+        window.showToast('Rekap transaksi CSV berhasil diunduh untuk Excel / Spreadsheet!', 'success');
+    }
+};
+
+window.handleRestoreFileSelected = function (inputEl) {
+    var file = inputEl && inputEl.files ? inputEl.files[0] : null;
+    if (!file) return;
+
+    if (!file.name.endsWith('.json')) {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Harap pilih berkas cadangan berekstensi .json', 'error');
+        }
+        inputEl.value = '';
+        return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function (e) {
+        try {
+            var content = e.target.result;
+            var parsed = JSON.parse(content);
+
+            if (!parsed || (!parsed.orders && !parsed.products && !parsed.app)) {
+                throw new Error('Format berkas cadangan tidak valid atau rusak.');
+            }
+
+            var ordersCount = (parsed.orders && Array.isArray(parsed.orders)) ? parsed.orders.length : 0;
+            var productsCount = (parsed.products && Array.isArray(parsed.products)) ? parsed.products.length : 0;
+            var backupDate = parsed.timestamp ? new Date(parsed.timestamp).toLocaleString('id-ID') : 'Tidak diketahui';
+
+            var confirmMsg = 'Konfirmasi Pemulihan Data:\n\n' +
+                '- Tanggal Berkas: ' + backupDate + '\n' +
+                '- Transaksi Ditemukan: ' + ordersCount + ' transaksi\n' +
+                '- Produk Ditemukan: ' + productsCount + ' item\n\n' +
+                'Apakah Anda yakin ingin memulihkan data ini? Data aktif di aplikasi akan disesuaikan dengan data cadangan ini.';
+
+            if (!window.confirm(confirmMsg)) {
+                inputEl.value = '';
+                return;
+            }
+
+            if (parsed.orders && Array.isArray(parsed.orders)) {
+                window.orderTransactions = parsed.orders;
+            }
+            if (parsed.products && Array.isArray(parsed.products)) {
+                window.catalogProducts = parsed.products;
+            }
+            if (parsed.rekanan && Array.isArray(parsed.rekanan)) {
+                window.mitraTokoList = parsed.rekanan;
+            }
+
+            if (typeof window.renderOrderTable === 'function') {
+                window.renderOrderTable();
+            }
+            if (typeof window.updateDashboardAnalytics === 'function') {
+                window.updateDashboardAnalytics();
+            }
+            if (typeof window.loadDashboardData === 'function') {
+                window.loadDashboardData();
+            }
+
+            if (typeof window.showToast === 'function') {
+                window.showToast('Pemulihan data berhasil! ' + ordersCount + ' transaksi telah dipulihkan.', 'success');
+            }
+
+            window.closeSettingModal('modalSetData');
+        } catch (err) {
+            console.error('[Restore Error]:', err);
+            if (typeof window.showToast === 'function') {
+                window.showToast('Gagal memulihkan cadangan: ' + err.message, 'error');
+            }
+        } finally {
+            inputEl.value = '';
+        }
+    };
+    reader.readAsText(file);
 };
 
 window.clearLocalCacheAndResync = function () {
@@ -775,3 +1056,8 @@ window.copyAboutSystemInfo = function () {
     }
 };
 
+
+
+if (typeof window.checkDailyAutoBackup === 'function') {
+    window.checkDailyAutoBackup();
+}

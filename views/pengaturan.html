@@ -363,32 +363,161 @@
         </div>
     </div>
 
-    <!-- Modal 4: Manajemen Data -->
+    <!-- Modal 4: Pusat Cadangan, Arsip & Pemulihan Data -->
     <div class="modal-overlay-custom" id="modalSetData">
-        <div class="modal-sheet-card">
+        <div class="modal-sheet-card" style="max-width: 520px; max-height: 88vh; display: flex; flex-direction: column;">
             <div class="modal-sheet-header">
                 <div class="modal-sheet-title">
                     <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/><path d="M3 19c0 1.66 4 3 9 3s9-1.34 9-3"/></svg>
-                    Manajemen Data &amp; Cadangan
+                    Pusat Cadangan &amp; Pemulihan Data
                 </div>
                 <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeSettingModal('modalSetData')">✕</button>
             </div>
-            <div class="modal-sheet-body" style="display: flex; flex-direction: column; gap: 14px;">
-                <div style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 12px;">
-                    <div style="font-weight: 700; font-size: 12.5px; color: var(--text-main); margin-bottom: 4px;">Cadangkan Seluruh Basis Data (JSON)</div>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Unduh snapshot lengkap transaksi, produk, piutang, dan log sistem ke file JSON terenkripsi.</div>
-                    <button type="button" class="btn-pill-action btn-pill-primary" onclick="exportFullJSONBackup()">
-                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                        Unduh Cadangan JSON
+            
+            <div class="modal-sheet-body" style="overflow-y: auto; padding: 16px 20px 24px; display: flex; flex-direction: column; gap: 14px;">
+                <!-- Status Bar Cadangan -->
+                <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 12px; padding: 12px 16px; color: #ffffff; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Cadangan Terakhir</div>
+                        <div id="lblLastBackupTime" style="font-size: 13px; font-weight: 800; color: #ffffff; margin-top: 2px;">Belum pernah dicadangkan</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 10px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Penyimpanan Google Drive</div>
+                        <div id="lblGDriveStatus" style="font-size: 11px; font-weight: 800; color: #34d399; margin-top: 2px; display: flex; align-items: center; justify-content: flex-end; gap: 4px;">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+                            Siap Digunakan
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bagian 1: Cadangkan ke Google Spreadsheet & Google Drive -->
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; box-shadow: 0 1px 3px rgba(15,23,42,0.03);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 28px; height: 28px; border-radius: 8px; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center;">
+                                <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                    <polyline points="17 21 17 13 7 13 7 21"/>
+                                    <polyline points="7 3 7 8 15 8"/>
+                                </svg>
+                            </div>
+                            <div style="font-weight: 800; font-size: 13px; color: #0f172a;">Cadangkan ke Google Drive &amp; Spreadsheet</div>
+                        </div>
+                        <span style="font-size: 9.5px; font-weight: 800; color: #059669; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 2px 7px; border-radius: 6px;">CLOUD SYNC</span>
+                    </div>
+                    <div style="font-size: 11.5px; color: #64748b; line-height: 1.4; margin-bottom: 12px;">
+                        Kirim salinan seluruh transaksi, stok produk, dan kas ke tab Spreadsheet serta buat arsip file (.JSON) otomatis di Google Drive.
+                    </div>
+
+                    <button type="button" id="btnSyncGDrive" class="btn-pill-action btn-pill-primary" onclick="window.backupToGoogleDriveAndSheets()" style="width: 100%; border-radius: 12px; padding: 9px 14px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; background: #059669; border-color: #059669;">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <span id="btnSyncGDriveText">Cadangkan ke Google Drive &amp; Sheets Sekarang</span>
+                    </button>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; margin-top: 10px; border-top: 1px solid #f1f5f9; font-size: 11px;">
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: #334155; font-weight: 700;">
+                            <input type="checkbox" id="chkAutoBackupDaily" onchange="window.toggleAutoBackup(this)" style="cursor: pointer;">
+                            Otomatis cadangkan harian saat tutup buku
+                        </label>
+                        <a href="javascript:void(0)" onclick="window.toggleGDriveConfigBox()" style="color: #4f46e5; font-weight: 700; text-decoration: none;">Konfigurasi Webhook ▼</a>
+                    </div>
+
+                    <div id="boxGDriveConfig" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; margin-top: 8px;">
+                        <div style="font-size: 10.5px; font-weight: 700; color: #475569; margin-bottom: 4px;">URL Web App Google Apps Script (Spreadsheet):</div>
+                        <div style="display: flex; gap: 6px;">
+                            <input type="text" id="inpGDriveWebhook" class="search-filter-input" placeholder="https://script.google.com/macros/s/.../exec" style="flex: 1; font-size: 11px; padding: 6px 10px; border-radius: 8px;">
+                            <button type="button" class="btn-pill-action btn-pill-secondary" onclick="window.saveGDriveWebhook()" style="border-radius: 8px; font-size: 11px; padding: 6px 10px;">Simpan</button>
+                        </div>
+                        <div style="font-size: 10px; color: #94a3b8; margin-top: 4px;">Gunakan deployment Web App dari berkas code.gs untuk menghubungkan Spreadsheet &amp; Google Drive.</div>
+                    </div>
+                </div>
+
+                <!-- Bagian 2: Unduh File Cadangan Mandiri (Offline Backup) -->
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; box-shadow: 0 1px 3px rgba(15,23,42,0.03);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 28px; height: 28px; border-radius: 8px; background: #eef2ff; color: #4f46e5; display: flex; align-items: center; justify-content: center;">
+                                <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                            </div>
+                            <div style="font-weight: 800; font-size: 13px; color: #0f172a;">Unduh Cadangan Mandiri (Offline File)</div>
+                        </div>
+                        <span style="font-size: 9.5px; font-weight: 800; color: #4f46e5; background: #eef2ff; border: 1px solid #c7d2fe; padding: 2px 7px; border-radius: 6px;">LOCAL BACKUP</span>
+                    </div>
+                    <div style="font-size: 11.5px; color: #64748b; line-height: 1.4; margin-bottom: 12px;">
+                        Simpan berkas cadangan ke komputer / HP Anda untuk arsip aman yang bisa dibuka tanpa koneksi internet.
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <button type="button" class="btn-pill-action btn-pill-primary" onclick="window.exportFullJSONBackup()" style="border-radius: 12px; padding: 8px 10px; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            Cadangan Lengkap (.JSON)
+                        </button>
+
+                        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="window.exportFullCSVArchive()" style="border-radius: 12px; padding: 8px 10px; font-size: 11.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            Rekap Transaksi (.CSV)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bagian 3: Pulihkan Basis Data dari Berkas Cadangan (Restore Database) -->
+                <div style="background: #ffffff; border: 1px solid #fed7aa; border-radius: 14px; padding: 14px; box-shadow: 0 1px 3px rgba(249,115,22,0.03);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 28px; height: 28px; border-radius: 8px; background: #fff7ed; color: #ea580c; display: flex; align-items: center; justify-content: center;">
+                                <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="1 4 1 10 7 10"/>
+                                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                                </svg>
+                            </div>
+                            <div style="font-weight: 800; font-size: 13px; color: #0f172a;">Pulihkan Data dari Berkas Cadangan (Restore)</div>
+                        </div>
+                        <span style="font-size: 9.5px; font-weight: 800; color: #ea580c; background: #fff7ed; border: 1px solid #fed7aa; padding: 2px 7px; border-radius: 6px;">PEMULIHAN</span>
+                    </div>
+                    <div style="font-size: 11.5px; color: #64748b; line-height: 1.4; margin-bottom: 12px;">
+                        Jika sewaktu-waktu terjadi salah hapus data atau kendala server, unggah berkas cadangan (.JSON) untuk memulihkan seluruh data transaksi dan produk.
+                    </div>
+
+                    <!-- Hidden file input for restore -->
+                    <input type="file" id="inpRestoreDatabaseFile" accept=".json" style="display: none;" onchange="window.handleRestoreFileSelected(this)">
+                    
+                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="document.getElementById('inpRestoreDatabaseFile').click()" style="width: 100%; border-radius: 12px; padding: 9px 14px; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; border-color: #ea580c; color: #c2410c; background: #fff7ed;">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Pilih Berkas Cadangan (.JSON) &amp; Pulihkan
                     </button>
                 </div>
 
-                <div style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 12px;">
-                    <div style="font-weight: 700; font-size: 12.5px; color: var(--text-main); margin-bottom: 4px;">Pembersihan Cache &amp; Resinkronisasi</div>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Bersihkan data sementara di browser dan tarik data termutakhir dari Supabase Cloud.</div>
-                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="clearLocalCacheAndResync()">
-                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                        Bersihkan Cache &amp; Sinkron
+                <!-- Bagian 4: Pembersihan Cache & Resinkronisasi Cloud -->
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; box-shadow: 0 1px 3px rgba(15,23,42,0.03);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 28px; height: 28px; border-radius: 8px; background: #f8fafc; color: #475569; display: flex; align-items: center; justify-content: center;">
+                                <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                                    <path d="M3 3v5h5"/>
+                                </svg>
+                            </div>
+                            <div style="font-weight: 800; font-size: 13px; color: #0f172a;">Pembersihan Cache &amp; Resinkronisasi Cloud</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 11.5px; color: #64748b; line-height: 1.4; margin-bottom: 12px;">
+                        Segarkan data sementara di browser dan tarik data paling mutakhir dari Supabase Cloud.
+                    </div>
+                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="window.clearLocalCacheAndResync()" style="width: 100%; border-radius: 12px; padding: 8px 14px; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                        Bersihkan Cache &amp; Sinkron Ulang
                     </button>
                 </div>
             </div>

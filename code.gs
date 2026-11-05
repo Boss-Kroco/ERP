@@ -1335,3 +1335,133 @@ function adminHashAllPasswords() {
   SpreadsheetApp.flush();
   Logger.log('Selesai: ' + count + ' password berhasil di-hash.');
 }
+
+/**
+ * ============================================================================
+ * MODUL CADANGAN OTOMATIS: GOOGLE SPREADSHEET & GOOGLE DRIVE
+ * ============================================================================
+ */
+
+/**
+ * Endpoint HTTP POST untuk menerima snapshot backup dari Web App ERP
+ */
+function doPost(e) {
+  try {
+    var contents = e && e.postData ? e.postData.contents : '';
+    var payload = {};
+    if (contents) {
+      payload = JSON.parse(contents);
+    }
+    var action = payload.action || '';
+    var data = payload.data || payload;
+
+    if (action === 'backupData' || action === 'apiBackupToDriveAndSheets') {
+      var res = apiBackupToDriveAndSheets(data);
+      return ContentService.createTextOutput(JSON.stringify(res))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'Action tidak dikenal' }))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ success: false, message: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * Simpan snapshot data ke Google Spreadsheet dan simpan arsip file JSON ke Google Drive
+ */
+function apiBackupToDriveAndSheets(payload) {
+  try {
+    payload = payload || {};
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var now = new Date();
+    var timestampStr = Utilities.formatDate(now, TIMEZONE_JKT, 'yyyy-MM-dd HH:mm:ss');
+    var dateSlug = Utilities.formatDate(now, TIMEZONE_JKT, 'yyyyMMdd_HHmmss');
+
+    // 1. Catat ke sheet Arsip_Backup_Log
+    var logSheet = ss.getSheetByName('Arsip_Backup_Log');
+    if (!logSheet) {
+      logSheet = ss.insertSheet('Arsip_Backup_Log');
+      logSheet.appendRow(['Timestamp', 'User', 'Jumlah Transaksi', 'Jumlah Produk', 'Ukuran Snapshot', 'Status', 'File Drive URL']);
+      logSheet.getRange(1, 1, 1, 7).setFontWeight('bold').setBackground('#f1f5f9');
+    }
+
+    // 2. Tulis / Perbarui snapshot data Transaksi ke sheet Arsip_Transaksi
+    var orders = payload.orders || [];
+    if (orders.length > 0) {
+      var orderSheet = ss.getSheetByName('Arsip_Transaksi');
+      if (!orderSheet) {
+        orderSheet = ss.insertSheet('Arsip_Transaksi');
+        orderSheet.appendRow(['ID Transaksi', 'No Order', 'Tanggal', 'Pelanggan', 'No HP', 'Produk / Kategori', 'Total (Rp)', 'Metode', 'Status']);
+        orderSheet.getRange(1, 1, 1, 9).setFontWeight('bold').setBackground('#f1f5f9');
+      }
+      var rowsToAdd = [];
+      for (var i = 0; i < orders.length; i++) {
+        var o = orders[i];
+        rowsToAdd.push([
+          o.id || '',
+          o.orderNum || '',
+          o.date || '',
+          o.customer || '',
+          o.phone || '',
+          o.category || '',
+          o.price || 0,
+          o.payment || '',
+          o.status || ''
+        ]);
+      }
+      var lastRow = orderSheet.getLastRow();
+      if (lastRow > 1) {
+        orderSheet.getRange(2, 1, lastRow - 1, 9).clearContent();
+      }
+      if (rowsToAdd.length > 0) {
+        orderSheet.getRange(2, 1, rowsToAdd.length, 9).setValues(rowsToAdd);
+      }
+    }
+
+    // 3. Simpan File JSON Snapshot Mandiri ke Google Drive
+    var fileUrl = '-';
+    var fileName = 'Backup_BossKroco_' + dateSlug + '.json';
+    try {
+      var folderName = 'Boss Kroco Backups';
+      var folders = DriveApp.getFoldersByName(folderName);
+      var targetFolder;
+      if (folders.hasNext()) {
+        targetFolder = folders.next();
+      } else {
+        targetFolder = DriveApp.createFolder(folderName);
+      }
+
+      var jsonBlob = Utilities.newBlob(JSON.stringify(payload, null, 2), 'application/json', fileName);
+      var createdFile = targetFolder.createFile(jsonBlob);
+      fileUrl = createdFile.getUrl();
+    } catch (driveErr) {
+      Logger.log('DriveApp Warning: ' + driveErr.toString());
+    }
+
+    // 4. Log status akhir
+    var userStr = (payload.currentUser && payload.currentUser.namaLengkap) ? payload.currentUser.namaLengkap : 'Admin';
+    logSheet.appendRow([
+      timestampStr,
+      userStr,
+      orders.length,
+      (payload.products ? payload.products.length : 0),
+      JSON.stringify(payload).length + ' bytes',
+      'Sukses Dicadangkan',
+      fileUrl
+    ]);
+
+    return {
+      success: true,
+      message: 'Cadangan data berhasil disimpan ke Google Spreadsheet dan Google Drive!',
+      timestamp: timestampStr,
+      driveFileUrl: fileUrl,
+      ordersCount: orders.length,
+      productsCount: (payload.products ? payload.products.length : 0)
+    };
+  } catch (err) {
+    return { success: false, message: 'Gagal mencadangkan data: ' + err.toString() };
+  }
+}
