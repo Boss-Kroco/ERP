@@ -1159,3 +1159,28 @@ window.copyAboutSystemInfo = function () {
 if (typeof window.checkDailyAutoBackup === 'function') {
     window.checkDailyAutoBackup();
 }
+
+/**
+ * Toggle Single-Column Accordion Drawer for Pusat Data
+ */
+window.toggleDataAccordion = function (itemId) {
+    var item = document.getElementById(itemId);
+    if (!item) return;
+    var body = item.querySelector('.data-accordion-body');
+    var chevron = item.querySelector('.data-accordion-chevron');
+    var isOpen = item.classList.contains('is-open');
+
+    if (isOpen) {
+        item.classList.remove('is-open');
+        item.style.borderColor = '#e2e8f0';
+        item.style.boxShadow = 'none';
+        if (body) body.style.display = 'none';
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+    } else {
+        item.classList.add('is-open');
+        item.style.borderColor = '#cbd5e1';
+        item.style.boxShadow = '0 4px 12px rgba(15, 23, 42, 0.05)';
+        if (body) body.style.display = 'block';
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+    }
+};
