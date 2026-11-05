@@ -507,9 +507,10 @@
             </div>
         </div>
 
-        <div style="margin-top: 28px; display: flex; justify-content: flex-end; gap: 12px;">
-            <button class="btn-pill-action btn-pill-secondary" style="padding: 10px 20px; border-radius: 8px;" onclick="document.getElementById('modalTambahJenisHpp').style.display='none'">Batal</button>
-            <button class="btn-pill-action btn-pill-primary" style="padding: 10px 20px; border-radius: 8px;" onclick="window.simpanProdukBaruHpp()">Simpan Makanan</button>
+        <div style="margin-top: 24px; display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 9px 14px; border-radius: 10px;" onclick="document.getElementById('modalTambahJenisHpp').style.display='none'">Tutup</button>
+            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 9px 14px; border-radius: 10px; font-weight: 700;" onclick="window.simpanProdukBaruHpp(false)">Simpan &amp; Tutup</button>
+            <button type="button" class="btn-pill-action btn-pill-primary" style="padding: 9px 16px; border-radius: 10px; font-weight: 800;" onclick="window.simpanProdukBaruHpp(true)">+ Simpan &amp; Tambah Lagi</button>
         </div>
     </div>
 </div>

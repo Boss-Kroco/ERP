@@ -286,3 +286,35 @@ window.submitTambahProduk = submitTambahProduk;
 window.openModalEditProduk = openModalEditProduk;
 window.closeModalEditProduk = closeModalEditProduk;
 window.submitEditProduk = submitEditProduk;
+
+/**
+ * Hapus Produk dari Master Produk & Database Supabase
+ */
+window.hapusProduk = function (produkId, namaProduk) {
+    var label = namaProduk || produkId;
+    var confirmMsg = 'Apakah Anda yakin ingin MENGHAPUS produk makanan:\n\n"' + label + '" (' + produkId + ')\n\nData akan dihapus dari Master Produk, Kalkulasi HPP, dan Etalase Toko.\nTindakan ini tidak dapat dibatalkan.';
+    if (!window.confirm(confirmMsg)) return;
+
+    if (window.runBackend) {
+        if (window.showToast) window.showToast('Menghapus ' + label + '...', 'info');
+        window.runBackend('apiDeleteProduct', [produkId, window.currentUser], function (res) {
+            if (res && res.success) {
+                // Update in-memory catalog
+                if (window.catalogProducts) {
+                    window.catalogProducts = window.catalogProducts.filter(function (p) { return p.produkId !== produkId; });
+                    try {
+                        localStorage.setItem('bos_kroco_catalog_products', JSON.stringify(window.catalogProducts));
+                    } catch(e) {}
+                }
+                if (typeof window.renderMasterProdukTable === 'function') window.renderMasterProdukTable();
+                if (typeof window.populateProductDropdowns === 'function') window.populateProductDropdowns();
+                if (typeof window.renderDaftarHPP === 'function') window.renderDaftarHPP();
+                if (typeof window.renderPosProductGrid === 'function') window.renderPosProductGrid();
+                if (typeof window.closeModalEditProduk === 'function') window.closeModalEditProduk();
+                if (window.showToast) window.showToast('Produk "' + label + '" berhasil dihapus!', 'success');
+            } else {
+                if (window.showToast) window.showToast((res && res.message) || 'Gagal menghapus produk.', 'error');
+            }
+        });
+    }
+};

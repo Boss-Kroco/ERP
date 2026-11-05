@@ -423,6 +423,18 @@
                 return { success: true, data: combined, total: combined.length };
             }
 
+            case 'apiDeleteProduct': {
+                var pId = args[0];
+                var uSession = args[1] || window.currentUser;
+                try {
+                    await sb.from('stok_lokasi').delete().eq('produk_id', pId);
+                } catch(e) {}
+                var delRes = await sb.from('produk').delete().eq('produk_id', pId);
+                if (delRes.error) throw delRes.error;
+                window.addMockAuditLog('MasterProduk', 'HAPUS', pId, '-', 'Hapus master produk: ' + pId, uSession);
+                return { success: true, message: 'Produk ' + pId + ' berhasil dihapus.' };
+            }
+
             case 'apiSaveProduct': {
                 var pObj = args[0] || {};
                 var uSession = args[1] || window.currentUser;
@@ -1494,6 +1506,16 @@
             } catch(e) {}
             window.addMockAuditLog('TenagaKerja', 'CATAT_UPAH', '-', (pTk.namaPekerja || ''), 'Presensi dan upah kerja', args[1]);
             successCb({ success: true, message: 'Presensi dan upah kerja berhasil disimpan.' });
+        } else if (functionName === 'apiDeleteProduct') {
+            var pId = args[0];
+            if (window.catalogProducts) {
+                window.catalogProducts = window.catalogProducts.filter(function(p) { return p.produkId !== pId; });
+                try {
+                    localStorage.setItem('bos_kroco_catalog_products', JSON.stringify(window.catalogProducts));
+                } catch(e) {}
+            }
+            window.addMockAuditLog('MasterProduk', 'HAPUS', pId, '-', 'Hapus master produk: ' + pId, args[1]);
+            successCb({ success: true, message: 'Produk ' + pId + ' berhasil dihapus.' });
         } else if (functionName === 'apiSaveProduct') {
             var pProd = args[0] || {};
             var newPId = 'PRD-' + ('000' + Math.floor(Math.random() * 900 + 100)).slice(-3);

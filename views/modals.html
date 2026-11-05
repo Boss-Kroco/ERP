@@ -20,8 +20,11 @@
         </div>
         <div class="modal-sheet-body">
             <div style="margin-bottom: 14px;">
-                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">Pilihan Preset Periode</label>
-                <select class="search-filter-input" style="width: 100%;" id="exportPresetSelect" onchange="onExportPresetChange()">
+                <label
+                    style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">Pilihan
+                    Preset Periode</label>
+                <select class="search-filter-input" style="width: 100%;" id="exportPresetSelect"
+                    onchange="onExportPresetChange()">
                     <option value="all">Semua Waktu (Seluruh Data)</option>
                     <option value="today">Hari Ini</option>
                     <option value="last7">7 Hari Terakhir</option>
@@ -30,19 +33,26 @@
                 </select>
             </div>
 
-            <div id="exportCustomDateBox" style="display: none; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+            <div id="exportCustomDateBox"
+                style="display: none; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
                 <div>
-                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Dari Tanggal</label>
+                    <label
+                        style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Dari
+                        Tanggal</label>
                     <input type="date" class="search-filter-input" style="width: 100%;" id="exportDateStart">
                 </div>
                 <div>
-                    <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Sampai Tanggal</label>
+                    <label
+                        style="font-size: 11px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 4px;">Sampai
+                        Tanggal</label>
                     <input type="date" class="search-filter-input" style="width: 100%;" id="exportDateEnd">
                 </div>
             </div>
 
             <div>
-                <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">Filter Status Pesanan</label>
+                <label
+                    style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">Filter
+                    Status Pesanan</label>
                 <select class="search-filter-input" style="width: 100%;" id="exportStatusFilter">
                     <option value="all">Semua Status (Lengkap)</option>
                     <option value="delivered">Delivered Saja</option>
@@ -53,31 +63,40 @@
         </div>
         <div class="modal-sheet-footer">
             <button class="btn-pill-action btn-pill-secondary" onclick="closeExportModal()">Batal</button>
-            <button class="btn-pill-action btn-pill-primary" onclick="generateFilteredCSVDownload()">Unduh CSV UTF-8</button>
+            <button class="btn-pill-action btn-pill-primary" onclick="generateFilteredCSVDownload()">Unduh CSV
+                UTF-8</button>
         </div>
     </div>
 </div>
 
 <!-- Modal Floating Due Alert (Tagihan Jatuh Tempo H-3) -->
 <div class="modal-overlay-custom" id="modalDueAlert" role="dialog" aria-modal="true" tabindex="-1">
-    <div class="modal-sheet-card" style="max-width: 840px; width: 95%; max-height: 90vh; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column;">
-        <div class="modal-sheet-header" style="padding: 18px 24px; border-bottom: 1px solid var(--border-soft); background: #f8fafc;">
+    <div class="modal-sheet-card"
+        style="max-width: 840px; width: 95%; max-height: 90vh; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column;">
+        <div class="modal-sheet-header"
+            style="padding: 18px 24px; border-bottom: 1px solid var(--border-soft); background: #f8fafc;">
             <div class="modal-sheet-title" style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 36px; height: 36px; border-radius: 10px; background: #fff1f2; display: flex; align-items: center; justify-content: center; color: var(--coral-pink);">
+                <div
+                    style="width: 36px; height: 36px; border-radius: 10px; background: #fff1f2; display: flex; align-items: center; justify-content: center; color: var(--coral-pink);">
                     <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                         <circle cx="12" cy="12" r="10" />
                         <polyline points="12 6 12 12 16 14" />
                     </svg>
                 </div>
                 <div>
-                    <div style="font-size: 16px; font-weight: 800; color: var(--text-dark); display: flex; align-items: center; gap: 8px;">
+                    <div
+                        style="font-size: 16px; font-weight: 800; color: var(--text-dark); display: flex; align-items: center; gap: 8px;">
                         <span>Tagihan Mendekati Jatuh Tempo (H-3)</span>
-                        <span id="modalDueAlertBadgeCount" style="background: #fee2e2; color: #ef4444; padding: 2px 9px; border-radius: 12px; font-size: 11.5px; font-weight: 700;">0 Tagihan</span>
+                        <span id="modalDueAlertBadgeCount"
+                            style="background: #fee2e2; color: #ef4444; padding: 2px 9px; border-radius: 12px; font-size: 11.5px; font-weight: 700;">0
+                            Tagihan</span>
                     </div>
-                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Daftar tagihan piutang dan kewajiban hutang yang mendekati atau melewati tempo</div>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Daftar tagihan piutang dan
+                        kewajiban hutang yang mendekati atau melewati tempo</div>
                 </div>
             </div>
-            <button class="btn-pill-action btn-pill-secondary" style="padding: 6px 10px; border-radius: 50%;" onclick="closeDueAlertModal()">
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 6px 10px; border-radius: 50%;"
+                onclick="closeDueAlertModal()">
                 <svg class="svg-icon-xs" viewBox="0 0 24 24">
                     <path d="M18 6 6 18" />
                     <path d="m6 6 12 12" />
@@ -86,27 +105,37 @@
         </div>
 
         <!-- Filter & KPI mini header inside modal -->
-        <div style="padding: 12px 24px; background: white; border-bottom: 1px solid var(--border-soft); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div
+            style="padding: 12px 24px; background: white; border-bottom: 1px solid var(--border-soft); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
             <div style="display: flex; gap: 6px;">
-                <button type="button" id="btnFilterDueSemua" onclick="filterDueAlerts('Semua')" class="btn-pill-action" style="padding: 5px 12px; font-size: 11.5px; font-weight: 700; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 20px; cursor: pointer;">
+                <button type="button" id="btnFilterDueSemua" onclick="filterDueAlerts('Semua')" class="btn-pill-action"
+                    style="padding: 5px 12px; font-size: 11.5px; font-weight: 700; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; border-radius: 20px; cursor: pointer;">
                     Semua (<span id="countDueSemua">0</span>)
                 </button>
-                <button type="button" id="btnFilterDuePiutang" onclick="filterDueAlerts('Piutang')" class="btn-pill-action" style="padding: 5px 12px; font-size: 11.5px; font-weight: 600; background: #f8fafc; color: var(--text-dark); border: 1px solid var(--border-soft); border-radius: 20px; cursor: pointer;">
+                <button type="button" id="btnFilterDuePiutang" onclick="filterDueAlerts('Piutang')"
+                    class="btn-pill-action"
+                    style="padding: 5px 12px; font-size: 11.5px; font-weight: 600; background: #f8fafc; color: var(--text-dark); border: 1px solid var(--border-soft); border-radius: 20px; cursor: pointer;">
                     Piutang (<span id="countDuePiutang">0</span>)
                 </button>
-                <button type="button" id="btnFilterDueHutang" onclick="filterDueAlerts('Hutang')" class="btn-pill-action" style="padding: 5px 12px; font-size: 11.5px; font-weight: 600; background: #f8fafc; color: var(--text-dark); border: 1px solid var(--border-soft); border-radius: 20px; cursor: pointer;">
+                <button type="button" id="btnFilterDueHutang" onclick="filterDueAlerts('Hutang')"
+                    class="btn-pill-action"
+                    style="padding: 5px 12px; font-size: 11.5px; font-weight: 600; background: #f8fafc; color: var(--text-dark); border: 1px solid var(--border-soft); border-radius: 20px; cursor: pointer;">
                     Hutang (<span id="countDueHutang">0</span>)
                 </button>
             </div>
             <div style="display: flex; gap: 16px; font-size: 12px;">
-                <span style="color: var(--text-muted);">Total Piutang: <b style="color: #2563eb;" id="sumDuePiutang">Rp 0</b></span>
-                <span style="color: var(--text-muted); border-left: 1px solid var(--border-soft); padding-left: 16px;">Total Hutang: <b style="color: #d97706;" id="sumDueHutang">Rp 0</b></span>
+                <span style="color: var(--text-muted);">Total Piutang: <b style="color: #2563eb;" id="sumDuePiutang">Rp
+                        0</b></span>
+                <span
+                    style="color: var(--text-muted); border-left: 1px solid var(--border-soft); padding-left: 16px;">Total
+                    Hutang: <b style="color: #d97706;" id="sumDueHutang">Rp 0</b></span>
             </div>
         </div>
 
         <div class="modal-sheet-body" style="padding: 0; overflow-y: auto; overflow-x: hidden; max-height: 420px;">
             <table class="custom-order-table" style="width: 100%; border-collapse: collapse; table-layout: fixed;">
-                <thead style="position: sticky; top: 0; background: #f8fafc; z-index: 2; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <thead
+                    style="position: sticky; top: 0; background: #f8fafc; z-index: 2; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                     <tr>
                         <th style="padding: 12px 18px; width: 34%; font-size: 11px;">Kontak & Ref ID</th>
                         <th style="padding: 12px 14px; width: 14%; font-size: 11px;">Tipe</th>
@@ -119,7 +148,8 @@
             </table>
         </div>
 
-        <div class="modal-sheet-footer" style="padding: 14px 24px; border-top: 1px solid var(--border-soft); background: #f8fafc; display: flex; justify-content: space-between; align-items: center;">
+        <div class="modal-sheet-footer"
+            style="padding: 14px 24px; border-top: 1px solid var(--border-soft); background: #f8fafc; display: flex; justify-content: space-between; align-items: center;">
             <div style="font-size: 11.5px; color: var(--text-muted);">
                 💡 Pelunasan tagihan otomatis tersinkron ke saldo kas, halaman pelanggan, dan dashboard.
             </div>
@@ -142,7 +172,8 @@
                 </svg>
                 Detail Transaksi
             </div>
-            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeDetailTrxModal()">
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;"
+                onclick="closeDetailTrxModal()">
                 <svg class="svg-icon-xs" viewBox="0 0 24 24">
                     <path d="M18 6 6 18" />
                     <path d="m6 6 12 12" />
@@ -155,13 +186,16 @@
         <div class="modal-sheet-footer">
             <button class="btn-pill-action btn-pill-secondary" onclick="closeDetailTrxModal()">Tutup</button>
             <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; width: 100%;">
-                <button class="btn-pill-action btn-pill-secondary" style="border-color: var(--violet-main); color: var(--violet-main);" onclick="editTransaksiDariModal()" id="btnEditDariModal">
+                <button class="btn-pill-action btn-pill-secondary"
+                    style="border-color: var(--violet-main); color: var(--violet-main);"
+                    onclick="editTransaksiDariModal()" id="btnEditDariModal">
                     <svg class="svg-icon-sm" viewBox="0 0 24 24">
                         <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
                     </svg>
                     Edit
                 </button>
-                <button class="btn-pill-action btn-pill-primary" onclick="cetakStrukDariModal('pembeli')" id="btnCetakDariModal">
+                <button class="btn-pill-action btn-pill-primary" onclick="cetakStrukDariModal('pembeli')"
+                    id="btnCetakDariModal">
                     <svg class="svg-icon-sm" viewBox="0 0 24 24">
                         <polyline points="6 9 6 2 18 2 18 9" />
                         <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
@@ -169,7 +203,9 @@
                     </svg>
                     Cetak Pembeli
                 </button>
-                <button class="btn-pill-action btn-pill-primary" style="background: var(--coral-pink); box-shadow: 0 4px 10px rgba(251,113,133,0.3);" onclick="cetakStrukDariModal('wakil')" id="btnCetakWakilDariModal">
+                <button class="btn-pill-action btn-pill-primary"
+                    style="background: var(--coral-pink); box-shadow: 0 4px 10px rgba(251,113,133,0.3);"
+                    onclick="cetakStrukDariModal('wakil')" id="btnCetakWakilDariModal">
                     <svg class="svg-icon-sm" viewBox="0 0 24 24">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                         <circle cx="9" cy="7" r="4" />
@@ -190,11 +226,13 @@
             <div class="modal-sheet-title">
                 <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: var(--violet-main);">
                     <path d="m7.5 4.27 9 5.15" />
-                    <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                    <path
+                        d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
                 </svg>
                 Tambah Master Produk Baru
             </div>
-            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeModalTambahProduk()">
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;"
+                onclick="closeModalTambahProduk()">
                 <svg class="svg-icon-xs" viewBox="0 0 24 24">
                     <path d="M18 6 6 18" />
                     <path d="m6 6 12 12" />
@@ -205,43 +243,63 @@
             <form onsubmit="event.preventDefault(); submitTambahProduk();">
                 <div style="margin-bottom: 10px;">
                     <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nama Produk</label>
-                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="newProdNama" required placeholder="Contoh: Kripik Tempe Rasa Keju">
+                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                        id="newProdNama" required placeholder="Contoh: Kripik Tempe Rasa Keju">
                 </div>
                 <div style="margin-bottom: 10px;">
-                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Satuan (Pcs/Toples/Botol)</label>
-                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="newProdSatuan" required placeholder="Pcs">
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Satuan
+                        (Pcs/Toples/Botol)</label>
+                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                        id="newProdSatuan" required placeholder="Pcs">
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">HPP Acuan (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="newProdHpp" required placeholder="8000">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">HPP Acuan (<span
+                                class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px;" id="newProdHpp" required placeholder="8000">
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Harga Jual (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="newProdHargaJual" required placeholder="15000">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Harga Jual (<span
+                                class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px;" id="newProdHargaJual" required placeholder="15000">
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Minimal Pembelian (Paket)</label>
-                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="newProdMinQtyGrosir" placeholder="Misal: 6 (Opsional)">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Minimal Pembelian
+                            (Paket)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                            id="newProdMinQtyGrosir" placeholder="Misal: 6 (Opsional)">
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Harga Paket / Grosir (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="newProdHargaGrosir" placeholder="Misal: 4700 (Opsional)">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Harga Paket /
+                            Grosir (<span class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px;" id="newProdHargaGrosir"
+                            placeholder="Misal: 4700 (Opsional)">
                     </div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; background: #f8fafc; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-soft);">
+                <div
+                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; background: #f8fafc; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-soft);">
                     <div>
-                        <label style="font-size: 11px; font-weight: 800; color: var(--emerald);">Stok Siap Jual (Etalase)</label>
-                        <input type="number" min="0" class="search-filter-input" style="width: 100%; margin-top: 4px; font-weight: 800; color: var(--emerald); background: #ffffff;" id="newProdStokEtalase" value="50" placeholder="50">
+                        <label style="font-size: 11px; font-weight: 800; color: var(--emerald);">Stok Siap Jual
+                            (Etalase)</label>
+                        <input type="number" min="0" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px; font-weight: 800; color: var(--emerald); background: #ffffff;"
+                            id="newProdStokEtalase" value="50" placeholder="50">
                     </div>
                     <div>
-                        <label style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Stok Gudang Produksi</label>
-                        <input type="number" min="0" class="search-filter-input" style="width: 100%; margin-top: 4px; background: #ffffff;" id="newProdStokGudang" value="100" placeholder="100">
+                        <label style="font-size: 11px; font-weight: 700; color: var(--text-muted);">Stok Gudang
+                            Produksi</label>
+                        <input type="number" min="0" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px; background: #ffffff;" id="newProdStokGudang"
+                            value="100" placeholder="100">
                     </div>
                 </div>
-                <button type="submit" class="btn-pill-action btn-pill-primary" style="width: 100%; justify-content: center; margin-top: 6px;">Daftarkan Produk</button>
+                <button type="submit" class="btn-pill-action btn-pill-primary"
+                    style="width: 100%; justify-content: center; margin-top: 6px;">Daftarkan Produk</button>
             </form>
         </div>
     </div>
@@ -260,10 +318,12 @@
         </button>
     </div>
 
-    <input type="text" class="search-filter-input" style="width: 100%; margin-bottom: 14px;" id="drawerSearchInput" placeholder="Cari menu..." oninput="filterDrawerMenu()">
+    <input type="text" class="search-filter-input" style="width: 100%; margin-bottom: 14px;" id="drawerSearchInput"
+        placeholder="Cari menu..." oninput="filterDrawerMenu()">
 
     <div style="display: flex; flex-direction: column; gap: 8px; overflow-y: auto;" id="drawerMenuList">
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('dashboard')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('dashboard')"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <rect width="7" height="7" x="3" y="3" rx="1.5" />
                 <rect width="7" height="7" x="14" y="3" rx="1.5" />
@@ -272,7 +332,8 @@
             </svg>
             Dashboard
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('pos')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('pos')"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
                 <path d="M3 6h18" />
@@ -280,7 +341,8 @@
             </svg>
             Kasir &amp; POS
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('transaksi')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('transaksi')"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14 2 14 8 20 8" />
@@ -289,7 +351,9 @@
             </svg>
             Daftar Transaksi
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('pelanggan')" id="drawerNavPelanggan" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('pelanggan')"
+            id="drawerNavPelanggan"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
@@ -298,20 +362,25 @@
             </svg>
             Pelanggan &amp; Mitra
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('sewa')" id="drawerNavSewa" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('sewa')"
+            id="drawerNavSewa"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                <path
+                    d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
             </svg>
             Sewa Alat
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('produk')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('produk')"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
                 <path d="M7 7h.01" />
             </svg>
             Master Produk
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('produksi')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('produksi')"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <polygon points="12 2 2 7 12 12 22 7 12 2" />
                 <polyline points="2 17 12 22 22 17" />
@@ -319,7 +388,8 @@
             </svg>
             Produksi &amp; HPP
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('multilokasi')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('multilokasi')"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M8 3 4 7l4 4" />
                 <path d="M4 7h16" />
@@ -328,7 +398,8 @@
             </svg>
             Transfer Stok
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('opname')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('opname')"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <rect width="8" height="4" x="8" y="2" rx="1" />
                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
@@ -336,7 +407,8 @@
             </svg>
             Stock Opname
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('keuangan')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('keuangan')"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <rect width="20" height="12" x="2" y="6" rx="2" />
                 <circle cx="12" cy="12" r="2" />
@@ -344,7 +416,8 @@
             </svg>
             Kas &amp; Beban
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('tenagakerja')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('tenagakerja')"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
@@ -353,7 +426,8 @@
             </svg>
             Upah Kerja
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('agenda')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('agenda')"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <rect width="18" height="18" x="3" y="4" rx="2" />
                 <line x1="16" y1="2" x2="16" y2="6" />
@@ -368,21 +442,24 @@
             </svg>
             Agenda &amp; Kalender
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('audit')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('audit')"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
                 <path d="m9 12 2 2 4-4" />
             </svg>
             Log Audit
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('profil')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('profil')"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <circle cx="12" cy="8" r="5" />
                 <path d="M20 21a8 8 0 0 0-16 0" />
             </svg>
             Profil Akun
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('pengaturan')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('pengaturan')"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <line x1="4" x2="20" y1="6" y2="6" />
                 <line x1="4" x2="20" y1="12" y2="12" />
@@ -393,7 +470,8 @@
             </svg>
             Pengaturan
         </button>
-        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('bantuan')" style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
+        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="navigateFromDrawer('bantuan')"
+            style="width: 100%; justify-content: flex-start; text-align: left; font-family: inherit;">
             <svg class="svg-icon-sm" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
@@ -418,7 +496,8 @@
         <option value="await">Set: Await</option>
     </select>
 
-    <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="exportSelectedOrdersCSV()">
+    <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 10px; font-size: 11px;"
+        onclick="exportSelectedOrdersCSV()">
         <svg class="svg-icon-sm" viewBox="0 0 24 24">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" />
@@ -426,7 +505,8 @@
         </svg>
         Unduh Terpilih
     </button>
-    <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 10px; font-size: 11px; color: var(--coral-pink);" onclick="clearBatchSelection()">
+    <button class="btn-pill-action btn-pill-secondary"
+        style="padding: 4px 10px; font-size: 11px; color: var(--coral-pink);" onclick="clearBatchSelection()">
         Batal
     </button>
 </div>
@@ -436,16 +516,20 @@
     <div class="modal-sheet-card" style="max-width: 540px;">
         <div class="modal-sheet-header">
             <div style="display: flex; align-items: center; gap: 8px;">
-                <span id="guideModalBadge" style="font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px;">Panduan</span>
+                <span id="guideModalBadge"
+                    style="font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px;">Panduan</span>
                 <div class="modal-sheet-title" id="guideModalTitle" style="font-size: 14.5px;">Panduan Fitur</div>
             </div>
-            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeGuideModal()">✕</button>
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;"
+                onclick="closeGuideModal()">✕</button>
         </div>
         <div class="modal-sheet-body">
-            <p id="guideModalDesc" style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;"></p>
+            <p id="guideModalDesc"
+                style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;"></p>
             <div id="guideModalBody"></div>
             <div style="display: flex; justify-content: flex-end; margin-top: 14px;">
-                <button type="button" class="btn-pill-action btn-pill-primary" onclick="closeGuideModal()">Saya Mengerti</button>
+                <button type="button" class="btn-pill-action btn-pill-primary" onclick="closeGuideModal()">Saya
+                    Mengerti</button>
             </div>
         </div>
     </div>
@@ -462,12 +546,16 @@
                 </svg>
                 Lacak &amp; Kelola Tiket Pertanyaan
             </div>
-            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeLacakTiketModal()">✕</button>
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;"
+                onclick="closeLacakTiketModal()">✕</button>
         </div>
         <div class="modal-sheet-body">
             <div style="display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
-                <input type="text" class="search-filter-input" id="searchTicketInput" placeholder="Cari No. Tiket (#TKT-BK-...) / Kategori / Nama..." style="flex: 1; min-width: 200px;" oninput="renderTicketList(this.value)">
-                <select class="search-filter-input" id="filterTicketStatus" style="width: 170px; cursor: pointer;" onchange="renderTicketList()">
+                <input type="text" class="search-filter-input" id="searchTicketInput"
+                    placeholder="Cari No. Tiket (#TKT-BK-...) / Kategori / Nama..." style="flex: 1; min-width: 200px;"
+                    oninput="renderTicketList(this.value)">
+                <select class="search-filter-input" id="filterTicketStatus" style="width: 170px; cursor: pointer;"
+                    onchange="renderTicketList()">
                     <option value="all">Semua Status</option>
                     <option value="Menunggu Respon">Menunggu Respon</option>
                     <option value="Diproses">Sedang Diproses</option>
@@ -475,9 +563,12 @@
                 </select>
             </div>
             <div id="ticketListContainer" style="max-height: 420px; overflow-y: auto; padding-right: 4px;"></div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; border-top: 1px solid var(--border-strong); padding-top: 10px;">
-                <span style="font-size: 11px; color: var(--text-muted);">Owner &amp; Admin dapat langsung membalas pertanyaan dan memperbarui status tiket.</span>
-                <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeLacakTiketModal()">Tutup</button>
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; border-top: 1px solid var(--border-strong); padding-top: 10px;">
+                <span style="font-size: 11px; color: var(--text-muted);">Owner &amp; Admin dapat langsung membalas
+                    pertanyaan dan memperbarui status tiket.</span>
+                <button type="button" class="btn-pill-action btn-pill-secondary"
+                    onclick="closeLacakTiketModal()">Tutup</button>
             </div>
         </div>
     </div>
@@ -496,21 +587,28 @@
                 </svg>
                 <span id="agendaModalHeaderTitle">Tambah Agenda Baru</span>
             </div>
-            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeAgendaFormModal()">✕</button>
+            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;"
+                onclick="closeAgendaFormModal()">✕</button>
         </div>
         <form onsubmit="saveAgendaForm(event)">
             <div class="modal-sheet-body" style="display: flex; flex-direction: column; gap: 14px;">
                 <input type="hidden" id="agendaFormId">
 
                 <div>
-                    <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Judul Kegiatan <span style="color:var(--coral-pink);">*</span></label>
-                    <input type="text" id="agendaInputTitle" class="search-filter-input" style="width: 100%;" placeholder="Contoh: Produksi Keripik Tempe Batch 4" required>
+                    <label
+                        style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Judul
+                        Kegiatan <span style="color:var(--coral-pink);">*</span></label>
+                    <input type="text" id="agendaInputTitle" class="search-filter-input" style="width: 100%;"
+                        placeholder="Contoh: Produksi Keripik Tempe Batch 4" required>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     <div>
-                        <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Kategori Kegiatan</label>
-                        <select id="agendaInputCategory" class="search-filter-input" style="width: 100%; cursor: pointer;">
+                        <label
+                            style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Kategori
+                            Kegiatan</label>
+                        <select id="agendaInputCategory" class="search-filter-input"
+                            style="width: 100%; cursor: pointer;">
                             <option value="Produksi & HPP">Produksi &amp; HPP</option>
                             <option value="Pengiriman Mitra">Pengiriman Mitra</option>
                             <option value="Tagih Piutang">Tagih Piutang</option>
@@ -520,32 +618,49 @@
                         </select>
                     </div>
                     <div>
-                        <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Tanggal Pelaksanaan <span style="color:var(--coral-pink);">*</span></label>
-                        <input type="date" id="agendaInputDate" class="search-filter-input" style="width: 100%; cursor: pointer;" required>
+                        <label
+                            style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Tanggal
+                            Pelaksanaan <span style="color:var(--coral-pink);">*</span></label>
+                        <input type="date" id="agendaInputDate" class="search-filter-input"
+                            style="width: 100%; cursor: pointer;" required>
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     <div>
-                        <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Jam Mulai</label>
-                        <input type="time" id="agendaInputStartTime" class="search-filter-input" style="width: 100%; cursor: pointer;" value="09:00">
+                        <label
+                            style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Jam
+                            Mulai</label>
+                        <input type="time" id="agendaInputStartTime" class="search-filter-input"
+                            style="width: 100%; cursor: pointer;" value="09:00">
                     </div>
                     <div>
-                        <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Jam Selesai (Opsional)</label>
-                        <input type="time" id="agendaInputEndTime" class="search-filter-input" style="width: 100%; cursor: pointer;" value="11:00">
+                        <label
+                            style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Jam
+                            Selesai (Opsional)</label>
+                        <input type="time" id="agendaInputEndTime" class="search-filter-input"
+                            style="width: 100%; cursor: pointer;" value="11:00">
                     </div>
                 </div>
 
                 <div>
-                    <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Keterangan &amp; Instruksi</label>
-                    <textarea id="agendaInputDescription" class="search-filter-input" rows="3" style="width: 100%; resize: vertical; min-height: 60px;" placeholder="Catatan detail kegiatan, target unit, PIC pelaksana, dll..."></textarea>
+                    <label
+                        style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Keterangan
+                        &amp; Instruksi</label>
+                    <textarea id="agendaInputDescription" class="search-filter-input" rows="3"
+                        style="width: 100%; resize: vertical; min-height: 60px;"
+                        placeholder="Catatan detail kegiatan, target unit, PIC pelaksana, dll..."></textarea>
                 </div>
 
-                <div style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+                <div
+                    style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                         <div>
-                            <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Pengingat / Alarm</label>
-                            <select id="agendaInputReminder" class="search-filter-input" style="width: 100%; background: #ffffff; cursor: pointer;">
+                            <label
+                                style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Pengingat
+                                / Alarm</label>
+                            <select id="agendaInputReminder" class="search-filter-input"
+                                style="width: 100%; background: #ffffff; cursor: pointer;">
                                 <option value="none">Tidak Ada</option>
                                 <option value="on_time">Tepat Waktu Pelaksanaan</option>
                                 <option value="15_min" selected>15 Menit Sebelumnya</option>
@@ -554,8 +669,11 @@
                             </select>
                         </div>
                         <div>
-                            <label style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Agenda Berulang</label>
-                            <select id="agendaInputRecurring" class="search-filter-input" style="width: 100%; background: #ffffff; cursor: pointer;">
+                            <label
+                                style="display: block; font-size: 11.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px;">Agenda
+                                Berulang</label>
+                            <select id="agendaInputRecurring" class="search-filter-input"
+                                style="width: 100%; background: #ffffff; cursor: pointer;">
                                 <option value="none">Tidak Berulang (Sekali Saja)</option>
                                 <option value="daily">Harian (Setiap Hari)</option>
                                 <option value="weekly">Mingguan (Setiap Minggu)</option>
@@ -564,13 +682,18 @@
                         </div>
                     </div>
 
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px; flex-wrap: wrap; gap: 8px;">
-                        <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-main);">
-                            <input type="checkbox" id="agendaInputTelegram" style="width: 16px; height: 16px; accent-color: var(--violet-main); cursor: pointer;" checked>
+                    <div
+                        style="display: flex; align-items: center; justify-content: space-between; margin-top: 4px; flex-wrap: wrap; gap: 8px;">
+                        <label
+                            style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-main);">
+                            <input type="checkbox" id="agendaInputTelegram"
+                                style="width: 16px; height: 16px; accent-color: var(--violet-main); cursor: pointer;"
+                                checked>
                             Kirim notifikasi jadwal ke Bot Telegram
                         </label>
                         <div>
-                            <select id="agendaInputStatus" class="search-filter-input" style="padding: 3px 8px; font-size: 11px; background: #ffffff; cursor: pointer;">
+                            <select id="agendaInputStatus" class="search-filter-input"
+                                style="padding: 3px 8px; font-size: 11px; background: #ffffff; cursor: pointer;">
                                 <option value="pending">Status: Belum Selesai</option>
                                 <option value="completed">Status: Selesai</option>
                             </select>
@@ -579,7 +702,8 @@
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
-                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeAgendaFormModal()">Batal</button>
+                    <button type="button" class="btn-pill-action btn-pill-secondary"
+                        onclick="closeAgendaFormModal()">Batal</button>
                     <button type="submit" class="btn-pill-action btn-pill-primary">Simpan Agenda</button>
                 </div>
             </div>
@@ -595,18 +719,21 @@
                 <span id="agendaDetailCatBadge" class="agenda-badge-cat">Kategori</span>
                 <span id="agendaDetailStatusPill" class="agenda-status-pill">Status</span>
             </div>
-            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeAgendaDetailModal()">✕</button>
+            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;"
+                onclick="closeAgendaDetailModal()">✕</button>
         </div>
         <div class="modal-sheet-body" style="display: flex; flex-direction: column; gap: 14px; padding-top: 14px;">
             <input type="hidden" id="agendaDetailId">
-            
+
             <!-- Judul Kegiatan -->
-            <div id="agendaDetailTitle" style="font-size: 16.5px; font-weight: 800; color: var(--text-main); line-height: 1.35;">
+            <div id="agendaDetailTitle"
+                style="font-size: 16.5px; font-weight: 800; color: var(--text-main); line-height: 1.35;">
                 Judul Kegiatan
             </div>
 
             <!-- Baris Waktu & Tanggal -->
-            <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #475569; background: #f8fafc; padding: 8px 12px; border-radius: 9px; border: 1px solid var(--border-strong);">
+            <div
+                style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #475569; background: #f8fafc; padding: 8px 12px; border-radius: 9px; border: 1px solid var(--border-strong);">
                 <svg class="svg-icon-xs text-violet" viewBox="0 0 24 24" style="flex-shrink: 0;">
                     <circle cx="12" cy="12" r="10" />
                     <polyline points="12 6 12 12 16 14" />
@@ -616,7 +743,9 @@
 
             <!-- Kotak Catatan Deskripsi -->
             <div>
-                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px;">Catatan &amp; Instruksi Kegiatan:</div>
+                <div
+                    style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px;">
+                    Catatan &amp; Instruksi Kegiatan:</div>
                 <div class="agenda-desc-box" id="agendaDetailDescContainer" style="margin: 0;">
                     <svg class="agenda-desc-box-icon" viewBox="0 0 24 24">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -631,23 +760,39 @@
 
             <!-- Grid Metadata Pengingat, Telegram, & Pengulangan -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 11.5px;">
-                <div style="display: flex; align-items: center; gap: 7px; color: #64748b; background: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <svg class="svg-icon-xs" viewBox="0 0 24 24" style="color: #ea580c; flex-shrink: 0;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <div
+                    style="display: flex; align-items: center; gap: 7px; color: #64748b; background: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24" style="color: #ea580c; flex-shrink: 0;">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                    </svg>
                     <div>
                         <div style="font-size: 10px; color: var(--text-muted);">Pengingat Alarm:</div>
-                        <div id="agendaDetailReminderText" style="font-weight: 700; color: var(--text-main);">15 Menit Sebelum</div>
+                        <div id="agendaDetailReminderText" style="font-weight: 700; color: var(--text-main);">15 Menit
+                            Sebelum</div>
                     </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 7px; color: #64748b; background: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <svg class="svg-icon-xs" viewBox="0 0 24 24" style="color: #2563eb; flex-shrink: 0;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                <div
+                    style="display: flex; align-items: center; gap: 7px; color: #64748b; background: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24" style="color: #2563eb; flex-shrink: 0;">
+                        <line x1="22" y1="2" x2="11" y2="13" />
+                        <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                    </svg>
                     <div>
                         <div style="font-size: 10px; color: var(--text-muted);">Bot Telegram:</div>
-                        <div id="agendaDetailTelegramText" style="font-weight: 700; color: var(--text-main);">Aktif Terkirim</div>
+                        <div id="agendaDetailTelegramText" style="font-weight: 700; color: var(--text-main);">Aktif
+                            Terkirim</div>
                     </div>
                 </div>
             </div>
-            <div id="agendaDetailRecurringRow" style="display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: #64748b; background: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                <svg class="svg-icon-xs" viewBox="0 0 24 24" style="color: #8b5cf6; flex-shrink: 0;"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            <div id="agendaDetailRecurringRow"
+                style="display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: #64748b; background: #f8fafc; padding: 7px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24" style="color: #8b5cf6; flex-shrink: 0;">
+                    <polyline points="17 1 21 5 17 9" />
+                    <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                    <polyline points="7 23 3 19 7 15" />
+                    <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                </svg>
                 <div>
                     <span style="font-size: 10px; color: var(--text-muted);">Pengulangan Jadwal: </span>
                     <strong id="agendaDetailRecurringText" style="color: var(--text-main);">Mingguan</strong>
@@ -655,18 +800,29 @@
             </div>
 
             <!-- Tombol Aksi di Modal Rincian -->
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--border-strong); flex-wrap: wrap;">
-                <button type="button" class="btn-pill-action btn-pill-danger" id="agendaDetailDeleteBtn" onclick="deleteAgendaFromDetail()" title="Hapus kegiatan ini">
-                    <svg class="svg-icon-xs" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            <div
+                style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--border-strong); flex-wrap: wrap;">
+                <button type="button" class="btn-pill-action btn-pill-danger" id="agendaDetailDeleteBtn"
+                    onclick="deleteAgendaFromDetail()" title="Hapus kegiatan ini">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    </svg>
                     <span>Hapus</span>
                 </button>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <button type="button" class="btn-pill-action btn-pill-secondary" id="agendaDetailEditBtn" onclick="editAgendaFromDetail()">
-                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                    <button type="button" class="btn-pill-action btn-pill-secondary" id="agendaDetailEditBtn"
+                        onclick="editAgendaFromDetail()">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+                        </svg>
                         <span>Edit</span>
                     </button>
-                    <button type="button" class="btn-pill-action btn-pill-primary" id="agendaDetailToggleStatusBtn" onclick="toggleAgendaStatusFromDetail()">
-                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    <button type="button" class="btn-pill-action btn-pill-primary" id="agendaDetailToggleStatusBtn"
+                        onclick="toggleAgendaStatusFromDetail()">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
                         <span id="agendaDetailToggleStatusText">Tandai Selesai</span>
                     </button>
                 </div>
@@ -680,15 +836,26 @@
     <div class="modal-sheet-card" style="max-width: 580px; max-height: 85vh; display: flex; flex-direction: column;">
         <div class="modal-sheet-header" style="border-bottom: 1px solid var(--border-strong); padding-bottom: 12px;">
             <div style="display: flex; align-items: center; gap: 9px;">
-                <div style="width: 30px; height: 30px; border-radius: 8px; background: #fef3c7; border: 1px solid #f59e0b; display: flex; align-items: center; justify-content: center; color: #d97706; flex-shrink: 0;">
-                    <svg viewBox="0 0 24 24" style="width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                <div
+                    style="width: 30px; height: 30px; border-radius: 8px; background: #fef3c7; border: 1px solid #f59e0b; display: flex; align-items: center; justify-content: center; color: #d97706; flex-shrink: 0;">
+                    <svg viewBox="0 0 24 24"
+                        style="width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                    </svg>
                 </div>
                 <div>
-                    <div style="font-size: 15px; font-weight: 800; color: var(--text-main); line-height: 1.2;">Daftar Catatan Operasional</div>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 1px;">Riwayat catatan harian yang pernah ditulis di kalender</div>
+                    <div style="font-size: 15px; font-weight: 800; color: var(--text-main); line-height: 1.2;">Daftar
+                        Catatan Operasional</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 1px;">Riwayat catatan harian yang
+                        pernah ditulis di kalender</div>
                 </div>
             </div>
-            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeAllDailyNotesModal()">✕</button>
+            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;"
+                onclick="closeAllDailyNotesModal()">✕</button>
         </div>
 
         <!-- Filter pencarian khusus catatan -->
@@ -698,11 +865,14 @@
                     <circle cx="11" cy="11" r="8" />
                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
-                <input type="text" id="allDailyNotesSearchInput" placeholder="Cari isi catatan (contoh: Roti, Telur, Keripik, Shift)..." oninput="renderAllDailyNotesList()">
+                <input type="text" id="allDailyNotesSearchInput"
+                    placeholder="Cari isi catatan (contoh: Roti, Telur, Keripik, Shift)..."
+                    oninput="renderAllDailyNotesList()">
             </div>
         </div>
 
-        <div class="modal-sheet-body" id="allDailyNotesListContainer" style="overflow-y: auto; padding: 12px 16px 16px 16px; display: flex; flex-direction: column; gap: 10px;">
+        <div class="modal-sheet-body" id="allDailyNotesListContainer"
+            style="overflow-y: auto; padding: 12px 16px 16px 16px; display: flex; flex-direction: column; gap: 10px;">
             <!-- Diisi secara dinamis oleh agenda.js -->
         </div>
     </div>
@@ -713,20 +883,33 @@
     <div class="modal-sheet-card" style="max-width: 580px;">
         <div class="modal-sheet-header">
             <div class="modal-sheet-title" style="display: flex; align-items: center; gap: 8px;">
-                <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
                 <span id="agendaDayModalTitle">Agenda Kegiatan</span>
             </div>
-            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeDayAgendaModal()">✕</button>
+            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;"
+                onclick="closeDayAgendaModal()">✕</button>
         </div>
         <div class="modal-sheet-body" style="display: flex; flex-direction: column; gap: 12px;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-                <div style="font-size: 12px; color: var(--text-muted);" id="agendaDayModalSub">Daftar agenda kegiatan yang dijadwalkan pada hari ini:</div>
-                <button type="button" class="btn-pill-action btn-pill-primary" style="padding: 5px 12px; font-size: 11.5px;" id="agendaDayModalAddBtn" onclick="addNewAgendaFromDayModal()">
-                    <svg class="svg-icon-xs" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <div style="font-size: 12px; color: var(--text-muted);" id="agendaDayModalSub">Daftar agenda kegiatan
+                    yang dijadwalkan pada hari ini:</div>
+                <button type="button" class="btn-pill-action btn-pill-primary"
+                    style="padding: 5px 12px; font-size: 11.5px;" id="agendaDayModalAddBtn"
+                    onclick="addNewAgendaFromDayModal()">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
                     <span>Tambah di Tanggal Ini</span>
                 </button>
             </div>
-            <div id="agendaDayModalItemsList" style="display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
+            <div id="agendaDayModalItemsList"
+                style="display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; padding-right: 4px;">
                 <!-- Diisi dinamis -->
             </div>
         </div>
@@ -743,7 +926,8 @@
                 </svg>
                 Edit Transaksi Penjualan
             </div>
-            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeModalEditTransaksi()">
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;"
+                onclick="closeModalEditTransaksi()">
                 <svg class="svg-icon-xs" viewBox="0 0 24 24">
                     <path d="M18 6 6 18" />
                     <path d="m6 6 12 12" />
@@ -753,54 +937,75 @@
         <div class="modal-sheet-body">
             <form onsubmit="event.preventDefault(); submitEditTransaksi();">
                 <input type="hidden" id="editTrxId">
-                
-                <div style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+
+                <div
+                    style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <small style="color: var(--text-muted); font-size: 11px;">Nomor Order &amp; ID:</small>
-                        <div id="editTrxOrderNumBadge" style="font-weight: 800; font-size: 13px; color: var(--text-main);">-</div>
+                        <div id="editTrxOrderNumBadge"
+                            style="font-weight: 800; font-size: 13px; color: var(--text-main);">-</div>
                     </div>
-                    <div id="editTrxSubIdBadge" style="font-size: 10.5px; font-family: monospace; color: var(--text-muted);">-</div>
+                    <div id="editTrxSubIdBadge"
+                        style="font-size: 10.5px; font-family: monospace; color: var(--text-muted);">-</div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Tanggal Transaksi</label>
-                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTrxTanggal" required placeholder="DD/MM/YYYY">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Tanggal
+                            Transaksi</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                            id="editTrxTanggal" required placeholder="DD/MM/YYYY">
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nama Pelanggan</label>
-                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTrxCustomer" required placeholder="Nama Pembeli">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nama
+                            Pelanggan</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                            id="editTrxCustomer" required placeholder="Nama Pembeli">
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">No Kontak / HP</label>
-                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTrxPhone" placeholder="0812...">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">No Kontak /
+                            HP</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                            id="editTrxPhone" placeholder="0812...">
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Ringkasan / Kategori Item</label>
-                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTrxCategory" placeholder="Kripik Tempe / Retail POS">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Ringkasan /
+                            Kategori Item</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                            id="editTrxCategory" placeholder="Kripik Tempe / Retail POS">
                     </div>
                 </div>
 
-                <div style="margin-bottom: 14px; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px; background: #fafafa;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                        <label style="font-size: 11.5px; font-weight: 800; color: var(--text-main); margin: 0;">Rincian Item (Bisa Diedit)</label>
-                        <button type="button" class="btn-pill-action btn-pill-primary" style="padding: 3px 8px; font-size: 10px;" onclick="tambahItemEditTrx()">+ Tambah Item</button>
+                <div
+                    style="margin-bottom: 14px; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px; background: #fafafa;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label style="font-size: 11.5px; font-weight: 800; color: var(--text-main); margin: 0;">Rincian
+                            Item (Bisa Diedit)</label>
+                        <button type="button" class="btn-pill-action btn-pill-primary"
+                            style="padding: 3px 8px; font-size: 10px;" onclick="tambahItemEditTrx()">+ Tambah
+                            Item</button>
                     </div>
-                    <div id="editTrxItemsContainer" style="display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto;">
+                    <div id="editTrxItemsContainer"
+                        style="display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto;">
                         <!-- Items rendered here by JS -->
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Total Keseluruhan (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTrxPrice" required min="0" readonly style="background: #f1f5f9; cursor: not-allowed;" title="Dihitung otomatis dari item">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Total Keseluruhan
+                            (<span class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px;" id="editTrxPrice" required min="0" readonly
+                            style="background: #f1f5f9; cursor: not-allowed;" title="Dihitung otomatis dari item">
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Metode Pembayaran</label>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Metode
+                            Pembayaran</label>
                         <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTrxPayment">
                             <option value="Tunai">Tunai / Cash</option>
                             <option value="Transfer">Transfer Bank</option>
@@ -811,7 +1016,8 @@
                 </div>
 
                 <div style="margin-bottom: 14px;">
-                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Status Pengiriman / Pesanan</label>
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Status Pengiriman /
+                        Pesanan</label>
                     <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTrxStatus">
                         <option value="delivered">Delivered (Selesai)</option>
                         <option value="on way">On Way (Dalam Pengiriman)</option>
@@ -820,7 +1026,8 @@
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeModalEditTransaksi()">Batal</button>
+                    <button type="button" class="btn-pill-action btn-pill-secondary"
+                        onclick="closeModalEditTransaksi()">Batal</button>
                     <button type="submit" class="btn-pill-action btn-pill-primary">
                         <svg class="svg-icon-sm" viewBox="0 0 24 24">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
@@ -856,22 +1063,28 @@
             <form onsubmit="event.preventDefault(); submitEditKas();">
                 <input type="hidden" id="editKasId">
 
-                <div style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <div
+                    style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <small style="color: var(--text-muted); font-size: 11px;">Nomor Kas:</small>
-                        <div id="editKasIdBadge" style="font-weight: 800; font-size: 13px; color: var(--text-main);">-</div>
+                        <div id="editKasIdBadge" style="font-weight: 800; font-size: 13px; color: var(--text-main);">-
+                        </div>
                     </div>
-                    <div id="editKasRefBadge" style="font-size: 11px; font-family: monospace; color: var(--text-muted);">Ref: -</div>
+                    <div id="editKasRefBadge"
+                        style="font-size: 11px; font-family: monospace; color: var(--text-muted);">Ref: -</div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Tanggal &amp; Waktu</label>
-                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editKasTanggal" required placeholder="DD/MM/YYYY HH:mm">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Tanggal &amp;
+                            Waktu</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                            id="editKasTanggal" required placeholder="DD/MM/YYYY HH:mm">
                     </div>
                     <div>
                         <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Tipe Kas</label>
-                        <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editKasTipe" required>
+                        <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editKasTipe"
+                            required>
                             <option value="Masuk">🟢 Kas Masuk (Pemasukan)</option>
                             <option value="Keluar">🔴 Kas Keluar (Pengeluaran)</option>
                         </select>
@@ -880,27 +1093,37 @@
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Kategori Kas</label>
-                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editKasKategori" required placeholder="Contoh: Operasional / Belanja Bahan">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Kategori
+                            Kas</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                            id="editKasKategori" required placeholder="Contoh: Operasional / Belanja Bahan">
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nominal (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editKasNominal" required min="0">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nominal (<span
+                                class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px;" id="editKasNominal" required min="0">
                     </div>
                 </div>
 
                 <div style="margin-bottom: 10px;">
-                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Keterangan / Uraian</label>
-                    <textarea class="search-filter-input" style="width: 100%; margin-top: 4px; resize: vertical; min-height: 60px;" id="editKasKeterangan" placeholder="Uraian detail transaksi kas..."></textarea>
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Keterangan /
+                        Uraian</label>
+                    <textarea class="search-filter-input"
+                        style="width: 100%; margin-top: 4px; resize: vertical; min-height: 60px;" id="editKasKeterangan"
+                        placeholder="Uraian detail transaksi kas..."></textarea>
                 </div>
 
                 <div style="margin-bottom: 14px;">
-                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Dicatat Oleh (Petugas/Kasir)</label>
-                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editKasDicatatOleh" placeholder="Nama petugas">
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Dicatat Oleh
+                        (Petugas/Kasir)</label>
+                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                        id="editKasDicatatOleh" placeholder="Nama petugas">
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeModalEditKas()">Batal</button>
+                    <button type="button" class="btn-pill-action btn-pill-secondary"
+                        onclick="closeModalEditKas()">Batal</button>
                     <button type="submit" class="btn-pill-action btn-pill-primary">
                         <svg class="svg-icon-sm" viewBox="0 0 24 24">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
@@ -925,7 +1148,8 @@
                 </svg>
                 Edit Master Produk
             </div>
-            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeModalEditProduk()">
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;"
+                onclick="closeModalEditProduk()">
                 <svg class="svg-icon-xs" viewBox="0 0 24 24">
                     <path d="M18 6 6 18" />
                     <path d="m6 6 12 12" />
@@ -936,25 +1160,30 @@
             <form onsubmit="event.preventDefault(); submitEditProduk();">
                 <input type="hidden" id="editProdId">
 
-                <div style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <div
+                    style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <small style="color: var(--text-muted); font-size: 11px;">Kode Produk ID:</small>
-                        <div id="editProdIdBadge" style="font-weight: 800; font-size: 13px; color: var(--violet-main);">-</div>
+                        <div id="editProdIdBadge" style="font-weight: 800; font-size: 13px; color: var(--violet-main);">
+                            -</div>
                     </div>
                 </div>
 
                 <div style="margin-bottom: 10px;">
                     <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nama Produk</label>
-                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdNama" required placeholder="Contoh: Kripik Tempe Keju">
+                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                        id="editProdNama" required placeholder="Contoh: Kripik Tempe Keju">
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div>
                         <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Satuan</label>
-                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdSatuan" required placeholder="Pcs / Toples / Botol">
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                            id="editProdSatuan" required placeholder="Pcs / Toples / Botol">
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Status Produk</label>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Status
+                            Produk</label>
                         <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdStatus">
                             <option value="Aktif">Aktif</option>
                             <option value="Non-Aktif">Non-Aktif</option>
@@ -964,35 +1193,50 @@
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">HPP Acuan (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdHpp" required min="0">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">HPP Acuan (<span
+                                class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px;" id="editProdHpp" required min="0">
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Harga Jual (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdHargaJual" required min="0">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Harga Jual (<span
+                                class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px;" id="editProdHargaJual" required min="0">
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Minimal Pembelian (Paket)</label>
-                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdMinQtyGrosir" placeholder="Misal: 6 (Opsional)">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Minimal Pembelian
+                            (Paket)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                            id="editProdMinQtyGrosir" placeholder="Misal: 6 (Opsional)">
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Harga Paket / Grosir (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdHargaGrosir" placeholder="Misal: 4700 (Opsional)">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Harga Paket /
+                            Grosir (<span class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px;" id="editProdHargaGrosir"
+                            placeholder="Misal: 4700 (Opsional)">
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeModalEditProduk()">Batal</button>
-                    <button type="submit" class="btn-pill-action btn-pill-primary">
-                        <svg class="svg-icon-sm" viewBox="0 0 24 24">
-                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                            <polyline points="17 21 17 13 7 13 7 21" />
-                            <polyline points="7 3 7 8 15 8" />
-                        </svg>
-                        Simpan Perubahan
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 14px;">
+                    <button type="button" class="btn-pill-action" style="background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; padding: 7px 12px; font-weight: 700; border-radius: 10px; display: flex; align-items: center; gap: 6px;" onclick="window.hapusProduk(document.getElementById('editProdId').value, document.getElementById('editProdNama').value)" title="Hapus Produk dari Sistem">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        Hapus Produk
                     </button>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeModalEditProduk()">Batal</button>
+                        <button type="submit" class="btn-pill-action btn-pill-primary">
+                            <svg class="svg-icon-sm" viewBox="0 0 24 24">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                                <polyline points="17 21 17 13 7 13 7 21" />
+                                <polyline points="7 3 7 8 15 8" />
+                            </svg>
+                            Simpan Perubahan
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
@@ -1009,7 +1253,8 @@
                 </svg>
                 Edit Data Batch Produksi
             </div>
-            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeModalEditProduksi()">
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;"
+                onclick="closeModalEditProduksi()">
                 <svg class="svg-icon-xs" viewBox="0 0 24 24">
                     <path d="M18 6 6 18" />
                     <path d="m6 6 12 12" />
@@ -1020,55 +1265,76 @@
             <form onsubmit="event.preventDefault(); submitEditProduksi();">
                 <input type="hidden" id="editProdBatchId">
 
-                <div style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <div
+                    style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <small style="color: var(--text-muted); font-size: 11px;">Batch ID &amp; Produk:</small>
-                        <div id="editProdBatchIdBadge" style="font-weight: 800; font-size: 13px; color: var(--text-main);">-</div>
+                        <div id="editProdBatchIdBadge"
+                            style="font-weight: 800; font-size: 13px; color: var(--text-main);">-</div>
                     </div>
-                    <div id="editProdBatchProdukBadge" style="font-size: 12px; font-weight: 700; color: var(--violet-main);">-</div>
+                    <div id="editProdBatchProdukBadge"
+                        style="font-size: 12px; font-weight: 700; color: var(--violet-main);">-</div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Jumlah Rencana (Pcs)</label>
-                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdBatchRencana" required min="0" oninput="hitungEditHppPreview()">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Jumlah Rencana
+                            (Pcs)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                            id="editProdBatchRencana" required min="0" oninput="hitungEditHppPreview()">
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Jumlah Rusak (Pcs)</label>
-                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdBatchRusak" required min="0" oninput="hitungEditHppPreview()">
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                    <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya Bahan Baku (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdBiayaBahan" required min="0" oninput="hitungEditHppPreview()">
-                    </div>
-                    <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya Kemasan (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdBiayaKemasan" required min="0" oninput="hitungEditHppPreview()">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Jumlah Rusak
+                            (Pcs)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                            id="editProdBatchRusak" required min="0" oninput="hitungEditHppPreview()">
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya Utilitas / Ops (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdBiayaOperasional" required min="0" oninput="hitungEditHppPreview()">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya Bahan Baku
+                            (<span class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px;" id="editProdBiayaBahan" required min="0"
+                            oninput="hitungEditHppPreview()">
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya Upah Kerja (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdBiayaUpah" required min="0" oninput="hitungEditHppPreview()">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya Kemasan
+                            (<span class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px;" id="editProdBiayaKemasan" required min="0"
+                            oninput="hitungEditHppPreview()">
                     </div>
                 </div>
 
-                <div style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 8px; padding: 8px 12px; margin-bottom: 14px; display: flex; justify-content: space-between; font-size: 12px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya Utilitas /
+                            Ops (<span class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px;" id="editProdBiayaOperasional" required min="0"
+                            oninput="hitungEditHppPreview()">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Biaya Upah Kerja
+                            (<span class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px;" id="editProdBiayaUpah" required min="0"
+                            oninput="hitungEditHppPreview()">
+                    </div>
+                </div>
+
+                <div
+                    style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 8px; padding: 8px 12px; margin-bottom: 14px; display: flex; justify-content: space-between; font-size: 12px;">
                     <span>Produksi Bersih: <b id="editProdBersihLbl">-</b></span>
                     <span>Total HPP: <b id="editProdTotalHppLbl" style="color: var(--violet-main);">-</b></span>
                     <span>HPP/Unit: <b id="editProdHppUnitLbl" style="color: var(--emerald);">-</b></span>
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeModalEditProduksi()">Batal</button>
+                    <button type="button" class="btn-pill-action btn-pill-secondary"
+                        onclick="closeModalEditProduksi()">Batal</button>
                     <button type="submit" class="btn-pill-action btn-pill-primary">
                         <svg class="svg-icon-sm" viewBox="0 0 24 24">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
@@ -1093,7 +1359,8 @@
                 </svg>
                 Edit Data Presensi &amp; Upah
             </div>
-            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeModalEditTenagaKerja()">
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;"
+                onclick="closeModalEditTenagaKerja()">
                 <svg class="svg-icon-xs" viewBox="0 0 24 24">
                     <path d="M18 6 6 18" />
                     <path d="m6 6 12 12" />
@@ -1104,21 +1371,25 @@
             <form onsubmit="event.preventDefault(); submitEditTenagaKerja();">
                 <input type="hidden" id="editTkId">
 
-                <div style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                <div
+                    style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <small style="color: var(--text-muted); font-size: 11px;">ID Tenaga Kerja:</small>
-                        <div id="editTkIdBadge" style="font-weight: 800; font-size: 13px; color: var(--text-main);">-</div>
+                        <div id="editTkIdBadge" style="font-weight: 800; font-size: 13px; color: var(--text-main);">-
+                        </div>
                     </div>
                 </div>
 
                 <div style="margin-bottom: 10px;">
                     <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nama Pekerja</label>
-                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTkNama" required>
+                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTkNama"
+                        required>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Skema Tenaga Kerja</label>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Skema Tenaga
+                            Kerja</label>
                         <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTkTipe">
                             <option value="Pekerja harian">Pekerja harian</option>
                             <option value="Karyawan tetap">Karyawan tetap</option>
@@ -1126,34 +1397,47 @@
                         </select>
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Total Jam Kerja</label>
-                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTkTotalJam" required min="0" oninput="hitungEditUpahPreview()">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Total Jam
+                            Kerja</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                            id="editTkTotalJam" required min="0" oninput="hitungEditUpahPreview()">
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Rate Upah (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTkRate" required min="0" oninput="hitungEditUpahPreview()">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Rate Upah (<span
+                                class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px;" id="editTkRate" required min="0"
+                            oninput="hitungEditUpahPreview()">
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Bonus / Lembur (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTkBonus" min="0" oninput="hitungEditUpahPreview()">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Bonus / Lembur
+                            (<span class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px;" id="editTkBonus" min="0"
+                            oninput="hitungEditUpahPreview()">
                     </div>
                 </div>
 
                 <div style="margin-bottom: 12px;">
-                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Potongan / Kasbon (<span class="app-currency-symbol">Rp</span>)</label>
-                    <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editTkPotongan" min="0" oninput="hitungEditUpahPreview()">
+                    <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Potongan / Kasbon
+                        (<span class="app-currency-symbol">Rp</span>)</label>
+                    <input type="number" step="any" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                        id="editTkPotongan" min="0" oninput="hitungEditUpahPreview()">
                 </div>
 
-                <div style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+                <div
+                    style="background: #f8fafc; border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
                     <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">TOTAL UPAH BERSIH:</span>
-                    <span style="font-size: 15px; font-weight: 800; color: var(--violet-main);" id="editTkTotalBayarLbl">0</span>
+                    <span style="font-size: 15px; font-weight: 800; color: var(--violet-main);"
+                        id="editTkTotalBayarLbl">0</span>
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeModalEditTenagaKerja()">Batal</button>
+                    <button type="button" class="btn-pill-action btn-pill-secondary"
+                        onclick="closeModalEditTenagaKerja()">Batal</button>
                     <button type="submit" class="btn-pill-action btn-pill-primary">
                         <svg class="svg-icon-sm" viewBox="0 0 24 24">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
@@ -1169,23 +1453,40 @@
 </div>
 
 <!-- 6. Modal Preview & Cetak Struk Transaksi POS Premium -->
-<div class="modal-overlay-custom" id="modalPreviewStruk" role="dialog" aria-modal="true" tabindex="-1" style="align-items: flex-start; overflow-y: auto; padding: 40px 16px;">
-    <div class="modal-sheet-card" style="max-width: 440px; background: transparent; box-shadow: none; border: none; overflow: visible; margin: auto;">
+<div class="modal-overlay-custom" id="modalPreviewStruk" role="dialog" aria-modal="true" tabindex="-1"
+    style="align-items: flex-start; overflow-y: auto; padding: 40px 16px;">
+    <div class="modal-sheet-card"
+        style="max-width: 440px; background: transparent; box-shadow: none; border: none; overflow: visible; margin: auto;">
         <div class="receipt-paper-wrapper" style="position: relative;">
-            
+
             <!-- Top Controls (Close & Status) -->
-            <div class="receipt-top-actions no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px;">
-                <span class="badge-receipt-live" style="background: rgba(108,71,255,0.15); color: var(--violet-main); font-size: 11.5px; font-weight: 800; padding: 5px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(108,71,255,0.12);">
-                    <span style="width: 7px; height: 7px; border-radius: 50%; background: var(--emerald); display: inline-block;"></span>
+            <div class="receipt-top-actions no-print"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px;">
+                <span class="badge-receipt-live"
+                    style="background: rgba(108,71,255,0.15); color: var(--violet-main); font-size: 11.5px; font-weight: 800; padding: 5px 14px; border-radius: 20px; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(108,71,255,0.12);">
+                    <span
+                        style="width: 7px; height: 7px; border-radius: 50%; background: var(--emerald); display: inline-block;"></span>
                     Struk Resmi Siap Cetak
                 </span>
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 5px 10px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 5px; background: #ffffff; border-radius: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);" onclick="if(window.openSettingHeaderStruk) window.openSettingHeaderStruk()" title="Ubah Nama, Alamat, No. Telp atau Sembunyikan">
-                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <button type="button" class="btn-pill-action btn-pill-secondary"
+                        style="padding: 5px 10px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 5px; background: #ffffff; border-radius: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.06);"
+                        onclick="if(window.openSettingHeaderStruk) window.openSettingHeaderStruk()"
+                        title="Ubah Nama, Alamat, No. Telp atau Sembunyikan">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="3" />
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                        </svg>
                         <span>Ubah / Hapus Alamat &amp; No. HP</span>
                     </button>
-                    <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 5px 10px; background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.12); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;" onclick="closePreviewStrukModal()">
-                        <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    <button type="button" class="btn-pill-action btn-pill-secondary"
+                        style="padding: 5px 10px; background: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.12); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;"
+                        onclick="closePreviewStrukModal()">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24">
+                            <path d="M18 6 6 18" />
+                            <path d="m6 6 12 12" />
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -1196,26 +1497,37 @@
             </div>
 
             <!-- Receipt Bottom Action Bar (No Print) -->
-            <div class="receipt-bottom-actions no-print" style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px;">
+            <div class="receipt-bottom-actions no-print"
+                style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                    <button type="button" class="btn-pill-action btn-pill-secondary" style="justify-content: center; background: #ffffff; padding: 10px; font-size: 11.5px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.06);" onclick="shareStrukWhatsApp()">
+                    <button type="button" class="btn-pill-action btn-pill-secondary"
+                        style="justify-content: center; background: #ffffff; padding: 10px; font-size: 11.5px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.06);"
+                        onclick="shareStrukWhatsApp()">
                         WA
                     </button>
-                    <button type="button" class="btn-pill-action btn-pill-secondary" style="justify-content: center; background: #ffffff; padding: 10px; font-size: 11.5px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.06);" onclick="copyStrukText()">
+                    <button type="button" class="btn-pill-action btn-pill-secondary"
+                        style="justify-content: center; background: #ffffff; padding: 10px; font-size: 11.5px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.06);"
+                        onclick="copyStrukText()">
                         Salin Teks
                     </button>
-                    <button type="button" class="btn-pill-action btn-pill-secondary" style="justify-content: center; background: #ffffff; padding: 10px; font-size: 11.5px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.06); color: var(--violet-main);" onclick="triggerDownloadStrukPdf()">
+                    <button type="button" class="btn-pill-action btn-pill-secondary"
+                        style="justify-content: center; background: #ffffff; padding: 10px; font-size: 11.5px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.06); color: var(--violet-main);"
+                        onclick="triggerDownloadStrukPdf()">
                         Unduh PDF
                     </button>
-                    <button type="button" class="btn-pill-action btn-pill-secondary" style="justify-content: center; background: #ffffff; padding: 10px; font-size: 11.5px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.06); color: var(--emerald);" onclick="triggerDownloadStrukImage()">
+                    <button type="button" class="btn-pill-action btn-pill-secondary"
+                        style="justify-content: center; background: #ffffff; padding: 10px; font-size: 11.5px; font-weight: 700; box-shadow: 0 2px 6px rgba(0,0,0,0.06); color: var(--emerald);"
+                        onclick="triggerDownloadStrukImage()">
                         Unduh Gambar
                     </button>
                 </div>
-                <button type="button" class="btn-pill-action btn-pill-primary" style="justify-content: center; padding: 13px; font-size: 14px; font-weight: 800; box-shadow: 0 10px 25px -5px rgba(108,71,255,0.4);" onclick="triggerPrintStruk()">
+                <button type="button" class="btn-pill-action btn-pill-primary"
+                    style="justify-content: center; padding: 13px; font-size: 14px; font-weight: 800; box-shadow: 0 10px 25px -5px rgba(108,71,255,0.4);"
+                    onclick="triggerPrintStruk()">
                     <svg class="svg-icon-sm" viewBox="0 0 24 24">
-                        <polyline points="6 9 6 2 18 2 18 9"/>
-                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-                        <rect width="12" height="8" x="6" y="14"/>
+                        <polyline points="6 9 6 2 18 2 18 9" />
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                        <rect width="12" height="8" x="6" y="14" />
                     </svg>
                     Cetak Struk (Printer Thermal)
                 </button>
@@ -1225,61 +1537,101 @@
 </div>
 
 <!-- Modal Pengaturan Identitas & Kontak Struk (Nota) -->
-<div class="modal-overlay-custom" id="modalSettingHeaderStruk" role="dialog" aria-modal="true" tabindex="-1" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 100000; align-items: center; justify-content: center;">
-    <div class="modal-sheet-card" style="max-width: 480px; width: 92%; background: #ffffff; border-radius: 20px; padding: 22px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
-        <div class="modal-sheet-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-soft); padding-bottom: 12px;">
-            <div class="modal-sheet-title" style="font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 8px; color: var(--violet-dark);">
-                <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+<div class="modal-overlay-custom" id="modalSettingHeaderStruk" role="dialog" aria-modal="true" tabindex="-1"
+    style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 100000; align-items: center; justify-content: center;">
+    <div class="modal-sheet-card"
+        style="max-width: 480px; width: 92%; background: #ffffff; border-radius: 20px; padding: 22px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+        <div class="modal-sheet-header"
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid var(--border-soft); padding-bottom: 12px;">
+            <div class="modal-sheet-title"
+                style="font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 8px; color: var(--violet-dark);">
+                <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                </svg>
                 Atur Alamat &amp; Kontak Struk
             </div>
-            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px; border-radius: 50%; width: 28px; height: 28px;" onclick="closeSettingHeaderStruk()">✕</button>
+            <button type="button" class="btn-pill-action btn-pill-secondary"
+                style="padding: 4px 8px; border-radius: 50%; width: 28px; height: 28px;"
+                onclick="closeSettingHeaderStruk()">✕</button>
         </div>
         <div class="modal-sheet-body">
-            <form onsubmit="event.preventDefault(); submitSettingHeaderStruk();" style="display: flex; flex-direction: column; gap: 12px;">
+            <form onsubmit="event.preventDefault(); submitSettingHeaderStruk();"
+                style="display: flex; flex-direction: column; gap: 12px;">
                 <div>
-                    <label class="profile-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 4px;">Nama Usaha / Toko</label>
-                    <input type="text" id="setStrukBrandName" class="search-filter-input profile-input" style="width: 100%; padding: 8px 12px; font-size: 12.5px; border-radius: 8px; border: 1px solid var(--border-strong);" placeholder="Contoh: MAFAZA GROUP">
+                    <label class="profile-label"
+                        style="font-size: 11.5px; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 4px;">Nama
+                        Usaha / Toko</label>
+                    <input type="text" id="setStrukBrandName" class="search-filter-input profile-input"
+                        style="width: 100%; padding: 8px 12px; font-size: 12.5px; border-radius: 8px; border: 1px solid var(--border-strong);"
+                        placeholder="Contoh: MAFAZA GROUP">
                 </div>
                 <div>
-                    <label class="profile-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 4px;">Sub-Judul / Tagline</label>
-                    <input type="text" id="setStrukBrandDesc" class="search-filter-input profile-input" style="width: 100%; padding: 8px 12px; font-size: 12.5px; border-radius: 8px; border: 1px solid var(--border-strong);" placeholder="Contoh: BUSINESS MANAGEMENT SYSTEM">
+                    <label class="profile-label"
+                        style="font-size: 11.5px; font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 4px;">Sub-Judul
+                        / Tagline</label>
+                    <input type="text" id="setStrukBrandDesc" class="search-filter-input profile-input"
+                        style="width: 100%; padding: 8px 12px; font-size: 12.5px; border-radius: 8px; border: 1px solid var(--border-strong);"
+                        placeholder="Contoh: BUSINESS MANAGEMENT SYSTEM">
                 </div>
-                <div style="background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 10px; padding: 12px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                        <label class="profile-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-dark); margin: 0;">Alamat Usaha</label>
-                        <button type="button" onclick="document.getElementById('setStrukAlamat').value=''" class="btn-pill-action btn-pill-secondary" style="font-size: 10px; padding: 2px 7px; border-radius: 6px;">Kosongkan</button>
+                <div
+                    style="background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 10px; padding: 12px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <label class="profile-label"
+                            style="font-size: 11.5px; font-weight: 700; color: var(--text-dark); margin: 0;">Alamat
+                            Usaha</label>
+                        <button type="button" onclick="document.getElementById('setStrukAlamat').value=''"
+                            class="btn-pill-action btn-pill-secondary"
+                            style="font-size: 10px; padding: 2px 7px; border-radius: 6px;">Kosongkan</button>
                     </div>
-                    <textarea id="setStrukAlamat" class="search-filter-input profile-input" rows="2" style="width: 100%; padding: 8px 10px; font-size: 12px; border-radius: 8px; border: 1px solid var(--border-strong); resize: vertical; height: auto;" placeholder="Tulis alamat usaha, atau kosongkan / centang di bawah untuk menghilangkannya..."></textarea>
-                    <label style="font-size: 11px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 6px; margin-top: 6px; cursor: pointer;">
-                        <input type="checkbox" id="chkHideAlamat" style="accent-color: var(--violet-main); width: 14px; height: 14px;">
+                    <textarea id="setStrukAlamat" class="search-filter-input profile-input" rows="2"
+                        style="width: 100%; padding: 8px 10px; font-size: 12px; border-radius: 8px; border: 1px solid var(--border-strong); resize: vertical; height: auto;"
+                        placeholder="Tulis alamat usaha, atau kosongkan / centang di bawah untuk menghilangkannya..."></textarea>
+                    <label
+                        style="font-size: 11px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 6px; margin-top: 6px; cursor: pointer;">
+                        <input type="checkbox" id="chkHideAlamat"
+                            style="accent-color: var(--violet-main); width: 14px; height: 14px;">
                         <span>Sembunyikan / Hilangkan Alamat dari Struk</span>
                     </label>
                 </div>
-                <div style="background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 10px; padding: 12px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                        <label class="profile-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-dark); margin: 0;">No. Telepon / WA &amp; Medsos</label>
-                        <button type="button" onclick="document.getElementById('setStrukKontak').value=''" class="btn-pill-action btn-pill-secondary" style="font-size: 10px; padding: 2px 7px; border-radius: 6px;">Kosongkan</button>
+                <div
+                    style="background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 10px; padding: 12px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <label class="profile-label"
+                            style="font-size: 11.5px; font-weight: 700; color: var(--text-dark); margin: 0;">No. Telepon
+                            / WA &amp; Medsos</label>
+                        <button type="button" onclick="document.getElementById('setStrukKontak').value=''"
+                            class="btn-pill-action btn-pill-secondary"
+                            style="font-size: 10px; padding: 2px 7px; border-radius: 6px;">Kosongkan</button>
                     </div>
-                    <input type="text" id="setStrukKontak" class="search-filter-input profile-input" style="width: 100%; padding: 8px 12px; font-size: 12px; border-radius: 8px; border: 1px solid var(--border-strong);" placeholder="Contoh: Telp / WA: 0822-6866-0396 | IG: @mafazagroup.id">
-                    <label style="font-size: 11px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 6px; margin-top: 6px; cursor: pointer;">
-                        <input type="checkbox" id="chkHideKontak" style="accent-color: var(--violet-main); width: 14px; height: 14px;">
+                    <input type="text" id="setStrukKontak" class="search-filter-input profile-input"
+                        style="width: 100%; padding: 8px 12px; font-size: 12px; border-radius: 8px; border: 1px solid var(--border-strong);"
+                        placeholder="Contoh: Telp / WA: 0822-6866-0396 | IG: @mafazagroup.id">
+                    <label
+                        style="font-size: 11px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 6px; margin-top: 6px; cursor: pointer;">
+                        <input type="checkbox" id="chkHideKontak"
+                            style="accent-color: var(--violet-main); width: 14px; height: 14px;">
                         <span>Sembunyikan / Hilangkan No. Telp &amp; Kontak dari Struk</span>
                     </label>
                 </div>
-                <div style="background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 8px; padding: 10px;">
-                    <label style="font-size: 11px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 6px; cursor: pointer; margin: 0;">
-                        <input type="checkbox" id="chkHideLogo" style="accent-color: var(--violet-main); width: 14px; height: 14px;">
+                <div
+                    style="background: #f8fafc; border: 1px solid var(--border-soft); border-radius: 8px; padding: 10px;">
+                    <label
+                        style="font-size: 11px; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 6px; cursor: pointer; margin: 0;">
+                        <input type="checkbox" id="chkHideLogo"
+                            style="accent-color: var(--violet-main); width: 14px; height: 14px;">
                         <span>Sembunyikan Logo Gambar</span>
                     </label>
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
-                    <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeSettingHeaderStruk()">Batal</button>
+                    <button type="button" class="btn-pill-action btn-pill-secondary"
+                        onclick="closeSettingHeaderStruk()">Batal</button>
                     <button type="submit" class="btn-pill-action btn-pill-primary">Simpan &amp; Terapkan</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-
-

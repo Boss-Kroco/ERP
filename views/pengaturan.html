@@ -280,42 +280,52 @@
 
     <!-- Modal 2: Konfigurasi Finansial -->
     <div class="modal-overlay-custom" id="modalSetFinance">
-        <div class="modal-sheet-card">
-            <div class="modal-sheet-header">
-                <div class="modal-sheet-title">
-                    <svg class="svg-icon-sm text-violet" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
-                    Konfigurasi Finansial
-                </div>
-                <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="closeSettingModal('modalSetFinance')">✕</button>
-            </div>
-            <div class="modal-sheet-body">
-                <form onsubmit="event.preventDefault(); savePengaturanFinance();" style="display: flex; flex-direction: column; gap: 12px;">
+        <div class="modal-sheet-card" style="width: 95%; max-width: 480px; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25); background: #ffffff;">
+            <div class="modal-sheet-header" style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; justify-content: space-between;">
+                <div class="modal-sheet-title" style="font-size: 15px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 34px; height: 34px; border-radius: 10px; background: #eff6ff; color: #0284c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                            <path d="M3 5V19A9 3 0 0 0 21 19V5"/>
+                            <path d="M3 12A9 3 0 0 0 21 12"/>
+                        </svg>
+                    </div>
                     <div>
-                        <label class="profile-label">Target Capaian Omzet Bulanan (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" id="setFinTargetOmzet" class="search-filter-input profile-input" value="5000000" min="0" step="500000" placeholder="5000000">
+                        <div style="line-height: 1.2;">Konfigurasi Finansial</div>
+                        <div style="font-size: 11px; font-weight: 500; color: #64748b; margin-top: 1px;">Mata uang, target capaian &amp; limit kas</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-pill-action btn-pill-secondary" style="border-radius: 12px; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 13px;" onclick="closeSettingModal('modalSetFinance')" title="Tutup Modal">✕</button>
+            </div>
+            <div class="modal-sheet-body" style="padding: 16px 20px 20px;">
+                <form onsubmit="event.preventDefault(); savePengaturanFinance();" style="display: flex; flex-direction: column; gap: 14px;">
+                    <div>
+                        <label class="profile-label" style="font-size: 11.5px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block;">Mata Uang Baku Sistem</label>
+                        <select id="setFinCurrency" class="search-filter-input profile-input" onchange="window.onFinCurrencyChanged(this.value)" style="border-radius: 12px; font-weight: 700; width: 100%;">
+                            <option value="IDR">IDR (Rupiah - Rp) [Standar Baku]</option>
+                            <option value="USD">USD (US Dollar - $)</option>
+                            <option value="SAR">SAR (Saudi Riyal - ﷼)</option>
+                            <option value="YER">YER (Real Yaman - ﷼)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="profile-label" style="font-size: 11.5px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block;">Target Capaian Omzet Bulanan (<span class="fin-currency-symbol">Rp</span>)</label>
+                        <input type="number" id="setFinTargetOmzet" class="search-filter-input profile-input" value="5000000" min="0" step="any" placeholder="Contoh: 15000000 atau 1000" style="border-radius: 12px; width: 100%;">
+                        <div style="font-size: 10.5px; color: #94a3b8; margin-top: 4px;">Ketik nominal target omzet yang diinginkan dalam mata uang terpilih di atas.</div>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                         <div>
-                            <label class="profile-label">Tarif Pajak PPN (%)</label>
-                            <input type="number" id="setFinPajak" class="search-filter-input profile-input" value="11" min="0" max="100">
+                            <label class="profile-label" style="font-size: 11.5px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block;">Tarif Pajak PPN (%)</label>
+                            <input type="number" id="setFinPajak" class="search-filter-input profile-input" value="11" min="0" max="100" step="any" style="border-radius: 12px; width: 100%;">
                         </div>
                         <div>
-                            <label class="profile-label">Mata Uang Baku</label>
-                            <select id="setFinCurrency" class="search-filter-input profile-input">
-                                <option value="IDR" selected>IDR (Rupiah - Rp) [Standar Baku]</option>
-                                <option value="USD">USD (US Dollar - $)</option>
-                                <option value="SAR">SAR (Saudi Riyal / Real Arab Saudi - ﷼)</option>
-                                <option value="YER">YER (Real Yaman / Yemeni Rial - ﷼)</option>
-                            </select>
+                            <label class="profile-label" style="font-size: 11.5px; font-weight: 700; color: #475569; margin-bottom: 5px; display: block;">Limit Kas Kritis (<span class="fin-currency-symbol">Rp</span>)</label>
+                            <input type="number" id="setFinLimitKas" class="search-filter-input profile-input" value="2000000" min="0" step="any" style="border-radius: 12px; width: 100%;">
                         </div>
                     </div>
-                    <div>
-                        <label class="profile-label">Limit Peringatan Saldo Kas Kritis (<span class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" id="setFinLimitKas" class="search-filter-input profile-input" value="2000000">
-                    </div>
-                    <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
-                        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeSettingModal('modalSetFinance')">Tutup</button>
-                        <button type="submit" class="btn-pill-action btn-pill-primary">Simpan Finansial</button>
+                    <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px;">
+                        <button type="button" class="btn-pill-action btn-pill-secondary" onclick="closeSettingModal('modalSetFinance')" style="border-radius: 12px; padding: 9px 16px; font-weight: 700;">Tutup</button>
+                        <button type="submit" class="btn-pill-action btn-pill-primary" style="border-radius: 12px; padding: 9px 18px; font-weight: 800;">Simpan Finansial</button>
                     </div>
                 </form>
             </div>

@@ -67,8 +67,9 @@ window.renderDaftarHPP = function() {
             <td style="text-align: right; color: var(--emerald); font-weight: bold;">${window.formatAppCurrency(laba)}</td>
             <td style="text-align: right; color: var(--violet-main); font-weight: bold;">${margin.toFixed(2)}%</td>
             <td><span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">${item.status}</span></td>
-            <td style="text-align: center;">
-                <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="window.lihatDetailHpp('${item.produkId}')">Lihat Detail</button>
+            <td style="text-align: center; white-space: nowrap;">
+                <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px; font-size: 11px; margin-right: 4px;" onclick="window.lihatDetailHpp('${item.produkId}')">Lihat Detail</button>
+                <button class="btn-pill-action" style="padding: 4px 8px; font-size: 11px; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; border-radius: 8px; font-weight: 700;" onclick="window.hapusProduk('${item.produkId}', '${item.namaProduk}')" title="Hapus Produk">Hapus</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -570,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500);
 });
 
-window.simpanProdukBaruHpp = function() {
+window.simpanProdukBaruHpp = function(keepOpen) {
     var namaEl = document.getElementById('newProdNamaHpp') || document.getElementById('newProdNama');
     var skuEl = document.getElementById('newProdSkuHpp') || document.getElementById('newProdSku');
     var satuanEl = document.getElementById('newProdSatuanHpp') || document.getElementById('newProdSatuan');
@@ -636,8 +637,20 @@ window.simpanProdukBaruHpp = function() {
             if(hargaEl) hargaEl.value = '';
             
             var modal = document.getElementById('modalTambahJenisHpp');
-            if(modal) modal.style.display = 'none';
-            if(window.showToast) window.showToast('Produk Makanan Baru berhasil ditambahkan ke Master Produk!', 'success');
+            if (keepOpen) {
+                // Tetap di form pendataan agar tidak perlu klik tambah jenis makanan lagi
+                if (modal) modal.style.display = 'flex';
+                if (namaEl) {
+                    namaEl.value = '';
+                    namaEl.focus();
+                }
+                if (skuEl) skuEl.value = '';
+                if (hargaEl) hargaEl.value = '';
+                if (window.showToast) window.showToast('"' + payload.namaProduk + '" berhasil disimpan! Silakan input makanan berikutnya...', 'success');
+            } else {
+                if (modal) modal.style.display = 'none';
+                if (window.showToast) window.showToast('Produk Makanan Baru "' + payload.namaProduk + '" berhasil ditambahkan!', 'success');
+            }
         }, function(err) {
             if(window.showToast) window.showToast('Gagal menyimpan produk: ' + (err.message || 'Error koneksi'), 'error');
         });

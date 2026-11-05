@@ -60,11 +60,12 @@ window.initPengaturanPage = function () {
     // Default estimasi pengeluaran kas operasional
     var estPengeluaran = 2730000;
     var estLaba = sumOmzet - estPengeluaran;
-    var pctCapaian = targetOmzet > 0 ? ((sumOmzet / targetOmzet) * 100).toFixed(1) : '0';
+    var omzetInCurr = (typeof window.toAppCurrency === 'function') ? window.toAppCurrency(sumOmzet) : sumOmzet;
+    var pctCapaian = targetOmzet > 0 ? ((omzetInCurr / targetOmzet) * 100).toFixed(1) : '0';
 
     if (elOmzet) elOmzet.textContent = window.formatAppCurrency(sumOmzet);
     if (elLaba) elLaba.textContent = window.formatAppCurrency(estLaba);
-    if (elTarget) elTarget.textContent = window.formatAppCurrency(targetOmzet);
+    if (elTarget) elTarget.textContent = (typeof window.formatAppCurrencyValue === 'function') ? window.formatAppCurrencyValue(targetOmzet) : window.formatAppCurrency(targetOmzet);
     if (elSubTarget) elSubTarget.textContent = pctCapaian + '% Terpenuhi';
     if (elTrx) elTrx.textContent = trxList.length;
 
@@ -76,11 +77,12 @@ window.initPengaturanPage = function () {
                 var realOmzet = (typeof d.omzet === 'number') ? d.omzet : sumOmzet;
                 var realPengeluaran = (typeof d.pengeluaran === 'number') ? d.pengeluaran : estPengeluaran;
                 var realLaba = (typeof d.labaBersih === 'number') ? d.labaBersih : (realOmzet - realPengeluaran);
-                var realPct = targetOmzet > 0 ? ((realOmzet / targetOmzet) * 100).toFixed(1) : '0';
+                var realOmzetInCurr = (typeof window.toAppCurrency === 'function') ? window.toAppCurrency(realOmzet) : realOmzet;
+                var realPct = targetOmzet > 0 ? ((realOmzetInCurr / targetOmzet) * 100).toFixed(1) : '0';
 
                 if (elOmzet) elOmzet.textContent = window.formatAppCurrency(realOmzet);
                 if (elLaba) elLaba.textContent = window.formatAppCurrency(realLaba);
-                if (elTarget) elTarget.textContent = window.formatAppCurrency(targetOmzet);
+                if (elTarget) elTarget.textContent = (typeof window.formatAppCurrencyValue === 'function') ? window.formatAppCurrencyValue(targetOmzet) : window.formatAppCurrency(targetOmzet);
                 if (elSubTarget) elSubTarget.textContent = realPct + '% Terpenuhi';
                 if (elTrx) elTrx.textContent = typeof d.totalTransactions === 'number' ? d.totalTransactions : trxList.length;
             }
@@ -1182,5 +1184,29 @@ window.toggleDataAccordion = function (itemId) {
         item.style.boxShadow = '0 4px 12px rgba(15, 23, 42, 0.06)';
         if (body) body.style.display = 'block';
         if (chevron) chevron.style.transform = 'rotate(90deg)';
+    }
+};
+
+/**
+ * Real-time Currency Change Handler in Financial Settings Modal
+ */
+window.onFinCurrencyChanged = function (currVal) {
+    var symbol = 'Rp';
+    if (currVal === 'USD') symbol = '$';
+    else if (currVal === 'SAR' || currVal === 'YER') symbol = '﷼';
+
+    document.querySelectorAll('.fin-currency-symbol, .app-currency-symbol').forEach(function (el) {
+        el.textContent = symbol;
+    });
+
+    var inpTarget = document.getElementById('setFinTargetOmzet');
+    if (inpTarget) {
+        if (currVal === 'USD') {
+            inpTarget.placeholder = 'Contoh: 15000 atau 1000';
+        } else if (currVal === 'SAR' || currVal === 'YER') {
+            inpTarget.placeholder = 'Contoh: 5000 atau 10000';
+        } else {
+            inpTarget.placeholder = 'Contoh: 15000000 atau 5000000';
+        }
     }
 };
