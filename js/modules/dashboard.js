@@ -33,6 +33,9 @@ var orderTransactions = [
     { id: 'TRX-20260905-0009', orderNum: 'Nº674847', customer: 'Pelanggan Umum', phone: 'Walk-in', category: 'Makaroni Panggang', price: 66000, date: '05/09/2026', payment: 'Tunai', status: 'delivered' },
     { id: 'TRX-20260905-0010', orderNum: 'Nº674848', customer: 'Agen Snack Bu Siti', phone: '0813 9876 1234', category: 'Rengginang Ketan Hitam', price: 210000, date: '05/09/2026', payment: 'Tempo', status: 'on way' }
 ];
+if (localStorage.getItem('mafaza_production_mode') === 'true') {
+    orderTransactions = [];
+}
 window.orderTransactions = orderTransactions;
 
 var dueAlertsData = [];
@@ -269,6 +272,15 @@ function renderOrderTable(dataset) {
             if (!tbody) return;
             tbody.innerHTML = '';
             var allData = dataset || window.orderTransactions || orderTransactions || [];
+            if (!allData || allData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 36px 16px; color: #94a3b8; font-size: 13px;">' +
+                    '<div style="font-weight: 700; color: #64748b; margin-bottom: 4px;">Belum Ada Transaksi</div>' +
+                    'Sistem dalam kondisi bersih. Silakan lakukan penjualan pertama Anda di menu Kasir POS!' +
+                    '</td></tr>';
+                var badgeEl = document.getElementById('orderCountBadge');
+                if (badgeEl) badgeEl.textContent = '0 Data';
+                return;
+            }
             var isFiltered = Boolean(dataset);
             var data = isFiltered ? dataset : allData.slice(0, 10);
             

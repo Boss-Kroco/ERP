@@ -1257,6 +1257,23 @@
             trxList.forEach(function (t) {
                 omzetReal += Number(t.price || t.amount || t.totalNet || 0);
             });
+            var isProdMode = localStorage.getItem('mafaza_production_mode') === 'true';
+            if (isProdMode && (!trxList || trxList.length === 0)) {
+                var zeroResult = {
+                    success: true,
+                    totalTransactions: 0,
+                    omzet: 0,
+                    pengeluaran: 0,
+                    saldoKas: 0,
+                    labaBersih: 0,
+                    piutang: 0,
+                    hutang: 0,
+                    totalAsetStok: 0,
+                    chartData: []
+                };
+                zeroResult.data = zeroResult;
+                return successCb(zeroResult);
+            }
             var baseOmzet = omzetReal > 0 ? (omzetReal * periodFactor) : (pPeriod === 'Harian' ? 1631000 : pPeriod === 'Mingguan' ? 3076000 : 18500000);
             var pengeluaranReal = 2730000 * periodFactor;
             var result = {

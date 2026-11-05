@@ -994,6 +994,99 @@ window.clearLocalCacheAndResync = function () {
     }, 600);
 };
 
+window.resetAllDataToCleanSlate = function () {
+    var confirmMsg = 'PERINGATAN PEMBERSIHAN DATA:\n\n' +
+        'Tindakan ini akan MENGHAPUS SEMUA DATA BAWAAN / SIMULASI:\n' +
+        '• Seluruh riwayat transaksi penjualan (di-reset ke 0)\n' +
+        '• Seluruh katalog produk & stok bawaan (di-reset ke 0)\n' +
+        '• Seluruh catatan mutasi kas (saldo awal Rp 0)\n' +
+        '• Seluruh kontak pelanggan & mitra bawaan\n' +
+        '• Seluruh agenda kegiatan contoh\n\n' +
+        'Akun login Admin Anda akan TETAP AMAN.\n\n' +
+        'Apakah Anda yakin ingin mengosongkan semua data dan memulai operasional toko nyata dari nol?';
+
+    if (!window.confirm(confirmMsg)) return;
+
+    var secondConfirm = window.prompt('Ketik "BERSIHKAN" (huruf kapital) untuk konfirmasi pembersihan total:');
+    if (secondConfirm !== 'BERSIHKAN') {
+        if (typeof window.showToast === 'function') {
+            window.showToast('Pembersihan data dibatalkan.', 'info');
+        }
+        return;
+    }
+
+    try {
+        // 1. Set mode produksi aktif
+        localStorage.setItem('mafaza_production_mode', 'true');
+
+        // 2. Kosongkan transaksi
+        window.orderTransactions = [];
+        localStorage.removeItem('bos_kroco_cached_orders');
+        localStorage.removeItem('mafaza_orders');
+
+        // 3. Kosongkan produk katalog
+        window.catalogProducts = [];
+        localStorage.setItem('bos_kroco_catalog_products', '[]');
+        localStorage.setItem('mafaza_catalog_products', '[]');
+
+        // 4. Kosongkan kas
+        window.allKeuanganKas = [];
+        window.currentRawKasList = [];
+        localStorage.setItem('mafaza_kas', '[]');
+
+        // 5. Kosongkan agenda
+        window.DEFAULT_AGENDAS = [];
+        var agendaKey = window.AGENDA_STORAGE_KEY || 'agenda_operational_list_v2';
+        localStorage.setItem(agendaKey, '[]');
+
+        // 6. Kosongkan mitra toko
+        window.mitraTokoList = [];
+        window.timAktivitasList = [];
+
+        // 7. Kosongkan tiket bantuan & audit trail
+        localStorage.removeItem('bos_kroco_help_tickets');
+        localStorage.removeItem('bos_kroco_audit_trail');
+
+        // 8. Jika Supabase client aktif, bersihkan tabel di cloud
+        if (window.supabaseClient) {
+            var sb = window.supabaseClient;
+            Promise.all([
+                sb.from('order_items').delete().neq('order_id', '00000000-0000-0000-0000-000000000000'),
+                sb.from('orders').delete().neq('order_id', '00000000-0000-0000-0000-000000000000'),
+                sb.from('transaksi_kas').delete().neq('kas_id', '00000000-0000-0000-0000-000000000000'),
+                sb.from('stock_opname').delete().neq('opname_id', '00000000-0000-0000-0000-000000000000'),
+                sb.from('products').delete().neq('produk_id', '00000000-0000-0000-0000-000000000000'),
+                sb.from('customers').delete().neq('customer_id', '00000000-0000-0000-0000-000000000000'),
+                sb.from('agendas').delete().neq('agenda_id', '00000000-0000-0000-0000-000000000000')
+            ]).then(function () {
+                console.log('[CleanSlate] Supabase tables wiped cleanly.');
+            }).catch(function (sbErr) {
+                console.warn('[CleanSlate] Supabase warning:', sbErr);
+            });
+        }
+
+        // 9. Perbarui UI seluruh modul aktif
+        if (typeof window.loadDashboardData === 'function') window.loadDashboardData();
+        if (typeof window.renderOrderTable === 'function') window.renderOrderTable([]);
+        if (typeof window.fetchMasterProducts === 'function') window.fetchMasterProducts();
+        if (typeof window.renderMasterProdukTable === 'function') window.renderMasterProdukTable();
+        if (typeof window.loadKeuanganData === 'function') window.loadKeuanganData();
+        if (typeof window.updateDashboardAnalytics === 'function') window.updateDashboardAnalytics();
+        if (typeof window.renderAgendaList === 'function') window.renderAgendaList();
+
+        if (typeof window.showToast === 'function') {
+            window.showToast('Semua data simulasi berhasil dibersihkan! Sistem siap digunakan untuk toko nyata.', 'success');
+        }
+
+        window.closeSettingModal('modalSetData');
+    } catch (err) {
+        console.error('Gagal membersihkan data:', err);
+        if (typeof window.showToast === 'function') {
+            window.showToast('Terjadi kesalahan saat pembersihan data: ' + err.message, 'error');
+        }
+    }
+};
+
 function saveAppSettingsHelper(newObj) {
     try {
         var current = {};

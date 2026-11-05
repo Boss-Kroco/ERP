@@ -41,7 +41,18 @@ function renderMasterProdukTable() {
     var tbody = document.getElementById('tblMasterProduk');
     if (!tbody) return;
     tbody.innerHTML = '';
+    if (localStorage.getItem('mafaza_production_mode') === 'true' && (!window.catalogProducts || window.catalogProducts.length === 0)) {
+        catalogProducts = [];
+        window.catalogProducts = [];
+    }
     var list = (window.catalogProducts && window.catalogProducts.length) ? window.catalogProducts : (catalogProducts || []);
+    if (!list || list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 36px 16px; color: #94a3b8; font-size: 13px;">' +
+            '<div style="font-weight: 700; color: #64748b; margin-bottom: 4px;">Belum Ada Master Produk</div>' +
+            'Klik tombol <b>+ Tambah Produk</b> di atas untuk mulai memasukkan produk jualan toko Anda.' +
+            '</td></tr>';
+        return;
+    }
     list.forEach(function (p) {
         var tr = document.createElement('tr');
         tr.innerHTML = '<td><b>' + escapeHtml(p.produkId) + '</b></td>'
