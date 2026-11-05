@@ -1173,14 +1173,14 @@ window.toggleDataAccordion = function (itemId) {
     if (isOpen) {
         item.classList.remove('is-open');
         item.style.borderColor = '#e2e8f0';
-        item.style.boxShadow = 'none';
+        item.style.boxShadow = '0 1px 3px rgba(15, 23, 42, 0.02)';
         if (body) body.style.display = 'none';
         if (chevron) chevron.style.transform = 'rotate(0deg)';
     } else {
         item.classList.add('is-open');
         item.style.borderColor = '#cbd5e1';
-        item.style.boxShadow = '0 4px 12px rgba(15, 23, 42, 0.05)';
+        item.style.boxShadow = '0 4px 12px rgba(15, 23, 42, 0.06)';
         if (body) body.style.display = 'block';
-        if (chevron) chevron.style.transform = 'rotate(180deg)';
+        if (chevron) chevron.style.transform = 'rotate(90deg)';
     }
 };
