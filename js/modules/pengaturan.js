@@ -1051,13 +1051,18 @@ window.resetAllDataToCleanSlate = function () {
         if (window.supabaseClient) {
             var sb = window.supabaseClient;
             Promise.all([
-                sb.from('order_items').delete().neq('order_id', '00000000-0000-0000-0000-000000000000'),
-                sb.from('orders').delete().neq('order_id', '00000000-0000-0000-0000-000000000000'),
-                sb.from('transaksi_kas').delete().neq('kas_id', '00000000-0000-0000-0000-000000000000'),
-                sb.from('stock_opname').delete().neq('opname_id', '00000000-0000-0000-0000-000000000000'),
-                sb.from('products').delete().neq('produk_id', '00000000-0000-0000-0000-000000000000'),
-                sb.from('customers').delete().neq('customer_id', '00000000-0000-0000-0000-000000000000'),
-                sb.from('agendas').delete().neq('agenda_id', '00000000-0000-0000-0000-000000000000')
+                sb.from('penjualan').delete().neq('trx_id', '00000000'),
+                sb.from('keuangan_kas').delete().neq('kas_id', '00000000'),
+                sb.from('stock_opname').delete().neq('opname_id', '00000000'),
+                sb.from('stok_lokasi').delete().neq('produk_id', '00000000'),
+                sb.from('produk').delete().neq('produk_id', '00000000'),
+                sb.from('pelanggan_toko').delete().neq('pelanggan_id', '00000000'),
+                sb.from('produksi').delete().neq('produksi_id', '00000000'),
+                sb.from('hutang_piutang').delete().neq('ref_id', '00000000'),
+                sb.from('tenaga_kerja').delete().neq('pekerja_id', '00000000'),
+                sb.from('mutasi_lokasi').delete().neq('mutasi_id', '00000000'),
+                sb.from('bahan_baku').delete().neq('bahan_id', '00000000'),
+                sb.from('audit_trail').delete().neq('log_id', '00000000')
             ]).then(function () {
                 console.log('[CleanSlate] Supabase tables wiped cleanly.');
             }).catch(function (sbErr) {
