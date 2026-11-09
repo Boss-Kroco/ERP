@@ -11,7 +11,9 @@
     <!-- Google Fonts: Plus Jakarta Sans & DM Sans (Curved 't' tail, No Cross Shape) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..800;1,9..40,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..800;1,9..40,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 
     <!-- Modular CSS Stylesheet -->
@@ -25,7 +27,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- Phosphor Icons (Premium) -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <style>.nav-icon-i { font-size: 24px; transition: all 0.2s; }</style>
+    <style>
+        .nav-icon-i {
+            font-size: 24px;
+            transition: all 0.2s;
+        }
+    </style>
 </head>
 
 <body>
@@ -33,7 +40,8 @@
     <div class="login-screen-overlay" id="loginScreen">
         <div class="login-card">
             <div class="login-card-header">
-                <img src="assets/logo.jpg" alt="Mafaza Group" style="width: 72px; height: 72px; border-radius: 16px; object-fit: contain; background: white; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <img src="assets/logo.jpg" alt="Mafaza Group"
+                    style="width: 72px; height: 72px; border-radius: 16px; object-fit: contain; background: white; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                 <div class="login-app-title">Mafaza Group ERP</div>
                 <div class="login-app-subtitle">Business Management System</div>
             </div>
@@ -46,8 +54,8 @@
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                             <circle cx="12" cy="7" r="4" />
                         </svg>
-                        <input type="text" id="loginUsername" class="login-input"
-                            placeholder="Masukkan username..." autocomplete="username">
+                        <input type="text" id="loginUsername" class="login-input" placeholder="Masukkan username..."
+                            autocomplete="username">
                     </div>
                 </div>
                 <div class="login-field-group">
@@ -57,8 +65,8 @@
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                         </svg>
-                        <input type="password" id="loginPassword" class="login-input"
-                            placeholder="Masukkan password..." autocomplete="current-password">
+                        <input type="password" id="loginPassword" class="login-input" placeholder="Masukkan password..."
+                            autocomplete="current-password">
                     </div>
                 </div>
                 <button id="loginSubmitBtn" class="btn-pill-action btn-pill-primary login-submit-btn"
@@ -86,7 +94,8 @@
                 </div>
 
                 <nav class="sidebar-icon-nav" id="sidebarIconNav">
-                    <button type="button" class="nav-icon-pill active" onclick="navigatePage('dashboard')" id="navPillDashboard" title="Dashboard">
+                    <button type="button" class="nav-icon-pill active" onclick="navigatePage('dashboard')"
+                        id="navPillDashboard" title="Dashboard">
                         <svg class="svg-icon" viewBox="0 0 24 24">
                             <rect width="7" height="7" x="3" y="3" rx="1.5" />
                             <rect width="7" height="7" x="14" y="3" rx="1.5" />
@@ -96,72 +105,87 @@
                         <span class="tooltip-text">Dashboard</span>
                     </button>
 
-                    <button type="button" class="nav-icon-pill" onclick="navigatePage('pos')" id="navPillPos" title="Kasir &amp; POS">
+                    <button type="button" class="nav-icon-pill" onclick="navigatePage('pos')" id="navPillPos"
+                        title="Kasir &amp; POS">
                         <i class="ph-duotone ph-storefront nav-icon-i"></i>
                         <span class="tooltip-text">Kasir &amp; POS</span>
                     </button>
 
-                    <button type="button" class="nav-icon-pill" onclick="navigatePage('transaksi')" id="navPillTransaksi" title="Daftar Transaksi">
+                    <button type="button" class="nav-icon-pill" onclick="navigatePage('transaksi')"
+                        id="navPillTransaksi" title="Daftar Transaksi">
                         <i class="ph-duotone ph-receipt nav-icon-i"></i>
                         <span class="tooltip-text">Daftar Transaksi</span>
                     </button>
 
-                    <button type="button" class="nav-icon-pill" onclick="navigatePage('pelanggan')" id="navPillPelanggan" title="Pelanggan &amp; Mitra Toko">
+                    <button type="button" class="nav-icon-pill" onclick="navigatePage('pelanggan')"
+                        id="navPillPelanggan" title="Pelanggan &amp; Mitra Toko">
                         <i class="ph-duotone ph-users-three nav-icon-i"></i>
                         <span class="tooltip-text">Pelanggan &amp; Mitra</span>
                     </button>
 
-                    <button type="button" class="nav-icon-pill" onclick="navigatePage('sewa'); if(window.renderAlatSewa) window.renderAlatSewa();" id="navPillSewa" title="Sewa Alat">
+                    <button type="button" class="nav-icon-pill"
+                        onclick="navigatePage('sewa'); if(window.renderAlatSewa) window.renderAlatSewa();"
+                        id="navPillSewa" title="Sewa Alat">
                         <i class="ph-duotone ph-toolbox nav-icon-i"></i>
                         <span class="tooltip-text">Sewa Alat</span>
                     </button>
 
-                    <button type="button" class="nav-icon-pill" onclick="navigatePage('produk')" id="navPillProduk" title="Master Produk">
+                    <button type="button" class="nav-icon-pill" onclick="navigatePage('produk')" id="navPillProduk"
+                        title="Master Produk">
                         <i class="ph-duotone ph-package nav-icon-i"></i>
                         <span class="tooltip-text">Master Produk</span>
                     </button>
 
-                    <button type="button" class="nav-icon-pill" onclick="navigatePage('produksi')" id="navPillProduksi" title="Produksi &amp; HPP">
+                    <button type="button" class="nav-icon-pill" onclick="navigatePage('produksi')" id="navPillProduksi"
+                        title="Produksi &amp; HPP">
                         <i class="ph-duotone ph-factory nav-icon-i"></i>
                         <span class="tooltip-text">Produksi &amp; HPP</span>
                     </button>
 
-                    <button type="button" class="nav-icon-pill" onclick="navigatePage('multilokasi')" id="navPillMultilokasi" title="Transfer Stok &amp; Multi-Lokasi">
+                    <button type="button" class="nav-icon-pill" onclick="navigatePage('multilokasi')"
+                        id="navPillMultilokasi" title="Transfer Stok &amp; Multi-Lokasi">
                         <i class="ph-duotone ph-truck nav-icon-i"></i>
                         <span class="tooltip-text">Transfer Stok</span>
                     </button>
 
-                    <button type="button" class="nav-icon-pill" onclick="navigatePage('opname')" id="navPillOpname" title="Stock Opname">
+                    <button type="button" class="nav-icon-pill" onclick="navigatePage('opname')" id="navPillOpname"
+                        title="Stock Opname">
                         <i class="ph-duotone ph-clipboard-text nav-icon-i"></i>
                         <span class="tooltip-text">Stock Opname</span>
                     </button>
 
-                    <button type="button" class="nav-icon-pill" onclick="navigatePage('keuangan')" id="navPillKeuangan" title="Kas &amp; Beban Pengeluaran">
+                    <button type="button" class="nav-icon-pill" onclick="navigatePage('keuangan')" id="navPillKeuangan"
+                        title="Kas &amp; Beban Pengeluaran">
                         <i class="ph-duotone ph-wallet nav-icon-i"></i>
                         <span class="tooltip-text">Kas &amp; Beban</span>
                     </button>
 
-                    <button type="button" class="nav-icon-pill" onclick="navigatePage('tenagakerja')" id="navPillTenagakerja" title="Tenaga Kerja &amp; Upah">
+                    <button type="button" class="nav-icon-pill" onclick="navigatePage('tenagakerja')"
+                        id="navPillTenagakerja" title="Tenaga Kerja &amp; Upah">
                         <i class="ph-duotone ph-hard-hat nav-icon-i"></i>
                         <span class="tooltip-text">Upah Kerja</span>
                     </button>
 
-                    <button type="button" class="nav-icon-pill" onclick="navigatePage('agenda')" id="navPillAgenda" title="Agenda &amp; Kalender">
+                    <button type="button" class="nav-icon-pill" onclick="navigatePage('agenda')" id="navPillAgenda"
+                        title="Agenda &amp; Kalender">
                         <i class="ph-duotone ph-calendar-check nav-icon-i"></i>
                         <span class="tooltip-text">Agenda &amp; Kalender</span>
                     </button>
 
-                    <button type="button" class="nav-icon-pill" onclick="navigatePage('audit')" id="navPillAudit" title="Log Audit &amp; Aktivitas">
+                    <button type="button" class="nav-icon-pill" onclick="navigatePage('audit')" id="navPillAudit"
+                        title="Log Audit &amp; Aktivitas">
                         <i class="ph-duotone ph-clock-counter-clockwise nav-icon-i"></i>
                         <span class="tooltip-text">Log Audit</span>
                     </button>
 
-                    <button type="button" class="nav-icon-pill" onclick="navigatePage('pengaturan')" id="navPillPengaturan" title="Pengaturan Sistem">
+                    <button type="button" class="nav-icon-pill" onclick="navigatePage('pengaturan')"
+                        id="navPillPengaturan" title="Pengaturan Sistem">
                         <i class="ph-duotone ph-gear-six nav-icon-i"></i>
                         <span class="tooltip-text">Pengaturan</span>
                     </button>
 
-                    <button type="button" class="nav-icon-pill" onclick="navigatePage('bantuan')" id="navPillBantuan" title="Pusat Bantuan &amp; FAQ">
+                    <button type="button" class="nav-icon-pill" onclick="navigatePage('bantuan')" id="navPillBantuan"
+                        title="Pusat Bantuan &amp; FAQ">
                         <i class="ph-duotone ph-lifebuoy nav-icon-i"></i>
                         <span class="tooltip-text">Pusat Bantuan</span>
                     </button>
@@ -223,7 +247,8 @@
                     </div>
 
                     <!-- Lonceng Notifikasi Piutang Jatuh Tempo -->
-                    <button type="button" class="due-reminder-pill" onclick="openDueAlertModal()" title="Pengingat Piutang Jatuh Tempo">
+                    <button type="button" class="due-reminder-pill" onclick="openDueAlertModal()"
+                        title="Pengingat Piutang Jatuh Tempo">
                         <svg class="svg-icon-sm" viewBox="0 0 24 24">
                             <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
                             <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
@@ -232,22 +257,25 @@
                         <span class="due-counter-circle" id="dueAlertCount">0</span>
                     </button>
 
-                    <button class="topbar-help-btn" onclick="navigatePage('bantuan')" title="Pusat Bantuan &amp; FAQ" style="border: 1px solid var(--border-strong); background: #ffffff; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: all 0.2s ease;">
-                        <svg class="svg-icon-xs" viewBox="0 0 24 24" style="stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
+                    <button class="topbar-help-btn" onclick="navigatePage('bantuan')" title="Pusat Bantuan &amp; FAQ"
+                        style="border: 1px solid var(--border-strong); background: #ffffff; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); transition: all 0.2s ease;">
+                        <svg class="svg-icon-xs" viewBox="0 0 24 24"
+                            style="stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;">
                             <circle cx="12" cy="12" r="10" />
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                             <path d="M12 17h.01" />
                         </svg>
                     </button>
-                    
-                    <div id="google_translate_element" style="opacity:0; width:1px; height:1px; position:absolute; top:-9999px; overflow:hidden;"></div>
-                    <button class="topbar-help-btn" onclick="toggleLanguage()" title="Ubah Bahasa" style="border: 1px solid var(--border-strong); background: #eff6ff; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); transition: all 0.2s ease;">
+
+                    <div id="google_translate_element"
+                        style="opacity:0; width:1px; height:1px; position:absolute; top:-9999px; overflow:hidden;">
+                    </div>
+                    <button class="topbar-help-btn" onclick="toggleLanguage()" title="Ubah Bahasa"
+                        style="border: 1px solid var(--border-strong); background: #eff6ff; border-radius: 50%; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary); transition: all 0.2s ease;">
                         <span id="langSwitchLabel" style="font-size: 11px; font-weight: 900;">ID</span>
                     </button>
 
-                    <div class="header-user-pill"
-                        onclick="navigatePage('profil')"
-                        title="Buka Profil Pengguna">
+                    <div class="header-user-pill" onclick="navigatePage('profil')" title="Buka Profil Pengguna">
                         <span id="headerUserRoleBadge" class="header-user-role-badge">Owner</span>
                         <div class="header-user-avatar" id="headerUserAvatar" title="Profil Akun">--</div>
                         <span id="headerUserName" style="display:none"></span>
@@ -257,8 +285,11 @@
 
             <!-- Main Dynamic Content Views Container (Loaded Modularly from views/*.html) -->
             <main id="pageContainer">
-                <div id="viewLoader" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 350px; color: var(--text-muted); font-size: 13px; font-weight: 600; gap: 12px;">
-                    <div style="width: 28px; height: 28px; border: 3px solid rgba(108,71,255,0.2); border-top-color: var(--violet-main); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                <div id="viewLoader"
+                    style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 350px; color: var(--text-muted); font-size: 13px; font-weight: 600; gap: 12px;">
+                    <div
+                        style="width: 28px; height: 28px; border: 3px solid rgba(108,71,255,0.2); border-top-color: var(--violet-main); border-radius: 50%; animation: spin 0.8s linear infinite;">
+                    </div>
                     Memuat modul sistem...
                 </div>
             </main>
@@ -306,7 +337,7 @@
             });
         }
     </script>
-    
+
     <!-- Google Translate Script -->
     <script type="text/javascript">
         function googleTranslateElementInit() {
@@ -317,15 +348,7 @@
             }, 'google_translate_element');
         }
     </script>
-    <!-- Floating Quick-Scroll Navigation Helper (Panah Naik & Turun Samping Kanan) -->
-    <div class="floating-scroll-nav" id="floatingScrollNav" title="Navigasi Geser Naik / Turun Layar">
-        <button type="button" class="btn-scroll-arrow" onclick="window.appScrollStep(-380)" title="Geser Layar Naik (▲)" aria-label="Geser Naik">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg>
-        </button>
-        <button type="button" class="btn-scroll-arrow" onclick="window.appScrollStep(380)" title="Geser Layar Turun (▼)" aria-label="Geser Turun">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-    </div>
+
 
 </body>
 

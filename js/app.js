@@ -497,32 +497,8 @@ window.addEventListener('load', function() {
 });
 
 // Helper Navigasi Geser Naik & Turun Layar (Panah Samping Kanan)
-window.appScrollStep = function (delta) {
-    // 1. Cek apakah ada modal aktif yang sedang terbuka
-    var activeModal = document.querySelector('.modal-overlay-custom.active .modal-sheet-body') ||
-                      document.querySelector('.modal-overlay-custom.active');
-    if (activeModal && activeModal.scrollHeight > activeModal.clientHeight) {
-        activeModal.scrollBy({ top: delta, behavior: 'smooth' });
-        return;
-    }
-
-    // 2. Cek apakah di halaman POS ada produk grid yang sedang di-scroll
-    var posGrid = document.getElementById('posProductGrid');
-    if (posGrid && posGrid.offsetParent !== null && posGrid.scrollHeight > posGrid.clientHeight) {
-        posGrid.scrollBy({ top: delta, behavior: 'smooth' });
-        return;
-    }
-
-    // 3. Cek container utama aplikasi
-    var mainContent = document.querySelector('.main-content') || document.querySelector('main') || document.getElementById('appMainContent');
-    if (mainContent && mainContent.scrollHeight > mainContent.clientHeight) {
-        mainContent.scrollBy({ top: delta, behavior: 'smooth' });
-        return;
-    }
-
-    // 4. Fallback ke window / documentElement
-    window.scrollBy({ top: delta, behavior: 'smooth' });
-};
+// Helper Navigasi Scroll Dihapus
+window.appScrollStep = function () {};
 
 
 
