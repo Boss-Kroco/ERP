@@ -1115,20 +1115,27 @@ function loadDashboardData() {
             if (elBeban) elBeban.textContent = window.formatAppCurrency(d.pengeluaran);
             if (elLaba) elLaba.textContent = window.formatAppCurrency(d.labaBersih);
             // Kalkulasi real stok dari data produk lokal (opsi 2)
+            var realGudang = 0;
+            var realToko = 0;
             if (window.catalogProducts && Array.isArray(window.catalogProducts)) {
-                var realGudang = 0;
-                var realToko = 0;
                 window.catalogProducts.forEach(function(p) {
                     realGudang += (parseFloat(p.stokGudang) || 0);
                     realToko += (parseFloat(p.stokEtalase) || 0);
                 });
-                if (document.getElementById('lblStokGudang')) document.getElementById('lblStokGudang').textContent = realGudang.toLocaleString('id-ID');
-                if (document.getElementById('lblStokEtalase')) document.getElementById('lblStokEtalase').textContent = realToko.toLocaleString('id-ID');
-            } else {
-                // Fallback jika belum ter-load
-                if (d.stokGudangTotal && document.getElementById('lblStokGudang')) document.getElementById('lblStokGudang').textContent = d.stokGudangTotal.toLocaleString('id-ID');
-                if (d.stokEtalaseTotal && document.getElementById('lblStokEtalase')) document.getElementById('lblStokEtalase').textContent = d.stokEtalaseTotal.toLocaleString('id-ID');
+            } else if (d.stokGudangTotal !== undefined || d.stokEtalaseTotal !== undefined) {
+                realGudang = parseFloat(d.stokGudangTotal) || 0;
+                realToko = parseFloat(d.stokEtalaseTotal) || 0;
             }
+            var txtG = realGudang.toLocaleString('id-ID');
+            var txtT = realToko.toLocaleString('id-ID');
+            ['lblStokGudang', 'lblStokGudangDist'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.textContent = txtG;
+            });
+            ['lblStokEtalase', 'lblStokEtalaseDist'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.textContent = txtT;
+            });
 
             if (d.piutang !== undefined && document.getElementById('lblTotalPiutang')) document.getElementById('lblTotalPiutang').textContent = window.formatAppCurrency(d.piutang);
 
@@ -1190,7 +1197,7 @@ function loadDashboardData() {
                     });
                     splineState.data = newSpline;
                     var elPeak = document.getElementById('overviewPeakVal');
-                    if (elPeak) elPeak.textContent = window.formatAppCurrency(mData.peakVal);
+                    if (elPeak) elPeak.textContent = window.formatAppCurrency(mData.peakVal || 0);
                     drawSplineWaveChart();
                 }
             } else if (curPeriod === 'Mingguan') {
@@ -1419,7 +1426,8 @@ window.getWeeklySalesData = function(weekOffset, filterItem) {
 
     var totalReal = 0;
     days.forEach(function(d) { totalReal += d.totalOmzet; });
-    if (totalReal === 0) {
+    var isProdModeW = localStorage.getItem('mafaza_production_mode') === 'true' || (!window.orderTransactions || window.orderTransactions.length === 0);
+    if (totalReal === 0 && !isProdModeW) {
         var baseDaily = [185000, 240000, 310000, 380000, 490000, 680000, 420000];
         days.forEach(function(d, idx) {
             d.totalOmzet = baseDaily[idx];
@@ -1557,8 +1565,9 @@ window.getMonthlySalesData = function(selectedYear, filterItem) {
 
     var totalReal = 0;
     monthlyData.forEach(function(it) { totalReal += it.totalOmzet; });
+    var isProdModeM = localStorage.getItem('mafaza_production_mode') === 'true' || (!window.orderTransactions || window.orderTransactions.length === 0);
 
-    if (totalReal === 0) {
+    if (totalReal === 0 && !isProdModeM) {
         var curM = new Date().getMonth();
         var baseSim = 2650000;
         var weights = [0.42, 0.48, 0.65, 0.78, 0.85, 0.92, 0.88, 0.95, 1.25, 1.05, 0.75, 0.60];
@@ -1667,13 +1676,16 @@ window.getYearlySalesData = function(filterItem) {
         [curYear]: 56400000
     };
 
-    yearsData.forEach(function(y) {
-        if (y.totalOmzet === 0) {
-            var simVal = simHistoric[y.year] || 25000000;
-            y.totalOmzet = simVal;
-            y.countTrx = Math.max(12, Math.round(simVal / 185000));
-        }
-    });
+    var isProdModeY = localStorage.getItem('mafaza_production_mode') === 'true' || (!window.orderTransactions || window.orderTransactions.length === 0);
+    if (!isProdModeY) {
+        yearsData.forEach(function(y) {
+            if (y.totalOmzet === 0) {
+                var simVal = simHistoric[y.year] || 25000000;
+                y.totalOmzet = simVal;
+                y.countTrx = Math.max(12, Math.round(simVal / 185000));
+            }
+        });
+    }
 
     for (var i = 0; i < yearsData.length; i++) {
         if (i === 0) {
@@ -1755,7 +1767,8 @@ window.getItemSalesData = function(sortBy, yearFilter) {
 
     var itemsList = Object.keys(itemMap).map(function(k) { return itemMap[k]; });
 
-    if (itemsList.length < 5) {
+    var isProdModeItem = localStorage.getItem('mafaza_production_mode') === 'true' || (!window.orderTransactions || window.orderTransactions.length === 0);
+    if (itemsList.length < 5 && !isProdModeItem) {
         var fallbacks = [
             { nama: 'Kripik Tempe Premium 250g', qty: 148, omzet: 2220000, trxCount: 74, sku: 'PRD-001' },
             { nama: 'Bakpia Basah Isi Hijau', qty: 112, omzet: 2800000, trxCount: 56, sku: 'PRD-008' },
@@ -2250,8 +2263,9 @@ window.renderGrafikAnalisis = function(mode, options) {
         if (elTotalY) elTotalY.textContent = window.formatAppCurrency(mData.totalYearOmzet);
         if (elTotalTrx) elTotalTrx.textContent = mData.totalYearTrx;
         if (elRata) elRata.textContent = window.formatAppCurrency(mData.avgMonthly);
-        if (elPeakM) elPeakM.textContent = mData.peakMonth ? mData.peakMonth.monthLong : '-';
-        if (elPeakV) elPeakV.textContent = window.formatAppCurrency(mData.peakVal);
+        if (elPeakM) elPeakM.textContent = (mData.peakVal > 0 && mData.peakMonth) ? mData.peakMonth.monthLong : '-';
+        if (elPeakV) elPeakV.textContent = window.formatAppCurrency(mData.peakVal || 0);
+        if (mData.totalYearOmzet === 0 && elSpeed) elSpeed.innerHTML = '<span style="color:#64748b; font-weight:700;">-</span>';
 
         if (elSub1) elSub1.innerHTML = '<span id="statBulananTotalTrx" style="font-weight: 800; color: #1e293b;">' + mData.totalYearTrx + '</span> transaksi tercatat';
         if (elSub2) elSub2.textContent = 'Rerata per bulan aktif';
