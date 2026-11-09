@@ -5,6 +5,17 @@
  * ============================================================================
  */
 
+var escapeHtml = function (str) {
+    if (typeof window.escapeHtml === 'function') return window.escapeHtml(str);
+    if (!str && str !== 0) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+};
+
 window.hppRincian = {};
 try {
     var storedRincian = localStorage.getItem('bos_kroco_hpp_rincian');
@@ -46,34 +57,106 @@ window.switchHppTab = function(tabId) {
     if(tabId === 'tambah') window.initTambahHpp();
 };
 
-window.renderDaftarHPP = function() {
+window.filterDaftarHppRealtime = function() {
     var tbody = document.getElementById('tblDaftarHPP');
-    if(!tbody) return;
-    tbody.innerHTML = '';
+    if (!tbody) return;
 
-    (window.catalogProducts || []).forEach(function(item) {
+    var filterCatEl = document.getElementById('filterKategoriDaftarHpp');
+    if (filterCatEl && filterCatEl.options.length <= 1 && typeof window.getCustomCategories === 'function') {
+        var cats = window.getCustomCategories();
+        var curValHpp = filterCatEl.value;
+        filterCatEl.innerHTML = '<option value="">Semua Kategori</option>' + cats.map(function(c) {
+            return '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+        }).join('');
+        if (curValHpp) filterCatEl.value = curValHpp;
+    }
+
+    var q = (document.getElementById('searchDaftarHpp') ? document.getElementById('searchDaftarHpp').value : '').toLowerCase().trim();
+    var cat = (document.getElementById('filterKategoriDaftarHpp') ? document.getElementById('filterKategoriDaftarHpp').value : '').trim();
+    var sort = (document.getElementById('sortDaftarHpp') ? document.getElementById('sortDaftarHpp').value : 'az') || 'az';
+
+    var source = (window.catalogProducts && window.catalogProducts.length) 
+        ? window.catalogProducts 
+        : (typeof catalogProducts !== 'undefined' && catalogProducts ? catalogProducts : []);
+
+    tbody.innerHTML = '';
+    if (!source || source.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 36px 16px; color: #94a3b8; font-size: 13px;">' +
+            '<div style="font-weight: 700; color: #64748b; margin-bottom: 4px;">Belum Ada Data HPP Produk</div>' +
+            'Klik tombol <b>+ Tambah Jenis Makanan</b> di atas untuk mulai mencatat HPP.' +
+            '</td></tr>';
+        return;
+    }
+
+    var filtered = source.filter(function(item) {
+        if (!item) return false;
+        var pNama = (item.namaProduk || '').toLowerCase();
+        var pId = (item.produkId || '').toLowerCase();
+        var pSatuan = (item.satuan || '').toLowerCase();
+        var pKat = (item.kategori || '').toLowerCase();
+        var matchQ = !q || pNama.includes(q) || pId.includes(q) || pSatuan.includes(q) || pKat.includes(q);
+        var matchCat = !cat || item.kategori === cat;
+        return matchQ && matchCat;
+    });
+
+    if (sort === 'az') {
+        filtered.sort(function(a, b) { return (a.namaProduk || '').localeCompare(b.namaProduk || '', 'id', { sensitivity: 'base' }); });
+    } else if (sort === 'za') {
+        filtered.sort(function(a, b) { return (b.namaProduk || '').localeCompare(a.namaProduk || '', 'id', { sensitivity: 'base' }); });
+    } else if (sort === 'hpp_asc') {
+        filtered.sort(function(a, b) { return (a.hargaBeliHPP || 0) - (b.hargaBeliHPP || 0); });
+    } else if (sort === 'hpp_desc') {
+        filtered.sort(function(a, b) { return (b.hargaBeliHPP || 0) - (a.hargaBeliHPP || 0); });
+    } else if (sort === 'laba_desc') {
+        filtered.sort(function(a, b) {
+            var labaA = (a.hargaJual || 0) - (a.hargaBeliHPP || 0);
+            var labaB = (b.hargaJual || 0) - (b.hargaBeliHPP || 0);
+            return labaB - labaA;
+        });
+    } else if (sort === 'margin_desc') {
+        filtered.sort(function(a, b) {
+            var marginA = (a.hargaJual || 0) > 0 ? (((a.hargaJual || 0) - (a.hargaBeliHPP || 0)) / a.hargaJual) : 0;
+            var marginB = (b.hargaJual || 0) > 0 ? (((b.hargaJual || 0) - (b.hargaBeliHPP || 0)) / b.hargaJual) : 0;
+            return marginB - marginA;
+        });
+    }
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 36px 16px; color: #94a3b8; font-size: 13px;">' +
+            '<div style="font-weight: 700; color: #64748b; margin-bottom: 4px;">Produk HPP Tidak Ditemukan</div>' +
+            'Tidak ada produk HPP yang sesuai dengan pencarian atau filter kategori saat ini.' +
+            '</td></tr>';
+        return;
+    }
+
+    filtered.forEach(function(item) {
         var tr = document.createElement('tr');
         var hpp = item.hargaBeliHPP || 0;
         var jual = item.hargaJual || 0;
         var laba = jual - hpp;
         var margin = jual > 0 ? (laba / jual) * 100 : 0;
-        
-        tr.innerHTML = `
-            <td style="font-weight: 600;">${item.namaProduk}</td>
-            <td>${item.produkId}</td>
-            <td>${item.satuan}</td>
-            <td style="text-align: right; font-weight: bold; color: var(--text-dark);">${window.formatAppCurrency(hpp)}</td>
-            <td style="text-align: right;">${window.formatAppCurrency(jual)}</td>
-            <td style="text-align: right; color: var(--emerald); font-weight: bold;">${window.formatAppCurrency(laba)}</td>
-            <td style="text-align: right; color: var(--violet-main); font-weight: bold;">${margin.toFixed(2)}%</td>
-            <td><span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">${item.status}</span></td>
-            <td style="text-align: center; white-space: nowrap;">
-                <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px; font-size: 11px; margin-right: 4px;" onclick="window.lihatDetailHpp('${item.produkId}')">Lihat Detail</button>
-                <button class="btn-pill-action" style="padding: 4px 8px; font-size: 11px; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; border-radius: 8px; font-weight: 700;" onclick="window.hapusProduk('${item.produkId}', '${item.namaProduk}')" title="Hapus Produk">Hapus</button>
-            </td>
-        `;
+        var statusLabel = item.status || 'Aktif';
+        var statusBg = statusLabel === 'Aktif' ? '#dcfce7' : '#fee2e2';
+        var statusColor = statusLabel === 'Aktif' ? '#166534' : '#991b1b';
+
+        tr.innerHTML = '<td><b>' + escapeHtml(item.namaProduk) + '</b></td>'
+            + '<td>' + escapeHtml(item.produkId) + '</td>'
+            + '<td>' + escapeHtml(item.satuan || 'Pcs') + '</td>'
+            + '<td style="text-align: right; font-weight: bold; color: var(--text-dark);">' + window.formatAppCurrency(hpp) + '</td>'
+            + '<td style="text-align: right;">' + window.formatAppCurrency(jual) + '</td>'
+            + '<td style="text-align: right; color: var(--emerald); font-weight: bold;">' + window.formatAppCurrency(laba) + '</td>'
+            + '<td style="text-align: right; color: var(--violet-main); font-weight: bold;">' + margin.toFixed(2) + '%</td>'
+            + '<td><span style="background: ' + statusBg + '; color: ' + statusColor + '; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold;">' + escapeHtml(statusLabel) + '</span></td>'
+            + '<td style="text-align: center; white-space: nowrap;">'
+            + '<button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px; font-size: 11px; margin-right: 4px;" onclick="window.lihatDetailHpp(\'' + escapeHtml(item.produkId) + '\')">Lihat Detail</button>'
+            + '<button class="btn-pill-action" style="padding: 4px 8px; font-size: 11px; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; border-radius: 8px; font-weight: 700;" onclick="window.hapusProduk(\'' + escapeHtml(item.produkId) + '\', \'' + escapeHtml(item.namaProduk) + '\')" title="Hapus Produk">Hapus</button>'
+            + '</td>';
         tbody.appendChild(tr);
     });
+};
+
+window.renderDaftarHPP = function() {
+    window.filterDaftarHppRealtime();
 };
 
 window.lihatDetailHpp = function(id) {

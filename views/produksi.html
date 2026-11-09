@@ -202,6 +202,29 @@
                     <button class="btn-pill-action btn-pill-primary" style="padding: 8px 16px; border-radius: 8px; font-weight: 600;" onclick="document.getElementById('modalTambahJenisHpp').style.display='flex'">+ Tambah Jenis Makanan</button>
                 </div>
             </div>
+            <!-- Toolbar Pencarian, Filter Kategori & Urutan Abjad Daftar HPP -->
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; background: #f8fafc; padding: 10px 14px; border-radius: 14px; border: 1px solid #e2e8f0;">
+                <div style="flex: 1; min-width: 200px; position: relative;">
+                    <input type="text" id="searchDaftarHpp" oninput="window.filterDaftarHppRealtime()" class="search-filter-input" placeholder="Cari nama produk HPP, SKU, atau satuan..." style="width: 100%; border-radius: 12px; padding: 7px 12px 7px 32px; font-size: 12px;">
+                    <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #94a3b8;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </div>
+                <div style="min-width: 160px;">
+                    <select id="filterKategoriDaftarHpp" onchange="window.filterDaftarHppRealtime()" class="search-filter-input" style="width: 100%; border-radius: 12px; padding: 7px 12px; font-size: 12px;">
+                        <option value="">Semua Kategori</option>
+                    </select>
+                </div>
+                <div style="min-width: 150px;">
+                    <select id="sortDaftarHpp" onchange="window.filterDaftarHppRealtime()" class="search-filter-input" style="width: 100%; border-radius: 12px; padding: 7px 12px; font-size: 12px;">
+                        <option value="az" selected>Urut A - Z (Abjad)</option>
+                        <option value="za">Urut Z - A</option>
+                        <option value="hpp_asc">HPP Terendah</option>
+                        <option value="hpp_desc">HPP Tertinggi</option>
+                        <option value="laba_desc">Laba Terbesar</option>
+                        <option value="margin_desc">Margin Tertinggi</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="table-responsive-wrapper">
                 <table class="custom-order-table">
                     <thead>

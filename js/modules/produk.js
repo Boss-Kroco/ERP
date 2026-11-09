@@ -1,4 +1,15 @@
 
+var escapeHtml = function (str) {
+    if (typeof window.escapeHtml === 'function') return window.escapeHtml(str);
+    if (!str && str !== 0) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+};
+
 // Manajemen Kategori Kustom & Tier Harga
 window.getCustomCategories = function() {
     var defaults = ['Makanan Ringan', 'Kue Kering', 'Sambal & Saus', 'Minuman', 'Bahan Pokok'];
@@ -24,21 +35,44 @@ window.saveCustomCategory = function(catName) {
 
 window.refreshCategoryDropdowns = function() {
     var cats = window.getCustomCategories();
+    var prods = (window.catalogProducts && window.catalogProducts.length) ? window.catalogProducts : (typeof catalogProducts !== 'undefined' && catalogProducts ? catalogProducts : []);
+    prods.forEach(function(p) {
+        if (p && p.kategori && p.kategori.trim() && !cats.includes(p.kategori.trim())) {
+            cats.push(p.kategori.trim());
+        }
+    });
+
     var filterSel = document.getElementById('filterKategoriMasterProduk');
     if (filterSel) {
         var curVal = filterSel.value;
         filterSel.innerHTML = '<option value="">Semua Kategori</option>' + cats.map(function(c) {
-            return '<option value="' + c + '">' + c + '</option>';
+            return '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
         }).join('');
-        filterSel.value = curVal;
+        if (curVal) filterSel.value = curVal;
+    }
+    var hppFilterSel = document.getElementById('filterKategoriDaftarHpp');
+    if (hppFilterSel) {
+        var curValHpp = hppFilterSel.value;
+        hppFilterSel.innerHTML = '<option value="">Semua Kategori</option>' + cats.map(function(c) {
+            return '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+        }).join('');
+        if (curValHpp) hppFilterSel.value = curValHpp;
     }
     var editSel = document.getElementById('editProdKategori');
     if (editSel) {
         var curValEdit = editSel.value;
         editSel.innerHTML = cats.map(function(c) {
-            return '<option value="' + c + '">' + c + '</option>';
+            return '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
         }).join('');
         if (curValEdit) editSel.value = curValEdit;
+    }
+    var newProdSel = document.getElementById('newProdKategori');
+    if (newProdSel) {
+        var curValNew = newProdSel.value;
+        newProdSel.innerHTML = cats.map(function(c) {
+            return '<option value="' + escapeHtml(c) + '">' + escapeHtml(c) + '</option>';
+        }).join('');
+        if (curValNew) newProdSel.value = curValNew;
     }
 };
 
@@ -84,29 +118,86 @@ window.getTierPricesFromContainer = function(containerId) {
 
 // Real-time filtering and default A-Z sorting
 window.filterMasterProdukRealtime = function() {
-    var q = (document.getElementById('searchMasterProduk') ? document.getElementById('searchMasterProduk').value : '').toLowerCase().trim();
-    var cat = document.getElementById('filterKategoriMasterProduk') ? document.getElementById('filterKategoriMasterProduk').value : '';
-    var sort = document.getElementById('sortMasterProduk') ? document.getElementById('sortMasterProduk').value : 'az';
+    var tbody = document.getElementById('tblMasterProduk');
+    if (!tbody) return;
 
-    var filtered = (window.allMasterProducts || []).filter(function(p) {
-        var matchQ = !q || (p.namaProduk && p.namaProduk.toLowerCase().includes(q)) || (p.produkId && p.produkId.toLowerCase().includes(q)) || (p.satuan && p.satuan.toLowerCase().includes(q));
+    var filterSel = document.getElementById('filterKategoriMasterProduk');
+    if (filterSel && filterSel.options.length <= 1) {
+        window.refreshCategoryDropdowns();
+    }
+
+    var q = (document.getElementById('searchMasterProduk') ? document.getElementById('searchMasterProduk').value : '').toLowerCase().trim();
+    var cat = (document.getElementById('filterKategoriMasterProduk') ? document.getElementById('filterKategoriMasterProduk').value : '').trim();
+    var sort = (document.getElementById('sortMasterProduk') ? document.getElementById('sortMasterProduk').value : 'az') || 'az';
+
+    if (localStorage.getItem('mafaza_production_mode') === 'true' && (!window.catalogProducts || window.catalogProducts.length === 0)) {
+        catalogProducts = [];
+        window.catalogProducts = [];
+    }
+
+    var source = (window.catalogProducts && window.catalogProducts.length) ? window.catalogProducts : (catalogProducts || []);
+    catalogProducts = source;
+    window.catalogProducts = source;
+
+    tbody.innerHTML = '';
+    if (!source || source.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 36px 16px; color: #94a3b8; font-size: 13px;">' +
+            '<div style="font-weight: 700; color: #64748b; margin-bottom: 4px;">Belum Ada Master Produk</div>' +
+            'Klik tombol <b>+ Tambah Produk</b> di atas untuk mulai memasukkan produk jualan toko Anda.' +
+            '</td></tr>';
+        return;
+    }
+
+    var filtered = source.filter(function(p) {
+        if (!p) return false;
+        var pNama = (p.namaProduk || '').toLowerCase();
+        var pId = (p.produkId || '').toLowerCase();
+        var pSatuan = (p.satuan || '').toLowerCase();
+        var pKat = (p.kategori || '').toLowerCase();
+        var matchQ = !q || pNama.includes(q) || pId.includes(q) || pSatuan.includes(q) || pKat.includes(q);
         var matchCat = !cat || p.kategori === cat;
         return matchQ && matchCat;
     });
 
     if (sort === 'az') {
-        filtered.sort(function(a, b) { return (a.namaProduk || '').localeCompare(b.namaProduk || ''); });
+        filtered.sort(function(a, b) { return (a.namaProduk || '').localeCompare(b.namaProduk || '', 'id', { sensitivity: 'base' }); });
     } else if (sort === 'za') {
-        filtered.sort(function(a, b) { return (b.namaProduk || '').localeCompare(a.namaProduk || ''); });
+        filtered.sort(function(a, b) { return (b.namaProduk || '').localeCompare(a.namaProduk || '', 'id', { sensitivity: 'base' }); });
     } else if (sort === 'stok_desc') {
         filtered.sort(function(a, b) { return ((b.stokEtalase || 0) + (b.stokGudang || 0)) - ((a.stokEtalase || 0) + (a.stokGudang || 0)); });
     } else if (sort === 'stok_asc') {
         filtered.sort(function(a, b) { return ((a.stokEtalase || 0) + (a.stokGudang || 0)) - ((b.stokEtalase || 0) + (b.stokGudang || 0)); });
+    } else if (sort === 'harga_desc') {
+        filtered.sort(function(a, b) { return (b.hargaJual || 0) - (a.hargaJual || 0); });
+    } else if (sort === 'harga_asc') {
+        filtered.sort(function(a, b) { return (a.hargaJual || 0) - (b.hargaJual || 0); });
     }
 
-    if (typeof window.renderFilteredMasterProdukTable === 'function') {
-        window.renderFilteredMasterProdukTable(filtered);
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 36px 16px; color: #94a3b8; font-size: 13px;">' +
+            '<div style="font-weight: 700; color: #64748b; margin-bottom: 4px;">Produk Tidak Ditemukan</div>' +
+            'Tidak ada produk yang cocok dengan pencarian atau filter kategori saat ini.' +
+            '</td></tr>';
+        return;
     }
+
+    filtered.forEach(function (p) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td><b>' + escapeHtml(p.produkId) + '</b></td>'
+            + '<td>' + escapeHtml(p.namaProduk) + '</td>'
+            + '<td>' + escapeHtml(p.satuan || 'Pcs') + '</td>'
+            + '<td>' + window.formatAppCurrency(p.hargaBeliHPP) + '</td>'
+            + '<td><b>' + window.formatAppCurrency(p.hargaJual) + '</b></td>'
+            + '<td><span style="color:var(--emerald); font-weight:800;">' + escapeHtml(String(p.stokEtalase || 0)) + '</span></td>'
+            + '<td>' + escapeHtml(String(p.stokGudang || 0)) + '</td>'
+            + '<td><span class="prog-status-pill ' + (p.status === 'Aktif' ? 'green' : 'coral') + '">' + escapeHtml(p.status || 'Aktif') + '</span></td>'
+            + '<td style="text-align: center; white-space: nowrap;">'
+            + '<button class="btn-pill-action btn-pill-secondary" style="padding: 2px 8px;" onclick="openModalEditProduk(\'' + escapeHtml(p.produkId) + '\')" title="Edit Produk">'
+            + '<svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Edit'
+            + '</button>'
+            + '</td>';
+        tbody.appendChild(tr);
+    });
 };
 
 /**
@@ -138,38 +229,7 @@ function fetchMasterProducts() {
 }
 
 function renderMasterProdukTable() {
-    var tbody = document.getElementById('tblMasterProduk');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    if (localStorage.getItem('mafaza_production_mode') === 'true' && (!window.catalogProducts || window.catalogProducts.length === 0)) {
-        catalogProducts = [];
-        window.catalogProducts = [];
-    }
-    var list = (window.catalogProducts && window.catalogProducts.length) ? window.catalogProducts : (catalogProducts || []);
-    if (!list || list.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; padding: 36px 16px; color: #94a3b8; font-size: 13px;">' +
-            '<div style="font-weight: 700; color: #64748b; margin-bottom: 4px;">Belum Ada Master Produk</div>' +
-            'Klik tombol <b>+ Tambah Produk</b> di atas untuk mulai memasukkan produk jualan toko Anda.' +
-            '</td></tr>';
-        return;
-    }
-    list.forEach(function (p) {
-        var tr = document.createElement('tr');
-        tr.innerHTML = '<td><b>' + escapeHtml(p.produkId) + '</b></td>'
-            + '<td>' + escapeHtml(p.namaProduk) + '</td>'
-            + '<td>' + escapeHtml(p.satuan) + '</td>'
-            + '<td>' + window.formatAppCurrency(p.hargaBeliHPP) + '</td>'
-            + '<td><b>' + window.formatAppCurrency(p.hargaJual) + '</b></td>'
-            + '<td><span style="color:var(--emerald); font-weight:800;">' + escapeHtml(String(p.stokEtalase || 0)) + '</span></td>'
-            + '<td>' + escapeHtml(String(p.stokGudang || 0)) + '</td>'
-            + '<td><span class="prog-status-pill ' + (p.status === 'Aktif' ? 'green' : 'coral') + '">' + escapeHtml(p.status) + '</span></td>'
-            + '<td style="text-align: center; white-space: nowrap;">'
-            + '<button class="btn-pill-action btn-pill-secondary" style="padding: 2px 8px;" onclick="openModalEditProduk(\'' + escapeHtml(p.produkId) + '\')" title="Edit Produk">'
-            + '<svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Edit'
-            + '</button>'
-            + '</td>';
-        tbody.appendChild(tr);
-    });
+    window.filterMasterProdukRealtime();
 }
 
 function populateProductDropdowns() {
