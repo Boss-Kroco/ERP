@@ -34,11 +34,16 @@ function tambahKeKeranjangGrid(pid, nama, harga) {
     if (existing) {
         window.updateCartQty(window.currentCart.indexOf(existing), existing.qty + 1);
     } else {
+        var prodObj = (window.catalogProducts || []).find(function(p){ return p.produkId === pid; }) ||
+                       (window.allMasterProducts || []).find(function(p){ return p.produkId === pid; });
+        var tiers = (prodObj && prodObj.hargaTiers) ? prodObj.hargaTiers : [];
         window.currentCart.push({
             produkId: pid,
             namaProduk: nama,
             hargaDefault: parseFloat(harga) || 0,
             harga: parseFloat(harga) || 0,
+            hargaTiers: tiers,
+            selectedTier: 'Normal',
             qty: 1,
             subtotal: parseFloat(harga) || 0
         });
@@ -1137,4 +1142,15 @@ window.togglePosPaymentInputs = function() {
         if (elTabCard) elTabCard.style.display = 'none';
     }
     window.updatePosKembalian();
+};
+
+
+window.changeCartItemTier = function(cartIdx, tierPrice, tierLabel) {
+    if (!window.currentCart || !window.currentCart[cartIdx]) return;
+    var itm = window.currentCart[cartIdx];
+    var prc = parseFloat(tierPrice) || itm.hargaDefault;
+    itm.harga = prc;
+    itm.selectedTier = tierLabel || 'Custom';
+    itm.subtotal = itm.qty * prc;
+    renderCart();
 };

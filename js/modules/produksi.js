@@ -558,7 +558,8 @@ window.simpanHppBaru = function() {
             if(window.renderMasterProdukTable) window.renderMasterProdukTable();
             if(window.renderDaftarHPP) window.renderDaftarHPP();
             if(window.showToast) window.showToast('HPP dan Harga Jual ' + prd.namaProduk + ' berhasil disimpan!', 'success');
-            window.switchHppTab('daftar');
+            // Tetap di tab kalkulasi agar pengguna tidak perlu bolak-balik (Item 2)
+        // window.switchHppTab('daftar');
         }, function(err) {
             if(window.showToast) window.showToast('Gagal menyimpan HPP: ' + (err.message || 'Error koneksi database'), 'error');
         });
@@ -654,5 +655,48 @@ window.simpanProdukBaruHpp = function(keepOpen) {
         }, function(err) {
             if(window.showToast) window.showToast('Gagal menyimpan produk: ' + (err.message || 'Error koneksi'), 'error');
         });
+    }
+};
+
+
+// Fitur Bagikan Simulasi HPP (Foto & Item 5: Hanya Melihat & Dapat Mengedit)
+window.openShareHppModal = function() {
+    var modal = document.getElementById('modalShareHpp');
+    if (modal) modal.classList.add('active');
+};
+
+window.closeShareHppModal = function() {
+    var modal = document.getElementById('modalShareHpp');
+    if (modal) modal.classList.remove('active');
+};
+
+window.generateAndCopyHppLink = function(mode) {
+    var pNama = document.getElementById('hppNamaProduk') ? document.getElementById('hppNamaProduk').value : '';
+    var pTarget = document.getElementById('hppTargetPcs') ? document.getElementById('hppTargetPcs').value : '1';
+    var pHargaJual = document.getElementById('hppHargaJual') ? document.getElementById('hppHargaJual').value : '0';
+    var pTotal = document.getElementById('hppTotalBiayaAll') ? document.getElementById('hppTotalBiayaAll').textContent : '0';
+
+    var simData = {
+        nama: pNama,
+        target: pTarget,
+        hargaJual: pHargaJual,
+        totalBiaya: pTotal,
+        mode: mode || 'view',
+        t: Date.now()
+    };
+
+    var encoded = encodeURIComponent(JSON.stringify(simData));
+    var shareUrl = window.location.origin + window.location.pathname + '?simulasi_hpp=' + encoded + '&mode=' + (mode || 'view');
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareUrl).then(function() {
+            if (typeof showToast === 'function') {
+                showToast('Tautan Simulasi (' + (mode === 'view' ? 'Hanya Melihat' : 'Dapat Mengedit') + ') berhasil disalin!', 'success');
+            }
+            window.closeShareHppModal();
+        });
+    } else {
+        window.prompt('Salin tautan simulasi ini:', shareUrl);
+        window.closeShareHppModal();
     }
 };

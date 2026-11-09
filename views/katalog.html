@@ -1,0 +1,34 @@
+<div id="view-katalog" class="view-section-card" style="display: none; padding: 16px;">
+    <!-- Customer Header -->
+    <div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border-radius: 18px; padding: 24px; color: #ffffff; margin-bottom: 20px; box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 9999px;">Katalog Menu Pelanggan</span>
+                <h1 style="font-size: 24px; font-weight: 800; margin: 8px 0 4px 0; color: #ffffff;">Boss Kroco Culinary</h1>
+                <p style="font-size: 13px; color: #e0e7ff; margin: 0;">Pesan langsung camilan gurih &amp; oleh-oleh renyah favorit Anda.</p>
+            </div>
+            <button class="btn-pill-action" onclick="window.salinLinkKatalogPelanggan()" style="background: #ffffff; color: #4338ca; border-radius: 12px; font-weight: 700; padding: 8px 14px; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                Salin Tautan Menu Pelanggan
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter & Cari Menu -->
+    <div style="display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 240px; position: relative;">
+            <input type="text" id="katalogSearch" oninput="window.renderKatalogPelanggan()" class="search-filter-input" placeholder="Cari makanan favorit Anda..." style="width: 100%; border-radius: 12px; padding: 10px 14px 10px 36px; font-size: 13px;">
+            <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+        <div style="min-width: 180px;">
+            <select id="katalogCategoryFilter" onchange="window.renderKatalogPelanggan()" class="search-filter-input" style="width: 100%; border-radius: 12px; padding: 10px 14px; font-size: 13px;">
+                <option value="">Semua Kategori</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Product Grid for Customers -->
+    <div id="katalogGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 30px;">
+        <!-- Dynamic Product Cards -->
+    </div>
+</div>

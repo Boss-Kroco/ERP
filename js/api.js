@@ -626,6 +626,20 @@
                 return { success: true, message: 'Status transaksi berhasil diubah.' };
             }
 
+            case 'apiDeleteTransaction': {
+                var dTrxId = args[0];
+                var { error: delErr } = await sb.from('penjualan').delete().eq('trx_id', dTrxId);
+                if (delErr) throw delErr;
+                return { success: true, message: 'Transaksi berhasil dihapus.' };
+            }
+
+            case 'apiBatchDeleteTransactions': {
+                var dTrxIds = args[0] || [];
+                var { error: delBErr } = await sb.from('penjualan').delete().in('trx_id', dTrxIds);
+                if (delBErr) throw delBErr;
+                return { success: true, count: dTrxIds.length, message: dTrxIds.length + ' transaksi berhasil dihapus.' };
+            }
+
             case 'apiBatchUpdateTransactionStatus': {
                 var pBatch = args[0] || {};
                 var ids = pBatch.trxIds || [];
@@ -1371,6 +1385,20 @@
             if (targetTrx) targetTrx.status = pUp.status;
             window.addMockAuditLog('Penjualan', 'UBAH_STATUS', oldSt, pUp.status, 'Pembaruan status pesanan: ' + pUp.trxId, args[1]);
             successCb({ success: true, message: 'Status transaksi ' + pUp.trxId + ' berhasil diubah ke: ' + pUp.status });
+        } else if (functionName === 'apiDeleteTransaction') {
+            var delId = args[0];
+            if (window.orderTransactions) {
+                window.orderTransactions = window.orderTransactions.filter(function(o) { return o.id !== delId && o.orderNum !== delId; });
+                try { localStorage.setItem('bos_kroco_cached_orders', JSON.stringify(window.orderTransactions)); } catch(e){}
+            }
+            successCb({ success: true, message: 'Transaksi berhasil dihapus.' });
+        } else if (functionName === 'apiBatchDeleteTransactions') {
+            var delIds = args[0] || [];
+            if (window.orderTransactions) {
+                window.orderTransactions = window.orderTransactions.filter(function(o) { return !delIds.includes(o.id) && !delIds.includes(o.orderNum); });
+                try { localStorage.setItem('bos_kroco_cached_orders', JSON.stringify(window.orderTransactions)); } catch(e){}
+            }
+            successCb({ success: true, count: delIds.length, message: delIds.length + ' transaksi berhasil dihapus.' });
         } else if (functionName === 'apiBatchUpdateTransactionStatus') {
             var pBatch = args[0] || {};
             var ids = pBatch.trxIds || [];

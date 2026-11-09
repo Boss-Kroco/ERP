@@ -505,6 +505,9 @@
         </svg>
         Unduh Terpilih
     </button>
+    <button class="btn-pill-action" style="padding: 4px 10px; font-size: 11px; background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; border-radius: 8px; font-weight: 700; cursor: pointer;" onclick="executeBatchDeleteOrders()">
+        <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 3px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Hapus Terpilih
+    </button>
     <button class="btn-pill-action btn-pill-secondary"
         style="padding: 4px 10px; font-size: 11px; color: var(--coral-pink);" onclick="clearBatchSelection()">
         Batal
@@ -1156,67 +1159,125 @@
                 </svg>
             </button>
         </div>
-        <div class="modal-sheet-body">
+        <div class="modal-sheet-body" style="max-height: 80vh; overflow-y: auto;">
             <form onsubmit="event.preventDefault(); submitEditProduk();">
                 <input type="hidden" id="editProdId">
 
                 <div
-                    style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    style="background: var(--bg-subtle); padding: 10px 14px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <small style="color: var(--text-muted); font-size: 11px;">Kode Produk ID:</small>
                         <div id="editProdIdBadge" style="font-weight: 800; font-size: 13px; color: var(--violet-main);">
                             -</div>
                     </div>
+                    <span id="editProdStatusBadge" style="font-size: 10.5px; font-weight: 700; background: #e0e7ff; color: #4338ca; padding: 2px 8px; border-radius: 9999px;">Master Produk</span>
                 </div>
 
                 <div style="margin-bottom: 10px;">
                     <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Nama Produk</label>
-                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                    <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px; border-radius: 12px;"
                         id="editProdNama" required placeholder="Contoh: Kripik Tempe Keju">
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Satuan</label>
-                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px;"
-                            id="editProdSatuan" required placeholder="Pcs / Toples / Botol">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Kategori Produk</label>
+                        <div style="display: flex; gap: 4px; margin-top: 4px;">
+                            <select class="search-filter-input" style="flex: 1; border-radius: 12px;" id="editProdKategori">
+                                <option value="Makanan Ringan">Makanan Ringan</option>
+                                <option value="Kue Kering">Kue Kering</option>
+                                <option value="Sambal & Saus">Sambal &amp; Saus</option>
+                                <option value="Minuman">Minuman</option>
+                                <option value="Bahan Pokok">Bahan Pokok</option>
+                            </select>
+                            <button type="button" class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px; font-size: 11px; border-radius: 12px;" onclick="window.tambahKategoriBaruPrompt('editProdKategori')" title="Tambah Kategori Baru">+</button>
+                        </div>
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Status
-                            Produk</label>
-                        <select class="search-filter-input" style="width: 100%; margin-top: 4px;" id="editProdStatus">
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Satuan</label>
+                        <input type="text" class="search-filter-input" style="width: 100%; margin-top: 4px; border-radius: 12px;"
+                            id="editProdSatuan" required placeholder="Pcs / Toples / Botol">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Status Produk</label>
+                        <select class="search-filter-input" style="width: 100%; margin-top: 4px; border-radius: 12px;" id="editProdStatus">
                             <option value="Aktif">Aktif</option>
                             <option value="Non-Aktif">Non-Aktif</option>
                         </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Target Produksi (Pcs)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px; border-radius: 12px;" id="editProdTarget" min="0" placeholder="0">
+                    </div>
+                </div>
+
+                <!-- Update Stok Langsung di Modal (Foto 4) -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 11.5px; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 6px;">
+                            <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                            Stok Multi-Lokasi (Update Langsung)
+                        </span>
+                        <span style="font-size: 10px; font-weight: 700; color: #475569; background: #e2e8f0; padding: 2px 6px; border-radius: 6px;">Real-Time</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label style="font-size: 11px; font-weight: 700; color: #475569;">Stok Etalase Toko (Pcs)</label>
+                            <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px; border-radius: 12px; background: #ffffff;" id="editProdStokEtalase" min="0" placeholder="0">
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; font-weight: 700; color: #475569;">Stok Gudang (Pcs)</label>
+                            <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px; border-radius: 12px; background: #ffffff;" id="editProdStokGudang" min="0" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HPP dan Harga Jual per pcs -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">HPP Acuan per pcs (<span
+                                class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px; border-radius: 12px;" id="editProdHpp" required min="0">
+                    </div>
+                    <div>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Harga Jual Normal per pcs (<span
+                                class="app-currency-symbol">Rp</span>)</label>
+                        <input type="number" step="any" class="search-filter-input"
+                            style="width: 100%; margin-top: 4px; border-radius: 12px;" id="editProdHargaJual" required min="0">
+                    </div>
+                </div>
+
+                <!-- Multi-Tier Harga (Foto 1: Harga A, Harga B, dll) -->
+                <div style="background: #faf5ff; border: 1px solid #f3e8ff; border-radius: 14px; padding: 12px; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                        <div>
+                            <span style="font-size: 11.5px; font-weight: 800; color: #6b21a8; display: flex; align-items: center; gap: 6px;">
+                                <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m16 10-4 4-2-2"/></svg>
+                                Pilihan Tingkat Harga (Tier Kasir)
+                            </span>
+                            <div style="font-size: 10px; color: #7e22ce;">Misal: Harga A (Rp 2.000), Harga B (Rp 2.600)</div>
+                        </div>
+                        <button type="button" class="btn-pill-action" style="padding: 4px 8px; font-size: 11px; background: #6b21a8; color: #ffffff; border-radius: 8px; border: none; cursor: pointer;" onclick="window.tambahRowTierHarga('editProdTierContainer')">+ Tambah Harga</button>
+                    </div>
+                    <div id="editProdTierContainer" style="display: flex; flex-direction: column; gap: 6px;">
+                        <!-- Dynamic Tier Rows Rendered Here -->
                     </div>
                 </div>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">HPP Acuan (<span
-                                class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input"
-                            style="width: 100%; margin-top: 4px;" id="editProdHpp" required min="0">
-                    </div>
-                    <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Harga Jual (<span
-                                class="app-currency-symbol">Rp</span>)</label>
-                        <input type="number" step="any" class="search-filter-input"
-                            style="width: 100%; margin-top: 4px;" id="editProdHargaJual" required min="0">
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
-                    <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Minimal Pembelian
-                            (Paket)</label>
-                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px;"
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Min Beli Grosir (Pcs)</label>
+                        <input type="number" class="search-filter-input" style="width: 100%; margin-top: 4px; border-radius: 12px;"
                             id="editProdMinQtyGrosir" placeholder="Misal: 6 (Opsional)">
                     </div>
                     <div>
-                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Harga Paket /
-                            Grosir (<span class="app-currency-symbol">Rp</span>)</label>
+                        <label style="font-size: 11.5px; font-weight: 700; color: var(--text-muted);">Harga Grosir Paket (<span class="app-currency-symbol">Rp</span>)</label>
                         <input type="number" step="any" class="search-filter-input"
-                            style="width: 100%; margin-top: 4px;" id="editProdHargaGrosir"
+                            style="width: 100%; margin-top: 4px; border-radius: 12px;" id="editProdHargaGrosir"
                             placeholder="Misal: 4700 (Opsional)">
                     </div>
                 </div>
@@ -1632,6 +1693,51 @@
                     <button type="submit" class="btn-pill-action btn-pill-primary">Simpan &amp; Terapkan</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Bagikan Simulasi HPP (Pilihan: Hanya Melihat / Dapat Mengedit) -->
+<div class="modal-overlay-custom" id="modalShareHpp" role="dialog" aria-modal="true" tabindex="-1">
+    <div class="modal-sheet-card" style="max-width: 480px;">
+        <div class="modal-sheet-header">
+            <div class="modal-sheet-title" style="display: flex; align-items: center; gap: 8px;">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24" style="color: var(--violet-main);"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                Bagikan Tautan Simulasi HPP
+            </div>
+            <button class="btn-pill-action btn-pill-secondary" style="padding: 4px 8px;" onclick="window.closeShareHppModal()">
+                <svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+        </div>
+        <div class="modal-sheet-body">
+            <p style="font-size: 12px; color: #64748b; margin-top: 0; line-height: 1.5;">
+                Pilih jenis akses tautan simulasi kalkulasi HPP untuk dibagikan kepada rekan atau mitra:
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+                <!-- Opsi 1: Hanya Melihat -->
+                <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; background: #f8fafc; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                    <div>
+                        <div style="font-size: 12.5px; font-weight: 700; color: #0f172a;">1. Hanya Melihat (View-Only)</div>
+                        <div style="font-size: 11px; color: #64748b;">Rekan dapat membaca rincian biaya HPP tanpa mengubah kalkulasi asli.</div>
+                    </div>
+                    <button type="button" class="btn-pill-action btn-pill-secondary" style="border-radius: 10px; padding: 6px 12px; font-size: 11.5px; white-space: nowrap;" onclick="window.generateAndCopyHppLink('view')">
+                        Salin Tautan
+                    </button>
+                </div>
+                <!-- Opsi 2: Dapat Mengedit -->
+                <div style="border: 1px solid #c7d2fe; border-radius: 12px; padding: 12px; background: #eef2ff; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                    <div>
+                        <div style="font-size: 12.5px; font-weight: 700; color: #3730a3;">2. Dapat Mengedit (Simulator Interaktif)</div>
+                        <div style="font-size: 11px; color: #4338ca;">Rekan dapat menguji kalkulasi, mengubah angka bahan, dan menghitung laba mandiri.</div>
+                    </div>
+                    <button type="button" class="btn-pill-action btn-pill-primary" style="border-radius: 10px; padding: 6px 12px; font-size: 11.5px; white-space: nowrap;" onclick="window.generateAndCopyHppLink('edit')">
+                        Salin Tautan
+                    </button>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+                <button type="button" class="btn-pill-action btn-pill-secondary" style="border-radius: 10px;" onclick="window.closeShareHppModal()">Tutup</button>
+            </div>
         </div>
     </div>
 </div>

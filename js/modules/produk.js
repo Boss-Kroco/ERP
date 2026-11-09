@@ -1,3 +1,114 @@
+
+// Manajemen Kategori Kustom & Tier Harga
+window.getCustomCategories = function() {
+    var defaults = ['Makanan Ringan', 'Kue Kering', 'Sambal & Saus', 'Minuman', 'Bahan Pokok'];
+    try {
+        var saved = localStorage.getItem('bos_kroco_custom_categories');
+        if (saved) {
+            var arr = JSON.parse(saved);
+            if (Array.isArray(arr) && arr.length > 0) return arr;
+        }
+    } catch(e) {}
+    return defaults;
+};
+
+window.saveCustomCategory = function(catName) {
+    if (!catName || !catName.trim()) return;
+    var cats = window.getCustomCategories();
+    if (!cats.includes(catName.trim())) {
+        cats.push(catName.trim());
+        try { localStorage.setItem('bos_kroco_custom_categories', JSON.stringify(cats)); } catch(e){}
+    }
+    window.refreshCategoryDropdowns();
+};
+
+window.refreshCategoryDropdowns = function() {
+    var cats = window.getCustomCategories();
+    var filterSel = document.getElementById('filterKategoriMasterProduk');
+    if (filterSel) {
+        var curVal = filterSel.value;
+        filterSel.innerHTML = '<option value="">Semua Kategori</option>' + cats.map(function(c) {
+            return '<option value="' + c + '">' + c + '</option>';
+        }).join('');
+        filterSel.value = curVal;
+    }
+    var editSel = document.getElementById('editProdKategori');
+    if (editSel) {
+        var curValEdit = editSel.value;
+        editSel.innerHTML = cats.map(function(c) {
+            return '<option value="' + c + '">' + c + '</option>';
+        }).join('');
+        if (curValEdit) editSel.value = curValEdit;
+    }
+};
+
+window.tambahKategoriBaruPrompt = function(targetSelectId) {
+    var input = window.prompt('Masukkan nama kategori baru:');
+    if (!input || !input.trim()) return;
+    var cat = input.trim();
+    window.saveCustomCategory(cat);
+    if (targetSelectId) {
+        var el = document.getElementById(targetSelectId);
+        if (el) el.value = cat;
+    }
+    if (typeof showToast === 'function') showToast('Kategori "' + cat + '" berhasil ditambahkan.', 'success');
+};
+
+// Multi-Tier Harga Helpers
+window.tambahRowTierHarga = function(containerId, labelVal, priceVal) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    var row = document.createElement('div');
+    row.className = 'tier-price-row';
+    row.style.cssText = 'display: flex; gap: 8px; align-items: center;';
+    row.innerHTML = '<input type="text" class="search-filter-input tier-label" placeholder="Nama Tingkat (cth: Harga A)" value="' + (labelVal || '') + '" style="flex: 1; border-radius: 10px; font-size: 11.5px; padding: 5px 8px;">' +
+        '<input type="number" step="any" class="search-filter-input tier-price" placeholder="Harga" value="' + (priceVal !== undefined ? priceVal : '') + '" style="width: 120px; border-radius: 10px; font-size: 11.5px; padding: 5px 8px;">' +
+        '<button type="button" class="btn-pill-action" style="background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; padding: 4px 8px; border-radius: 8px; font-size: 11px;" onclick="this.parentElement.remove()">X</button>';
+    container.appendChild(row);
+};
+
+window.getTierPricesFromContainer = function(containerId) {
+    var container = document.getElementById(containerId);
+    if (!container) return [];
+    var rows = container.querySelectorAll('.tier-price-row');
+    var tiers = [];
+    rows.forEach(function(r) {
+        var lbl = (r.querySelector('.tier-label') ? r.querySelector('.tier-label').value : '').trim();
+        var prc = parseFloat(r.querySelector('.tier-price') ? r.querySelector('.tier-price').value : 0) || 0;
+        if (lbl && prc > 0) {
+            tiers.push({ label: lbl, harga: prc });
+        }
+    });
+    return tiers;
+};
+
+// Real-time filtering and default A-Z sorting
+window.filterMasterProdukRealtime = function() {
+    var q = (document.getElementById('searchMasterProduk') ? document.getElementById('searchMasterProduk').value : '').toLowerCase().trim();
+    var cat = document.getElementById('filterKategoriMasterProduk') ? document.getElementById('filterKategoriMasterProduk').value : '';
+    var sort = document.getElementById('sortMasterProduk') ? document.getElementById('sortMasterProduk').value : 'az';
+
+    var filtered = (window.allMasterProducts || []).filter(function(p) {
+        var matchQ = !q || (p.namaProduk && p.namaProduk.toLowerCase().includes(q)) || (p.produkId && p.produkId.toLowerCase().includes(q)) || (p.satuan && p.satuan.toLowerCase().includes(q));
+        var matchCat = !cat || p.kategori === cat;
+        return matchQ && matchCat;
+    });
+
+    if (sort === 'az') {
+        filtered.sort(function(a, b) { return (a.namaProduk || '').localeCompare(b.namaProduk || ''); });
+    } else if (sort === 'za') {
+        filtered.sort(function(a, b) { return (b.namaProduk || '').localeCompare(a.namaProduk || ''); });
+    } else if (sort === 'stok_desc') {
+        filtered.sort(function(a, b) { return ((b.stokEtalase || 0) + (b.stokGudang || 0)) - ((a.stokEtalase || 0) + (a.stokGudang || 0)); });
+    } else if (sort === 'stok_asc') {
+        filtered.sort(function(a, b) { return ((a.stokEtalase || 0) + (a.stokGudang || 0)) - ((b.stokEtalase || 0) + (b.stokGudang || 0)); });
+    }
+
+    if (typeof window.renderFilteredMasterProdukTable === 'function') {
+        window.renderFilteredMasterProdukTable(filtered);
+    }
+};
+
 /**
  * ============================================================================
  * MAFAZA GROUP ERP - MASTER PRODUK MODULE

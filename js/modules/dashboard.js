@@ -3062,3 +3062,93 @@ window.copyStrukText = function () {
     }
 };
 
+
+
+// Fitur Hapus Transaksi Massal & Satuan (Foto 2 & Foto 3)
+window.executeBatchDeleteOrders = function () {
+    if (!selectedOrderIds || selectedOrderIds.length === 0) {
+        if (typeof showToast === 'function') showToast('Pilih setidaknya satu transaksi untuk dihapus.', 'warning');
+        return;
+    }
+
+    var count = selectedOrderIds.length;
+    var confirmMsg = 'Apakah Anda yakin ingin menghapus ' + count + ' transaksi yang dipilih? Data yang dihapus tidak dapat dipulihkan.';
+    if (!window.confirm(confirmMsg)) return;
+
+    var targetIds = selectedOrderIds.slice();
+
+    // Hapus dari memori lokal
+    window.orderTransactions = (window.orderTransactions || []).filter(function (o) {
+        return !targetIds.includes(o.id) && !targetIds.includes(o.orderNum);
+    });
+
+    try {
+        localStorage.setItem('bos_kroco_cached_orders', JSON.stringify(window.orderTransactions));
+    } catch(e) {}
+
+    // Panggil API untuk hapus di Supabase
+    if (typeof window.callApi === 'function') {
+        window.callApi('apiBatchDeleteTransactions', [targetIds]).then(function(res) {
+            console.log('[Batch Delete Orders] Result:', res);
+        }).catch(function(err) {
+            console.warn('[Batch Delete Orders] Warning:', err);
+        });
+    }
+
+    selectedOrderIds = [];
+    if (typeof updateBatchToolbar === 'function') updateBatchToolbar();
+    if (typeof renderOrderTable === 'function') renderOrderTable(window.orderTransactions);
+    if (typeof updateDashboardKPIs === 'function') updateDashboardKPIs(window.orderTransactions);
+    if (typeof drawSplineWaveChart === 'function') drawSplineWaveChart();
+    if (typeof showToast === 'function') showToast(count + ' transaksi berhasil dihapus.', 'success');
+};
+
+window.hapusTransaksi = function (trxId, e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (!trxId) return;
+
+    if (!window.confirm('Hapus transaksi ' + trxId + ' (pembatalan pembelian)?')) return;
+
+    window.orderTransactions = (window.orderTransactions || []).filter(function (o) {
+        return o.id !== trxId && o.orderNum !== trxId;
+    });
+
+    try {
+        localStorage.setItem('bos_kroco_cached_orders', JSON.stringify(window.orderTransactions));
+    } catch(e) {}
+
+    if (typeof window.callApi === 'function') {
+        window.callApi('apiDeleteTransaction', [trxId]).catch(function(e) {
+            console.warn('[Delete Trx Error]', e);
+        });
+    }
+
+    if (typeof renderOrderTable === 'function') renderOrderTable(window.orderTransactions);
+    if (typeof updateDashboardKPIs === 'function') updateDashboardKPIs(window.orderTransactions);
+    if (typeof showToast === 'function') showToast('Transaksi ' + trxId + ' berhasil dihapus.', 'success');
+};
+
+window.hapusTransaksiDariModal = function () {
+    var trxId = document.getElementById('modalDetailTrxNum') ? document.getElementById('modalDetailTrxNum').textContent.trim() : null;
+    var orderRef = window.currentDetailTrxId || trxId;
+    if (!orderRef) return;
+
+    if (window.confirm('Batalkan dan hapus transaksi ini?')) {
+        window.orderTransactions = (window.orderTransactions || []).filter(function (o) {
+            return o.id !== orderRef && o.orderNum !== orderRef;
+        });
+
+        try {
+            localStorage.setItem('bos_kroco_cached_orders', JSON.stringify(window.orderTransactions));
+        } catch(e) {}
+
+        if (typeof window.callApi === 'function') {
+            window.callApi('apiDeleteTransaction', [orderRef]).catch(function(e){});
+        }
+
+        if (typeof closeModalDetailTrx === 'function') closeModalDetailTrx();
+        if (typeof renderOrderTable === 'function') renderOrderTable(window.orderTransactions);
+        if (typeof updateDashboardKPIs === 'function') updateDashboardKPIs(window.orderTransactions);
+        if (typeof showToast === 'function') showToast('Transaksi berhasil dihapus (dibatalkan).', 'success');
+    }
+};

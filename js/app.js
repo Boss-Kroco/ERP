@@ -245,7 +245,7 @@ window.handleGlobalSearch = function (q) {
 
 // View Templates Loader
 window.VIEW_MODULES = [
-    'dashboard', 'pos', 'transaksi', 'sewa', 'pelanggan', 'produk', 'produksi',
+    'dashboard', 'katalog', 'pos', 'transaksi', 'sewa', 'pelanggan', 'produk', 'produksi',
     'multilokasi', 'opname', 'keuangan', 'tenagakerja', 'agenda', 'audit', 'profil', 'pengaturan', 'bantuan'
 ];
 
@@ -729,3 +729,62 @@ document.addEventListener('keydown', function (e) {
 });
 
 
+
+
+// Logika Katalog Pelanggan (Item 4)
+window.renderKatalogPelanggan = function() {
+    var grid = document.getElementById('katalogGrid');
+    if (!grid) return;
+    var q = (document.getElementById('katalogSearch') ? document.getElementById('katalogSearch').value : '').toLowerCase().trim();
+    var cat = document.getElementById('katalogCategoryFilter') ? document.getElementById('katalogCategoryFilter').value : '';
+
+    var prods = window.catalogProducts || window.allMasterProducts || [];
+    var filtered = prods.filter(function(p) {
+        var matchQ = !q || (p.namaProduk && p.namaProduk.toLowerCase().includes(q));
+        var matchCat = !cat || p.kategori === cat;
+        return matchQ && matchCat;
+    });
+
+    grid.innerHTML = '';
+    if (filtered.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px;">Tidak ada menu yang sesuai pencarian.</div>';
+        return;
+    }
+
+    filtered.forEach(function(p) {
+        var card = document.createElement('div');
+        card.style.cssText = 'background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(15,23,42,0.03);';
+        
+        var tierHtml = '';
+        if (p.hargaTiers && p.hargaTiers.length > 0) {
+            tierHtml = '<div style="font-size: 11px; color: #6b21a8; background: #faf5ff; padding: 4px 8px; border-radius: 8px; margin-top: 6px;">Tersedia pilihan: ' + 
+                p.hargaTiers.map(function(t){ return t.label + ' (' + (window.formatAppCurrency ? window.formatAppCurrency(t.harga) : t.harga) + ')'; }).join(', ') + 
+                '</div>';
+        }
+
+        var waText = encodeURIComponent('Halo Boss Kroco, saya ingin pesan: ' + p.namaProduk + ' seharga ' + (window.formatAppCurrency ? window.formatAppCurrency(p.hargaJual) : p.hargaJual));
+        var waUrl = 'https://wa.me/6281234567890?text=' + waText;
+
+        card.innerHTML = '<div>' +
+            '<div style="font-size: 11px; font-weight: 700; color: #6366f1; text-transform: uppercase;">' + (p.kategori || 'Kuliner') + '</div>' +
+            '<div style="font-size: 15px; font-weight: 800; color: #0f172a; margin-top: 4px;">' + p.namaProduk + '</div>' +
+            '<div style="font-size: 16px; font-weight: 800; color: #059669; margin-top: 8px;">' + (window.formatAppCurrency ? window.formatAppCurrency(p.hargaJual) : ('Rp ' + p.hargaJual)) + '</div>' +
+            tierHtml +
+            '</div>' +
+            '<a href="' + waUrl + '" target="_blank" class="btn-pill-action btn-pill-primary" style="margin-top: 14px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px; border-radius: 12px; font-size: 12px; font-weight: 700; padding: 8px 12px;">' +
+            '<svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>' +
+            'Pesan via WhatsApp</a>';
+        grid.appendChild(card);
+    });
+};
+
+window.salinLinkKatalogPelanggan = function() {
+    var url = window.location.origin + window.location.pathname + '?view=katalog';
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function() {
+            if (typeof showToast === 'function') showToast('Tautan menu pelanggan berhasil disalin!', 'success');
+        });
+    } else {
+        window.prompt('Salin tautan ini untuk pelanggan:', url);
+    }
+};
