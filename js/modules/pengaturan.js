@@ -1018,18 +1018,22 @@ window.resetAllDataToCleanSlate = function () {
     }
 
     try {
-        // 1. Set mode produksi aktif
+        // 1. Set mode produksi aktif dan tandai data bersih permanen
         localStorage.setItem('mafaza_production_mode', 'true');
+        localStorage.setItem('bos_kroco_data_cleared', 'true');
 
-        // 2. Kosongkan transaksi
+        // 2. Kosongkan transaksi secara permanen (simpan array kosong [])
         window.orderTransactions = [];
-        localStorage.removeItem('bos_kroco_cached_orders');
-        localStorage.removeItem('mafaza_orders');
+        window._semuaTransaksiList = [];
+        localStorage.setItem('bos_kroco_cached_orders', '[]');
+        localStorage.setItem('mafaza_orders', '[]');
 
-        // 3. Kosongkan produk katalog
+        // 3. Kosongkan produk katalog & sewa alat
         window.catalogProducts = [];
+        window.katalogAlat = [];
         localStorage.setItem('bos_kroco_catalog_products', '[]');
         localStorage.setItem('mafaza_catalog_products', '[]');
+        localStorage.setItem('mafaza_katalog_alat', '[]');
 
         // 4. Kosongkan kas
         window.allKeuanganKas = [];
@@ -1046,8 +1050,8 @@ window.resetAllDataToCleanSlate = function () {
         window.timAktivitasList = [];
 
         // 7. Kosongkan tiket bantuan & audit trail
-        localStorage.removeItem('bos_kroco_help_tickets');
-        localStorage.removeItem('bos_kroco_audit_trail');
+        localStorage.setItem('bos_kroco_help_tickets', '[]');
+        localStorage.setItem('bos_kroco_audit_trail', '[]');
 
         // 8. Jika Supabase client aktif, bersihkan tabel di cloud
         if (window.supabaseClient) {
@@ -1080,6 +1084,9 @@ window.resetAllDataToCleanSlate = function () {
         if (typeof window.loadKeuanganData === 'function') window.loadKeuanganData();
         if (typeof window.updateDashboardAnalytics === 'function') window.updateDashboardAnalytics();
         if (typeof window.renderAgendaList === 'function') window.renderAgendaList();
+        if (typeof window.refreshAllTransactions === 'function') window.refreshAllTransactions();
+        if (typeof window.renderAlatSewa === 'function') window.renderAlatSewa();
+        if (typeof window.renderGrafikAnalisis === 'function') window.renderGrafikAnalisis();
 
         if (typeof window.showToast === 'function') {
             window.showToast('Semua data simulasi berhasil dibersihkan! Sistem siap digunakan untuk toko nyata.', 'success');

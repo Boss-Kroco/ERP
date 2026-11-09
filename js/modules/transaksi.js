@@ -64,7 +64,8 @@ window.refreshAllTransactions = async function() {
     }
 
     // Gabungkan dengan transaksi in-memory POS jika belum masuk server
-    if (window.orderTransactions && Array.isArray(window.orderTransactions)) {
+    var isCleared = localStorage.getItem('bos_kroco_data_cleared') === 'true' || localStorage.getItem('mafaza_production_mode') === 'true';
+    if (!isCleared && window.orderTransactions && Array.isArray(window.orderTransactions)) {
         window.orderTransactions.forEach(function(memTrx) {
             var exists = list.some(function(item) { return item.id === memTrx.id; });
             if (!exists) {
@@ -73,8 +74,16 @@ window.refreshAllTransactions = async function() {
         });
     }
 
-    if (list.length === 0 && window.orderTransactions) {
-        list = window.orderTransactions.slice();
+    // Jika mode bersih aktif, jangan biarkan data dummy TRX-20260905 masuk
+    if (isCleared) {
+        list = list.filter(function(item) {
+            return item.id && !item.id.startsWith('TRX-20260905');
+        });
+        if (window.orderTransactions) {
+            window.orderTransactions = window.orderTransactions.filter(function(item) {
+                return item.id && !item.id.startsWith('TRX-20260905');
+            });
+        }
     }
 
     window._semuaTransaksiList = list;

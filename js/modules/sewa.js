@@ -13,11 +13,18 @@ var DEFAULT_KATALOG_ALAT = [
     { id: 'AL-005', nama: 'Scaffolding (Set)', hargaSewa: 40000, qty: 100 }
 ];
 
+var isSewaCleared = localStorage.getItem('bos_kroco_data_cleared') === 'true' || localStorage.getItem('mafaza_production_mode') === 'true';
 try {
     var savedAlat = localStorage.getItem('mafaza_katalog_alat');
-    window.katalogAlat = savedAlat ? JSON.parse(savedAlat) : DEFAULT_KATALOG_ALAT;
+    if (savedAlat !== null) {
+        window.katalogAlat = JSON.parse(savedAlat);
+    } else if (isSewaCleared) {
+        window.katalogAlat = [];
+    } else {
+        window.katalogAlat = [];
+    }
 } catch (e) {
-    window.katalogAlat = DEFAULT_KATALOG_ALAT;
+    window.katalogAlat = [];
 }
 
 window.simpanKatalogAlatStorage = function() {
