@@ -1161,12 +1161,10 @@ function loadDashboardData() {
             var badgeDash = document.getElementById('badgeKasKritis');
             if (badgeDash) badgeDash.style.display = isKasKritis ? 'inline-block' : 'none';
 
-            var elKeuanganSaldo = document.getElementById('keuanganSaldoKas');
             var elKeuanganLimit = document.getElementById('keuanganLimitKas');
             var badgeKeuangan = document.getElementById('badgeKeuanganKasKritis');
             var alertKeuanganBox = document.getElementById('alertKasKritisBox');
 
-            if (elKeuanganSaldo) elKeuanganSaldo.textContent = window.formatAppCurrency(d.saldoKas || 0);
             if (elKeuanganLimit) elKeuanganLimit.textContent = window.formatAppCurrency(limitKas);
             if (badgeKeuangan) badgeKeuangan.style.display = isKasKritis ? 'inline-block' : 'none';
             if (alertKeuanganBox) alertKeuanganBox.style.display = isKasKritis ? 'block' : 'none';
@@ -2679,8 +2677,13 @@ window.openPreviewStruk = function (trxId, mode) {
         }
     });
 
-    var diskon = Number(trx.diskon || 0);
-    var totalHemat = totalItemDiskon + diskon;
+    var diskonNota = Number(trx.diskonNota !== undefined ? trx.diskonNota : (trx.diskon || 0));
+    // Jika trx lama menyimpan diskon sebagai total potongan yang sudah mencakup item
+    if (trx.diskonItem !== undefined && trx.diskonNota === undefined && diskonNota >= totalItemDiskon) {
+        diskonNota = diskonNota - totalItemDiskon;
+    }
+    var totalHemat = totalItemDiskon + diskonNota;
+    var diskon = diskonNota;
     var pajak = Number(trx.pajakNominal || 0);
     var metode = trx.payment || 'Tunai';
     var isTunai = String(metode).toLowerCase() === 'tunai';

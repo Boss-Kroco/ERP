@@ -60,12 +60,11 @@ window.initPengaturanPage = function () {
     // Default estimasi pengeluaran kas operasional
     var estPengeluaran = 2730000;
     var estLaba = sumOmzet - estPengeluaran;
-    var omzetInCurr = (typeof window.toAppCurrency === 'function') ? window.toAppCurrency(sumOmzet) : sumOmzet;
-    var pctCapaian = targetOmzet > 0 ? ((omzetInCurr / targetOmzet) * 100).toFixed(1) : '0';
+    var pctCapaian = targetOmzet > 0 ? ((sumOmzet / targetOmzet) * 100).toFixed(1) : '0';
 
     if (elOmzet) elOmzet.textContent = window.formatAppCurrency(sumOmzet);
     if (elLaba) elLaba.textContent = window.formatAppCurrency(estLaba);
-    if (elTarget) elTarget.textContent = (typeof window.formatAppCurrencyValue === 'function') ? window.formatAppCurrencyValue(targetOmzet) : window.formatAppCurrency(targetOmzet);
+    if (elTarget) elTarget.textContent = window.formatAppCurrency(targetOmzet);
     if (elSubTarget) elSubTarget.textContent = pctCapaian + '% Terpenuhi';
     if (elTrx) elTrx.textContent = trxList.length;
 
@@ -77,12 +76,11 @@ window.initPengaturanPage = function () {
                 var realOmzet = (typeof d.omzet === 'number') ? d.omzet : sumOmzet;
                 var realPengeluaran = (typeof d.pengeluaran === 'number') ? d.pengeluaran : estPengeluaran;
                 var realLaba = (typeof d.labaBersih === 'number') ? d.labaBersih : (realOmzet - realPengeluaran);
-                var realOmzetInCurr = (typeof window.toAppCurrency === 'function') ? window.toAppCurrency(realOmzet) : realOmzet;
-                var realPct = targetOmzet > 0 ? ((realOmzetInCurr / targetOmzet) * 100).toFixed(1) : '0';
+                var realPct = targetOmzet > 0 ? ((realOmzet / targetOmzet) * 100).toFixed(1) : '0';
 
                 if (elOmzet) elOmzet.textContent = window.formatAppCurrency(realOmzet);
                 if (elLaba) elLaba.textContent = window.formatAppCurrency(realLaba);
-                if (elTarget) elTarget.textContent = (typeof window.formatAppCurrencyValue === 'function') ? window.formatAppCurrencyValue(targetOmzet) : window.formatAppCurrency(targetOmzet);
+                if (elTarget) elTarget.textContent = window.formatAppCurrency(targetOmzet);
                 if (elSubTarget) elSubTarget.textContent = realPct + '% Terpenuhi';
                 if (elTrx) elTrx.textContent = typeof d.totalTransactions === 'number' ? d.totalTransactions : trxList.length;
             }
@@ -130,6 +128,44 @@ window.initPengaturanPage = function () {
 window.openSettingModal = function (modalId) {
     var modal = document.getElementById(modalId);
     if (modal) modal.classList.add('active');
+
+    if (modalId === 'modalSetFinance') {
+        var rawSettings = localStorage.getItem('bos_kroco_app_settings');
+        var curCurrency = 'IDR';
+        var tOmzet = 5000000;
+        var lKas = 2000000;
+        var pjk = 11;
+        if (rawSettings) {
+            try {
+                var c = JSON.parse(rawSettings);
+                if (c.currency) curCurrency = c.currency;
+                if (c.targetOmzet !== undefined) tOmzet = parseFloat(c.targetOmzet) || 5000000;
+                if (c.limitKas !== undefined) lKas = parseFloat(c.limitKas) || 2000000;
+                if (c.pajak !== undefined) pjk = parseFloat(c.pajak) || 11;
+            } catch(e) {}
+        }
+        var selCurr = document.getElementById('setFinCurrency');
+        if (selCurr) selCurr.value = curCurrency;
+
+        if (typeof window.onFinCurrencyChanged === 'function') {
+            window.onFinCurrencyChanged(curCurrency);
+        }
+
+        var inpTarget = document.getElementById('setFinTargetOmzet');
+        var inpLimit = document.getElementById('setFinLimitKas');
+        var inpPajak = document.getElementById('setFinPajak');
+
+        // Tampilkan dalam mata uang aktif pengguna
+        if (inpTarget) {
+            var valInCurr = (typeof window.toAppCurrency === 'function') ? window.toAppCurrency(tOmzet) : tOmzet;
+            inpTarget.value = Number(valInCurr.toFixed(2));
+        }
+        if (inpLimit) {
+            var valLimitInCurr = (typeof window.toAppCurrency === 'function') ? window.toAppCurrency(lKas) : lKas;
+            inpLimit.value = Number(valLimitInCurr.toFixed(2));
+        }
+        if (inpPajak) inpPajak.value = pjk;
+    }
 
     if (modalId === 'modalSetData') {
         var lblLast = document.getElementById('lblLastBackupTime');
@@ -365,12 +401,16 @@ window.savePengaturanProfile = function () {
 };
 
 window.savePengaturanFinance = function () {
-    var targetOmzet = document.getElementById('setFinTargetOmzet') ? document.getElementById('setFinTargetOmzet').value : '5000000';
+    var rawTarget = document.getElementById('setFinTargetOmzet') ? parseFloat(document.getElementById('setFinTargetOmzet').value) || 0 : 5000000;
     var pajak = document.getElementById('setFinPajak') ? document.getElementById('setFinPajak').value : '11';
-    var limitKas = document.getElementById('setFinLimitKas') ? document.getElementById('setFinLimitKas').value : '2000000';
+    var rawLimit = document.getElementById('setFinLimitKas') ? parseFloat(document.getElementById('setFinLimitKas').value) || 0 : 2000000;
     var currency = document.getElementById('setFinCurrency') ? document.getElementById('setFinCurrency').value : 'IDR';
 
-    saveAppSettingsHelper({ targetOmzet: targetOmzet, pajak: pajak, limitKas: limitKas, currency: currency });
+    // Konversi nilai input dari mata uang yang dipilih ke Base IDR untuk standardisasi penyimpanan
+    var targetOmzetBaseIdr = Math.round((typeof window.fromAppCurrency === 'function') ? window.fromAppCurrency(rawTarget) : rawTarget);
+    var limitKasBaseIdr = Math.round((typeof window.fromAppCurrency === 'function') ? window.fromAppCurrency(rawLimit) : rawLimit);
+
+    saveAppSettingsHelper({ targetOmzet: targetOmzetBaseIdr, pajak: pajak, limitKas: limitKasBaseIdr, currency: currency });
     window.closeSettingModal('modalSetFinance');
     window.initPengaturanPage();
     if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();

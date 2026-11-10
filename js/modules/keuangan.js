@@ -9,6 +9,234 @@ var allKeuanganKas = [];
 var currentRawKasList = allKeuanganKas;
 var currentFilteredKas = [];
 
+// ============================================================================
+// Multi-Currency Tabungan Ledger & Pertukaran Kurs (Item 8, 9 & 10)
+// ============================================================================
+window.getMultiTabunganBalances = function() {
+    var defaults = { YER: 0, SAR: 0, USD: 0, IDR: 0 };
+    try {
+        var raw = localStorage.getItem("bos_kroco_multi_tabungan");
+        if (raw) {
+            var parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === "object") {
+                return {
+                    YER: parseFloat(parsed.YER) || 0,
+                    SAR: parseFloat(parsed.SAR) || 0,
+                    USD: parseFloat(parsed.USD) || 0,
+                    IDR: parseFloat(parsed.IDR) || 0
+                };
+            }
+        }
+    } catch(e) {}
+    return defaults;
+};
+
+window.saveMultiTabunganBalances = function(balances) {
+    try {
+        localStorage.setItem("bos_kroco_multi_tabungan", JSON.stringify(balances));
+    } catch(e) {}
+    window.renderMultiTabunganUI();
+};
+
+window.getTabunganMutasiList = function() {
+    try {
+        var raw = localStorage.getItem("bos_kroco_tabungan_mutasi");
+        if (raw) {
+            var parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) return parsed;
+        }
+    } catch(e) {}
+    return [];
+};
+
+window.addTabunganMutasi = function(mutasi) {
+    var list = window.getTabunganMutasiList();
+    var now = new Date();
+    var timeStr = ("0" + now.getDate()).slice(-2) + "/" + ("0" + (now.getMonth() + 1)).slice(-2) + "/" + now.getFullYear() + " " +
+        ("0" + now.getHours()).slice(-2) + ":" + ("0" + now.getMinutes()).slice(-2);
+    
+    var record = {
+        id: "TAB-" + Date.now(),
+        tanggal: timeStr,
+        tipe: mutasi.tipe || "Tukar Kurs",
+        keluar: mutasi.keluar || "-",
+        masuk: mutasi.masuk || "-",
+        keterangan: mutasi.keterangan || "-",
+        dicatatOleh: (window.currentUser && (window.currentUser.namaLengkap || window.currentUser.username)) || "Bendahara"
+    };
+    list.unshift(record);
+    try {
+        localStorage.setItem("bos_kroco_tabungan_mutasi", JSON.stringify(list.slice(0, 100)));
+    } catch(e) {}
+    window.renderTabunganMutasiTable();
+};
+
+window.renderMultiTabunganUI = function() {
+    var bal = window.getMultiTabunganBalances();
+    var lblYer = document.getElementById("lblTabunganValYER");
+    var lblSar = document.getElementById("lblTabunganValSAR");
+    var lblUsd = document.getElementById("lblTabunganValUSD");
+    var lblIdr = document.getElementById("lblTabunganValIDR");
+
+    if (lblYer) lblYer.textContent = bal.YER.toLocaleString("id-ID") + " ﷼";
+    if (lblSar) lblSar.textContent = bal.SAR.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " ﷼";
+    if (lblUsd) lblUsd.textContent = "$ " + bal.USD.toLocaleString("id-ID", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (lblIdr) lblIdr.textContent = "Rp " + Math.round(bal.IDR).toLocaleString("id-ID");
+
+    // Update preview di kartu Saldo Tabungan halaman kas
+    var elPreview = document.getElementById("keuanganMultiTabunganPreview");
+    if (elPreview) {
+        elPreview.innerHTML = "<b>YER:</b> " + bal.YER.toLocaleString("id-ID") + " ﷼ &bull; <b>SAR:</b> " + bal.SAR.toLocaleString("id-ID") + " ﷼ &bull; <b>USD:</b> $" + bal.USD.toLocaleString("id-ID") + " &bull; <b>IDR:</b> Rp " + Math.round(bal.IDR).toLocaleString("id-ID");
+    }
+
+    // Hitung total ekuivalen tabungan dalam mata uang aktif
+    var cfg = window.getAppCurrencyConfig ? window.getAppCurrencyConfig() : { currency: "IDR", exchangeRate: 1 };
+    var totalEquivalentIdr = (bal.YER * 62) + (bal.SAR * 4400) + (bal.USD * 16000) + bal.IDR;
+    var elTotalTabungan = document.getElementById("keuanganSaldoTabungan");
+    if (elTotalTabungan) {
+        elTotalTabungan.textContent = window.formatAppCurrency(totalEquivalentIdr);
+    }
+};
+
+window.renderTabunganMutasiTable = function() {
+    var tbody = document.getElementById("tblRiwayatTabunganKhusus");
+    if (!tbody) return;
+    var list = window.getTabunganMutasiList();
+    if (!list || list.length === 0) {
+        tbody.innerHTML = "<tr><td colspan=\"6\" style=\"text-align: center; color: #94a3b8; padding: 18px;\">Belum ada mutasi tabungan tercatat.</td></tr>";
+        return;
+    }
+
+    var html = "";
+    list.forEach(function(m) {
+        var tipeColor = "#3b82f6";
+        if (m.tipe === "Tukar Kurs") tipeColor = "#8b5cf6";
+        else if (m.tipe.indexOf("Tarik") !== -1) tipeColor = "#dc2626";
+        else if (m.tipe.indexOf("Setor") !== -1) tipeColor = "#16a34a";
+
+        html += "<tr>"
+            + "<td>" + escapeHtml(m.tanggal) + "</td>"
+            + "<td><span style=\"background: #f1f5f9; color: " + tipeColor + "; font-weight: 700; font-size: 11px; padding: 2px 8px; border-radius: 6px;\">" + escapeHtml(m.tipe) + "</span></td>"
+            + "<td style=\"color: #dc2626; font-weight: 700;\">" + escapeHtml(m.keluar) + "</td>"
+            + "<td style=\"color: #16a34a; font-weight: 700;\">" + escapeHtml(m.masuk) + "</td>"
+            + "<td style=\"font-size: 11.5px; max-width: 220px;\">" + escapeHtml(m.keterangan) + "</td>"
+            + "<td><small style=\"font-weight: 600;\">" + escapeHtml(m.dicatatOleh) + "</small></td>"
+            + "</tr>";
+    });
+    tbody.innerHTML = html;
+};
+
+window.openModalTabunganKhusus = function() {
+    var modal = document.getElementById("modalTabunganKhusus");
+    if (modal) {
+        modal.style.display = "flex";
+        window.renderMultiTabunganUI();
+        window.renderTabunganMutasiTable();
+    }
+};
+
+window.closeModalTabunganKhusus = function() {
+    var modal = document.getElementById("modalTabunganKhusus");
+    if (modal) modal.style.display = "none";
+};
+
+window.submitTukarKursTabungan = function() {
+    var dariCurr = document.getElementById("tukarDariCurr") ? document.getElementById("tukarDariCurr").value : "YER";
+    var dariNom = parseFloat(document.getElementById("tukarDariNominal").value) || 0;
+    var keCurr = document.getElementById("tukarKeCurr") ? document.getElementById("tukarKeCurr").value : "SAR";
+    var keNom = parseFloat(document.getElementById("tukarKeNominal").value) || 0;
+    var ket = (document.getElementById("tukarKeterangan") ? document.getElementById("tukarKeterangan").value : "").trim();
+
+    if (dariNom <= 0 || keNom <= 0) {
+        if (window.showToast) window.showToast("Jumlah ditukar dan diterima harus lebih dari 0.", "error");
+        return;
+    }
+    if (dariCurr === keCurr) {
+        if (window.showToast) window.showToast("Mata uang asal dan tujuan pertukaran tidak boleh sama.", "error");
+        return;
+    }
+
+    var balances = window.getMultiTabunganBalances();
+    if ((balances[dariCurr] || 0) < dariNom) {
+        if (window.showToast) window.showToast("Saldo tabungan " + dariCurr + " tidak mencukupi! Tersedia: " + (balances[dariCurr] || 0).toLocaleString("id-ID"), "error");
+        return;
+    }
+
+    // Eksekusi pertukaran saldo
+    balances[dariCurr] -= dariNom;
+    balances[keCurr] = (balances[keCurr] || 0) + keNom;
+
+    window.saveMultiTabunganBalances(balances);
+
+    var note = ket || ("Tukar kurs tabungan: " + dariNom.toLocaleString("id-ID") + " " + dariCurr + " menjadi " + keNom.toLocaleString("id-ID") + " " + keCurr);
+    window.addTabunganMutasi({
+        tipe: "Tukar Kurs",
+        keluar: "-" + dariNom.toLocaleString("id-ID") + " " + dariCurr,
+        masuk: "+" + keNom.toLocaleString("id-ID") + " " + keCurr,
+        keterangan: note
+    });
+
+    // Reset input
+    if (document.getElementById("tukarDariNominal")) document.getElementById("tukarDariNominal").value = "";
+    if (document.getElementById("tukarKeNominal")) document.getElementById("tukarKeNominal").value = "";
+    if (document.getElementById("tukarKeterangan")) document.getElementById("tukarKeterangan").value = "";
+
+    if (window.showToast) window.showToast("Berhasil menukarkan " + dariNom.toLocaleString("id-ID") + " " + dariCurr + " ke " + keNom.toLocaleString("id-ID") + " " + keCurr + "!", "success");
+};
+
+window.submitSetorTarikTabungan = function() {
+    var aksi = document.getElementById("setorTarikAksi") ? document.getElementById("setorTarikAksi").value : "Setor";
+    var curr = document.getElementById("setorTarikCurr") ? document.getElementById("setorTarikCurr").value : "SAR";
+    var nom = parseFloat(document.getElementById("setorTarikNominal").value) || 0;
+    var ket = (document.getElementById("setorTarikKeterangan") ? document.getElementById("setorTarikKeterangan").value : "").trim();
+
+    if (nom <= 0) {
+        if (window.showToast) window.showToast("Nominal harus lebih dari 0.", "error");
+        return;
+    }
+
+    var balances = window.getMultiTabunganBalances();
+    if (aksi === "Tarik") {
+        if ((balances[curr] || 0) < nom) {
+            if (window.showToast) window.showToast("Saldo tabungan " + curr + " tidak cukup untuk ditarik. Tersedia: " + (balances[curr] || 0).toLocaleString("id-ID"), "error");
+            return;
+        }
+        balances[curr] -= nom;
+        window.addTabunganMutasi({
+            tipe: "Tarik Tabungan",
+            keluar: "-" + nom.toLocaleString("id-ID") + " " + curr,
+            masuk: "-",
+            keterangan: ket || ("Penarikan saldo tabungan " + curr)
+        });
+    } else {
+        balances[curr] = (balances[curr] || 0) + nom;
+        window.addTabunganMutasi({
+            tipe: "Setor Tabungan",
+            keluar: "-",
+            masuk: "+" + nom.toLocaleString("id-ID") + " " + curr,
+            keterangan: ket || ("Setoran saldo tabungan " + curr)
+        });
+    }
+
+    window.saveMultiTabunganBalances(balances);
+
+    if (document.getElementById("setorTarikNominal")) document.getElementById("setorTarikNominal").value = "";
+    if (document.getElementById("setorTarikKeterangan")) document.getElementById("setorTarikKeterangan").value = "";
+
+    if (window.showToast) window.showToast("Berhasil " + aksi + " " + nom.toLocaleString("id-ID") + " " + curr + "!", "success");
+};
+
+window.onKasTipeChanged = function() {
+    var tipe = document.getElementById("kasTipe") ? document.getElementById("kasTipe").value : "";
+    var colMataUang = document.getElementById("colPilihMataUangTabungan");
+    if (colMataUang) {
+        if (tipe === "Tabungan Masuk" || tipe === "Tabungan Keluar") {
+            colMataUang.style.display = "block";
+        } else {
+            colMataUang.style.display = "none";
+        }
+    }
+};
 var escapeHtml = function (text) {
     if (typeof window.escapeHtml === 'function') return window.escapeHtml(text);
     if (!text && text !== 0) return '';
@@ -32,6 +260,7 @@ function parseKasDate(dateStr) {
 }
 
 function initKeuanganPage() {
+    if (typeof window.renderMultiTabunganUI === "function") window.renderMultiTabunganUI();
     if (typeof window.updateAppCurrencyUI === 'function') window.updateAppCurrencyUI();
     fetchKeuanganKas();
 }

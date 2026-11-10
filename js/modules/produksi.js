@@ -77,7 +77,19 @@ window.filterDaftarHppRealtime = function() {
 
     var source = (window.catalogProducts && window.catalogProducts.length) 
         ? window.catalogProducts 
-        : (typeof catalogProducts !== 'undefined' && catalogProducts ? catalogProducts : []);
+        : (typeof catalogProducts !== 'undefined' && catalogProducts && catalogProducts.length ? catalogProducts : []);
+    if (!source || source.length === 0) {
+        try {
+            var rawSaved = localStorage.getItem('bos_kroco_catalog_products');
+            if (rawSaved) {
+                var parsedSaved = JSON.parse(rawSaved);
+                if (Array.isArray(parsedSaved) && parsedSaved.length) {
+                    source = parsedSaved;
+                    window.catalogProducts = parsedSaved;
+                }
+            }
+        } catch(e) {}
+    }
 
     tbody.innerHTML = '';
     if (!source || source.length === 0) {
@@ -100,23 +112,33 @@ window.filterDaftarHppRealtime = function() {
     });
 
     if (sort === 'az') {
-        filtered.sort(function(a, b) { return (a.namaProduk || '').localeCompare(b.namaProduk || '', 'id', { sensitivity: 'base' }); });
+        filtered.sort(function(a, b) { return (a.namaProduk || '').trim().localeCompare((b.namaProduk || '').trim(), 'id', { sensitivity: 'base' }); });
     } else if (sort === 'za') {
-        filtered.sort(function(a, b) { return (b.namaProduk || '').localeCompare(a.namaProduk || '', 'id', { sensitivity: 'base' }); });
+        filtered.sort(function(a, b) { return (b.namaProduk || '').trim().localeCompare((a.namaProduk || '').trim(), 'id', { sensitivity: 'base' }); });
     } else if (sort === 'hpp_asc') {
-        filtered.sort(function(a, b) { return (a.hargaBeliHPP || 0) - (b.hargaBeliHPP || 0); });
+        filtered.sort(function(a, b) {
+            return (parseFloat(a.hargaBeliHPP) || 0) - (parseFloat(b.hargaBeliHPP) || 0);
+        });
     } else if (sort === 'hpp_desc') {
-        filtered.sort(function(a, b) { return (b.hargaBeliHPP || 0) - (a.hargaBeliHPP || 0); });
+        filtered.sort(function(a, b) {
+            return (parseFloat(b.hargaBeliHPP) || 0) - (parseFloat(a.hargaBeliHPP) || 0);
+        });
     } else if (sort === 'laba_desc') {
         filtered.sort(function(a, b) {
-            var labaA = (a.hargaJual || 0) - (a.hargaBeliHPP || 0);
-            var labaB = (b.hargaJual || 0) - (b.hargaBeliHPP || 0);
+            var labaA = (parseFloat(a.hargaJual) || 0) - (parseFloat(a.hargaBeliHPP) || 0);
+            var labaB = (parseFloat(b.hargaJual) || 0) - (parseFloat(b.hargaBeliHPP) || 0);
             return labaB - labaA;
         });
     } else if (sort === 'margin_desc') {
         filtered.sort(function(a, b) {
-            var marginA = (a.hargaJual || 0) > 0 ? (((a.hargaJual || 0) - (a.hargaBeliHPP || 0)) / a.hargaJual) : 0;
-            var marginB = (b.hargaJual || 0) > 0 ? (((b.hargaJual || 0) - (b.hargaBeliHPP || 0)) / b.hargaJual) : 0;
+            var hjA = parseFloat(a.hargaJual) || 0;
+            var hppA = parseFloat(a.hargaBeliHPP) || 0;
+            var marginA = hjA > 0 ? ((hjA - hppA) / hjA) : -1;
+
+            var hjB = parseFloat(b.hargaJual) || 0;
+            var hppB = parseFloat(b.hargaBeliHPP) || 0;
+            var marginB = hjB > 0 ? ((hjB - hppB) / hjB) : -1;
+
             return marginB - marginA;
         });
     }

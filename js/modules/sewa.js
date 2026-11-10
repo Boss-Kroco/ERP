@@ -352,7 +352,7 @@ window.prosesSewa = function() {
             durasi: durasi,
             price: totalBayar,
             totalGross: rawSubtotalTotal,
-            diskon: totalHemat,
+            diskon: notaDiskonNominal, // Hanya diskon nota agar tidak terhitung ganda
             diskonItem: itemDiskonTotal,
             diskonNota: notaDiskonNominal,
             totalHemat: totalHemat,
@@ -363,8 +363,46 @@ window.prosesSewa = function() {
         };
         window.orderTransactions.unshift(newTrx);
         
+        // Simpan permanen ke cache transaksi lokal
+        try {
+            localStorage.setItem('bos_kroco_cached_orders', JSON.stringify(window.orderTransactions));
+        } catch(e) {}
+
+        // Sinkronkan ke daftar semua transaksi jika ada
+        if (window._semuaTransaksiList && Array.isArray(window._semuaTransaksiList)) {
+            window._semuaTransaksiList.unshift(newTrx);
+            if (typeof window.applyTransaksiFilters === 'function') {
+                window.applyTransaksiFilters();
+            }
+        }
+        
         if (typeof window.renderOrderTable === 'function') window.renderOrderTable();
         if (typeof window.loadDashboardData === 'function') window.loadDashboardData();
+
+        // Kirim transaksi ke backend / Supabase agar tersimpan permanen di database
+        var payloadTrx = {
+            pelangganId: 'CUST-SEWA',
+            namaPelanggan: penyewa,
+            cartItems: cartItems,
+            totalGross: rawSubtotalTotal,
+            diskon: totalHemat,
+            totalNet: totalBayar,
+            metodeBayar: 'Tunai',
+            statusBayar: 'Lunas'
+        };
+        if (typeof window.runBackend === 'function') {
+            window.runBackend('apiCreateTransaction', [payloadTrx, window.currentUser], function(res) {
+                if (res && res.success && res.trxId) {
+                    newTrx.id = res.trxId;
+                    try {
+                        localStorage.setItem('bos_kroco_cached_orders', JSON.stringify(window.orderTransactions));
+                    } catch(e) {}
+                }
+                if (typeof window.refreshAllTransactions === 'function') {
+                    window.refreshAllTransactions();
+                }
+            });
+        }
         
         // Also update Kas Operasional
         if (window.mockKeuanganKas) {

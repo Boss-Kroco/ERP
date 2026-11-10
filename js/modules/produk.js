@@ -160,17 +160,29 @@ window.filterMasterProdukRealtime = function() {
     });
 
     if (sort === 'az') {
-        filtered.sort(function(a, b) { return (a.namaProduk || '').localeCompare(b.namaProduk || '', 'id', { sensitivity: 'base' }); });
+        filtered.sort(function(a, b) { return (a.namaProduk || '').trim().localeCompare((b.namaProduk || '').trim(), 'id', { sensitivity: 'base' }); });
     } else if (sort === 'za') {
-        filtered.sort(function(a, b) { return (b.namaProduk || '').localeCompare(a.namaProduk || '', 'id', { sensitivity: 'base' }); });
+        filtered.sort(function(a, b) { return (b.namaProduk || '').trim().localeCompare((a.namaProduk || '').trim(), 'id', { sensitivity: 'base' }); });
     } else if (sort === 'stok_desc') {
-        filtered.sort(function(a, b) { return ((b.stokEtalase || 0) + (b.stokGudang || 0)) - ((a.stokEtalase || 0) + (a.stokGudang || 0)); });
+        filtered.sort(function(a, b) {
+            var stkB = (parseFloat(b.stokEtalase) || 0) + (parseFloat(b.stokGudang) || 0);
+            var stkA = (parseFloat(a.stokEtalase) || 0) + (parseFloat(a.stokGudang) || 0);
+            return stkB - stkA;
+        });
     } else if (sort === 'stok_asc') {
-        filtered.sort(function(a, b) { return ((a.stokEtalase || 0) + (a.stokGudang || 0)) - ((b.stokEtalase || 0) + (b.stokGudang || 0)); });
+        filtered.sort(function(a, b) {
+            var stkA = (parseFloat(a.stokEtalase) || 0) + (parseFloat(a.stokGudang) || 0);
+            var stkB = (parseFloat(b.stokEtalase) || 0) + (parseFloat(b.stokGudang) || 0);
+            return stkA - stkB;
+        });
     } else if (sort === 'harga_desc') {
-        filtered.sort(function(a, b) { return (b.hargaJual || 0) - (a.hargaJual || 0); });
+        filtered.sort(function(a, b) {
+            return (parseFloat(b.hargaJual) || 0) - (parseFloat(a.hargaJual) || 0);
+        });
     } else if (sort === 'harga_asc') {
-        filtered.sort(function(a, b) { return (a.hargaJual || 0) - (b.hargaJual || 0); });
+        filtered.sort(function(a, b) {
+            return (parseFloat(a.hargaJual) || 0) - (parseFloat(b.hargaJual) || 0);
+        });
     }
 
     if (filtered.length === 0) {
@@ -289,13 +301,21 @@ function submitTambahProduk() {
     var stokEtalaseVal = parseFloat((document.getElementById('newProdStokEtalase') || {}).value) || 0;
     var stokGudangVal = parseFloat((document.getElementById('newProdStokGudang') || {}).value) || 0;
 
+    var rawNewHpp = parseFloat(document.getElementById('newProdHpp').value) || 0;
+    var rawNewJual = parseFloat(document.getElementById('newProdHargaJual').value) || 0;
+    var rawNewGrosir = parseFloat(document.getElementById('newProdHargaGrosir').value) || 0;
+
+    var baseNewHpp = Math.round((typeof window.fromAppCurrency === 'function') ? window.fromAppCurrency(rawNewHpp) : rawNewHpp);
+    var baseNewJual = Math.round((typeof window.fromAppCurrency === 'function') ? window.fromAppCurrency(rawNewJual) : rawNewJual);
+    var baseNewGrosir = Math.round((typeof window.fromAppCurrency === 'function') ? window.fromAppCurrency(rawNewGrosir) : rawNewGrosir);
+
     var payload = {
         namaProduk: nama,
         satuan: (document.getElementById('newProdSatuan').value || 'Pcs').trim(),
-        hargaBeliHPP: Math.round(parseFloat(document.getElementById('newProdHpp').value) || 0),
-        hargaJual: Math.round(parseFloat(document.getElementById('newProdHargaJual').value) || 0),
+        hargaBeliHPP: baseNewHpp,
+        hargaJual: baseNewJual,
         minQtyGrosir: parseFloat(document.getElementById('newProdMinQtyGrosir').value) || 0,
-        hargaGrosir: Math.round(parseFloat(document.getElementById('newProdHargaGrosir').value) || 0),
+        hargaGrosir: baseNewGrosir,
         stokEtalase: stokEtalaseVal,
         stokGudang: stokGudangVal
     };
@@ -364,17 +384,21 @@ function openModalEditProduk(produkId) {
             if (elNama) elNama.value = item.namaProduk || '';
             var elSat = document.getElementById('editProdSatuan');
             if (elSat) elSat.value = item.satuan || 'Pcs';
+            var hppInCurr = (typeof window.toAppCurrency === 'function') ? window.toAppCurrency(item.hargaBeliHPP || 0) : (item.hargaBeliHPP || 0);
+            var jualInCurr = (typeof window.toAppCurrency === 'function') ? window.toAppCurrency(item.hargaJual || 0) : (item.hargaJual || 0);
+            var grosirInCurr = (typeof window.toAppCurrency === 'function') ? window.toAppCurrency(item.hargaGrosir || 0) : (item.hargaGrosir || 0);
+
             var elHpp = document.getElementById('editProdHpp');
-            if (elHpp) elHpp.value = item.hargaBeliHPP || 0;
+            if (elHpp) elHpp.value = Number(hppInCurr.toFixed(2));
             var elJual = document.getElementById('editProdHargaJual');
-            if (elJual) elJual.value = item.hargaJual || 0;
+            if (elJual) elJual.value = Number(jualInCurr.toFixed(2));
             var elStat = document.getElementById('editProdStatus');
             if (elStat) elStat.value = item.status || 'Aktif';
             
             var elMinQty = document.getElementById('editProdMinQtyGrosir');
             if (elMinQty) elMinQty.value = item.minQtyGrosir || '';
             var elHargaGrosir = document.getElementById('editProdHargaGrosir');
-            if (elHargaGrosir) elHargaGrosir.value = item.hargaGrosir || '';
+            if (elHargaGrosir) elHargaGrosir.value = (item.hargaGrosir !== undefined && item.hargaGrosir !== '') ? Number(grosirInCurr.toFixed(2)) : '';
 
             var modal = document.getElementById('modalEditProduk');
             if (modal) modal.classList.add('active');
@@ -387,14 +411,22 @@ function closeModalEditProduk() {
 
 function submitEditProduk() {
     var prodId = document.getElementById('editProdId').value;
+    var rawHpp = parseFloat(document.getElementById('editProdHpp').value) || 0;
+    var rawJual = parseFloat(document.getElementById('editProdHargaJual').value) || 0;
+    var rawGrosir = parseFloat(document.getElementById('editProdHargaGrosir').value) || 0;
+
+    var baseHpp = Math.round((typeof window.fromAppCurrency === 'function') ? window.fromAppCurrency(rawHpp) : rawHpp);
+    var baseJual = Math.round((typeof window.fromAppCurrency === 'function') ? window.fromAppCurrency(rawJual) : rawJual);
+    var baseGrosir = Math.round((typeof window.fromAppCurrency === 'function') ? window.fromAppCurrency(rawGrosir) : rawGrosir);
+
     var payload = {
         produkId: prodId,
         namaProduk: document.getElementById('editProdNama').value.trim(),
         satuan: document.getElementById('editProdSatuan').value.trim(),
-        hargaBeliHPP: Math.round(parseFloat(document.getElementById('editProdHpp').value) || 0),
-        hargaJual: Math.round(parseFloat(document.getElementById('editProdHargaJual').value) || 0),
+        hargaBeliHPP: baseHpp,
+        hargaJual: baseJual,
         minQtyGrosir: parseFloat(document.getElementById('editProdMinQtyGrosir').value) || 0,
-        hargaGrosir: Math.round(parseFloat(document.getElementById('editProdHargaGrosir').value) || 0),
+        hargaGrosir: baseGrosir,
         status: document.getElementById('editProdStatus').value
     };
 

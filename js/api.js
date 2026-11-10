@@ -276,7 +276,16 @@
                 }
 
                 var totalTransactions = pRes.data ? pRes.data.length : 0;
-                var saldoKas = Math.max(0, omzet - pengeluaran);
+                var saldoKas = 0;
+                if (kasRes.data && kasRes.data.length > 0) {
+                    kasRes.data.forEach(function (k) {
+                        var nom = Number(k.nominal || 0);
+                        if (k.tipe === 'Masuk' || k.tipe === 'Tabungan Keluar') saldoKas += nom;
+                        else if (k.tipe === 'Keluar' || k.tipe === 'Tabungan Masuk') saldoKas -= nom;
+                    });
+                } else {
+                    saldoKas = Math.max(0, omzet - pengeluaran);
+                }
                 var labaBersih = omzet - pengeluaran;
 
                 var result = {
