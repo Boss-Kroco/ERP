@@ -204,6 +204,9 @@ window.filterMasterProdukRealtime = function() {
             + '<td>' + escapeHtml(String(p.stokGudang || 0)) + '</td>'
             + '<td><span class="prog-status-pill ' + (p.status === 'Aktif' ? 'green' : 'coral') + '">' + escapeHtml(p.status || 'Aktif') + '</span></td>'
             + '<td style="text-align: center; white-space: nowrap;">'
+            + '<button class="btn-pill-action btn-pill-secondary" style="padding: 2px 8px; margin-right: 4px; color: var(--violet-main); border-color: #c7d2fe; background: #eef2ff; font-weight: 700;" onclick="window.openModalAdjustStok(\'' + escapeHtml(p.produkId) + '\')" title="Koreksi / Tambah / Kurang Stok">'
+            + '<svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 2px;"><path d="M12 5v14M5 12h14"/></svg> +/- Stok'
+            + '</button>'
             + '<button class="btn-pill-action btn-pill-secondary" style="padding: 2px 8px;" onclick="openModalEditProduk(\'' + escapeHtml(p.produkId) + '\')" title="Edit Produk">'
             + '<svg class="svg-icon-xs" viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg> Edit'
             + '</button>'
@@ -357,8 +360,8 @@ function submitTambahProduk() {
         document.getElementById('newProdHargaJual').value = '';
         document.getElementById('newProdMinQtyGrosir').value = '';
         document.getElementById('newProdHargaGrosir').value = '';
-        if (document.getElementById('newProdStokEtalase')) document.getElementById('newProdStokEtalase').value = '50';
-        if (document.getElementById('newProdStokGudang')) document.getElementById('newProdStokGudang').value = '100';
+        if (document.getElementById('newProdStokEtalase')) document.getElementById('newProdStokEtalase').value = '0';
+        if (document.getElementById('newProdStokGudang')) document.getElementById('newProdStokGudang').value = '0';
 
         renderMasterProdukTable();
         populateProductDropdowns();
@@ -400,6 +403,11 @@ function openModalEditProduk(produkId) {
             var elHargaGrosir = document.getElementById('editProdHargaGrosir');
             if (elHargaGrosir) elHargaGrosir.value = (item.hargaGrosir !== undefined && item.hargaGrosir !== '') ? Number(grosirInCurr.toFixed(2)) : '';
 
+            var elStokEtalase = document.getElementById('editProdStokEtalase');
+            if (elStokEtalase) elStokEtalase.value = Number(item.stokEtalase !== undefined ? item.stokEtalase : 0);
+            var elStokGudang = document.getElementById('editProdStokGudang');
+            if (elStokGudang) elStokGudang.value = Number(item.stokGudang !== undefined ? item.stokGudang : 0);
+
             var modal = document.getElementById('modalEditProduk');
             if (modal) modal.classList.add('active');
         }
@@ -419,6 +427,9 @@ function submitEditProduk() {
     var baseJual = Math.round((typeof window.fromAppCurrency === 'function') ? window.fromAppCurrency(rawJual) : rawJual);
     var baseGrosir = Math.round((typeof window.fromAppCurrency === 'function') ? window.fromAppCurrency(rawGrosir) : rawGrosir);
 
+    var sEtalase = Math.max(0, parseFloat((document.getElementById('editProdStokEtalase') || {}).value) || 0);
+    var sGudang = Math.max(0, parseFloat((document.getElementById('editProdStokGudang') || {}).value) || 0);
+
     var payload = {
         produkId: prodId,
         namaProduk: document.getElementById('editProdNama').value.trim(),
@@ -427,6 +438,8 @@ function submitEditProduk() {
         hargaJual: baseJual,
         minQtyGrosir: parseFloat(document.getElementById('editProdMinQtyGrosir').value) || 0,
         hargaGrosir: baseGrosir,
+        stokEtalase: sEtalase,
+        stokGudang: sGudang,
         status: document.getElementById('editProdStatus').value
     };
 
@@ -447,6 +460,8 @@ function submitEditProduk() {
                 catalogProducts[i].hargaJual = payload.hargaJual;
                 catalogProducts[i].minQtyGrosir = payload.minQtyGrosir;
                 catalogProducts[i].hargaGrosir = payload.hargaGrosir;
+                catalogProducts[i].stokEtalase = payload.stokEtalase;
+                catalogProducts[i].stokGudang = payload.stokGudang;
                 catalogProducts[i].status = payload.status;
                 break;
             }
@@ -508,5 +523,197 @@ window.hapusProduk = function (produkId, namaProduk) {
                 if (window.showToast) window.showToast((res && res.message) || 'Gagal menghapus produk.', 'error');
             }
         });
+    }
+};
+
+
+// ============================================================================
+// FITUR KOREKSI / PENYESUAIAN STOK (TAMBAH & KURANG) & RESET KE 0
+// ============================================================================
+window.openModalAdjustStok = function(produkId) {
+    var prods = (window.catalogProducts && window.catalogProducts.length) ? window.catalogProducts : (catalogProducts || []);
+    var item = prods.find(function(p) { return p.produkId === produkId; });
+    if (!item) {
+        if (window.showToast) window.showToast('Produk tidak ditemukan.', 'error');
+        return;
+    }
+
+    var modal = document.getElementById('modalAdjustStok');
+    if (!modal) return;
+
+    document.getElementById('adjustProdId').value = item.produkId;
+    document.getElementById('adjustProdSku').textContent = 'ID: ' + item.produkId + ' (' + (item.satuan || 'Pcs') + ')';
+    document.getElementById('adjustProdNama').textContent = item.namaProduk || '-';
+    document.getElementById('adjustCurEtalase').textContent = Number(item.stokEtalase !== undefined ? item.stokEtalase : 0);
+    document.getElementById('adjustCurGudang').textContent = Number(item.stokGudang !== undefined ? item.stokGudang : 0);
+
+    document.getElementById('adjustLokasi').value = 'etalase';
+    document.getElementById('adjustAksi').value = 'kurang';
+    document.getElementById('adjustQty').value = '1';
+    document.getElementById('adjustCatatan').value = '';
+
+    window.updateAdjustPreview();
+    modal.classList.add('active');
+};
+
+window.closeModalAdjustStok = function() {
+    var modal = document.getElementById('modalAdjustStok');
+    if (modal) modal.classList.remove('active');
+};
+
+window.setAdjustQuickQty = function(n) {
+    var inp = document.getElementById('adjustQty');
+    if (inp) {
+        inp.value = n;
+        window.updateAdjustPreview();
+    }
+};
+
+window.setAdjustQuickZero = function() {
+    var selAksi = document.getElementById('adjustAksi');
+    var inp = document.getElementById('adjustQty');
+    if (selAksi) selAksi.value = 'set';
+    if (inp) inp.value = 0;
+    window.updateAdjustPreview();
+};
+
+window.updateAdjustPreview = function() {
+    var prodId = document.getElementById('adjustProdId').value;
+    var prods = (window.catalogProducts && window.catalogProducts.length) ? window.catalogProducts : (catalogProducts || []);
+    var item = prods.find(function(p) { return p.produkId === prodId; });
+    if (!item) return;
+
+    var lokasi = document.getElementById('adjustLokasi').value;
+    var aksi = document.getElementById('adjustAksi').value;
+    var qty = Math.max(0, parseFloat(document.getElementById('adjustQty').value) || 0);
+
+    var curVal = (lokasi === 'etalase') ? Number(item.stokEtalase || 0) : Number(item.stokGudang || 0);
+    var newVal = curVal;
+
+    if (aksi === 'kurang') {
+        newVal = Math.max(0, curVal - qty);
+    } else if (aksi === 'tambah') {
+        newVal = curVal + qty;
+    } else if (aksi === 'set') {
+        newVal = qty;
+    }
+
+    var lokasiLabel = (lokasi === 'etalase') ? 'Stok Etalase' : 'Stok Gudang';
+    var box = document.getElementById('adjustPreviewBox');
+    if (box) {
+        var diff = newVal - curVal;
+        var diffText = diff > 0 ? ('(+' + diff + ')') : (diff < 0 ? ('(' + diff + ')') : '(Tidak Berubah)');
+        var diffColor = diff > 0 ? '#16a34a' : (diff < 0 ? '#dc2626' : '#64748b');
+
+        box.innerHTML = lokasiLabel + ': <span style="text-decoration: line-through; color: #94a3b8;">' + curVal + '</span> &rarr; '
+            + '<b style="color: #4f46e5; font-size: 14px;">' + newVal + '</b> '
+            + '<span style="color: ' + diffColor + '; font-weight: 800; font-size: 11px; margin-left: 6px;">' + diffText + '</span>';
+    }
+};
+
+window.submitAdjustStok = function() {
+    var prodId = document.getElementById('adjustProdId').value;
+    var prods = (window.catalogProducts && window.catalogProducts.length) ? window.catalogProducts : (catalogProducts || []);
+    var item = prods.find(function(p) { return p.produkId === prodId; });
+    if (!item) {
+        if (window.showToast) window.showToast('Produk tidak ditemukan.', 'error');
+        return;
+    }
+
+    var lokasi = document.getElementById('adjustLokasi').value;
+    var aksi = document.getElementById('adjustAksi').value;
+    var qty = Math.max(0, parseFloat(document.getElementById('adjustQty').value) || 0);
+    var alasan = document.getElementById('adjustAlasan').value;
+    var catatan = (document.getElementById('adjustCatatan').value || '').trim();
+
+    var curEtalase = Number(item.stokEtalase || 0);
+    var curGudang = Number(item.stokGudang || 0);
+
+    var newEtalase = curEtalase;
+    var newGudang = curGudang;
+
+    if (lokasi === 'etalase') {
+        if (aksi === 'kurang') newEtalase = Math.max(0, curEtalase - qty);
+        else if (aksi === 'tambah') newEtalase = curEtalase + qty;
+        else if (aksi === 'set') newEtalase = qty;
+    } else {
+        if (aksi === 'kurang') newGudang = Math.max(0, curGudang - qty);
+        else if (aksi === 'tambah') newGudang = curGudang + qty;
+        else if (aksi === 'set') newGudang = qty;
+    }
+
+    item.stokEtalase = newEtalase;
+    item.stokGudang = newGudang;
+
+    try {
+        localStorage.setItem('bos_kroco_catalog_products', JSON.stringify(prods));
+    } catch(e) {}
+
+    var payload = {
+        produkId: prodId,
+        namaProduk: item.namaProduk,
+        satuan: item.satuan,
+        hargaBeliHPP: item.hargaBeliHPP,
+        hargaJual: item.hargaJual,
+        minQtyGrosir: item.minQtyGrosir,
+        hargaGrosir: item.hargaGrosir,
+        stokEtalase: newEtalase,
+        stokGudang: newGudang,
+        status: item.status
+    };
+
+    if (window.runBackend) {
+        window.runBackend('apiUpdateProduct', [payload, window.currentUser], function(res) {
+            console.log('[Stok Adjust] Response server:', res);
+        });
+    }
+
+    if (typeof window.addMockAuditLog === 'function') {
+        var logDetail = 'Koreksi Stok ' + (lokasi === 'etalase' ? 'Etalase' : 'Gudang') + ' ' + item.namaProduk + ': ' 
+            + (lokasi === 'etalase' ? curEtalase + ' -> ' + newEtalase : curGudang + ' -> ' + newGudang) 
+            + ' [Alasan: ' + alasan + (catatan ? ' - ' + catatan : '') + ']';
+        window.addMockAuditLog('MasterProduk', 'ADJUST_STOK', prodId, '-', logDetail, window.currentUser);
+    }
+
+    window.closeModalAdjustStok();
+    if (typeof window.filterMasterProdukRealtime === 'function') window.filterMasterProdukRealtime();
+    if (typeof window.populateProductDropdowns === 'function') window.populateProductDropdowns();
+    if (typeof window.loadDashboardData === 'function') window.loadDashboardData();
+
+    if (window.showToast) {
+        window.showToast('Stok ' + item.namaProduk + ' berhasil disesuaikan!', 'success');
+    }
+};
+
+window.resetSemuaStokKeNol = function() {
+    var prods = (window.catalogProducts && window.catalogProducts.length) ? window.catalogProducts : (catalogProducts || []);
+    if (!prods || prods.length === 0) {
+        if (window.showToast) window.showToast('Tidak ada produk untuk direset.', 'info');
+        return;
+    }
+
+    if (!confirm('Apakah Anda yakin ingin mengatur stok etalase dan gudang SEMUA produk menjadi 0? Tindakan ini dapat disesuaikan kembali nanti.')) {
+        return;
+    }
+
+    prods.forEach(function(p) {
+        p.stokEtalase = 0;
+        p.stokGudang = 0;
+    });
+
+    try {
+        localStorage.setItem('bos_kroco_catalog_products', JSON.stringify(prods));
+    } catch(e) {}
+
+    if (window.runBackend) {
+        window.runBackend('apiResetAllStockToZero', [window.currentUser], function() {});
+    }
+
+    if (typeof window.filterMasterProdukRealtime === 'function') window.filterMasterProdukRealtime();
+    if (typeof window.populateProductDropdowns === 'function') window.populateProductDropdowns();
+    if (typeof window.loadDashboardData === 'function') window.loadDashboardData();
+
+    if (window.showToast) {
+        window.showToast('Semua stok etalase & gudang produk telah diatur menjadi 0!', 'success');
     }
 };

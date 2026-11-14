@@ -1116,8 +1116,12 @@ function loadDashboardData() {
             var elKas = document.getElementById('statHeroKas');
             var elBeban = document.getElementById('statHeroBeban');
             var elLaba = document.getElementById('statHeroLaba');
+            var realKasOperasional = (typeof window.getSaldoKasOperasional === 'function') 
+                ? window.getSaldoKasOperasional() 
+                : ((typeof d.saldoKas === 'number' && d.saldoKas > 0) ? d.saldoKas : 0);
+
             if (elOmzet) elOmzet.textContent = window.formatAppCurrency(d.omzet);
-            if (elKas) elKas.textContent = window.formatAppCurrency(d.saldoKas);
+            if (elKas) elKas.textContent = window.formatAppCurrency(realKasOperasional);
             if (elBeban) elBeban.textContent = window.formatAppCurrency(d.pengeluaran);
             if (elLaba) elLaba.textContent = window.formatAppCurrency(d.labaBersih);
             // Kalkulasi real stok dari data produk lokal (opsi 2)
@@ -1157,7 +1161,8 @@ function loadDashboardData() {
                 }
             } catch (e) {}
 
-            var isKasKritis = typeof d.saldoKas === 'number' && d.saldoKas < limitKas;
+            var currentKas = (typeof window.getSaldoKasOperasional === 'function') ? window.getSaldoKasOperasional() : (d.saldoKas || 0);
+            var isKasKritis = currentKas < limitKas;
             var badgeDash = document.getElementById('badgeKasKritis');
             if (badgeDash) badgeDash.style.display = isKasKritis ? 'inline-block' : 'none';
 

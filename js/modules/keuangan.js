@@ -287,14 +287,8 @@ function fetchKeuanganKas() {
         window.allKeuanganKas = allKeuanganKas;
         window.currentRawKasList = currentRawKasList;
 
-        // Perbarui saldo kas riil dari transaksi mutasi terbaru jika ada
-        if (allKeuanganKas.length > 0) {
-            var latestKas = allKeuanganKas[0];
-            var elSaldo = document.getElementById('keuanganSaldoKas');
-            if (elSaldo && latestKas.saldoBerjalan !== undefined && latestKas.saldoBerjalan !== null) {
-                elSaldo.textContent = window.formatAppCurrency(latestKas.saldoBerjalan);
-            }
-        }
+        // Perbarui saldo kas riil dan metrik
+        filterKeuanganKas();
 
         filterKeuanganKas();
     });
@@ -422,16 +416,72 @@ function updateKeuanganMetrics(items) {
     var countMasuk = 0;
     var countKeluar = 0;
 
+    // Poin 4: Tabungan Keluar & Tabungan Masuk JANGAN dihitung ke Total Kas Masuk / Keluar Operasional
     (items || []).forEach(function (k) {
         var nom = Number(k.nominal || 0);
-        if (k.tipe === 'Masuk' || k.tipe === 'Tabungan Keluar') {
+        if (k.tipe === 'Masuk') {
             totalMasuk += nom;
             countMasuk++;
-        } else if (k.tipe === 'Keluar' || k.tipe === 'Tabungan Masuk') {
+        } else if (k.tipe === 'Keluar') {
             totalKeluar += nom;
             countKeluar++;
         }
     });
+
+    // Poin 3: Hitung Saldo Kas Operasional Riil (Total Masuk Murni + Tarik Tabungan - Total Keluar Murni - Setor Tabungan)
+    var saldoKasOperasional = 0;
+    var allMutasi = window.allKeuanganKas || allKeuanganKas || [];
+    allMutasi.forEach(function(k) {
+        var nom = Number(k.nominal || 0);
+        if (k.tipe === 'Masuk' || k.tipe === 'Tabungan Keluar') {
+            saldoKasOperasional += nom;
+        } else if (k.tipe === 'Keluar' || k.tipe === 'Tabungan Masuk') {
+            saldoKasOperasional -= nom;
+        }
+    });
+
+    // Jika mutasi kas belum tercatat namun ada riwayat transaksi kasir tunai
+    if (saldoKasOperasional === 0 && window.orderTransactions && window.orderTransactions.length > 0) {
+        var sumTrxCash = 0;
+        window.orderTransactions.forEach(function(o) {
+            var pay = String(o.payment || o.metodeBayar || 'Tunai').toLowerCase();
+            if (pay === 'tunai' || pay === 'cash' || !pay) {
+                sumTrxCash += Number(o.price || o.amount || o.totalNet || 0);
+            }
+        });
+        if (sumTrxCash > 0) {
+            saldoKasOperasional = sumTrxCash;
+            if (totalMasuk === 0) {
+                totalMasuk = sumTrxCash;
+                countMasuk = window.orderTransactions.length;
+            }
+        }
+    }
+
+    window._currentSaldoKasOperasional = saldoKasOperasional;
+
+    var elSaldoKas = document.getElementById('keuanganSaldoKas');
+    if (elSaldoKas) {
+        elSaldoKas.textContent = window.formatAppCurrency(saldoKasOperasional);
+    }
+
+    var limitKas = 2000000;
+    try {
+        var rawSettings = localStorage.getItem('bos_kroco_app_settings');
+        if (rawSettings) {
+            var c = JSON.parse(rawSettings);
+            if (c && c.limitKas) limitKas = parseFloat(c.limitKas) || 2000000;
+        }
+    } catch(e) {}
+
+    var elLimit = document.getElementById('keuanganLimitKas');
+    if (elLimit) elLimit.textContent = window.formatAppCurrency(limitKas);
+
+    var isKritis = saldoKasOperasional < limitKas;
+    var badgeKritis = document.getElementById('badgeKeuanganKasKritis');
+    var alertBox = document.getElementById('alertKasKritisBox');
+    if (badgeKritis) badgeKritis.style.display = isKritis ? 'inline-flex' : 'none';
+    if (alertBox) alertBox.style.display = isKritis ? 'block' : 'none';
 
     var tabunganTotal = 0;
     var hasKasTabungan = false;
@@ -713,3 +763,24 @@ window.exportKeuanganCSV = exportKeuanganCSV;
 window.openModalEditKas = openModalEditKas;
 window.closeModalEditKas = closeModalEditKas;
 window.submitEditKas = submitEditKas;
+
+window.getSaldoKasOperasional = function() {
+    if (typeof window._currentSaldoKasOperasional === 'number') {
+        return window._currentSaldoKasOperasional;
+    }
+    var bal = 0;
+    (window.allKeuanganKas || []).forEach(function(k) {
+        var nom = Number(k.nominal || 0);
+        if (k.tipe === 'Masuk' || k.tipe === 'Tabungan Keluar') bal += nom;
+        else if (k.tipe === 'Keluar' || k.tipe === 'Tabungan Masuk') bal -= nom;
+    });
+    if (bal === 0 && window.orderTransactions && window.orderTransactions.length > 0) {
+        window.orderTransactions.forEach(function(o) {
+            var pay = String(o.payment || o.metodeBayar || 'Tunai').toLowerCase();
+            if (pay === 'tunai' || pay === 'cash' || !pay) {
+                bal += Number(o.price || o.amount || o.totalNet || 0);
+            }
+        });
+    }
+    return bal;
+};

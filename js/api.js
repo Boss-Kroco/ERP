@@ -432,6 +432,17 @@
                 return { success: true, data: combined, total: combined.length };
             }
 
+            case 'apiResetAllStockToZero': {
+                var uSession = args[0] || window.currentUser;
+                try {
+                    await sb.from('stok_lokasi').update({ etalase_toko: 0, gudang_produksi: 0 }).neq('produk_id', '___');
+                } catch(e) {}
+                if (typeof window.addMockAuditLog === 'function') {
+                    window.addMockAuditLog('MasterProduk', 'RESET_STOK', 'ALL', '-', 'Reset semua stok produk ke 0', uSession);
+                }
+                return { success: true, message: 'Semua stok berhasil diatur ke 0.' };
+            }
+
             case 'apiDeleteProduct': {
                 var pId = args[0];
                 var uSession = args[1] || window.currentUser;
@@ -467,8 +478,8 @@
                     }
                 } catch(e) {}
 
-                var stokEtalase = Math.round(Number(pObj.stokEtalase !== undefined ? pObj.stokEtalase : 50));
-                var stokGudang = Math.round(Number(pObj.stokGudang !== undefined ? pObj.stokGudang : 100));
+                var stokEtalase = Math.max(0, Math.round(Number(pObj.stokEtalase !== undefined ? pObj.stokEtalase : 0)));
+                var stokGudang = Math.max(0, Math.round(Number(pObj.stokGudang !== undefined ? pObj.stokGudang : 0)));
 
                 var baseInsert = {
                     produk_id: newId,
@@ -1570,8 +1581,8 @@
                 hargaJual: Math.round(Number(pProd.hargaJual || 0)),
                 minQtyGrosir: Number(pProd.minQtyGrosir || 0),
                 hargaGrosir: Math.round(Number(pProd.hargaGrosir || 0)),
-                stokEtalase: Number(pProd.stokEtalase !== undefined ? pProd.stokEtalase : 50),
-                stokGudang: Number(pProd.stokGudang !== undefined ? pProd.stokGudang : 100),
+                stokEtalase: Math.max(0, Number(pProd.stokEtalase !== undefined ? pProd.stokEtalase : 0)),
+                stokGudang: Math.max(0, Number(pProd.stokGudang !== undefined ? pProd.stokGudang : 0)),
                 status: 'Aktif'
             };
             window.catalogProducts.unshift(newPObj);
