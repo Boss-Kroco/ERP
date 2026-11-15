@@ -1091,6 +1091,21 @@
                     }
                 }
 
+                if (pProd.stokEtalase !== undefined || pProd.stokGudang !== undefined) {
+                    var se = Math.max(0, Math.round(Number(pProd.stokEtalase !== undefined ? pProd.stokEtalase : 0)));
+                    var sg = Math.max(0, Math.round(Number(pProd.stokGudang !== undefined ? pProd.stokGudang : 0)));
+                    try {
+                        await sb.from('stok_lokasi').upsert([{
+                            produk_id: pid,
+                            nama_produk: baseUpdates.nama_produk,
+                            etalase_toko: se,
+                            gudang_produksi: sg,
+                            batas_minimum: 10,
+                            status: (se + sg) <= 10 ? 'Kritis' : 'Aman'
+                        }], { onConflict: 'produk_id' });
+                    } catch (e) {}
+                }
+
                 if (pProd.namaProduk && (!oldProd || oldProd.nama_produk !== pProd.namaProduk)) {
                     try {
                         await sb.from('stok_lokasi').update({ nama_produk: pProd.namaProduk }).eq('produk_id', pid);
@@ -1630,6 +1645,8 @@
                 targetPrd.hargaJual = Number(pUpPrd.hargaJual !== undefined ? pUpPrd.hargaJual : targetPrd.hargaJual);
                 targetPrd.minQtyGrosir = Number(pUpPrd.minQtyGrosir !== undefined ? pUpPrd.minQtyGrosir : targetPrd.minQtyGrosir);
                 targetPrd.hargaGrosir = Number(pUpPrd.hargaGrosir !== undefined ? pUpPrd.hargaGrosir : targetPrd.hargaGrosir);
+                if (pUpPrd.stokEtalase !== undefined) targetPrd.stokEtalase = Math.max(0, Number(pUpPrd.stokEtalase));
+                if (pUpPrd.stokGudang !== undefined) targetPrd.stokGudang = Math.max(0, Number(pUpPrd.stokGudang));
                 targetPrd.status = pUpPrd.status || targetPrd.status;
             } else {
                 listPrd.push(pUpPrd);
